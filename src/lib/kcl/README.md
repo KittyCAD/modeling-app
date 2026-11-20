@@ -74,6 +74,41 @@ camera pose across idle and transient reconnects, restoring it after the next
 execution instead of framing the model again. Closing the view discards that pose.
 Local rendering is exempt from idle teardown.
 
+## Sharing native execution
+
+The shared executor currently saves source-capture work, including reading imports.
+It does not eliminate native execution per view.
+[`createKclRuntime`](execution/runtime.ts) creates a WASM context bound to one
+engine connection. Execution builds that connection's scene, and its artifact
+references address geometry in that scene. An independent streamed view needs
+its own scene to render. Local views currently have the same requirement because
+they also execute through a geometry-only engine connection.
+
+[`createKclViewExecution`](modeling/viewExecution.ts) bridges that boundary: each
+view executes the shared snapshot and retains its own native results and failures.
+This accommodates the current engine integration; it is not a requirement that
+future executors repeat all native computation for every presentation.
+
+Sharing native execution would require:
+
+1. A reusable geometry and artifact result that does not depend on the producing
+   connection or borrow memory freed when its view closes. Its shared owner would
+   need to retain it for all consuming views.
+2. A way for independent engine connections to present that result, through scene
+   installation or shared model references, including any mapping needed for
+   connection-specific geometry references. A local-renderer path could instead
+   consume reusable geometry directly; that would not by itself solve streaming.
+3. A definition of which source and execution-setting revisions identify the same
+   reusable result. View-specific presentation settings must remain independent.
+4. Per-view camera, selection, and connection lifetimes. Reconnecting a view would
+   present the current result in its replacement scene without rerunning healthy
+   sibling views or discarding their interaction state.
+
+With those capabilities, the bridge could consume shared native results and
+coordinate their presentation. Deleting the bridge alone would not populate the
+other connections' scenes. That separation is future work, not an API supplied
+by this package today.
+
 ## Rendering
 
 Both presentations use the application's `ConnectionManager` and camera controls:
