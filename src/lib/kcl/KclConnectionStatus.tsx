@@ -11,6 +11,14 @@ export function KclConnectionStatus({
 }) {
   useSignals()
   const state = session.state.value
+  if (state.type === 'idle')
+    return (
+      <ConnectionRecovery
+        title="Scene paused"
+        onReconnect={session.reconnect}
+        className="body-bg absolute inset-0 z-50"
+      />
+    )
   if (state.type === 'error')
     return (
       <ConnectionRecovery

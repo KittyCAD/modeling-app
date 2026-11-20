@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals-core'
+import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import { emptyExecState } from '@src/lang/wasm'
 import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
 import { createKclSession } from '@src/lib/kcl/session'
@@ -230,4 +232,163 @@ it('ignores late resize failures from a retired connection', async () => {
   expect(session.resource.peek()).toBe(second)
   detach()
   session.dispose()
+})
+
+it.each(['local', 'streamed'] as const)(
+  'applies the idle timeout only to %s streamed sessions and restores the camera on activity',
+  async (presentation) => {
+    vi.useFakeTimers()
+    const first = scene(presentation),
+      second = scene(presentation)
+    first.preferences = { ...first.preferences, idleTimeout: signal(1000) }
+    const open = vi
+      .fn<OpenKclScene>()
+      .mockResolvedValueOnce(first)
+      .mockResolvedValueOnce(second)
+    const session = createKclSession(open)
+    const parent = container()
+    session.attach(parent)
+    try {
+      await session.execute(snapshot, runSignal())
+      const pose = first.snapshotCamera()
+      await vi.advanceTimersByTimeAsync(1100)
+      if (presentation === 'local') {
+        expect(session.resource.peek()).toBe(first)
+        expect(first.dispose).not.toHaveBeenCalled()
+        return
+      }
+      expect(session.state.peek().type).toBe('idle')
+      expect(first.dispose).toHaveBeenCalledOnce()
+      parent.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+      await vi.advanceTimersByTimeAsync(0)
+      await session.execute(snapshot, runSignal())
+      expect(second.restoreCamera).toHaveBeenCalledWith(pose)
+      expect(second.frameModel).not.toHaveBeenCalled()
+    } finally {
+      session.dispose()
+    }
+  }
+)
+
+it('does not idle during execution or while the user is interacting', async () => {
+  vi.useFakeTimers()
+  const resource = scene()
+  resource.preferences = { ...resource.preferences, idleTimeout: signal(1000) }
+  const session = createKclSession(async () => resource)
+  const parent = container()
+  session.attach(parent)
+  try {
+    await session.execute(snapshot, runSignal())
+    resource.runtime.executing.value = true
+    await vi.advanceTimersByTimeAsync(5000)
+    expect(resource.dispose).not.toHaveBeenCalled()
+    resource.runtime.executing.value = false
+    for (let i = 0; i < 3; i++) {
+      await vi.advanceTimersByTimeAsync(800)
+      parent.dispatchEvent(new PointerEvent('pointermove'))
+    }
+    expect(resource.dispose).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(session.state.peek().type).toBe('idle')
+  } finally {
+    session.dispose()
+  }
+})
+
+it.each([true, false])(
+  'retries a retryable=%s transport loss without moving a healthy sibling',
+  async (retryable) => {
+    vi.useFakeTimers()
+    const first = scene(),
+      replacement = scene(),
+      siblingScene = scene()
+    let disconnect: (error: Error) => void = () => {}
+    const open = vi
+      .fn<OpenKclScene>()
+      .mockImplementationOnce(async (_size, _signal, closed) => {
+        disconnect = closed
+        return first
+      })
+      .mockResolvedValue(replacement)
+    const session = createKclSession(open),
+      sibling = createKclSession(async () => siblingScene)
+    session.attach(container())
+    sibling.attach(container())
+    try {
+      await session.execute(snapshot, runSignal())
+      await sibling.execute(snapshot, runSignal())
+      const pose = first.snapshotCamera()
+      disconnect(new SceneDisconnected('WebSocket closed', retryable))
+      await vi.advanceTimersByTimeAsync(1000)
+      if (retryable) {
+        expect(session.resource.peek()).toBe(replacement)
+        await session.execute(snapshot, runSignal())
+        expect(replacement.restoreCamera).toHaveBeenCalledWith(pose)
+        expect(replacement.frameModel).not.toHaveBeenCalled()
+      } else {
+        window.dispatchEvent(new Event('focus'))
+        expect(open).toHaveBeenCalledOnce()
+        expect(session.state.peek().type).toBe('error')
+      }
+      expect(sibling.resource.peek()).toBe(siblingScene)
+      expect(siblingScene.dispose).not.toHaveBeenCalled()
+    } finally {
+      session.dispose()
+      sibling.dispose()
+    }
+  }
+)
+
+it('cancels a pending automatic retry on disposal and discards its saved camera', async () => {
+  vi.useFakeTimers()
+  let disconnect: (error: Error) => void = () => {}
+  const first = scene()
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockImplementation(async (_size, _signal, closed) => {
+      disconnect = closed
+      return first
+    })
+  const session = createKclSession(open)
+  session.attach(container())
+  await session.execute(snapshot, runSignal())
+  disconnect(new SceneDisconnected('Lost connection'))
+  session.dispose()
+  await vi.advanceTimersByTimeAsync(10000)
+  window.dispatchEvent(new Event('online'))
+  expect(open).toHaveBeenCalledOnce()
+  const fresh = scene(),
+    next = createKclSession(async () => fresh)
+  next.attach(container())
+  await next.execute(snapshot, runSignal())
+  expect(fresh.frameModel).toHaveBeenCalledOnce()
+  expect(fresh.restoreCamera).not.toHaveBeenCalled()
+  next.dispose()
+})
+
+it('bounds repeated startup failures after a transport loss until the user retries', async () => {
+  vi.useFakeTimers()
+  let disconnect: (error: Error) => void = () => {}
+  const first = scene()
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockImplementationOnce(async (_size, _signal, closed) => {
+      disconnect = closed
+      return first
+    })
+    .mockResolvedValue(new Error('Still unavailable'))
+  const session = createKclSession(open)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    disconnect(new SceneDisconnected('Connection lost'))
+    await vi.advanceTimersByTimeAsync(20000)
+    expect(open).toHaveBeenCalledTimes(4)
+    expect(session.state.peek().type).toBe('error')
+    session.reconnect()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(open).toHaveBeenCalledTimes(5)
+  } finally {
+    session.dispose()
+  }
 })
