@@ -1,6 +1,6 @@
 export interface TessellationRequest {
   id: number
-  snapshot: string
+  snapshot: string | Uint8Array
   refinement: number
 }
 
@@ -11,4 +11,4 @@ export type TessellationResponse =
       normals: Float32Array
       faceCount: number
     }
-  | { id: number; error: string }
+  | { id: number; error: string; unsupportedExport?: true }

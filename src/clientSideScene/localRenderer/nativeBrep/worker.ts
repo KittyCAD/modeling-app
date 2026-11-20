@@ -1,3 +1,7 @@
+import {
+  readPreviewGlb,
+  UnsupportedPreviewGlb,
+} from '@src/clientSideScene/localRenderer/nativeBrep/gltfPreview'
 import type { NativeBrepSceneSnapshot, NativeBrepSnapshot } from '@kittycad/lib'
 import init, {
   tessellate_snapshot,
@@ -76,8 +80,10 @@ async function drain() {
           })
           continue
         }
-        const input = JSON.parse(
-          request.snapshot
+        const input = (
+          typeof request.snapshot === 'string'
+            ? JSON.parse(request.snapshot)
+            : readPreviewGlb(request.snapshot)
         ) as Partial<NativeBrepSceneSnapshot> & Partial<NativeBrepSnapshot>
         const { version } = input
         if (version !== 1) {
@@ -110,7 +116,7 @@ async function drain() {
                 brep: body.brep,
               } satisfies NativeBrepSnapshot)
             )
-          : [request.snapshot]
+          : [String(request.snapshot)]
         const keys = snapshots.map(
           (snapshot) => `${request.refinement}:${snapshot}`
         )
@@ -219,6 +225,9 @@ async function drain() {
       } catch (error) {
         const response: TessellationResponse = {
           id: request.id,
+          ...(error instanceof UnsupportedPreviewGlb
+            ? { unsupportedExport: true as const }
+            : {}),
           error: error instanceof Error ? error.message : String(error),
         }
         self.postMessage(response)
