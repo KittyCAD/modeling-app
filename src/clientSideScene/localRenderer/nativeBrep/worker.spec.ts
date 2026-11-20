@@ -59,6 +59,25 @@ describe('native B-rep worker', () => {
     expect(mocks.tessellate).not.toHaveBeenCalled()
   })
 
+  it('identifies a full GLB returned by an Engine that ignored the preview option', async () => {
+    const json = new TextEncoder().encode(JSON.stringify({ meshes: [{}] }))
+    const snapshot = new Uint8Array(20 + json.length)
+    const header = new DataView(snapshot.buffer)
+    header.setUint32(0, 0x46546c67, true)
+    header.setUint32(12, json.length, true)
+    header.setUint32(16, 0x4e4f534a, true)
+    snapshot.set(json, 20)
+    scope.onmessage?.({
+      data: { id: 1, snapshot, refinement: 0 },
+    } as MessageEvent)
+    await vi.waitFor(() => expect(scope.postMessage).toHaveBeenCalledOnce())
+    expect(scope.postMessage.mock.calls[0][0]).toMatchObject({
+      id: 1,
+      unsupportedExport: true,
+    })
+    expect(mocks.tessellate).not.toHaveBeenCalled()
+  })
+
   it('preserves the legacy single-body snapshot frame', async () => {
     scope.onmessage?.({
       data: {
