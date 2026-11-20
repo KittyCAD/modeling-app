@@ -79,7 +79,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   await registry.configure([
     cloudProjects,
     provide(homeProjectActionsService, {
-      canCloneToLibrary: () => true,
+      canDuplicateToLibrary: () => true,
     } as unknown as HomeProjectActionsService),
     provide(authService, {
       user,
@@ -167,7 +167,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
     type: 'Find and select command',
     data: {
       groupId: 'projects',
-      name: 'Clone project',
+      name: 'Duplicate project',
       argDefaultValues: { project: entries[0].id },
     },
   })

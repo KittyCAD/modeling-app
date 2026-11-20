@@ -15,7 +15,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   findKeymapItemForCommand,
@@ -237,14 +236,6 @@ function ProjectMenuPopover({
     [commandList]
   )
   const machineCount = machineManager.machines.length
-  const getCurrentFileForDuplicate = useCallback(
-    () => ({
-      currentFilePath: app?.project?.executingPath,
-      currentFileContents: app?.project?.executingEditor.value?.code,
-    }),
-    [app]
-  )
-
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
@@ -276,40 +267,6 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
-        project
-          ? {
-              id: 'duplicate-project',
-              Element: 'button' as const,
-              children: (
-                <span
-                  className={projectMenuItemLabelClassName}
-                  data-testid="project-sidebar-duplicate-project"
-                >
-                  Duplicate project
-                </span>
-              ),
-              onClick: () => {
-                const editor = getCurrentFileForDuplicate()
-                app.projectOperations
-                  .duplicateProject(
-                    project,
-                    getProjectDisplayName(project),
-                    editor.currentFilePath
-                      ? {
-                          path: editor.currentFilePath,
-                          contents: editor.currentFileContents ?? '',
-                        }
-                      : undefined
-                  )
-                  .then((created) =>
-                    app.projectSession.openFile(created.path, {
-                      projectPath: created.path,
-                    })
-                  )
-                  .catch(reportRejection)
-              },
-            }
-          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []
@@ -497,7 +454,6 @@ function ProjectMenuPopover({
       onProjectClose,
       projectPath,
       project,
-      getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
       app.projectOperations,

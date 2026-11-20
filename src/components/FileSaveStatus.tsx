@@ -32,7 +32,7 @@ export function FileSaveStatus() {
       !project.readWriteAccess &&
       app.registry
         .optional(homeProjectActionsService)
-        ?.canCloneToLibrary(project)
+        ?.canDuplicateToLibrary(project)
     return (
       <span role="status" className={className}>
         {availability.reason}
@@ -42,7 +42,7 @@ export function FileSaveStatus() {
             onClick={() =>
               selectCommand(app.commands, {
                 groupId: 'projects',
-                name: 'Clone project',
+                name: 'Duplicate project',
                 argDefaultValues: { project: project.id },
               })
             }
