@@ -1,8 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
-import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
-import { createKclSession } from '@src/lib/kcl/session'
+import { KclConnectionStatus } from '@src/lib/kcl/modeling/KclConnectionStatus'
+import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene/open'
+import { createKclSession } from '@src/lib/kcl/modeling/session'
 import { createTestKclScene } from '@src/lib/kcl/testFixtures'
 
 beforeEach(() => {

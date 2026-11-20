@@ -5,9 +5,9 @@ import * as ExecutionStrategy from 'effect/ExecutionStrategy'
 import { computed, effect, signal } from '@preact/signals-core'
 import type { ExecState } from '@src/lang/wasm'
 import type { Executor } from '@src/lib/executors/registry/contract'
-import type { KclExecutionCapability } from '@src/lib/kcl/executor'
-import type { KclSession } from '@src/lib/kcl/session'
-import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
+import type { KclExecutionCapability } from '@src/lib/kcl/execution/executor'
+import type { KclSession } from '@src/lib/kcl/modeling/session'
+import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
 import { isErr } from '@src/lib/trap'
 
 /** Native results and failures belong to one scene; their entity IDs cannot be used by a sibling connection. */

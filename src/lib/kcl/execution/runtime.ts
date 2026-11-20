@@ -14,7 +14,7 @@ import {
 } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import fsZds from '@src/lib/fs-zds'
-import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
+import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
 import {
   type SceneExecutionDoneDetail,
   SceneExecutionEvents,

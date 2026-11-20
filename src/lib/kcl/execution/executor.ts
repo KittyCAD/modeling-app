@@ -1,7 +1,7 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ExecutorRunContext } from '@src/lib/executors/registry/contract'
 import { defineExecutorCapability } from '@src/lib/executors/registry/contract'
-import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
+import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
 import { isErr } from '@src/lib/trap'
 
 /** Capture one connection-independent source snapshot for every view leasing this executor. */

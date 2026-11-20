@@ -1,8 +1,8 @@
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import { emptyExecState } from '@src/lang/wasm'
-import { createKclRuntime } from '@src/lib/kcl/runtime'
-import { openKclScene } from '@src/lib/kcl/scene'
-import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import { createKclRuntime } from '@src/lib/kcl/execution/runtime'
+import { openKclScene } from '@src/lib/kcl/scene/open'
+import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import {
   connectScene,
   type SceneConnection,
@@ -68,7 +68,7 @@ vi.mock('@src/clientSideScene/sceneInfra', () => ({
   SceneInfra: owned.TestInfra,
 }))
 vi.mock('@src/lib/kcl/scene/connection', () => ({ connectScene: vi.fn() }))
-vi.mock('@src/lib/kcl/runtime', () => ({ createKclRuntime: vi.fn() }))
+vi.mock('@src/lib/kcl/execution/runtime', () => ({ createKclRuntime: vi.fn() }))
 vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn(async () => {}),
 }))

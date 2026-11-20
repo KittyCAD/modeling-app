@@ -2,7 +2,10 @@ import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { encode } from '@msgpack/msgpack'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { createKclRuntime, type KclRuntime } from '@src/lib/kcl/runtime'
+import {
+  createKclRuntime,
+  type KclRuntime,
+} from '@src/lib/kcl/execution/runtime'
 import { SceneExecutionEvents } from '@src/lib/kcl/scene/execution'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'

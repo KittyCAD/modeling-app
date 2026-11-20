@@ -6,12 +6,12 @@ import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import { DprDetector } from '@src/lib/DprDetector'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
-import type { KclRuntime } from '@src/lib/kcl/runtime'
+import type { KclRuntime } from '@src/lib/kcl/execution/runtime'
 import type {
   ScenePresentationPreferences,
   SceneCameraPreferences,
   SceneAppearancePreferences,
-} from '@src/lib/kcl/presentationPreferences'
+} from '@src/lib/kcl/scene/presentationPreferences'
 import styles from './scenePresentation.module.css'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { getSceneOverlayTheme } from '@src/lib/settings/viewportRendering'

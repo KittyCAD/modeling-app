@@ -19,12 +19,12 @@ import {
 import {
   createKclViewExecution,
   type KclViewExecution,
-} from '@src/lib/kcl/viewExecution'
-import { createKclExecution } from '@src/lib/kcl/executor'
-import { KclScene } from '@src/lib/kcl/KclScene'
-import { openKclScene } from '@src/lib/kcl/scene'
-import { createKclSession } from '@src/lib/kcl/session'
-import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+} from '@src/lib/kcl/modeling/viewExecution'
+import { createKclExecution } from '@src/lib/kcl/execution/executor'
+import { KclScene } from '@src/lib/kcl/modeling/KclScene'
+import { openKclScene } from '@src/lib/kcl/scene/open'
+import { createKclSession } from '@src/lib/kcl/modeling/session'
+import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { isErr } from '@src/lib/trap'
@@ -37,7 +37,7 @@ import { observations as wasmInputs } from '@src/registry/contracts/wasm'
 import {
   readKclFileExtensions,
   readKclVersion,
-} from '@src/lib/kcl/nativeInputs'
+} from '@src/lib/kcl/execution/nativeInputs'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 
 /**

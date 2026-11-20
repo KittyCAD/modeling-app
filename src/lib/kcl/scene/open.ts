@@ -9,13 +9,16 @@ import {
   EngineConnectionManagerEvents,
   getDimensions,
 } from '@src/lib/engineConnection/utils'
-import { createKclRuntime, type KclRuntime } from '@src/lib/kcl/runtime'
-import type { ScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import {
+  createKclRuntime,
+  type KclRuntime,
+} from '@src/lib/kcl/execution/runtime'
+import type { ScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import {
   createSceneElement,
   createSceneViewport,
   type SceneViewport,
-} from '@src/lib/kcl/scenePresentation'
+} from '@src/lib/kcl/scene/scenePresentation'
 import {
   connectScene,
   type SceneConnection,
