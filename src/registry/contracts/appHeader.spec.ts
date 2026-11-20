@@ -1,4 +1,7 @@
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import {
+  appHeaderItemsFacet,
+  appHeaderLeftItemsFacet,
+} from '@src/registry/contracts/appHeader'
 import {
   factory as defineFactory,
   contribute,
@@ -11,43 +14,49 @@ import { describe, expect, it } from 'vitest'
 const FirstItem = () => null
 const SecondItem = () => null
 describe('app header registry contract', () => {
-  it('allows extensions to contribute ordered header items', async () => {
-    const registry = new Registry()
-    await registry.configure([
-      defineFactory({
-        create: () => ({
-          items: [
-            contribute(
-              appHeaderItemsFacet,
-              () =>
-                ({
-                  id: 'second',
-                  order: 20,
-                  Component: SecondItem,
-                }) satisfies InputOf<typeof appHeaderItemsFacet>
-            ),
-          ],
-        }),
-      }) satisfies Factory,
-      defineFactory({
-        create: () => ({
-          items: [
-            contribute(
-              appHeaderItemsFacet,
-              () =>
-                ({
-                  id: 'first',
-                  order: 10,
-                  Component: FirstItem,
-                }) satisfies InputOf<typeof appHeaderItemsFacet>
-            ),
-          ],
-        }),
-      }) satisfies Factory,
-    ])
-    expect(registry.get(appHeaderItemsFacet).map((item) => item.id)).toEqual([
-      'first',
-      'second',
-    ])
-  })
+  it.each([
+    ['right', appHeaderItemsFacet],
+    ['left', appHeaderLeftItemsFacet],
+  ] as const)(
+    'allows extensions to contribute ordered %s header items',
+    async (_, facet) => {
+      const registry = new Registry()
+      await registry.configure([
+        defineFactory({
+          create: () => ({
+            items: [
+              contribute(
+                facet,
+                () =>
+                  ({
+                    id: 'second',
+                    order: 20,
+                    Component: SecondItem,
+                  }) satisfies InputOf<typeof facet>
+              ),
+            ],
+          }),
+        }) satisfies Factory,
+        defineFactory({
+          create: () => ({
+            items: [
+              contribute(
+                facet,
+                () =>
+                  ({
+                    id: 'first',
+                    order: 10,
+                    Component: FirstItem,
+                  }) satisfies InputOf<typeof facet>
+              ),
+            ],
+          }),
+        }) satisfies Factory,
+      ])
+      expect(registry.get(facet).map((item) => item.id)).toEqual([
+        'first',
+        'second',
+      ])
+    }
+  )
 })
