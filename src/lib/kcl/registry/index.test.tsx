@@ -10,10 +10,16 @@ import kclExtension from '@src/lib/kcl/registry'
 import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import type { KclSceneResource } from '@src/lib/kcl/scene'
 import { openKclScene } from '@src/lib/kcl/scene'
+import { initialiseWasm } from '@src/lang/wasmUtils'
+import type * as WasmUtils from '@src/lang/wasmUtils'
+import {
+  readKclFileExtensions,
+  readKclVersion,
+} from '@src/lib/kcl/nativeInputs'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
-import { act, render } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 import {
   createTestKclScene,
@@ -25,8 +31,12 @@ vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
 }))
 vi.mock('@src/lib/kcl/scene', () => ({ openKclScene: vi.fn() }))
 vi.mock('@src/lib/kcl/nativeInputs', () => ({
-  readKclVersion: async () => '3.0',
-  readKclFileExtensions: async () => ['kcl'],
+  readKclVersion: vi.fn(async () => '3.0'),
+  readKclFileExtensions: vi.fn(async () => ['kcl']),
+}))
+vi.mock('@src/lang/wasmUtils', async (importOriginal) => ({
+  ...(await importOriginal<typeof WasmUtils>()),
+  initialiseWasm: vi.fn(() => new Promise<ModuleType>(() => {})),
 }))
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
@@ -50,6 +60,7 @@ it.each([false, true])(
     const settings = settingsProvider.current.peek()
     settings.modeling.highlightEdges.user = false
     settings.modeling.useLocalRenderer.user = local
+    const wasm = new Promise<ModuleType>(() => {})
     const registry = new Registry()
     await registry.configure([
       editorsExtension,
@@ -57,7 +68,7 @@ it.each([false, true])(
       kclExtension,
       [
         [provide(settingsService, settingsProvider)],
-        [contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {}))],
+        [contribute(wasmPromiseFacet, () => wasm)],
       ],
     ])
     try {
@@ -84,6 +95,7 @@ it.each([false, true])(
       await vi.waitFor(() => expect(resources).toHaveLength(2))
       const nativeSettings = registry.required(kclExecutionSettingsService)
       for (const [options] of vi.mocked(openKclScene).mock.calls) {
+        expect(options.wasm).toBe(wasm)
         expect(options.nativeSettings.executeRevision.peek()).toBe(
           nativeSettings.executeRevision.peek()
         )
@@ -211,6 +223,72 @@ it.each([false, true])(
       await vi.waitFor(() =>
         expect(resources[1].dispose).toHaveBeenCalledOnce()
       )
+    } finally {
+      await registry.dispose()
+    }
+  }
+)
+
+it.each([false, true])(
+  'reports a missing WASM provider instead of initializing one (local rendering: %s)',
+  async (local) => {
+    vi.clearAllMocks()
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
+    vi.mocked(readKclFileExtensions).mockImplementationOnce(async (wasm) => {
+      await wasm
+      return ['kcl']
+    })
+    vi.mocked(readKclVersion).mockImplementationOnce(
+      async (_contents, wasm) => {
+        await wasm
+        return '3.0'
+      }
+    )
+    const settings = createTestSettings()
+    settings.current.peek().modeling.useLocalRenderer.user = local
+    const registry = new Registry()
+    await registry.configure([
+      editorsExtension,
+      executorsExtension,
+      kclExtension,
+      [[provide(settingsService, settings)]],
+    ])
+    try {
+      const editors = registry.required(editorsService)
+      const editor = requireSuccess(
+        editors.createEditor('@settings(kclVersion = 3.0)\nanswer = 42')
+      )
+      requireSuccess(editors.setLanguage(editor.id, 'kcl'))
+      const view = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+      await vi.waitFor(() =>
+        expect(editors.viewState(view).peek().binding.type).toBe('ready')
+      )
+      const binding = editors.viewState(view).peek().binding
+      if (binding.type !== 'ready')
+        throw new Error('Modeling view did not bind')
+      const mounted = render(
+        <binding.Component editor={editor} instance={view} active />
+      )
+      try {
+        expect(await screen.findByRole('alert')).toHaveTextContent(
+          'Missing WASM promise registry value.'
+        )
+        await vi.waitFor(() => {
+          const executions = registry
+            .required(executorsService)
+            .executors.peek()
+          expect(executions).toHaveLength(1)
+          expect(executions[0].output.peek().errors['kcl.execution']).toEqual(
+            new Error('Missing WASM promise registry value.')
+          )
+          expect(executions[0].output.peek().running).toBe(false)
+        })
+        expect(initialiseWasm).not.toHaveBeenCalled()
+        expect(openKclScene).not.toHaveBeenCalled()
+      } finally {
+        mounted.unmount()
+      }
     } finally {
       await registry.dispose()
     }

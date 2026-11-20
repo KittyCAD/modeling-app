@@ -6,7 +6,6 @@ import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { factory, contribute } from 'plankton'
 import { computed, signal } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
-import { initialiseWasm } from '@src/lang/wasmUtils'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
@@ -60,9 +59,9 @@ const extension = factory({
     wasmInput,
     executorsInput,
   }) => {
-    let fallbackWasm: ReturnType<typeof initialiseWasm> | undefined
     const getWasm = () =>
-      wasmInput.wasmPromiseFacet.value ?? (fallbackWasm ??= initialiseWasm())
+      wasmInput.wasmPromiseFacet.value ??
+      Promise.reject(new Error('Missing WASM promise registry value.'))
     const execution = createKclExecution(
       (executor) => {
         const settings = settingsInput.settingsService.required()
