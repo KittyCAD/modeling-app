@@ -5,21 +5,28 @@ editors. A Code view edits the live document; a Modeling view executes its curre
 contents and presents the resulting model without waiting for a save. These
 contributions require `zds_project_shell_refactor`.
 
-Each Modeling view has its own model and camera. Two views of one document share
-text while keeping their engine connections and native contexts independent.
+Modeling views of one editor lease a shared executor. Its KCL output is a captured
+source snapshot, including working imports; it contains no connection-specific
+geometry or entity IDs. Each view separately owns an engine connection, native
+context, camera, and the native execution result for that scene. Thus source
+capture is shared, while native KCL execution still runs for each connection.
+Consumers can explicitly create independent executors when they need that policy.
 
 ## From a document to a model
 
-The registry contribution connects three parts:
+The registry contribution connects these parts:
 
 1. **Capture sources.** The project source service captures the entrypoint and
    open imported buffers, including unsaved edits. Project sessions supply byte
    reads for other files. KCL declares its supported import types.
-2. **Execute.** The executor runs that snapshot through the view's native KCL
-   runtime. Changes to the buffer, imported buffers, project contents, or opted-in
-   settings invalidate the previous run. External storage updates enter through
-   the project/editor services before they become execution input.
-3. **Present.** `KclScene` attaches the scene and displays its streamed or local
+2. **Publish shared input.** The shared executor publishes the source snapshot.
+   Buffer, imported-buffer, and project changes replace it for all consumers.
+   External storage updates enter through project/editor services first.
+3. **Execute per scene.** `createKclViewExecution` sends that snapshot to each
+   view's native runtime. Execution settings can refresh a scene without
+   recapturing sources. Native results and failures remain local to that view;
+   source-capture failures are shared.
+4. **Present.** `KclScene` attaches the scene and displays its streamed or local
    rendering. Switching tabs or remounting React attaches the existing session. The local
    renderer asks that retained scene whether initial camera framing is still
    needed, so a presentation remount preserves the camera.
@@ -34,23 +41,26 @@ setting opts into execution refresh.
 | --- | --- |
 | Editor | Working text and undo history shared by its presentations |
 | Project source service | Working-document precedence, project membership, captured bytes, and source revisions |
-| Modeling view's executor | Run cancellation, results, and scene lifetime |
+| Shared executor | Source-capture cancellation and connection-independent output |
+| Modeling view context | Executor lease, scene session, preferences, and native-result observer |
 | `createKclSession` | Connection startup, presentation attachment, resizing, and recovery |
 | `createKclRuntime` | Native model memory and serialized execution, export, and disposal |
 
 The session opens a connection once its mounted viewport has a usable size.
-Closing the view, editor, or project releases its owned execution resources.
+Closing one view releases its scene and executor lease; sibling views retain
+their scenes and the shared executor. Closing the final lease releases that
+executor. Explicit executor shutdown also closes its views' scene sessions.
 Startup and execution have deadlines; cancellation also releases resources that
 finish opening after their owner has closed.
 
 Connection progress uses the shared `Loading` view. A connection failure displays
 `ConnectionRecovery` with a Reconnect action. Manual retry and returning focus to
 a failed or stale mounted scene use the same recovery path: start opening a fresh
-connection and refresh that executor from current sources. Source capture can run
-while the connection opens; execution waits until the connection and native
-runtime are ready. Each attempt owns its callbacks, so late failures cannot
-replace a newer connection. KCL execution errors are reported separately from
-connection failures.
+connection and replay the latest shared snapshot in that scene. A healthy sibling
+does not rerun, and recovery does not refresh the shared executor. Source capture
+can run while connections open; each native execution waits for its own scene.
+Each attempt owns its callbacks, so late failures cannot replace a newer
+connection. KCL execution errors are reported separately from connection failures.
 
 Unexpected transport closes request automatic recovery, with a bounded retry
 budget shared with the legacy WebSocket hook. Terminal failures wait for manual
@@ -81,7 +91,7 @@ leave camera controls and the streamed connection unchanged. Execution, native
 export, and scene rebuilds share a queue so disposal can wait for borrowed native
 memory.
 The renderer choice is captured when the scene opens; reopen the Modeling view
-after changing it. Each executor's refresh revision uses that captured choice,
+after changing it. Each view's settings revision uses that captured choice,
 so an already-open streamed view still receives streamed rebuilds even if the
 preference now selects local rendering for new views.
 
@@ -95,7 +105,8 @@ boundary and its ownership decisions.
 - [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.
 - [`project sources`](../projectSession/next/sources.ts): captures working documents
   and stored bytes for a specific project opening.
-- [`executor.ts`](executor.ts): connects an editor executor to its scene session.
+- [`executor.ts`](executor.ts): contributes shared source capture.
+- [`viewExecution.ts`](viewExecution.ts): runs shared snapshots in one view's native session.
 - [`session.ts`](session.ts): owns connection and presentation lifetime.
 - [`runtime.ts`](runtime.ts): owns native KCL operations.
 - [`scene.ts`](scene.ts): assembles a connection, runtime, camera, and renderer host.

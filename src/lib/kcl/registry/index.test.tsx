@@ -46,6 +46,7 @@ it.each([false, true])(
   'binds classified buffers to independent Modeling scenes (local rendering: %s)',
   async (local) => {
     vi.mocked(openKclScene).mockClear()
+    vi.mocked(readKclFileExtensions).mockClear()
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
     const resources: KclSceneResource[] = []
@@ -82,6 +83,9 @@ it.each([false, true])(
       await vi.waitFor(() =>
         expect(editors.viewState(first).peek().binding.type).toBe('ready')
       )
+      expect(registry.required(executorsService).executors.peek()).toHaveLength(
+        1
+      )
       const a = editors.viewState(first).peek().binding
       const b = editors.viewState(second).peek().binding
       if (a.type !== 'ready' || b.type !== 'ready')
@@ -111,6 +115,18 @@ it.each([false, true])(
             .every((executor) => !executor.output.peek().running)
         ).toBe(true)
       )
+      await vi.waitFor(() => {
+        for (const resource of resources)
+          expect(resource.runtime.execute).toHaveBeenCalledOnce()
+      })
+      const sharedExecutor = registry
+        .required(executorsService)
+        .executors.peek()[0]
+      expect(resources[0].runtime).not.toBe(resources[1].runtime)
+      expect(vi.mocked(resources[0].runtime.execute).mock.calls[0][0]).toBe(
+        vi.mocked(resources[1].runtime.execute).mock.calls[0][0]
+      )
+      expect(readKclFileExtensions).toHaveBeenCalledOnce()
       expect(
         resources.every(
           (resource) => resource.presentation === (local ? 'local' : 'streamed')
@@ -195,6 +211,9 @@ it.each([false, true])(
       await vi.waitFor(() => expect(resources).toHaveLength(3))
       const fresh = resources[2]
       expect(fresh.presentation).toBe(local ? 'streamed' : 'local')
+      expect(registry.required(executorsService).executors.peek()).toEqual([
+        sharedExecutor,
+      ])
       await vi.waitFor(() =>
         expect(fresh.runtime.execute).toHaveBeenCalledOnce()
       )
@@ -217,12 +236,34 @@ it.each([false, true])(
         expect(resources[0].dispose).toHaveBeenCalledOnce()
       )
       expect(resources[1].dispose).not.toHaveBeenCalled()
+      expect(registry.required(executorsService).executors.peek()).toEqual([
+        sharedExecutor,
+      ])
+      expect(readKclFileExtensions).toHaveBeenCalledOnce()
+      const remainingRuns = vi.mocked(resources[1].runtime.execute).mock.calls
+        .length
+      await act(async () => {
+        editor.dispatch({
+          changes: {
+            from: editor.contents.peek().length,
+            insert: '\nanswer2 = 7',
+          },
+        })
+      })
+      await vi.waitFor(() =>
+        expect(resources[1].runtime.execute).toHaveBeenCalledTimes(
+          remainingRuns + 1
+        )
+      )
+      expect(resources[0].runtime.execute).toHaveBeenCalledTimes(executions)
+      expect(readKclFileExtensions).toHaveBeenCalledTimes(2)
       await act(async () => {
         requireSuccess(editors.closeEditor(editor.id))
       })
       await vi.waitFor(() =>
         expect(resources[1].dispose).toHaveBeenCalledOnce()
       )
+      expect(registry.required(executorsService).executors.peek()).toEqual([])
     } finally {
       await registry.dispose()
     }
@@ -294,3 +335,78 @@ it.each([false, true])(
     }
   }
 )
+
+it('keeps a pending shared capture alive when one Modeling view closes', async () => {
+  vi.clearAllMocks()
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
+  const pending = Promise.withResolvers<string[]>()
+  vi.mocked(readKclFileExtensions).mockImplementationOnce(() => pending.promise)
+  const resources: KclSceneResource[] = []
+  vi.mocked(openKclScene).mockImplementation(
+    async ({ preferences, presentation }) => {
+      const resource = createTestKclScene(presentation, { preferences })
+      resources.push(resource)
+      return resource
+    }
+  )
+  const registry = new Registry()
+  await registry.configure([
+    editorsExtension,
+    executorsExtension,
+    kclExtension,
+    [
+      [provide(settingsService, createTestSettings())],
+      [contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {}))],
+    ],
+  ])
+  try {
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(
+      editors.createEditor('@settings(kclVersion = 3.0)\nanswer = 42')
+    )
+    requireSuccess(editors.setLanguage(editor.id, 'kcl'))
+    const first = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+    const second = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+    const a = editors.viewState(first).peek().binding,
+      b = editors.viewState(second).peek().binding
+    if (a.type !== 'ready' || b.type !== 'ready')
+      throw new Error('Modeling did not bind')
+    const mounted = render(
+      <>
+        <a.Component editor={editor} instance={first} active />
+        <b.Component editor={editor} instance={second} active />
+      </>
+    )
+    try {
+      await vi.waitFor(() => expect(resources).toHaveLength(2))
+      expect(registry.required(executorsService).executors.peek()).toHaveLength(
+        1
+      )
+      await act(async () => {
+        requireSuccess(editors.closeView(first.id))
+      })
+      await vi.waitFor(() =>
+        expect(resources[0].dispose).toHaveBeenCalledOnce()
+      )
+      expect(resources[1].dispose).not.toHaveBeenCalled()
+      pending.resolve(['kcl'])
+      await vi.waitFor(() =>
+        expect(resources[1].runtime.execute).toHaveBeenCalledOnce()
+      )
+      expect(resources[0].runtime.execute).not.toHaveBeenCalled()
+      expect(readKclFileExtensions).toHaveBeenCalledOnce()
+      await act(async () => {
+        requireSuccess(editors.closeView(second.id))
+      })
+      await vi.waitFor(() =>
+        expect(resources[1].dispose).toHaveBeenCalledOnce()
+      )
+      expect(registry.required(executorsService).executors.peek()).toEqual([])
+    } finally {
+      mounted.unmount()
+    }
+  } finally {
+    await registry.dispose()
+  }
+})

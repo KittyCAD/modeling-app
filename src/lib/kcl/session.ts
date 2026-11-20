@@ -35,13 +35,14 @@ function opening() {
 }
 
 /**
- * `createKclExecution` retains this session for one executor and disposes it with
- * the executor's Effect scope. `KclScene` only attaches/detaches its DOM element.
- * Connection attempts can be replaced while the executor and document survive.
+ * One Modeling view context retains and disposes this session. `KclScene` only
+ * attaches/detaches its DOM element. Connection attempts can be replaced while
+ * the document and its shared executor survive.
  */
 export function createKclSession(
   open: OpenKclScene,
-  onReconnect: () => void = () => {}
+  onReconnect: () => void = () => {},
+  isBusy: () => boolean = () => false
 ) {
   const element = document.createElement('div')
   Object.assign(element.style, {
@@ -214,7 +215,7 @@ export function createKclSession(
     attempt = opening()
     state.value = { type: 'connecting' }
     begin({ width: container.clientWidth, height: container.clientHeight })
-    onReconnect() // The KCL registry supplies `executor.refresh` to reload current sources.
+    onReconnect() // The owning view replays its latest shared source snapshot into this connection.
   }
   const idle = setInterval(() => {
     const active = resource.peek()
@@ -226,7 +227,7 @@ export function createKclSession(
       state.peek().type !== 'ready'
     )
       return
-    if (active.runtime.executing.peek()) {
+    if (active.runtime.executing.peek() || isBusy()) {
       lastInput = Date.now()
       return
     }
