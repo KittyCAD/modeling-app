@@ -80,8 +80,10 @@ export class IntegerIdPicker {
   private renderTarget: RenderTarget | null = null
 
   private growthPass: EdgeGrowthPass | null = null
+  private grownTarget: RenderTarget | null = null
 
   private edgeObject: LineSegments2 | null = null
+  private hasEdgeTargets = false
   private edgesVisible = true
   private dirty = true
   private version = 0
@@ -177,6 +179,7 @@ export class IntegerIdPicker {
       addMesh(target, this.targetById.push(target) - 1)
     }
     if (edges) {
+      this.hasEdgeTargets = edges.targets.length > 0
       this.edgeObject = this.addLines(
         edges,
         VISIBLE_EDGE_LINE_WIDTH_PX,
@@ -314,7 +317,7 @@ export class IntegerIdPicker {
     }
 
     const pixels = await buffer.read(
-      this.growthPass?.target ?? target,
+      this.grownTarget ?? target,
       readbackPixelX,
       this.packsIdsIntoColor
         ? target.height - 1 - readbackPixelY
@@ -338,37 +341,33 @@ export class IntegerIdPicker {
     const target = this.ensureRenderTarget()
     if (this.dirty) this.renderIdBuffer(target, camera)
     const version = this.version
-    const grown = await this.renderer.readRenderTargetPixelsAsync(
-      this.growthPass?.target ?? target,
-      0,
-      0,
-      target.width,
-      target.height
-    )
-    if (version !== this.version) return null
-    const seeds = await this.renderer.readRenderTargetPixelsAsync(
-      target,
-      0,
-      0,
-      target.width,
-      target.height
-    )
-    if (version !== this.version) return null
+    const read = async (source: RenderTarget) => {
+      const pixels = await this.renderer.readRenderTargetPixelsAsync(
+        source,
+        0,
+        0,
+        target.width,
+        target.height
+      )
+      return version === this.version
+        ? colorizePickBuffer(
+            pixels,
+            target.width,
+            target.height,
+            this.packsIdsIntoColor
+          )
+        : null
+    }
+    const grownTarget = this.grownTarget
+    const pixels = await read(grownTarget ?? target)
+    if (!pixels || version !== this.version) return null
+    const seedPixels = grownTarget ? await read(target) : pixels
+    if (!seedPixels || version !== this.version) return null
     return {
       width: target.width,
       height: target.height,
-      pixels: colorizePickBuffer(
-        grown,
-        target.width,
-        target.height,
-        this.packsIdsIntoColor
-      ),
-      seedPixels: colorizePickBuffer(
-        seeds,
-        target.width,
-        target.height,
-        this.packsIdsIntoColor
-      ),
+      pixels,
+      seedPixels,
     }
   }
 
@@ -376,6 +375,8 @@ export class IntegerIdPicker {
     this.sourceByProxy.clear()
     this.scene.clear()
     this.edgeObject = null
+    this.hasEdgeTargets = false
+    this.grownTarget = null
     this.targetById = [null]
     this.materials.forEach((material) => {
       material.dispose()
@@ -409,14 +410,6 @@ export class IntegerIdPicker {
         samples: 0,
       })
       this.renderTarget.texture.name = 'local-renderer-selection-ids'
-      this.growthPass = new EdgeGrowthPass(
-        this.renderer,
-        this.renderTarget,
-        width,
-        height,
-        this.packsIdsIntoColor,
-        (id) => this.idOutput(id)
-      )
       this.invalidate()
     } else if (
       this.renderTarget.width !== width ||
@@ -447,9 +440,23 @@ export class IntegerIdPicker {
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
-    if (this.growthPass) {
+    this.grownTarget = null
+    if (
+      this.hasEdgeTargets &&
+      this.edgeObject?.visible &&
+      camera.layers.test(this.edgeObject.layers)
+    ) {
+      this.growthPass ??= new EdgeGrowthPass(
+        this.renderer,
+        target,
+        target.width,
+        target.height,
+        this.packsIdsIntoColor,
+        (id) => this.idOutput(id)
+      )
       const bounds = this.renderer.domElement.getBoundingClientRect()
       this.growthPass.render(bounds.width, bounds.height)
+      this.grownTarget = this.growthPass.target
     }
     this.renderer.setRenderTarget(previousTarget)
     this.renderer.autoClear = previousAutoClear
