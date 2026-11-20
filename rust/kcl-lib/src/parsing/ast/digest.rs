@@ -54,16 +54,12 @@ use crate::parsing::ast::types::VariableKind;
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
-/// Macro to implement `compute_digest` for AST nodes. If you update this, you
-/// probably want to update the no_attrs version as well.
+/// Compute and store digests from the current AST fields. Editing a descendant
+/// can leave a stored digest on any ancestor. Keep the no_attrs version in sync.
 macro_rules! compute_digest {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
         pub fn compute_digest(&mut self) -> Digest {
-            if let Some(node_digest) = self.digest {
-                return node_digest;
-            }
-
             let mut $hasher = Sha256::new();
 
             #[allow(unused_mut)]
@@ -91,10 +87,6 @@ macro_rules! compute_digest_no_attrs {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
         pub fn compute_digest(&mut self) -> Digest {
-            if let Some(node_digest) = self.digest {
-                return node_digest;
-            }
-
             let mut $hasher = Sha256::new();
 
             #[allow(unused_mut)]
@@ -662,6 +654,9 @@ impl Node<Block> {
     compute_digest!(|slf, hasher| {
         for item in &mut slf.items {
             hasher.update(item.compute_digest());
+        }
+        for attr in &mut slf.inner_attrs {
+            hasher.update(attr.compute_digest());
         }
     });
 }
