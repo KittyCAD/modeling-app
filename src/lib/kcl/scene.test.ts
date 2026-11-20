@@ -328,16 +328,28 @@ it.each([
     const scene = await openKclScene({ ...options, presentation: 'streamed' })
     if (scene instanceof Error) throw scene
     const manager = owned.managers[0]
-    manager.dispatchEvent(new Event(event))
+    manager.dispatchEvent(
+      new CustomEvent(event, {
+        detail: { code: '1006', reconnectRequested: false },
+      })
+    )
     expect(options.onDisconnect).toHaveBeenCalledWith(
       expect.objectContaining({
         retryable: true,
-        details: expect.objectContaining({ eventType: event }),
+        details: expect.objectContaining({
+          eventType: event,
+          websocketCloseCode: '1006',
+          reconnectRequested: false,
+        }),
       })
     )
     options.onDisconnect.mockClear()
     await scene.dispose()
-    manager.dispatchEvent(new Event(event))
+    manager.dispatchEvent(
+      new CustomEvent(event, {
+        detail: { code: '1006', reconnectRequested: false },
+      })
+    )
     expect(options.onDisconnect).not.toHaveBeenCalled()
     preferences.dispose()
   }

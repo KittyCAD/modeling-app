@@ -97,21 +97,27 @@ const extension = factory({
               size,
               signal,
               onDisconnect: (error) => {
-                void reportClientError({
-                  code: ClientErrorCode.EngineDisconnect,
-                  message: error.message,
-                  dedupeKey: `kcl-scene:${viewId}:${error.message}`,
-                  extra: {
-                    ...(error instanceof SceneDisconnected
-                      ? error.details
-                      : {}),
-                    source: 'KclScene',
-                    kclSourceLength: executor.editor.contents.peek().length,
-                    viewId,
-                    currentFileName: executor.editor.src.peek(),
-                    renderer: presentation.peek(),
-                  },
-                })
+                if (
+                  !(
+                    error instanceof SceneDisconnected &&
+                    error.details.reconnectRequested === true
+                  )
+                )
+                  void reportClientError({
+                    code: ClientErrorCode.EngineDisconnect,
+                    message: error.message,
+                    dedupeKey: `kcl-scene:${viewId}:${error.message}`,
+                    extra: {
+                      ...(error instanceof SceneDisconnected
+                        ? error.details
+                        : {}),
+                      source: 'KclScene',
+                      kclSourceLength: executor.editor.contents.peek().length,
+                      viewId,
+                      currentFileName: executor.editor.src.peek(),
+                      renderer: presentation.peek(),
+                    },
+                  })
                 onDisconnect(error)
               },
             })

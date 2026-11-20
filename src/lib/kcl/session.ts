@@ -72,7 +72,7 @@ export function createKclSession(
     if (active && (attempt.framed || active.presentation === 'local'))
       savedCamera = active.snapshotCamera()
   }
-  const retry = () => {
+  const retry = (consumeBudget = true) => {
     cancelRetry()
     if (
       disposed ||
@@ -85,7 +85,7 @@ export function createKclSession(
     retryTimer = setTimeout(
       () => {
         recover(container)
-        retryCount += 1
+        if (consumeBudget) retryCount += 1
       },
       500 * (retryCount + 1)
     )
@@ -116,6 +116,10 @@ export function createKclSession(
   const fail = (error: Error, owner = attempt) => {
     if (!current(owner)) return
     clearTimeout(owner.timer)
+    const requested =
+      error instanceof SceneDisconnected &&
+      error.details.reconnectRequested === true
+    if (requested) retryCount = 0
     rememberCamera()
     state.value = { type: 'error', error }
     owner.lifetime.abort()
@@ -127,7 +131,7 @@ export function createKclSession(
       (retryCount > 0 &&
         !(error instanceof SceneDisconnected && !error.retryable))
     )
-      retry()
+      retry(!requested)
   }
   const start = async (
     size: { width: number; height: number },
@@ -227,6 +231,7 @@ export function createKclSession(
       return
     }
     if (Date.now() - lastInput < timeout) return
+    retryCount = 0
     rememberCamera()
     state.value = { type: 'idle' }
     attempt.lifetime.abort()
