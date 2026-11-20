@@ -177,6 +177,9 @@ pub enum KclValue {
     NamedView {
         value: Box<NamedViewValue>,
     },
+    Sheet {
+        value: Box<crate::std::drawing::Sheet>,
+    },
     ImportedGeometry(ImportedGeometry),
     Function {
         #[serde(serialize_with = "function_value_stub")]
@@ -750,6 +753,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::CameraView { value } => to_vec_sr(value.meta()),
             KclValue::NamedView { value } => to_vec_sr(value.meta()),
+            KclValue::Sheet { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
@@ -788,6 +792,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::CameraView { value } => to_vec_sr(value.meta()),
             KclValue::NamedView { value } => to_vec_sr(value.meta()),
+            KclValue::Sheet { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
@@ -842,6 +847,7 @@ impl KclValue {
             KclValue::Helix { value } => value.meta.clone(),
             KclValue::CameraView { value } => value.meta().to_vec(),
             KclValue::NamedView { value } => value.meta().to_vec(),
+            KclValue::Sheet { value } => value.meta().to_vec(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
@@ -882,6 +888,7 @@ impl KclValue {
             | KclValue::Helix { .. }
             | KclValue::CameraView { .. }
             | KclValue::NamedView { .. }
+            | KclValue::Sheet { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
             | KclValue::Module { .. }
@@ -904,6 +911,7 @@ impl KclValue {
             KclValue::Helix { .. } => "a helix".to_owned(),
             KclValue::CameraView { .. } => "a camera view".to_owned(),
             KclValue::NamedView { .. } => "a named view".to_owned(),
+            KclValue::Sheet { .. } => "a drawing sheet".to_owned(),
             KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
             KclValue::Function { .. } => "a function".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
@@ -1431,6 +1439,7 @@ impl KclValue {
             | KclValue::Helix { .. }
             | KclValue::CameraView { .. }
             | KclValue::NamedView { .. }
+            | KclValue::Sheet { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
             | KclValue::Plane { .. }

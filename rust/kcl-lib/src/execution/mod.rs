@@ -2212,7 +2212,7 @@ impl ExecutorContext {
     }
 
     fn default_tolerance_command(exec_state: &ExecState) -> Option<ModelingCmd> {
-        exec_state.entry_point_version_is_v3_or_higher().then(|| {
+        exec_state.entry_point_version_at_least(KclVersion::V3Preview).then(|| {
             let tolerance = kcmc::shared::Tolerance::builder()
                 .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
                     crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM,
@@ -6138,7 +6138,12 @@ startSketchOn(XY)
                 "code={code}"
             );
             assert_eq!(
-                result.exec_state.entry_point_version_is_v3_or_higher(),
+                result.exec_state.entry_point_version_at_least(KclVersion::V1),
+                expected.is_some(),
+                "code={code}"
+            );
+            assert_eq!(
+                result.exec_state.entry_point_version_at_least(KclVersion::V3Preview),
                 expected == Some(KclVersion::V3Preview),
                 "code={code}"
             );
@@ -6222,7 +6227,7 @@ startSketchOn(XY)
                 Some(KclVersion::V3Preview),
                 "mock execution should record a 3.0-preview entry point"
             );
-            assert!(exec_state.entry_point_version_is_v3_or_higher());
+            assert!(exec_state.entry_point_version_at_least(KclVersion::V3Preview));
 
             // Populate the preserved mock memory with a 3.0-preview run, then
             // check that a 2.0 run restoring that memory isn't pinned to
@@ -6230,7 +6235,7 @@ startSketchOn(XY)
             ctx.run_mock(&v3_program, &fresh_memory).await.unwrap();
             let (exec_state, _) = ctx.run_mock_returning_state(&v2_program, &prev_memory).await.unwrap();
             assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V2));
-            assert!(!exec_state.entry_point_version_is_v3_or_higher());
+            assert!(!exec_state.entry_point_version_at_least(KclVersion::V3Preview));
 
             // ...and that a 3.0-preview run restoring a 2.0 run's memory
             // records 3.0-preview.

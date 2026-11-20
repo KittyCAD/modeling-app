@@ -27,6 +27,15 @@ const MILLIMETERS_TO_METERS = 1 / 1000
 const LABEL_FONT = '24px "Source Code VF", monospace'
 const LABEL_TEXTURE_SCALE = 2
 const LABEL_MM_PER_PIXEL = 0.12
+// Planes crossing at their centers split each other into quadrants. Drawing
+// each quadrant as its own mesh lets the renderer sort the translucent fills
+// back to front, which it can't do for whole planes that intersect.
+const QUADRANTS = [
+  [-1, -1],
+  [1, -1],
+  [-1, 1],
+  [1, 1],
+] as const
 
 // sRGB palette matching the engine; convert to linear when assigning materials.
 const PLANES = [
@@ -44,7 +53,7 @@ type PlaneLabel = {
 
 type Plane = {
   group: Group
-  mesh: Mesh
+  meshes: Mesh[]
   transform: Matrix4
   size: number
   defaultPlane?: (typeof PLANES)[number]
@@ -53,9 +62,9 @@ type Plane = {
 export class PlaneRenderer {
   readonly planes = new Map<string, Plane>()
   private readonly group = new Group()
-  private readonly planeGeometry = new PlaneGeometry(
-    PLANE_SIZE_MM,
-    PLANE_SIZE_MM
+  private readonly quadrantGeometry = new PlaneGeometry(
+    PLANE_SIZE_MM / 2,
+    PLANE_SIZE_MM / 2
   )
   private readonly borderGeometry = new LineSegmentsGeometry()
   private readonly materials: (MeshBasicNodeMaterial | Line2NodeMaterial)[] = []
@@ -75,9 +84,12 @@ export class PlaneRenderer {
     // Author in engine coordinates (Z-up, mm), then match glTF (Y-up, meters).
     this.group.rotation.x = -Math.PI / 2
     this.group.scale.setScalar(MILLIMETERS_TO_METERS)
-    const edges = new EdgesGeometry(this.planeGeometry)
+    // The border goes around the whole plane, not each quadrant.
+    const planeGeometry = new PlaneGeometry(PLANE_SIZE_MM, PLANE_SIZE_MM)
+    const edges = new EdgesGeometry(planeGeometry)
     this.borderGeometry.fromEdgesGeometry(edges)
     edges.dispose()
+    planeGeometry.dispose()
     this.materials.push(...Object.values(this.offsetMaterials))
   }
 
@@ -86,9 +98,12 @@ export class PlaneRenderer {
     // A new engine session can change UUIDs without changing the plane visuals.
     for (const [id, plane] of this.planes) {
       if (!plane.defaultPlane || ids[plane.defaultPlane.key] === id) continue
+      const newId = ids[plane.defaultPlane.key]
       this.planes.delete(id)
-      plane.mesh.name = ids[plane.defaultPlane.key]
-      this.planes.set(plane.mesh.name, plane)
+      for (const mesh of plane.meshes) {
+        mesh.name = newId
+      }
+      this.planes.set(newId, plane)
     }
     for (const definition of PLANES) {
       const { key, name, label, color } = definition
@@ -169,16 +184,20 @@ export class PlaneRenderer {
     const group = new Group()
     group.name = id
     group.matrixAutoUpdate = false
-    const mesh = new Mesh(this.planeGeometry, materials.fillMaterial)
-    // Picking returns this mesh; its name is the engine entity UUID for either kind of plane.
-    mesh.name = id
+    const meshes = QUADRANTS.map(([x, y]) => {
+      const mesh = new Mesh(this.quadrantGeometry, materials.fillMaterial)
+      // Picking returns these meshes; their name is the engine entity UUID for either kind of plane.
+      mesh.name = id
+      mesh.position.set((x * PLANE_SIZE_MM) / 4, (y * PLANE_SIZE_MM) / 4, 0)
+      return mesh
+    })
     const border = new LineSegments2(
       this.borderGeometry,
       materials.borderMaterial
     )
     border.name = `${defaultPlane?.name ?? id}-border`
-    group.add(mesh, border)
-    const plane = { group, mesh, transform, size, defaultPlane }
+    group.add(...meshes, border)
+    const plane = { group, meshes, transform, size, defaultPlane }
     this.planes.set(id, plane)
     this.group.add(group)
     return plane
@@ -254,7 +273,7 @@ export class PlaneRenderer {
     this.planes.clear()
     this.group.removeFromParent()
     this.group.clear()
-    this.planeGeometry.dispose()
+    this.quadrantGeometry.dispose()
     this.borderGeometry.dispose()
     this.labelGeometries.forEach((geometry) => geometry.dispose())
     this.materials.forEach((material) => material.dispose())
