@@ -30,14 +30,12 @@ export function selectionTargetId(packedId: number) {
 }
 
 // These are used in shader code so use tsl primitives
-export const getSelectionTypeFromId = (id: Node<'uint'>) =>
-  id.shiftRight(uint(SELECTION_ID_TYPE_SHIFT))
-
-export const isBodyEdge = (id: Node<'uint'>) =>
-  getSelectionTypeFromId(id).equal(uint(EdgeTargetType.BodyEdge))
-
-export const isSketchLine = (id: Node<'uint'>) =>
-  getSelectionTypeFromId(id).equal(uint(EdgeTargetType.SketchLine))
+export const isLineSeed = (id: Node<'uint'>) => {
+  const type = id.shiftRight(uint(SELECTION_ID_TYPE_SHIFT))
+  return type
+    .equal(uint(EdgeTargetType.BodyEdge))
+    .or(type.equal(uint(EdgeTargetType.SketchLine)))
+}
 
 export const encodeId = (id: Node<'uint'>) => {
   const byte = (shift: number) =>
