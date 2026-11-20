@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Install vector
-brew tap vectordotdev/brew && brew install vector
+brew install vectordotdev/brew/vector
 
 # Configure vector
 mkdir -p /tmp/vector

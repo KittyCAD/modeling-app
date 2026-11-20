@@ -339,8 +339,18 @@ jobs:
               os: namespace-profile-macos-8-cores
               label: webkit
               test_command: npm run test:e2e:web:webkit
+              test_args: --grep-invert=viewport-rendering
               playwright_cache_path: ~/Library/Caches/ms-playwright
               optional: true # WebKit coverage is non-blocking for external callers
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: macos-15
+              label: macos-cloud-video
+              test_command: npm run test:e2e:web:webkit
+              test_args: viewport-rendering.spec.ts
+              playwright_cache_path: ~/Library/Caches/ms-playwright
+              optional: true
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -409,7 +419,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} ${{ matrix.config.test_args }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
