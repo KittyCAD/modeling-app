@@ -12,11 +12,11 @@ verify *args:
 # Run the same lint checks we run in CI.
 lint:
     # All features.
-    cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+    CARGO_BUILD_WARNINGS=deny cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
     # Default features.
-    cargo clippy -p kcl-lib --all-targets --locked -- -D warnings
+    CARGO_BUILD_WARNINGS=deny cargo clippy -p kcl-lib --all-targets --locked -- -D warnings
     # kcl-wasm-lib
-    cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown --all-targets --locked -- -D warnings
+    CARGO_BUILD_WARNINGS=deny cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown --all-targets --locked -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix
