@@ -21,6 +21,7 @@ use crate::exec::NumericType;
 use crate::exec::Sketch;
 use crate::execution::BasePath;
 use crate::execution::GeoMeta;
+use crate::execution::KclVersion;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
@@ -160,7 +161,7 @@ pub(crate) async fn create_segments_in_engine(
         Reverse,
     }
 
-    let contact_tolerance_mm = if exec_state.entry_point_version_is_v3_or_higher() {
+    let contact_tolerance_mm = if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
         POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM
     } else {
         SOLVER_CONVERGENCE_TOLERANCE

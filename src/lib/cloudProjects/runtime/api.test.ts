@@ -1,4 +1,5 @@
 import fc from 'fast-check'
+import * as archive from '@src/lib/cloudProjects/runtime/archive'
 import {
   clearSessionExpiredNotice,
   sessionExpiredNotice,
@@ -65,6 +66,53 @@ function projectResponse(projectId: string, revision: string) {
 
 describe('cloud upload HTTP contract (mocked fetch)', () => {
   test.each([
+    ['create', 'file count'],
+    ['update', 'file count'],
+    ['create', 'size'],
+    ['update', 'size'],
+  ] as const)(
+    'rejects %s uploads over the %s limit before requests or file copies',
+    async (operation, limit) => {
+      const fetchMock = vi.fn<typeof fetch>(async () =>
+        projectResponse('project-existing', 'rev-2')
+      )
+      vi.stubGlobal('fetch', fetchMock)
+      const data = new Uint8Array(limit === 'size' ? 1024 * 1024 : 0)
+      const files = [
+        ...projectFiles(),
+        ...Array.from({ length: limit === 'size' ? 1024 : 9999 }, (_, i) => ({
+          relativePath: `parts/${i}.bin`,
+          data,
+        })),
+      ]
+      const copy = vi
+        .spyOn(archive, 'toArrayBuffer')
+        .mockImplementation(() => new ArrayBuffer(0))
+      try {
+        const config = { enabled: true, baseUrl: 'https://api.dev.zoo.dev' }
+        const upload =
+          operation === 'create'
+            ? createRemoteProject(config, '/projects/bracket', files)
+            : updateRemoteProject({
+                config,
+                projectPath: '/projects/bracket',
+                project: {
+                  id: 'project-existing',
+                  description: '',
+                  category_ids: [],
+                },
+                files,
+              })
+        await expect(upload).rejects.toThrow(new RegExp(limit))
+        expect(copy).not.toHaveBeenCalled()
+        expect(fetchMock).not.toHaveBeenCalled()
+      } finally {
+        copy.mockRestore()
+      }
+    }
+  )
+
+  test.each([
     undefined,
     { description: 'A description', category_ids: ['category-a'] },
   ])(
@@ -113,6 +161,7 @@ describe('cloud upload HTTP contract (mocked fetch)', () => {
       projectPath: '/projects/bracket',
       project: {
         id: 'project-existing',
+        title: 'Previous project title',
         description: 'Existing Aquarium description.',
         category_ids: ['category-a', 'category-b'],
       },
@@ -136,6 +185,48 @@ describe('cloud upload HTTP contract (mocked fetch)', () => {
       expected_revision: 'rev-1',
     })
   })
+
+  test.each([
+    'default_file = "main.kcl"\n',
+    'title = ""\ndefault_file = "main.kcl"\n',
+    'title = "   "\ndefault_file = "main.kcl"\n',
+  ])(
+    'preserves the cloud title when project.toml has no usable title: %j',
+    async (projectToml) => {
+      const id = 'f943a134-b51e-4fbf-bf8c-2ed491bc4bd5'
+      let body: Record<string, unknown> | undefined
+      vi.stubGlobal(
+        'fetch',
+        vi.fn<typeof fetch>(async (_input, init) => {
+          body = await uploadBodyFromRequest(init)
+          return projectResponse(id, 'rev-2')
+        })
+      )
+      await updateRemoteProject({
+        config: { enabled: true, baseUrl: 'https://api.test' },
+        projectPath: `/__zoo_cloud__/${id}`,
+        project: {
+          id,
+          title: 'Silverware organizer',
+          description: 'An organizer for your utensils.',
+          category_ids: ['category-a'],
+        },
+        files: [
+          projectFile('main.kcl'),
+          projectFile('project.toml', projectToml),
+        ],
+        expectedRevision: 'rev-1',
+      })
+      expect(body).toEqual({
+        title: 'Silverware organizer',
+        description: 'An organizer for your utensils.',
+        category_ids: ['category-a'],
+        entrypoint_path: 'main.kcl',
+        project_toml_path: 'project.toml',
+        expected_revision: 'rev-1',
+      })
+    }
+  )
 
   test('omits deletion intent when no deleted paths are provided', async () => {
     let uploadedBody: Record<string, unknown> | undefined

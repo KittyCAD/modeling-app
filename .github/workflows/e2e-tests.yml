@@ -326,14 +326,13 @@ jobs:
             test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
         include:
-          # TODO: Enable Firefox testing on CI
-          # - shardIndex: 1
-          #   shardTotal: 1
-          #   config:
-          #     os: namespace-profile-ubuntu-8-cores
-          #     label: firefox
-          #     test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
-          #     playwright_cache_path: ~/.cache/ms-playwright
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-ubuntu-8-cores
+              label: firefox
+              test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
+              playwright_cache_path: ~/.cache/ms-playwright
           - shardIndex: 1
             shardTotal: 1
             config:
@@ -692,7 +691,7 @@ jobs:
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false
           rustflags: '' # use .cargo/config.toml
