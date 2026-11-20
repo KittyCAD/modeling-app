@@ -20,8 +20,8 @@ function opening() {
     // Passed to `openKclScene`; aborting closes connection work and makes its
     // checks after WASM/SceneInfra startup reject late resources.
     lifetime: new AbortController(),
-    // `execute` may arrive before a viewport attaches. `start` resolves this once
-    // the connection and native runtime exist; `fail`/`dispose` resolve an `Error`.
+    // `execute` may arrive before a viewport attaches. `openAndAttachScene`
+    // resolves this with the connection and runtime; `fail`/`dispose` resolve an `Error`.
     ready: Promise.withResolvers<KclSceneResource | Error>(),
     // Lets queued/running executions return an error immediately on connection
     // loss. The runtime's separate native queue still waits before freeing WASM.
@@ -29,15 +29,26 @@ function opening() {
     // Set after `execute` calls `frameModel` for the first successful streamed
     // model. Later edits/reattachments and recovered connections retain the user's camera.
     framed: false,
-    // `begin` installs the startup deadline; each `execute` has its own run timer.
+    // `beginOpeningAttempt` installs the startup deadline; each `execute` has
+    // its own run timer.
     timer: undefined as ReturnType<typeof setTimeout> | undefined,
   }
 }
 
 /**
- * One Modeling view context retains and disposes this session. `KclScene` only
- * attaches/detaches its DOM element. Connection attempts can be replaced while
- * the document and its shared executor survive.
+ * Owns one Modeling view's scene across presentation attachments and reconnects.
+ * The view's mode context creates and disposes the session; `KclScene` attaches
+ * its DOM element. Detaching that presentation preserves the connection, native
+ * runtime, and camera for a later attachment.
+ *
+ * The first attachment with usable dimensions begins opening the scene. `execute`
+ * can arrive earlier: it captures the current opening attempt and waits for that
+ * attempt's `ready` promise. Execution and preference updates share a session
+ * queue; the native runtime separately serializes access to its WASM memory.
+ *
+ * Recovery replaces the opening attempt and scene, while retaining the session
+ * and saved camera. Callbacks check their captured attempt before publishing
+ * results, so a retired connection cannot replace the current scene.
  */
 export function createKclSession(
   open: OpenKclScene,
@@ -103,8 +114,8 @@ export function createKclSession(
     queue = result.catch(() => undefined)
     return result
   }
-  // Hide the failed resource immediately. `start` awaits its asynchronous
-  // disposal before opening a replacement, including any pending native work.
+  // Hide the failed resource immediately, but retain its disposal promise so
+  // opening a replacement waits for pending native work to finish.
   const retire = () => {
     stopSettings?.()
     stopSettings = undefined
@@ -134,7 +145,9 @@ export function createKclSession(
     )
       retry(!requested)
   }
-  const start = async (
+  // Wait for the previous runtime to release its native resources before opening
+  // a replacement. A result that arrives after cancellation still needs disposal.
+  const openAndAttachScene = async (
     size: { width: number; height: number },
     owner: ReturnType<typeof opening>
   ) => {
@@ -181,14 +194,17 @@ export function createKclSession(
       )
     }
   }
-  const begin = (size: { width: number; height: number }) => {
+  // Arm the deadline before asynchronous opening, including any wait for the
+  // previous scene's disposal. `started` prevents resize events from launching
+  // the initial attempt repeatedly; `recover` explicitly creates later attempts.
+  const beginOpeningAttempt = (size: { width: number; height: number }) => {
     const owner = attempt
     started = true
     owner.timer = setTimeout(
       () => fail(new Error('Opening the KCL scene timed out'), owner),
       60_000
     )
-    void start(size, owner)
+    void openAndAttachScene(size, owner)
   }
   // Manual retry, viewport resize, and focus recovery use the same checks.
   // Only an attached viewport with a usable size can replace a failed/stale resource.
@@ -214,7 +230,10 @@ export function createKclSession(
     if (stale) fail(new Error('The scene connection expired'))
     attempt = opening()
     state.value = { type: 'connecting' }
-    begin({ width: container.clientWidth, height: container.clientHeight })
+    beginOpeningAttempt({
+      width: container.clientWidth,
+      height: container.clientHeight,
+    })
     onReconnect() // The owning view replays its latest shared source snapshot into this connection.
   }
   const idle = setInterval(() => {
@@ -264,7 +283,7 @@ export function createKclSession(
         }
         if (size.width < 4 || size.height < 4) return
         recover(container)
-        if (!started) begin(size)
+        if (!started) beginOpeningAttempt(size)
         else if (state.peek().type === 'ready') {
           const owner = attempt
           void resource
