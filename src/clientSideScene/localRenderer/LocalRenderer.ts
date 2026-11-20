@@ -30,7 +30,6 @@ import { createRegionMeshes } from '@src/clientSideScene/localRenderer/sketchReg
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
-import { PickBufferDebugView } from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
@@ -65,6 +64,7 @@ import {
   type Plane,
   Scene,
   Texture,
+  Vector2,
   Vector3,
 } from 'three'
 import {
@@ -259,9 +259,8 @@ export class LocalRenderer {
   private baseRenderDirty = true
   private depthDirty = true
   private disposed = false
-  private pickBufferDebugView: PickBufferDebugView | null = null
-  private pickBufferDebugGeneration = 0
-  private pickBufferDebugRefreshing = false
+  private readonly frameListeners = new Set<() => void>()
+  private readonly lifetime = new AbortController()
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
   private selectedEntityIds: string[] = []
@@ -731,7 +730,8 @@ export class LocalRenderer {
     }
 
     this.disposed = true
-    this.closePickBufferDebug()
+    this.lifetime.abort()
+    this.frameListeners.clear()
     for (const dispose of this.disposers.splice(0)) {
       dispose()
     }
@@ -1056,62 +1056,62 @@ export class LocalRenderer {
     selectionHighlightRenderer.render(camera)
   }
 
-  showPickBufferDebug(): Error | undefined {
-    if (this.pickBufferDebugView) {
-      this.refreshPickBufferDebug()
-      return
-    }
+  subscribeFrames(listener: () => void) {
+    this.frameListeners.add(listener)
+    return () => this.frameListeners.delete(listener)
+  }
+
+  getPickView() {
+    const { gpu, camera, executionVersion, currentModel } = this
     if (
       this.disposed ||
-      !this.gpu ||
-      !this.camera ||
-      !this.currentModel ||
+      !gpu ||
+      !camera ||
+      !currentModel ||
       !this.isLoadedSceneCurrent() ||
-      this.kclManager.isExecuting
+      this.host.executing.peek()
     ) {
-      return new Error('No current local picking buffer is available.')
+      return null
     }
-    const view = PickBufferDebugView.create(this.container)
-    if (view instanceof Error) return view
-    this.pickBufferDebugView = view
-    this.refreshPickBufferDebug()
-  }
-
-  closePickBufferDebug() {
-    this.pickBufferDebugGeneration++
-    this.pickBufferDebugView?.dispose()
-    this.pickBufferDebugView = null
-  }
-
-  private refreshPickBufferDebug() {
-    if (!this.pickBufferDebugView) return
-    this.pickBufferDebugGeneration++
-    if (this.pickBufferDebugRefreshing) return
-    this.pickBufferDebugRefreshing = true
-    void this.readPickBufferDebug().catch(reportRejection)
-  }
-
-  private async readPickBufferDebug() {
-    try {
-      while (this.pickBufferDebugView && !this.disposed) {
-        const generation = this.pickBufferDebugGeneration
-        const camera = this.camera
-        const picker = this.gpu?.integerIdPicker
-        const snapshot =
-          camera &&
-          picker &&
-          this.currentModel &&
-          this.isLoadedSceneCurrent() &&
-          !this.kclManager.isExecuting
-            ? await picker.captureDebugBuffer(camera)
-            : null
-        if (generation !== this.pickBufferDebugGeneration) continue
-        if (snapshot) this.pickBufferDebugView?.update(snapshot)
-        else this.pickBufferDebugView?.clear()
-        break
-      }
-    } finally {
-      this.pickBufferDebugRefreshing = false
+    const { integerIdPicker: picker, renderer } = gpu
+    const { width, height } = renderer.domElement.getBoundingClientRect()
+    const size = renderer.getDrawingBufferSize(new Vector2())
+    const scratch = new Vector2()
+    const world = camera.matrixWorld.clone()
+    const projection = camera.projectionMatrix.clone()
+    return {
+      width,
+      height,
+      bufferWidth: size.x,
+      bufferHeight: size.y,
+      backend: renderer.backend.constructor.name,
+      buffer: picker.buffer,
+      pick: (x: number, y: number, buffer = picker.buffer) =>
+        picker.pick(
+          { x, y, streamWidth: width, streamHeight: height, camera },
+          buffer
+        ),
+      invalidate: () => picker.invalidate(),
+      capture: () => picker.captureDebugBuffer(camera),
+      container: this.container,
+      signal: this.lifetime.signal,
+      isCurrent: () => {
+        const rect = renderer.domElement.getBoundingClientRect()
+        return (
+          !this.disposed &&
+          this.gpu === gpu &&
+          this.camera === camera &&
+          rect.width === width &&
+          rect.height === height &&
+          renderer.getDrawingBufferSize(scratch).equals(size) &&
+          camera.matrixWorld.equals(world) &&
+          camera.projectionMatrix.equals(projection) &&
+          this.executionVersion === executionVersion &&
+          this.currentModel === currentModel &&
+          !this.host.executing.peek() &&
+          this.isLoadedSceneCurrent()
+        )
+      },
     }
   }
 
@@ -1203,7 +1203,7 @@ export class LocalRenderer {
       !picker ||
       !this.currentModel ||
       !this.isLoadedSceneCurrent() ||
-      this.kclManager.isExecuting
+      this.host.executing.peek()
     )
       return null
 
@@ -1329,7 +1329,7 @@ export class LocalRenderer {
       }
 
       this.render()
-      this.refreshPickBufferDebug()
+      this.frameListeners.forEach((listener) => listener())
     })
   }
 

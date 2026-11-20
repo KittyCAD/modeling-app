@@ -66,6 +66,11 @@ export type IntegerIdPickResult = {
   stale: boolean
 }
 
+export interface PickBufferIO {
+  render(target: RenderTarget, camera: Camera): void
+  read: WebGPURenderer['readRenderTargetPixelsAsync']
+}
+
 export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
   private readonly scene = new Scene()
@@ -81,6 +86,11 @@ export class IntegerIdPicker {
   private edgesVisible = true
   private dirty = true
   private version = 0
+
+  readonly buffer: PickBufferIO = {
+    render: (target, camera) => this.renderIdBuffer(target, camera),
+    read: (...args) => this.renderer.readRenderTargetPixelsAsync(...args),
+  }
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
@@ -270,19 +280,22 @@ export class IntegerIdPicker {
     this.version += 1
   }
 
-  async pick({
-    x,
-    y,
-    streamWidth,
-    streamHeight,
-    camera,
-  }: {
-    x: number
-    y: number
-    streamWidth: number
-    streamHeight: number
-    camera: Camera
-  }): Promise<IntegerIdPickResult | null> {
+  async pick(
+    {
+      x,
+      y,
+      streamWidth,
+      streamHeight,
+      camera,
+    }: {
+      x: number
+      y: number
+      streamWidth: number
+      streamHeight: number
+      camera: Camera
+    },
+    buffer = this.buffer
+  ): Promise<IntegerIdPickResult | null> {
     if (
       streamWidth <= 0 ||
       streamHeight <= 0 ||
@@ -313,10 +326,10 @@ export class IntegerIdPicker {
     const targetById = this.targetById
 
     if (this.dirty) {
-      this.renderIdBuffer(target, camera)
+      buffer.render(target, camera)
     }
 
-    const pixels = await this.renderer.readRenderTargetPixelsAsync(
+    const pixels = await buffer.read(
       this.growthPass?.target ?? target,
       readbackPixelX,
       this.packsIdsIntoColor

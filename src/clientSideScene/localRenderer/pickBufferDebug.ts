@@ -1,6 +1,8 @@
 import { EdgeTargetType } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { selectionTargetId } from '@src/clientSideScene/localRenderer/selectionId'
 import type { Mesh } from 'three'
+import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { reportRejection } from '@src/lib/trap'
 
 export type PickBufferSnapshot = {
   width: number
@@ -16,6 +18,69 @@ type DebugViewState = {
 }
 
 let debugView: PickBufferDebugView | null = null
+let generation = 0
+let pending: Promise<void> | null = null
+let paused = false
+let refresh: (() => void) | undefined
+let disconnect: (() => void) | undefined
+
+export function closePickBufferDebug() {
+  generation++
+  disconnect?.()
+  disconnect = undefined
+  refresh = undefined
+  debugView?.dispose()
+}
+
+export function showPickBufferDebug(source: LocalRenderer) {
+  const view = source.getPickView()
+  if (!view) return new Error('No current local picking buffer is available.')
+  closePickBufferDebug()
+  const overlay = PickBufferDebugView.create(view.container)
+  if (overlay instanceof Error) return overlay
+  refresh = () => {
+    generation++
+    if (paused || pending) return
+    const read = async () => {
+      let version
+      do {
+        version = generation
+        const current = source.getPickView()
+        const snapshot = current && (await current.capture())
+        if (version === generation && debugView === overlay && !paused) {
+          if (snapshot && current?.isCurrent()) overlay.update(snapshot)
+          else overlay.clear()
+        }
+      } while (version !== generation && debugView === overlay && !paused)
+    }
+    pending = read()
+      .catch(reportRejection)
+      .finally(() => {
+        pending = null
+        if (debugView !== overlay) refresh?.()
+      })
+  }
+  const unsubscribe = source.subscribeFrames(refresh)
+  view.signal.addEventListener('abort', closePickBufferDebug)
+  disconnect = () => {
+    unsubscribe()
+    view.signal.removeEventListener('abort', closePickBufferDebug)
+  }
+  refresh()
+}
+
+export async function withPickBufferDebugPaused<T>(run: () => Promise<T>) {
+  if (paused) return new Error('Benchmark already running.')
+  paused = true
+  generation++
+  try {
+    await pending
+    return await run()
+  } finally {
+    paused = false
+    refresh?.()
+  }
+}
 let debugViewState: DebugViewState = {
   active: false,
   showingSeeds: false,
