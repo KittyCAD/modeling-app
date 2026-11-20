@@ -910,62 +910,70 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a fillet call with edge selection on end cap (selectionV2)', async () => {
-      const codeWithoutTagEnd = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 5, tag = $seg01)
-  |> line(endAbsolute = [0, 5])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 5)`
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        codeWithoutTagEnd,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const segment = [...artifactGraph.values()].find(
-        (a): a is Extract<typeof a, { type: 'segment' }> => a.type === 'segment'
-      )
-      expect(segment).toBeDefined()
-      if (!segment) return
-      const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
-      if (err(commonFaces)) throw commonFaces
-      expect(commonFaces.length).toBeGreaterThanOrEqual(2)
-      const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
-      expect(codeRefs?.length).toBeGreaterThan(0)
-      const selection: Selections = {
-        graphSelections: [
-          {
-            entityRef: {
-              type: 'edge',
-              side_faces: commonFaces.slice(0, 2).map((f) => f.id),
+    it.each([
+      { length: 5, tagArg: 'tagStart', capTag: 'capStart001' },
+      { length: -5, tagArg: 'tagEnd', capTag: 'capEnd001' },
+    ])(
+      'should fillet the sketch-plane edge of a sketch v1 extrusion of $length',
+      async ({ length, tagArg, capTag }) => {
+        const code = extrudedTriangle.replace(
+          'extrude(profile001, length = 5)',
+          `extrude(profile001, length = ${length})`
+        )
+        const { artifactGraph, ast } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const segment = [...artifactGraph.values()].find(
+          (a) => a.type === 'segment'
+        )
+        if (!segment) throw new Error('Sketch segment not found')
+        const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
+        if (err(commonFaces)) throw commonFaces
+        expect(commonFaces).toHaveLength(2)
+        const selection: Selections = {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: commonFaces.map((f) => f.id),
+              },
+              codeRef: segment.codeRef,
             },
-            codeRef: codeRefs![0],
-          },
-        ],
-        otherSelections: [],
+          ],
+          otherSelections: [],
+        }
+        const radius = (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result = addFillet({
+          ast,
+          artifactGraph,
+          selection,
+          radius,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode).toContain(`${tagArg} = $${capTag}`)
+        expect(newCode).toContain('xLine(length = 5, tag = $seg01)')
+        expect(newCode).toContain(
+          `fillet001 = fillet(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [seg01, extrude001.faces.${capTag}]
+    }
+  ],
+  radius = 1,
+)`
+        )
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       }
-      const radius = (await stringToKclExpression(
-        '1',
-        rustContextInThisFile
-      )) as KclCommandValue
-      const result = addFillet({
-        ast,
-        artifactGraph,
-        selection,
-        radius,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(newCode).toContain('fillet(')
-      expect(newCode).toMatch(/edges = \[\s*{/)
-      expect(newCode.includes('tagEnd') || newCode.includes('tagStart')).toBe(
-        true
-      )
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    )
 
     it('should add fillet calls on two bodies with one edge selected on each (selectionV2)', async () => {
       const twoBodiesWithTags = `sketch001 = startSketchOn(XY)
@@ -1937,8 +1945,10 @@ ${extrudedTriangle}`
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain('blend001 = blend([')
-      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode).toContain(`blend001 = blend([
+  getBoundedEdge(profile001, edge = seg01),
+  getBoundedEdge(profile002, edge = seg02)
+])`)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
