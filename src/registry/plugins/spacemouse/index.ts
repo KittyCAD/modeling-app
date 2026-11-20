@@ -2,7 +2,6 @@ import {
   defineEngineSceneViewExtension,
   engineSceneViewExtensionsFacet,
 } from '@src/registry/contracts/engineScene'
-import { statusBarGlobalItemsFacet } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { contribute } from 'plankton'
 import { Suspense, createElement, lazy } from 'react'
@@ -14,23 +13,11 @@ const SpaceMouseSceneController = lazy(async () => {
   return { default: SpaceMouseSceneController }
 })
 
-const SpaceMouseStatusBarItem = lazy(async () => {
-  const { SpaceMouseStatusBarItem } = await import('./SpaceMouseStatusBarItem')
-  return { default: SpaceMouseStatusBarItem }
-})
-
 const SpaceMouseSceneOverlay = () =>
   createElement(
     Suspense,
     { fallback: null },
     createElement(SpaceMouseSceneController)
-  )
-
-const SpaceMouseStatus = () =>
-  createElement(
-    Suspense,
-    { fallback: null },
-    createElement(SpaceMouseStatusBarItem)
   )
 
 const spaceMouse = createZdsPlugin({
@@ -46,11 +33,6 @@ const spaceMouse = createZdsPlugin({
         Component: SpaceMouseSceneOverlay,
       })
     ),
-    contribute(statusBarGlobalItemsFacet, () => ({
-      id: 'spacemouse.status',
-      order: 40,
-      component: SpaceMouseStatus,
-    })),
   ],
   defaultSetting: 'off',
   activationSetting: {

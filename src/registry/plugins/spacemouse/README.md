@@ -8,27 +8,20 @@ the local renderer merged in [#14506](https://github.com/KittyCAD/modeling-app/p
 1. Install and start the [3Dconnexion driver](https://3dconnexion.com/us/drivers/).
 2. Enable **Use Local Renderer** in user modeling settings and restart the app.
 3. Enable **SpaceMouse** in **Settings > Modeling**.
-4. Open a model. The plugin attempts to connect automatically on desktop.
-   In a browser, click the SpaceMouse status bar item for the first connection
-   and allow local network access if prompted. Later modeling views connect
-   automatically when loopback permission is granted.
-5. Click the viewport to give it focus, then move the puck. Use the driver to
-   adjust navigation mode, sensitivity, and axis preferences.
+4. Open a model and click the viewport to give it focus. If the browser asks
+   for local network access, allow it. Move the puck to navigate and use the
+   driver to adjust navigation mode, sensitivity, and axis preferences.
 
-Click the SpaceMouse status bar item to connect or disconnect. Turning off
-the SpaceMouse setting or leaving the modeling view also closes the session.
-Input is ignored while the viewport is unfocused, while dragging with the
-regular mouse, and when using the streamed renderer. Sketch rotation follows
-**Allow Orbit in Sketch Mode**.
+The plugin connects when a modeling view opens on desktop or in a browser
+with loopback permission. If permission has not been decided or cannot be
+checked, it tries on the first viewport click. To retry after starting the
+driver or allowing access in browser site settings, reopen the model or toggle
+SpaceMouse off and on.
 
-Automatic connection failures do not show a toast or retry in a loop. Click
-the status bar item to retry; a manual disconnect lasts until the modeling
-view closes or SpaceMouse is re-enabled. Browsers that cannot query loopback
-permission keep the manual connection action.
-
-The global status bar icon shows connection details on hover while SpaceMouse
-is enabled. Manual connections show a success toast once the navigation
-controller is ready; automatic connections update the status bar without a toast.
+Turning off SpaceMouse or leaving the modeling view closes the session. Input
+is ignored while the viewport is unfocused, while dragging with the regular
+mouse, and when using the streamed renderer. Sketch rotation follows **Allow
+Orbit in Sketch Mode**.
 
 ## Connection and camera
 

@@ -2,9 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runInNewContext } from 'node:vm'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Signal } from '@src/lib/signal'
-import { act, fireEvent, render, screen } from '@testing-library/react'
-import { createElement } from 'react'
-import toast from 'react-hot-toast'
 import {
   Box3,
   Euler,
@@ -18,12 +15,7 @@ import {
   DriverSpaceMouseController,
   type SpaceMouseCameraControls,
 } from './driverSpaceMouse'
-import { SpaceMouseStatusBarItem } from './SpaceMouseStatusBarItem'
-import {
-  activeSpaceMouseController,
-  SpaceMouseController,
-  spaceMouseState,
-} from './spaceMouseController'
+import { SpaceMouseController } from './spaceMouseController'
 import vendorSource from '@public/vendor/3dconnexion.min.js?raw'
 
 vi.mock('/vendor/3dconnexion.min.js?url', () => ({
@@ -95,29 +87,24 @@ beforeEach(() => {
   vi.stubGlobal('_3Dconnexion', FakeDriver)
   FakeDriver.instances = []
   vi.mocked(isDesktop).mockReturnValue(false)
-  spaceMouseState.value = { status: 'disconnected' }
 })
 
 afterEach(() => {
   vi.useRealTimers()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
-  activeSpaceMouseController.value = null
   document.body.replaceChildren()
 })
 
 describe('SpaceMouse connection', () => {
   function setupController() {
-    const { driver, controls, scene } = setup()
+    const { driver, controls, scene, canvas } = setup()
     driver.dispose()
     const controller = new SpaceMouseController(controls, scene)
-    return { controller, controls }
+    return { controller, controls, canvas }
   }
 
   it('connects on desktop without taking keyboard focus from an editor', async () => {
-    const success = vi
-      .spyOn(toast, 'success')
-      .mockReturnValue('spacemouse-connected')
     vi.mocked(isDesktop).mockReturnValue(true)
     const { controller } = setupController()
     const editor = document.createElement('input')
@@ -129,54 +116,15 @@ describe('SpaceMouse connection', () => {
     const sdk = FakeDriver.instances[0]
     sdk.client.onConnect()
     sdk.client.on3dmouseCreated()
-    expect(await connection).toBeUndefined()
-    expect(spaceMouseState.value.status).toBe('connected')
+    await connection
     expect(editor).toHaveFocus()
-    expect(success).not.toHaveBeenCalled()
     controller.dispose()
   })
 
-  it('connects from the status bar, confirms readiness once, and disconnects', async () => {
-    const success = vi
-      .spyOn(toast, 'success')
-      .mockReturnValue('spacemouse-connected')
-    const { controller } = setupController()
-    activeSpaceMouseController.value = controller
-    const view = render(createElement(SpaceMouseStatusBarItem))
-    const connectButton = screen.getByRole('button', {
-      name: /Connect SpaceMouse/,
-    })
-    expect(connectButton).not.toHaveTextContent('SpaceMouse')
-    fireEvent.click(connectButton)
-    await vi.waitFor(() => expect(FakeDriver.instances).toHaveLength(1))
-    expect(
-      screen.getByRole('button', { name: /SpaceMouse: Connecting/ })
-    ).toBeDisabled()
-    const sdk = FakeDriver.instances[0]
-    sdk.client.onConnect()
-    expect(success).not.toHaveBeenCalled()
-    await act(async () => sdk.client.on3dmouseCreated())
-    expect(
-      await screen.findByRole('button', { name: /SpaceMouse: Connected/ })
-    ).toBeEnabled()
-    expect(success).toHaveBeenCalledWith('SpaceMouse connected.', {
-      id: 'spacemouse-connected',
-    })
-    await controller.connect()
-    expect(success).toHaveBeenCalledTimes(1)
-    fireEvent.click(
-      screen.getByRole('button', { name: /Disconnect SpaceMouse/ })
-    )
-    expect(
-      screen.getByRole('button', { name: /SpaceMouse: Disconnected/ })
-    ).toBeEnabled()
-    view.unmount()
-    controller.dispose()
-  })
-
-  it.each(['prompt', 'denied', 'unsupported'])(
-    'keeps connection manual when browser permission is %s',
+  it.each(['prompt', 'unsupported'])(
+    'connects on a viewport click when browser permission is %s',
     async (state) => {
+      vi.useFakeTimers()
       vi.stubGlobal('navigator', {
         permissions: {
           query: vi.fn(() =>
@@ -186,13 +134,36 @@ describe('SpaceMouse connection', () => {
           ),
         },
       })
-      const { controller } = setupController()
+      const { controller, canvas } = setupController()
       await controller.autoConnect()
       expect(FakeDriver.instances).toHaveLength(0)
-      expect(spaceMouseState.value.status).toBe('disconnected')
+
+      canvas.click()
+      // The browser can hold the connection while the permission prompt is open.
+      await vi.advanceTimersByTimeAsync(6000)
+      expect(FakeDriver.instances).toHaveLength(1)
+      const sdk = FakeDriver.instances[0]
+      sdk.client.onConnect()
+      sdk.client.on3dmouseCreated()
+      expect(sdk.create3dmouse).toHaveBeenCalledWith(
+        canvas,
+        'Zoo Design Studio'
+      )
       controller.dispose()
     }
   )
+
+  it('skips browser connections when loopback permission was denied', async () => {
+    vi.stubGlobal('navigator', {
+      permissions: { query: vi.fn().mockResolvedValue({ state: 'denied' }) },
+    })
+    const { controller, canvas } = setupController()
+    await controller.autoConnect()
+    canvas.click()
+    await Promise.resolve()
+    expect(FakeDriver.instances).toHaveLength(0)
+    controller.dispose()
+  })
 
   it('connects in a browser with loopback permission already granted', async () => {
     const query = vi.fn().mockResolvedValue({ state: 'granted' })
@@ -203,7 +174,7 @@ describe('SpaceMouse connection', () => {
     const connection = controller.autoConnect()
     await vi.waitFor(() => expect(FakeDriver.instances).toHaveLength(1))
     FakeDriver.instances[0].client.on3dmouseCreated()
-    expect(await connection).toBeUndefined()
+    await connection
     expect(query).toHaveBeenCalledWith({
       name: 'loopback-network',
     })
@@ -219,19 +190,19 @@ describe('SpaceMouse connection', () => {
     controller.dispose()
   })
 
-  it('honors a disconnect while browser permission is being checked', async () => {
+  it('ignores a pending browser permission check after disposal', async () => {
     const permission = Promise.withResolvers<{ state: PermissionState }>()
     vi.stubGlobal('navigator', {
       permissions: { query: vi.fn(() => permission.promise) },
     })
-    const { controller } = setupController()
+    const { controller, canvas } = setupController()
     const connection = controller.autoConnect()
-    controller.disconnect()
-    permission.resolve({ state: 'granted' })
-    await connection
-    expect(FakeDriver.instances).toHaveLength(0)
-    expect(spaceMouseState.value.status).toBe('disconnected')
     controller.dispose()
+    permission.resolve({ state: 'prompt' })
+    await connection
+    canvas.click()
+    await Promise.resolve()
+    expect(FakeDriver.instances).toHaveLength(0)
   })
 })
 
@@ -597,14 +568,14 @@ describe('SpaceMouse connection lifecycle', () => {
     expect(sdk.close).toHaveBeenCalled()
   })
 
-  it('does not reconnect or change state when disabled during connection', async () => {
+  it('does not open a driver session when disabled during connection', async () => {
+    vi.mocked(isDesktop).mockReturnValue(true)
     const { driver, controls, scene } = setup()
     driver.dispose()
     const controller = new SpaceMouseController(controls, scene)
-    const connection = controller.connect()
+    const connection = controller.autoConnect()
     controller.dispose()
     await connection
-    expect(spaceMouseState.value.status).toBe('disconnected')
     expect(FakeDriver.instances).toHaveLength(0)
   })
 })

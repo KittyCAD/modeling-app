@@ -1,91 +1,82 @@
-import { signal } from '@preact/signals-core'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isErr } from '@src/lib/trap'
-import toast from 'react-hot-toast'
+import { err, report, reportRejection } from '@src/lib/trap'
 import {
   DriverSpaceMouseController,
   type SpaceMouseCameraControls,
   type SpaceMouseScene,
 } from './driverSpaceMouse'
 
-export type SpaceMouseState = {
-  status: 'disconnected' | 'connecting' | 'connected' | 'error'
-  error?: string
-}
-
-export const spaceMouseState = signal<SpaceMouseState>({
-  status: 'disconnected',
-})
-
-export const activeSpaceMouseController = signal<SpaceMouseController | null>(
-  null
-)
-
 export class SpaceMouseController {
   private driver: DriverSpaceMouseController | null = null
   private disposed = false
-  private connectionRevision = 0
 
   constructor(
-    readonly cameraControls: SpaceMouseCameraControls,
+    private readonly cameraControls: SpaceMouseCameraControls,
     private readonly scene: SpaceMouseScene
   ) {}
 
-  async autoConnect(): Promise<undefined | Error> {
+  async autoConnect(): Promise<void> {
     if (this.disposed || !this.cameraControls.localCameraMode) return
-    const revision = this.connectionRevision
-    if (!isDesktop()) {
-      try {
-        const permission = await navigator.permissions.query({
-          // @ts-expect-error Chrome's loopback permission is not in lib.dom yet.
-          name: 'loopback-network',
-        })
-        if (permission.state !== 'granted') return
-      } catch {
-        // Unsupported permission queries need the manual Connect action.
-        return
-      }
+    if (isDesktop()) return this.connect()
+
+    let permission: PermissionState = 'prompt'
+    try {
+      const result = await navigator.permissions.query({
+        // @ts-expect-error Chrome's loopback permission is not in lib.dom yet.
+        name: 'loopback-network',
+      })
+      permission = result.state
+    } catch {
+      // Browsers without this permission query can try on the first click.
     }
-    if (revision !== this.connectionRevision) return
-    return this.connect({ showSuccessToast: false })
+    if (this.disposed) return
+    if (permission === 'granted') return this.connect()
+    if (permission === 'prompt') {
+      this.cameraControls.domElement.addEventListener(
+        'click',
+        this.connectOnViewportClick,
+        { once: true }
+      )
+    }
   }
 
-  async connect({ showSuccessToast = true } = {}): Promise<undefined | Error> {
-    if (this.disposed || this.driver) return
-    this.connectionRevision += 1
-    spaceMouseState.value = { status: 'connecting' }
+  private connectOnViewportClick = () => {
+    this.connect(true).catch(reportRejection)
+  }
+
+  private async connect(fromViewportClick = false): Promise<void> {
+    if (this.disposed || this.driver || !this.cameraControls.localCameraMode)
+      return
     const driver = new DriverSpaceMouseController(
       this.cameraControls,
       this.scene,
       (reason) => {
-        if (this.disposed || this.driver !== driver) return
+        if (this.driver !== driver) return
         this.disconnect()
-        spaceMouseState.value = { status: 'error', error: reason }
+        report(reason)
       }
     )
     this.driver = driver
-    const result = await driver.connect()
-    if (this.disposed || this.driver !== driver) return
-    if (isErr(result)) {
-      this.disconnect()
-      spaceMouseState.value = { status: 'error', error: result.message }
-      return result
+    if (fromViewportClick) {
+      this.cameraControls.domElement.focus({ preventScroll: true })
     }
-    spaceMouseState.value = { status: 'connected' }
-    if (showSuccessToast)
-      toast.success('SpaceMouse connected.', { id: 'spacemouse-connected' })
+    // Leave time for the browser's permission prompt before timing out.
+    const result = await driver.connect(fromViewportClick ? 60_000 : undefined)
+    if (this.driver === driver && err(result)) this.disconnect()
   }
 
-  disconnect() {
-    this.connectionRevision += 1
+  private disconnect() {
     const driver = this.driver
     this.driver = null
     driver?.dispose()
-    spaceMouseState.value = { status: 'disconnected' }
   }
 
   dispose() {
     this.disposed = true
+    this.cameraControls.domElement.removeEventListener(
+      'click',
+      this.connectOnViewportClick
+    )
     this.disconnect()
   }
 }

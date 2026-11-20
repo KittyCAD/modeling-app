@@ -3,11 +3,8 @@ import { useEffect, useRef } from 'react'
 import { shouldLockViewControls } from '@src/components/viewControlMenuUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { reportRejection, trap } from '@src/lib/trap'
-import {
-  SpaceMouseController,
-  activeSpaceMouseController,
-} from './spaceMouseController'
+import { reportRejection } from '@src/lib/trap'
+import { SpaceMouseController } from './spaceMouseController'
 
 export function SpaceMouseSceneController() {
   const {
@@ -28,18 +25,9 @@ export function SpaceMouseSceneController() {
       getSelectionBounds: () => sceneInfra.localRenderer?.getSelectionBounds(),
       canRotate: () => !rotationLocked.current,
     })
-    activeSpaceMouseController.value = controller
-    controller
-      .autoConnect()
-      .then((result) => trap(result, { suppress: true }))
-      .catch(reportRejection)
+    controller.autoConnect().catch(reportRejection)
 
-    return () => {
-      if (activeSpaceMouseController.value === controller) {
-        activeSpaceMouseController.value = null
-      }
-      controller.dispose()
-    }
+    return () => controller.dispose()
   }, [sceneInfra])
 
   return null

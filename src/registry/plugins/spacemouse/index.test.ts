@@ -37,7 +37,6 @@ describe('SpaceMouse plugin', () => {
     )
     expect(toggle.active.value).toBe(false)
     expect(registry.get(engineSceneViewExtensionsFacet)).toEqual([])
-    expect(registry.get(statusBarGlobalItemsFacet)).toEqual([])
 
     await toggle.enable()
 
@@ -45,15 +44,12 @@ describe('SpaceMouse plugin', () => {
     expect(
       registry.get(engineSceneViewExtensionsFacet).map((item) => item.id)
     ).toEqual(['spacemouse.controller'])
-    expect(
-      registry.get(statusBarGlobalItemsFacet).map((item) => item.id)
-    ).toEqual(['spacemouse.status'])
+    expect(registry.get(statusBarGlobalItemsFacet)).toEqual([])
 
     await toggle.disable()
 
     expect(toggle.active.value).toBe(false)
     expect(registry.get(engineSceneViewExtensionsFacet)).toEqual([])
-    expect(registry.get(statusBarGlobalItemsFacet)).toEqual([])
     await registry.dispose()
   })
 })
