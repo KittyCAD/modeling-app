@@ -85,7 +85,7 @@ Both presentations use the application's `ConnectionManager` and camera controls
 Native execution uses `kclExecutionSettingsService`, the same composed policy
 consumed by the legacy file route. The registry resolves it when execution inputs
 are observed or a scene session is created, after registry setup.
-[`presentationPreferences.ts`](presentationPreferences.ts) groups the camera,
+[`scene/presentationPreferences.ts`](scene/presentationPreferences.ts) groups the camera,
 appearance, local-renderer, and unit inputs by consumer. Renderer-only updates
 leave camera controls and the streamed connection unchanged. Execution, native
 export, and scene rebuilds share a queue so disposal can wait for borrowed native
@@ -102,12 +102,17 @@ boundary and its ownership decisions.
 
 ## Code map
 
+- `execution/`: source capture, native execution, and native input metadata.
+- `scene/`: connection and renderer assembly, viewport presentation, and settings.
+- `modeling/`: per-view sessions, snapshot consumption, and React presentation.
+- `registry/`: composes KCL capabilities into editor views.
+
 - [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.
 - [`project sources`](../projectSession/next/sources.ts): captures working documents
   and stored bytes for a specific project opening.
-- [`executor.ts`](executor.ts): contributes shared source capture.
-- [`viewExecution.ts`](viewExecution.ts): runs shared snapshots in one view's native session.
-- [`session.ts`](session.ts): owns connection and presentation lifetime.
-- [`runtime.ts`](runtime.ts): owns native KCL operations.
-- [`scene.ts`](scene.ts): assembles a connection, runtime, camera, and renderer host.
-- [`KclScene.tsx`](KclScene.tsx): renders the Modeling viewport.
+- [`execution/executor.ts`](execution/executor.ts): contributes shared source capture.
+- [`modeling/viewExecution.ts`](modeling/viewExecution.ts): runs shared snapshots in one view's native session.
+- [`modeling/session.ts`](modeling/session.ts): owns connection and presentation lifetime.
+- [`execution/runtime.ts`](execution/runtime.ts): owns native KCL operations.
+- [`scene/open.ts`](scene/open.ts): assembles a connection, runtime, camera, and renderer host.
+- [`modeling/KclScene.tsx`](modeling/KclScene.tsx): renders the Modeling viewport.

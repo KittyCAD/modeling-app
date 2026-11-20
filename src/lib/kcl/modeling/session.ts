@@ -3,8 +3,8 @@ import type { CameraViewState } from '@kittycad/lib'
 import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import { effect, signal } from '@preact/signals-core'
 import type { ExecState } from '@src/lang/wasm'
-import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
-import type { KclSourceSnapshot } from '@src/lib/kcl/sources'
+import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene/open'
+import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
 import { isErr, reportRejection } from '@src/lib/trap'
 
 type KclConnectionState =

@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import Loading from '@src/components/Loading'
-import type { KclSession } from '@src/lib/kcl/session'
+import type { KclSession } from '@src/lib/kcl/modeling/session'
 
 /** Adapts this session's connection state to the shared `Loading`/`ConnectionRecovery` views; retry calls `session.reconnect`. */
 export function KclConnectionStatus({

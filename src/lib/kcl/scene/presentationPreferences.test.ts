@@ -1,4 +1,4 @@
-import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { expect, it, vi } from 'vitest'

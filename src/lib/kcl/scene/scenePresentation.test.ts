@@ -1,6 +1,6 @@
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import type {
   SceneConnection,
   ScenePresentation,
@@ -8,7 +8,7 @@ import type {
 import {
   createSceneElement,
   createSceneViewport,
-} from '@src/lib/kcl/scenePresentation'
+} from '@src/lib/kcl/scene/scenePresentation'
 import {
   createTestKclRuntime,
   createTestSettings,

@@ -1,9 +1,9 @@
-import type { KclViewExecution } from '@src/lib/kcl/viewExecution'
+import type { KclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import type { Executor } from '@src/lib/executors/registry/contract'
-import type { KclSession } from '@src/lib/kcl/session'
-import { KclConnectionStatus } from '@src/lib/kcl/KclConnectionStatus'
+import type { KclSession } from '@src/lib/kcl/modeling/session'
+import { KclConnectionStatus } from '@src/lib/kcl/modeling/KclConnectionStatus'
 import { useEffect, useRef } from 'react'
 
 const hiddenPlanes = { xy: false, xz: false, yz: false }

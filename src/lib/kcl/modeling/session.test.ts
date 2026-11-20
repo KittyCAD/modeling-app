@@ -1,8 +1,8 @@
 import { signal } from '@preact/signals-core'
 import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import { emptyExecState } from '@src/lang/wasm'
-import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene'
-import { createKclSession } from '@src/lib/kcl/session'
+import type { KclSceneResource, OpenKclScene } from '@src/lib/kcl/scene/open'
+import { createKclSession } from '@src/lib/kcl/modeling/session'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createTestKclScene } from '@src/lib/kcl/testFixtures'
 
