@@ -3,6 +3,7 @@ import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
+  exportModelAction,
   exportProjectArchiveAction,
   featureTreePaneConfig,
   isDefaultLayoutPaneID,
@@ -1139,8 +1140,13 @@ function getLayoutMigrations(): LayoutMigrationMap {
                 const index = layout.actions.findIndex(
                   (action) => action?.actionType === ActionType.Export
                 )
+                const exportAction = layout.actions[index]
+                if (!exportAction) return layout
+
+                exportAction.label = exportModelAction.label
+                exportAction.icon = exportModelAction.icon
+
                 if (
-                  index >= 0 &&
                   !layout.actions.some(
                     (action) => action?.id === exportProjectArchiveAction.id
                   )

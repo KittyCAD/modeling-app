@@ -1,6 +1,8 @@
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
+  exportModelAction,
+  exportProjectArchiveAction,
   featureTreePaneConfig,
   namedViewsPaneConfig,
 } from '@src/lib/layout/configs/default'
@@ -429,7 +431,7 @@ describe('Layout utils', () => {
       expect(migrated).toHaveProperty('layout.activeIndices', [0])
     })
 
-    it('adds the archive button beside Export without changing saved panes', () => {
+    it.each(['Export', 'Export part'])('migrates %s', (label) => {
       const migrated = parseLayoutWithMigrations({
         version: 'v4',
         layout: {
@@ -447,7 +449,7 @@ describe('Layout utils', () => {
           actions: [
             {
               id: 'export',
-              label: 'Export',
+              label,
               icon: 'floppyDiskArrow',
               actionType: 'export',
             },
@@ -463,9 +465,10 @@ describe('Layout utils', () => {
 
       expect(migrated).toHaveProperty('version', LATEST_LAYOUT_VERSION)
       expect(migrated).toHaveProperty('layout.children.length', 2)
+      expect(migrated).toHaveProperty('layout.activeIndices', [0])
       expect(migrated).toHaveProperty('layout.actions', [
-        expect.objectContaining({ id: 'export' }),
-        expect.objectContaining({ id: 'export-project-archive' }),
+        exportModelAction,
+        exportProjectArchiveAction,
         expect.objectContaining({ id: 'make' }),
       ])
     })
