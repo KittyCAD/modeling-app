@@ -22,7 +22,7 @@ const ITERATOR_TO_ARRAY_ERROR = '.toArray is not a function'
 
 export function ProjectErrorPage() {
   const error = useRouteError()
-  if (!(error instanceof CloudApiError) || error.status !== 403)
+  if (!(error instanceof CloudApiError) || error.status !== 403 || error.status !== 404)
     return <ErrorPage />
 
   return (
