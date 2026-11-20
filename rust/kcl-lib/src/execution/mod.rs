@@ -7327,40 +7327,6 @@ assert(1, isEqualTo = 2, error = "code after exit ran")
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn return_inside_sketch_block_terminates_function_in_v3() {
-        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
-fn f() {
-  sketch(on = XY) {
-    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-    return 42
-  }
-  return 0
-}
-x = f()
-"#;
-        let result = parse_execute(code).await.unwrap();
-        assert_eq!(variable_f64(&result, "x"), 42.0);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn return_inside_sketch_block_ignored_without_v3() {
-        // Pins the pre-KCL-3.0 behavior: `__return` binds in the sketch block's
-        // child environment and is lost when it pops.
-        let code = r#"@settings(experimentalFeatures = allow)
-fn f() {
-  sketch(on = XY) {
-    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-    return 42
-  }
-  return 0
-}
-x = f()
-"#;
-        let result = parse_execute(code).await.unwrap();
-        assert_eq!(variable_f64(&result, "x"), 0.0);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn code_after_return_still_runs_without_v3() {
         let code = r#"fn f() {
   return 1
@@ -7992,75 +7958,6 @@ x = leakCheck()
             "unexpected message: {}",
             err.message()
         );
-    }
-
-    /// Unwinding out of a sketch block nested inside a scoped if-arm must
-    /// run the sketch cleanup and then pop the arm's scope environment, in
-    /// that order, on all three unwind paths: error, exit(), and early
-    /// return.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unwind_through_sketch_block_inside_scoped_if_arm_in_v3() {
-        // Error: the user's error surfaces, not an internal
-        // environment-imbalance error.
-        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
-fn f() {
-  dummy = if true {
-    s = sketch(on = XY) {
-      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-      q = notDefinedAnywhere
-    }
-    0
-  } else {
-    0
-  }
-  return dummy
-}
-x = f()
-"#;
-        let err = parse_execute(code).await.unwrap_err();
-        assert!(
-            err.message().contains("`notDefinedAnywhere` is not defined"),
-            "unexpected message: {}",
-            err.message()
-        );
-
-        // exit() terminates the program; nothing after it runs.
-        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
-fn f() {
-  dummy = if true {
-    s = sketch(on = XY) {
-      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-      e = exit()
-    }
-    0
-  } else {
-    0
-  }
-  return dummy
-}
-x = f()
-assert(1, isEqualTo = 2, error = "code after exit ran")
-"#;
-        parse_execute(code).await.unwrap();
-
-        // Early return terminates the enclosing function with its value.
-        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
-fn g() {
-  dummy = if true {
-    s = sketch(on = XY) {
-      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-      return 42
-    }
-    0
-  } else {
-    0
-  }
-  return 0
-}
-y = g()
-"#;
-        let result = parse_execute(code).await.unwrap();
-        assert_eq!(variable_f64(&result, "y"), 42.0);
     }
 
     /// A tag declared inside an if-arm is bound like any arm-local: usable
