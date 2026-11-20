@@ -57,6 +57,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import {
   ZookeeperConversation,
   type ZookeeperConversationProps,
@@ -140,7 +141,7 @@ describe('ZookeeperConversation', () => {
 
   afterEach(() => vi.restoreAllMocks())
 
-  test('loads older messages without moving the visible exchange or resetting its card', () => {
+  test('loads older messages without moving the visible exchange or resetting its card while activity arrives', () => {
     const latest: Conversation['exchanges'][number] = {
       request: { type: 'user', content: 'Latest question' },
       responses: [],
@@ -170,6 +171,7 @@ describe('ZookeeperConversation', () => {
     const scroll = originalCard?.parentElement
     if (!originalCard || !scroll)
       throw new Error('Missing conversation scroll container')
+    const scrollTo = vi.spyOn(scroll, 'scrollTo')
     let top = 100
     vi.spyOn(scroll, 'getBoundingClientRect').mockImplementation(
       () => new DOMRect(0, 0, 100, 500)
@@ -184,15 +186,40 @@ describe('ZookeeperConversation', () => {
     expect(
       screen.getByRole('button', { name: 'Loading older messages...' })
     ).toBeDisabled()
+    const updatedLatest: Conversation['exchanges'][number] = {
+      ...latest,
+      responses: [
+        {
+          reasoning: {
+            type: 'markdown',
+            content:
+              ZOOKEEPER_ACTIVITY_PREFIX +
+              JSON.stringify({
+                kind: 'commentary',
+                text: 'Checking the model.',
+              }),
+          },
+        },
+      ],
+    }
+    rerender(
+      <ZookeeperConversation
+        {...props}
+        conversation={{ exchanges: [updatedLatest] }}
+        isLoadingOlderMessages
+      />
+    )
+    expect(scrollTo).not.toHaveBeenCalled()
     top = 340
     const expanded: Conversation = {
       exchanges: [
         { ...latest, request: { type: 'user', content: 'Older question' } },
-        latest,
+        updatedLatest,
       ],
     }
     rerender(<ZookeeperConversation {...props} conversation={expanded} />)
     expect(scroll.scrollTop).toBe(270)
+    expect(scrollTo).not.toHaveBeenCalled()
     expect(container.querySelectorAll('[data-zookeeper-exchange]')[1]).toBe(
       originalCard
     )
@@ -925,10 +952,10 @@ describe('ZookeeperConversation', () => {
       const requestBubble = screen.getByTestId('ml-request-chat-bubble')
       expect(requestBubble).toHaveTextContent(promptText)
 
-      const responseBubble = screen.getByTestId('ml-response-chat-bubble')
-      expect(
-        within(responseBubble).getByTestId('ml-response-chat-bubble-thinking')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('zookeeper-activity-card')).toHaveTextContent(
+        'Working…'
+      )
+      expect(screen.queryByTestId('ml-response-chat-bubble')).toBeNull()
 
       const finalResponse = 'Rounded cube generated successfully.'
       latestConversation = {
@@ -1230,21 +1257,16 @@ describe('ZookeeperConversation', () => {
       />
     )
 
-    const responseBubble = screen.getByTestId('ml-response-chat-bubble')
-
-    expect(
-      within(responseBubble).queryByText(unknownResponseText)
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId('ml-response-chat-bubble-thinking')
-    ).toBeInTheDocument()
+    expect(screen.queryByText(unknownResponseText)).not.toBeInTheDocument()
+    expect(screen.getByTestId('zookeeper-activity-card')).toBeInTheDocument()
+    expect(screen.queryByTestId('ml-response-chat-bubble')).toBeNull()
   })
 
   test.each([
     'Manual edits detected since the last Zookeeper state.',
     'Temporary connection issue. Retrying automatically…',
   ])(
-    'keeps reasoning expanded for non-terminal info notices: %s',
+    'keeps activity available for non-terminal info notices: %s',
     async (infoText) => {
       const conversation: Conversation = {
         exchanges: [
@@ -1296,25 +1318,43 @@ describe('ZookeeperConversation', () => {
         ).toHaveTextContent(infoText)
       } else {
         expect(screen.queryByText(infoText)).not.toBeInTheDocument()
+        expect(
+          screen.queryByTestId('zookeeper-manual-edit-notice')
+        ).not.toBeInTheDocument()
       }
       expect(
         screen.queryByTestId('ml-response-info-chat-bubble')
       ).not.toBeInTheDocument()
       expect(
-        screen.getByTestId('ml-response-chat-bubble-thinking')
-      ).toBeInTheDocument()
+        screen.queryByTestId('ml-response-chat-bubble-thinking')
+      ).not.toBeInTheDocument()
 
+      const activityToggle = screen.getByRole('button', {
+        name: /View activity/,
+      })
+      expect(activityToggle).toHaveAttribute('aria-expanded', 'false')
+      fireEvent.click(activityToggle)
       await waitFor(() => {
         expect(
           screen.getByTestId('ml-response-thinking-view')
         ).toBeInTheDocument()
       })
-      expect(screen.getByText('Collapse')).toBeInTheDocument()
-      expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+      if (
+        infoText === 'Manual edits detected since the last Zookeeper state.'
+      ) {
+        expect(
+          screen.getByTestId('zookeeper-manual-edit-notice')
+        ).toHaveTextContent(
+          'Project files changed since Zookeeper last ran. Using the current files.'
+        )
+      }
+      expect(
+        screen.getByRole('button', { name: /Hide activity/ })
+      ).toHaveAttribute('aria-expanded', 'true')
     }
   )
 
-  test('preserves active reasoning time when its exchange remounts', () => {
+  test('preserves active working time when its exchange remounts', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
 
@@ -1334,16 +1374,94 @@ describe('ZookeeperConversation', () => {
 
     try {
       const { unmount } = renderExchange()
-      expect(screen.getByText('Reasoned for 20 minutes')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Working for 20m 0s/ })
+      ).toBeInTheDocument()
       unmount()
 
       vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
       renderExchange()
-      expect(screen.getByText('Reasoned for 21 minutes')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Working for 21m 0s/ })
+      ).toBeInTheDocument()
     } finally {
       vi.clearAllTimers()
       vi.useRealTimers()
     }
+  })
+
+  test('follows new activity rows until the reader scrolls away', () => {
+    const activity = (payload: object) => ({
+      activity: payload,
+    })
+    const responses = [
+      activity({ kind: 'commentary', text: 'Checking the project.' }),
+    ]
+    const conversationProps = {
+      isLoading: false,
+      onProcess: vi.fn(),
+      onClickClearChat: vi.fn(),
+      onReconnect: vi.fn(),
+      onCancel: vi.fn(),
+      needsReconnect: false,
+      contexts: [],
+      disabled: false,
+      hasPromptCompleted: false,
+      isProcessing: true,
+      queue: [],
+      onRemoveFromQueue: vi.fn(),
+      onSteer: vi.fn(),
+    }
+    const renderConversation = (messages: typeof responses) => (
+      <ZookeeperConversation
+        {...conversationProps}
+        conversation={{
+          exchanges: [
+            {
+              request: { type: 'user', content: 'Inspect the project' },
+              responses: messages,
+              deltasAggregated: '',
+            },
+          ],
+        }}
+      />
+    )
+    const { rerender } = render(renderConversation(responses))
+    const scrollPane = screen.getByTestId('zookeeper-conversation-scroll')
+    const scrollTo = vi.fn()
+    Object.defineProperties(scrollPane, {
+      scrollHeight: { configurable: true, value: 1_000 },
+      clientHeight: { configurable: true, value: 200 },
+      scrollTop: { configurable: true, writable: true, value: 800 },
+      scrollTo: { configurable: true, value: scrollTo },
+    })
+    fireEvent.scroll(scrollPane)
+
+    const started = activity({
+      kind: 'tool',
+      call_id: 'call-1',
+      name: 'read_project_file',
+      status: 'started',
+    })
+    rerender(renderConversation([...responses, started]))
+    expect(scrollTo).toHaveBeenCalledWith({ top: 1_000, behavior: 'auto' })
+
+    scrollPane.scrollTop = 0
+    fireEvent.scroll(scrollPane)
+    scrollTo.mockClear()
+    rerender(
+      renderConversation([
+        ...responses,
+        started,
+        activity({
+          kind: 'tool',
+          call_id: 'call-1',
+          name: 'read_project_file',
+          status: 'completed',
+        }),
+      ])
+    )
+    expect(scrollTo).not.toHaveBeenCalled()
   })
 
   test('hides the immediate thought when end_of_stream is followed by another response', () => {

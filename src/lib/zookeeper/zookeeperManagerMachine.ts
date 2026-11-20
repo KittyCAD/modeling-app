@@ -22,6 +22,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { cleanErrs, isErr } from '@src/lib/trap'
 import { binaryToUuid, isArray, isRecord, uuidv4 } from '@src/lib/utils'
+import { parseZookeeperActivity } from '@src/lib/zookeeper/activityMessages'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 import ms from 'ms'
@@ -800,7 +801,14 @@ export const ZookeeperConversationToMarkdown = (
       }
     }
     for (const response of exchange.responses) {
-      if ('reasoning' in response) {
+      const activity = parseZookeeperActivity(response)
+      let content: string | undefined
+      if (activity) {
+        content =
+          activity.kind === 'tool'
+            ? activity.label || activity.name.replaceAll('_', ' ')
+            : activity.text
+      } else if ('reasoning' in response) {
         if ('content' in response.reasoning) {
           if (
             [
@@ -812,11 +820,7 @@ export const ZookeeperConversationToMarkdown = (
               'deleted_project_file',
             ].includes(response.reasoning.type) === false
           ) {
-            const contentWithoutCode = response.reasoning.content.replace(
-              /```[\s\S]*?```/gm,
-              '~~Code redacted~~'
-            )
-            reason += `${contentWithoutCode}\n\n`
+            content = response.reasoning.content
           }
         } else if ('error' in response.reasoning) {
           reason += `**${response.reasoning.error}**\n\n`
@@ -830,6 +834,9 @@ export const ZookeeperConversationToMarkdown = (
             reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
           }
         }
+      }
+      if (content !== undefined) {
+        reason += `${content.replace(/```[\s\S]*?```/gm, '~~Code redacted~~')}\n\n`
       }
       if ('error' in response) {
         reason += `**${response.error.detail}**\n\n`
