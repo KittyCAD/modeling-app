@@ -5,9 +5,11 @@ import { ActionButton } from '@src/components/ActionButton'
 import { getProjectHeaderButtonClasses } from '@src/components/actionButtonStyles'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
+import type { CloudStorageService } from '@src/lib/cloudProjects/service'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { authService } from '@src/registry/contracts/auth'
+import { routerService } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { PATHS } from '@src/lib/routePaths'
 import { useEffect, useId, useState } from 'react'
@@ -19,45 +21,53 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
   const cloud = registry.optional(cloudStorageService)
   const auth = registry.optional(authService)
   const appUrl = registry.optional(runtimeService)?.current.value.appUrl
-  if (!cloud || !auth?.isLoggedIn.value || !appUrl) return null
+  const pathname = registry.optional(routerService)?.location.value.pathname
 
   const nextProject = registry.optional(projectSessionService)?.currentProject
     .value
   const project = app.projectSignal.value?.projectIORefSignal.value
   let projectId: string | undefined
-  if (nextProject) {
-    if (nextProject.storage?.type === 'cloud')
-      projectId = nextProject.storage.projectId
+  if (
+    pathname?.startsWith(`${PATHS.PROJECT}/`) &&
+    nextProject?.storage?.type === 'cloud'
+  ) {
+    projectId = nextProject.storage.projectId
   } else if (
+    pathname?.startsWith(`${PATHS.FILE}/`) &&
     project?.cloudProjectId &&
-    project.path === cloud.pathFor(project.cloudProjectId)
+    project.path === cloud?.pathFor(project.cloudProjectId)
   ) {
     projectId = project.cloudProjectId
   }
-  if (!projectId) return null
 
-  const url = new URL(
-    `${PATHS.PROJECT}/${encodeURIComponent(projectId)}`,
-    appUrl
-  ).href
+  const sharing =
+    cloud && projectId && appUrl && auth?.isLoggedIn.value
+      ? {
+          projectId,
+          url: new URL(
+            `${PATHS.PROJECT}/${encodeURIComponent(projectId)}`,
+            appUrl
+          ).href,
+          cloud,
+        }
+      : undefined
   return (
-    <Popover className="flex" key={`${url}:${auth.user.value?.id ?? ''}`}>
+    <Popover
+      className="flex"
+      key={sharing ? `${sharing.url}:${auth?.user.value?.id ?? ''}` : undefined}
+    >
       {({ open }) => (
         <>
           <Popover.Button
             type="button"
-            className={getProjectHeaderButtonClasses()}
+            disabled={!sharing}
+            title={sharing ? undefined : 'Open a cloud project to share.'}
+            className={`${getProjectHeaderButtonClasses()} disabled:cursor-default disabled:opacity-50`}
           >
             <CustomIcon name="link" className="h-5 w-5" aria-hidden="true" />
             Share
           </Popover.Button>
-          {open && (
-            <ShareProjectDialog
-              url={url}
-              projectId={projectId}
-              loadAccess={cloud.getProjectAccess}
-            />
-          )}
+          {open && sharing && <ShareProjectDialog {...sharing} />}
         </>
       )}
     </Popover>
@@ -67,28 +77,40 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
 function ShareProjectDialog({
   url,
   projectId,
-  loadAccess,
+  cloud,
 }: {
   url: string
   projectId: string
-  loadAccess: (
-    id: string,
-    signal: AbortSignal
-  ) => Promise<ProjectAccessResponse | undefined>
+  cloud: CloudStorageService
 }) {
   const id = useId()
-  const [access, setAccess] = useState<ProjectAccessResponse | null>()
+  const [permissions, setPermissions] = useState<{
+    access: ProjectAccessResponse
+    organizationName?: string
+  } | null>()
+  const access = permissions?.access
+  const organizationName = permissions?.organizationName
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
-    void loadAccess(projectId, controller.signal)
-      .catch(() => null)
-      .then((result) => {
-        if (!controller.signal.aborted) setAccess(result ?? null)
-      })
+    const { signal } = controller
+    const load = async () => {
+      const access = await cloud
+        .getProjectAccess(projectId, signal)
+        .catch(() => undefined)
+      if (signal.aborted) return
+      setPermissions(access ? { access } : null)
+      if (access?.scope !== 'organization' || !access.organization_id) return
+      const organizationName = await cloud
+        .getOrganizationName(access.organization_id, signal)
+        .catch(() => undefined)
+      if (!signal.aborted && organizationName)
+        setPermissions({ access, organizationName })
+    }
+    void load()
     return () => controller.abort()
-  }, [projectId, loadAccess])
+  }, [projectId, cloud])
 
   const copyLink = async () => {
     try {
@@ -150,9 +172,9 @@ function ShareProjectDialog({
           {access ? (
             <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-2">Who can open this link</dt>
-              <dd>
+              <dd className="min-w-0 break-words">
                 {access.scope === 'organization'
-                  ? 'Members of the owning organization'
+                  ? `Members of ${organizationName ?? 'the owning organization'}`
                   : 'Project owner'}
               </dd>
               <dt className="text-2">Your access</dt>
@@ -160,7 +182,7 @@ function ShareProjectDialog({
             </dl>
           ) : (
             <p role="status" className="mt-2 text-sm text-2">
-              {access === undefined
+              {permissions === undefined
                 ? 'Loading permissions…'
                 : 'Could not load project permissions.'}
             </p>
