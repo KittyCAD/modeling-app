@@ -65,7 +65,7 @@ sketch001 = sketch(on = XZ) {
 
   test(
     'Command palette opens Extrude dialog with variable and optional inputs',
-    { tag: '@localRenderer' },
+    { tag: ['@localRenderer', '@vcr'] },
     async ({ homePage, scene, editor, cmdBar, modelingDialog }) => {
       await homePage.goToModelingScene()
       await scene.settled()

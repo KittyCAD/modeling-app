@@ -31,6 +31,7 @@ import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
+import { installEngineCassette } from '@e2e/playwright/lib/engine-cassette'
 import {
   TEST_SETTINGS,
   geometryOnlyForTestTags,
@@ -689,15 +690,20 @@ const fixturesForWeb = {
       return disposable
     }
 
-    const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise('', userFeatures, mockApiRoutes)
+    const finishCassette = await installEngineCassette(page, testInfo)
+    try {
+      const webApp = new AuthenticatedApp(context, page, testInfo)
+      await webApp.initialise('', userFeatures, mockApiRoutes)
 
-    // Web settings live in OPFS; the localStorage seed alone cannot select
-    // a renderer. Persist the choice before a modeling scene mounts; no reload
-    // is needed on the project library, where no scene has mounted yet.
-    await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
+      // Web settings live in OPFS; the localStorage seed alone cannot select
+      // a renderer. Persist the choice before a modeling scene mounts; no reload
+      // is needed on the project library, where no scene has mounted yet.
+      await applyTestSceneMode(page, geometryOnlyForTestTags(testInfo.tags))
 
-    await use(page)
+      await use(page)
+    } finally {
+      await finishCassette?.()
+    }
   },
 }
 
