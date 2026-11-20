@@ -203,8 +203,7 @@ export const LocalWebGPUSceneView = ({
                 : "Local rendering couldn't start on this device"}
             </h2>
             <p className="text-sm text-2">
-              Switch to streaming to keep working, or reload to try local
-              rendering again.
+              Reload to try local rendering again, or switch to streaming.
             </p>
             <details className="text-xs text-3">
               <summary className="cursor-pointer py-1">Details</summary>
