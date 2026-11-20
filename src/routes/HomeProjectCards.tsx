@@ -15,7 +15,7 @@ import type {
 } from '@src/registry/contracts/homeProjects'
 import type { ProjectLibraryTypeContribution } from '@src/registry/contracts/projectLibraries'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
-import type { HTMLProps } from 'react'
+import { useRef, type HTMLProps, type RefObject } from 'react'
 import { Link } from 'react-router-dom'
 
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
@@ -49,6 +49,7 @@ interface ProjectLibraryPreviewRowProps {
   projectShellEnabled?: boolean
   showCloudSyncUi: boolean
   onCloneToLibrary: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -77,6 +78,27 @@ export function ProjectLibraryHomeSummarySlot({
   ) : null
 }
 
+export function ProjectLibraryHomeContextMenuSlot({
+  library,
+  projects,
+  menuTargetElement,
+  projectLibraryTypes,
+}: {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+  menuTargetElement: RefObject<HTMLElement | null>
+  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
+}) {
+  const Menu = projectLibraryTypes?.get(library.type)?.homeContextMenu
+  return Menu ? (
+    <Menu
+      library={library}
+      projects={projects}
+      menuTargetElement={menuTargetElement}
+    />
+  ) : null
+}
+
 export function ProjectLibraryPreviewRow({
   library,
   projects,
@@ -88,9 +110,11 @@ export function ProjectLibraryPreviewRow({
   projectShellEnabled = false,
   showCloudSyncUi,
   onCloneToLibrary,
+  onShareWithOrganization,
   projectLibraryDrag,
   projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
+  const menuTargetElement = useRef<HTMLDivElement>(null)
   const previewProjects =
     query.length > 0
       ? projects
@@ -112,7 +136,10 @@ export function ProjectLibraryPreviewRow({
       aria-label={`${library.title} library`}
       {...libraryDropTargetProps}
     >
-      <div className="group flex items-center gap-3 rounded-sm border border-transparent p-1 hover:border-primary/30 hover:bg-primary/5">
+      <div
+        ref={menuTargetElement}
+        className="group flex items-center gap-3 rounded-sm border border-transparent p-1 hover:border-primary/30 hover:bg-primary/5"
+      >
         <Link
           to={getProjectLibraryRoute(library)}
           className="flex min-w-0 flex-1 items-center gap-3 !no-underline"
@@ -144,6 +171,12 @@ export function ProjectLibraryPreviewRow({
           projects={libraryProjects}
           projectLibraryTypes={projectLibraryTypes}
         />
+        <ProjectLibraryHomeContextMenuSlot
+          library={library}
+          projects={libraryProjects}
+          menuTargetElement={menuTargetElement}
+          projectLibraryTypes={projectLibraryTypes}
+        />
         <Link
           to={getProjectLibraryRoute(library)}
           className="hidden flex-none select-none text-xs text-chalkboard-70 !no-underline dark:text-chalkboard-30 sm:block"
@@ -171,6 +204,7 @@ export function ProjectLibraryPreviewRow({
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
           onCloneToLibrary={onCloneToLibrary}
+          onShareWithOrganization={onShareWithOrganization}
           projectLibraryDrag={projectLibraryDrag}
           density="compact"
           className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
@@ -195,6 +229,7 @@ interface ProjectCardListProps {
   projectShellEnabled?: boolean
   showCloudSyncUi: boolean
   onCloneToLibrary: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   density?: 'default' | 'compact'
   showDetails?: boolean
@@ -210,6 +245,7 @@ export function ProjectCardList({
   projectShellEnabled = false,
   showCloudSyncUi,
   onCloneToLibrary,
+  onShareWithOrganization,
   projectLibraryDrag,
   density = 'default',
   showDetails = true,
@@ -239,6 +275,7 @@ export function ProjectCardList({
             showCloudSyncUi={showCloudSyncUi}
             showSourceStatusBadges={showSourceStatusBadges}
             onCloneToLibrary={onCloneToLibrary}
+            onShareWithOrganization={onShareWithOrganization}
             {...projectDragProps}
           />
         )

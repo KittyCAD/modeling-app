@@ -12,7 +12,14 @@ import {
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
-import { type HTMLProps, type ReactNode, useEffect, useState } from 'react'
+import {
+  type HTMLProps,
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 
 type ReadWriteProjectState = {
@@ -32,6 +39,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
   libraryHomeSummary?: ReactNode
+  libraryContextMenu?: (target: RefObject<HTMLElement | null>) => ReactNode
   showFreeCloudProjectTrainingDisclosure?: boolean
 }
 
@@ -47,9 +55,11 @@ export function HomeHeader({
   readWriteProjectDir,
   projectSearchKeybinding,
   libraryHomeSummary,
+  libraryContextMenu,
   showFreeCloudProjectTrainingDisclosure = false,
   ...rest
 }: HomeHeaderProps) {
+  const menuTargetElement = useRef<HTMLDivElement>(null)
   const [refreshCoolingDown, setRefreshCoolingDown] = useState(false)
   useEffect(() => {
     if (!refreshCoolingDown) return
@@ -80,7 +90,7 @@ export function HomeHeader({
                 All libraries
               </Link>
             )}
-            <div className="flex items-center gap-3">
+            <div ref={menuTargetElement} className="flex items-center gap-3">
               {library && (
                 <span
                   className="grid h-12 w-12 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20"
@@ -94,6 +104,7 @@ export function HomeHeader({
                 </span>
               )}
               <h1 className="text-3xl font-bold">{title}</h1>
+              {libraryContextMenu?.(menuTargetElement)}
             </div>
           </div>
         </div>

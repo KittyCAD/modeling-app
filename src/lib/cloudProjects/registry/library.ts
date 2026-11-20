@@ -1,7 +1,19 @@
 import { computed, effect, signal } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
 import type { UserOrgInfo } from '@kittycad/lib'
+import {
+  createOrganizationSharingCommand,
+  SHARE_PROJECT_WITH_ORGANIZATION_COMMAND,
+} from '@src/lib/cloudProjects/organizationSharing'
+import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
 import { createElement } from 'react'
 import { CloudLibraryCreateButton } from '@src/lib/cloudProjects/CloudLibraryCreateButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import {
+  canDeleteCloudLibrary,
+  createCloudLibraryDeleteCommand,
+  DELETE_CLOUD_LIBRARY_COMMAND,
+} from '@src/lib/cloudProjects/libraryDeletion'
 import {
   createCloudProjectCommands,
   CREATE_CLOUD_LIBRARY_COMMAND,
@@ -13,6 +25,8 @@ import {
   listRemoteProjectLibraries,
   getCurrentOrganization,
   createRemoteProjectLibrary,
+  deleteRemoteProjectLibrary,
+  type RemoteProjectLibrary,
 } from '@src/lib/cloudProjects/runtime/api'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -27,6 +41,7 @@ import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
 import {
   apiProjectLibraries,
@@ -47,7 +62,7 @@ import {
 } from '@src/registry/contracts/homeSidebar'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
-  type HomeProjectEntryContribution,
+  type HomeProjectEntry,
   homeProjectEntriesFacet,
   homeProjectLoadingLibraryIdsFacet,
   homeProjectSettledLibraryIdsFacet,
@@ -55,6 +70,7 @@ import {
 import {
   projectLibrarySettingDefaultPoliciesFacet,
   projectLibraryTypesFacet,
+  type ProjectLibraryHomeContextMenuProps,
 } from '@src/registry/contracts/projectLibraries'
 import { observations as routerObservations } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
@@ -97,56 +113,83 @@ export default defineFactory({
     const auth = authInputs.authService.current
     const router = routerInputs.routerService.current
     const runtime = runtimeInput.current
-    const libraries = signal<ReturnType<typeof apiProjectLibraries>>([])
+    const remoteLibraries = signal<RemoteProjectLibrary[]>([])
+    const libraries = computed(() => apiProjectLibraries(remoteLibraries.value))
     const organization = signal<UserOrgInfo | undefined>(undefined)
+    const contributedLibraries = computed(() => {
+      const org = organization.value
+      return org
+        ? [
+            ...libraries.value,
+            {
+              id: ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
+              title: `${org.name ?? 'Organization'} projects`,
+              type: CLOUD_PROJECT_LIBRARY_TYPE,
+              source: '/organization',
+              path: 'zoo://organization',
+              organizationId: org.id,
+            },
+          ]
+        : libraries.value
+    })
     const refreshCatalog = signal(0)
     const libraryIds = computed(() => [
       PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-      ...libraries.value.map((library) => library.id),
+      ...contributedLibraries.value.map((library) => library.id),
     ])
     const pathname = computed(() => router.value?.location.value.pathname)
     const settledAccount = signal<
       | {
           id: string | undefined
+          projectsLoaded: boolean
         }
       | undefined
     >(undefined)
     let disposed = false
-    const entries = computed<readonly HomeProjectEntryContribution[]>(() => {
+    const finishProjectListing = (
+      id: string | undefined,
+      projectsLoaded: boolean
+    ) => {
+      if (!disposed && auth.peek()?.user.peek()?.id === id)
+        settledAccount.value = { id, projectsLoaded }
+    }
+    const entries = computed<readonly HomeProjectEntry[]>(() => {
       if (!auth.value?.isLoggedIn.value) return []
       const thumbnails = cloud().thumbnails.value
-      return cloud()
-        .projects.value.filter(
-          (project) =>
-            project.library_id || project.access?.scope !== 'organization'
-        )
-        .map((project) => ({
-          id: `cloud:${project.id}`,
-          source: 'remote',
-          status: 'cloud-only',
-          name: project.id,
-          title: project.title ?? 'Untitled',
-          remoteProjectId: project.id,
-          projectPath: fsZds.join(cloud().root, project.id),
-          watchThumbnail: () => cloud().watchThumbnail(project.id),
-          thumbnail: thumbnails.has(project.id)
-            ? {
-                type: 'remote',
-                url: thumbnails.get(project.id)!,
-              }
-            : undefined,
-          libraryIds: [
-            project.library_id
-              ? apiProjectLibraryId(project.library_id)
+      return cloud().projects.value.map((project) => ({
+        id: `cloud:${project.id}`,
+        source: 'remote',
+        status: 'cloud-only',
+        name: project.id,
+        title: project.title ?? 'Untitled',
+        remoteProjectId: project.id,
+        canShareWithOrganization: Boolean(
+          organization.value &&
+            project.access?.scope === 'personal' &&
+            project.access.can_manage_organization
+        ),
+        projectPath: fsZds.join(cloud().root, project.id),
+        watchThumbnail: () => cloud().watchThumbnail(project.id),
+        thumbnail: thumbnails.has(project.id)
+          ? {
+              type: 'remote',
+              url: thumbnails.get(project.id)!,
+            }
+          : undefined,
+        libraryIds: [
+          project.library_id
+            ? apiProjectLibraryId(project.library_id)
+            : project.access?.scope === 'organization'
+              ? ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID
               : PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-          ],
-          readWriteAccess: project.access?.can_edit ?? true,
-          deleteRemoteOnDelete: true,
-          modified:
-            typeof project.updated_at === 'string'
-              ? Date.parse(project.updated_at)
-              : undefined,
-        }))
+        ],
+        readWriteAccess: project.access?.can_edit ?? true,
+        deleteRemoteOnDelete: true,
+        modified:
+          typeof project.updated_at === 'string'
+            ? Date.parse(project.updated_at)
+            : undefined,
+      }))
     })
     const projectInfo = async (id: string) => {
       const path = await cloud().openProject(id)
@@ -200,10 +243,13 @@ export default defineFactory({
               return new Error('Sign in to refresh cloud projects.')
             const storage = cloud()
             if (storage.projectsLoading.peek()) return
+            const accountId = auth.peek()?.user.peek()?.id
             refreshCatalog.value += 1
             try {
               await storage.listProjects()
+              finishProjectListing(accountId, true)
             } catch (cause) {
+              finishProjectListing(accountId, false)
               return new Error('Could not refresh projects. Try again.', {
                 cause,
               })
@@ -211,6 +257,8 @@ export default defineFactory({
           },
         },
         createProject: {
+          isAvailable: ({ library }) =>
+            library.id !== ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
           run: async ({
             library,
             requestedProjectTitle,
@@ -274,6 +322,8 @@ export default defineFactory({
           },
         },
         duplicateProject: {
+          isAvailable: ({ library }) =>
+            library.id !== ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const title = `${getHomeProjectDisplayName(project)}-copy`
@@ -301,6 +351,8 @@ export default defineFactory({
           },
         },
         cloneProjectTo: {
+          isAvailable: ({ library }) =>
+            library.id !== ORGANIZATION_CLOUD_PROJECT_LIBRARY_ID,
           run: async ({ library, source, project, requestedProjectTitle }) => {
             const archive =
               source.files ??
@@ -341,6 +393,75 @@ export default defineFactory({
           refreshCatalog.value += 1
         },
       })[0]
+    const deletionEnabled = () =>
+      Boolean(
+        auth.value?.isLoggedIn.value &&
+          !isOffline() &&
+          settledAccount.value &&
+          settledAccount.value.projectsLoaded &&
+          settledAccount.value.id === auth.value.user.value?.id &&
+          !cloud().projectsLoading.value
+      )
+    const deleteLibraryCommand = () =>
+      createCloudLibraryDeleteCommand({
+        enabled: deletionEnabled,
+        libraries: () => remoteLibraries.value,
+        projects: () => cloud().projects.value,
+        deleteLibrary: async (id, revision) => {
+          await deleteRemoteProjectLibrary(
+            {
+              enabled: true,
+              token: auth.peek()?.token.peek(),
+              baseUrl: runtime.peek()?.current.peek().apiBaseUrl,
+            },
+            id,
+            revision
+          )
+          refreshCatalog.value += 1
+          const currentRouter = router.peek()
+          if (
+            currentRouter?.location.peek().pathname ===
+            `${PATHS.LIBRARY}/${encodeURIComponent(apiProjectLibraryId(id))}`
+          )
+            void currentRouter.navigate(PATHS.HOME)
+        },
+      })
+    const CloudLibraryHomeContextMenu = ({
+      library,
+      menuTargetElement,
+    }: ProjectLibraryHomeContextMenuProps) => {
+      useSignals()
+      const remote = remoteLibraries.value.find(
+        (remote) => remote.id === getApiProjectLibraryId(library)
+      )
+      if (
+        !deletionEnabled() ||
+        !remote ||
+        !canDeleteCloudLibrary(remote, cloud().projects.value)
+      )
+        return null
+      const onDelete = () => {
+        const commands = commandsInputs.commandSystemService.current.value
+        if (commands)
+          selectCommand(commands, {
+            groupId: 'projects',
+            name: DELETE_CLOUD_LIBRARY_COMMAND,
+            argDefaultValues: { library: remote.id },
+          })
+      }
+      return createElement(ContextMenu, {
+        menuTargetElement,
+        items: [
+          createElement(ContextMenuItem, {
+            key: 'delete-library',
+            icon: 'trash',
+            'data-testid': 'project-library-context-delete',
+            onClick: onDelete,
+            children: 'Delete library',
+          }),
+        ],
+      })
+    }
     const NewLibraryButton = ({ className }: HomeSidebarItemProps) =>
       createElement(CloudLibraryCreateButton, {
         className,
@@ -369,7 +490,7 @@ export default defineFactory({
           const nextScope = JSON.stringify([token, account, baseUrl, loggedIn])
           if (scope !== nextScope) {
             scope = nextScope
-            libraries.value = []
+            remoteLibraries.value = []
             organization.value = undefined
           }
           if (!loggedIn || !token) return
@@ -378,7 +499,7 @@ export default defineFactory({
           void listRemoteProjectLibraries(config, controller.signal)
             .then((result) => {
               if (!controller.signal.aborted && !disposed)
-                libraries.value = apiProjectLibraries(result)
+                remoteLibraries.value = result
             })
             .catch((error: unknown) => {
               if (!controller.signal.aborted && !disposed)
@@ -410,10 +531,10 @@ export default defineFactory({
           if (storage.projectsLoading.peek()) return
           void storage
             .listProjects()
-            .catch(reportRejection)
-            .finally(() => {
-              if (!disposed && auth.peek()?.user.peek()?.id === accountId)
-                settledAccount.value = { id: accountId }
+            .then(() => finishProjectListing(accountId, true))
+            .catch((error: unknown) => {
+              reportRejection(error)
+              finishProjectListing(accountId, false)
             })
         })
         return () => {
@@ -423,8 +544,47 @@ export default defineFactory({
         }
       },
       items: [
+        contribute(
+          commandsFacet,
+          () =>
+            createOrganizationSharingCommand({
+              enabled: () =>
+                Boolean(auth.value?.isLoggedIn.value && !isOffline()),
+              organization: () => organization.value,
+              projects: () => entries.value,
+              shareProject: (id) => cloud().shareProjectWithOrganization(id),
+            }),
+          { key: 'cloud-projects.share-with-organization' }
+        ),
+        contribute(projectExplorerProjectMenuItemsFacet, () => ({
+          id: 'cloud-projects.share-with-organization',
+          order: 20,
+          label: 'Share with organization',
+          dataTestId: 'project-sidebar-share-with-organization',
+          isVisible: ({ projectPath }) =>
+            entries.value.some(
+              (project) =>
+                project.projectPath === projectPath &&
+                project.canShareWithOrganization
+            ),
+          onSelect: ({ projectPath }) => {
+            const project = entries.value.find(
+              (project) => project.projectPath === projectPath
+            )
+            const commands = commandsInputs.commandSystemService.current.value
+            if (project && commands)
+              selectCommand(commands, {
+                groupId: 'projects',
+                name: SHARE_PROJECT_WITH_ORGANIZATION_COMMAND,
+                argDefaultValues: { project: project.id },
+              })
+          },
+        })),
         contribute(commandsFacet, newLibraryCommand, {
           key: 'cloud-projects.create-library',
+        }),
+        contribute(commandsFacet, deleteLibraryCommand, {
+          key: 'cloud-projects.delete-library',
         }),
         contribute(homeSidebarItemsFacet, () => ({
           id: 'cloud-projects.create-library',
@@ -465,7 +625,8 @@ export default defineFactory({
         ),
         contribute(projectLibraryTypesFacet, () => ({
           ..._projectLibraryTypesContribution,
-          libraries: libraries.value,
+          libraries: contributedLibraries.value,
+          homeContextMenu: CloudLibraryHomeContextMenu,
         })),
       ],
       dispose: () => {

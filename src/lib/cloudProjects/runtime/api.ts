@@ -109,6 +109,7 @@ export interface RemoteProjectLibrary {
   org_id?: string
   user_id?: string
   can_manage?: boolean
+  revision?: string
 }
 
 export async function getCurrentOrganization(
@@ -140,6 +141,20 @@ export function createRemoteProjectLibrary(
   )
 }
 
+export function deleteRemoteProjectLibrary(
+  config: CloudApiConfig,
+  id: string,
+  expectedRevision: string
+) {
+  return cloudCall(config, (client) =>
+    projects.delete_project_library({
+      client,
+      id,
+      expected_revision: expectedRevision,
+    })
+  )
+}
+
 export async function listRemoteProjectLibraries(
   config: CloudApiConfig,
   signal?: AbortSignal
@@ -165,6 +180,15 @@ export async function listRemoteProjectLibraries(
   return [
     ...new Map(libraries.map((library) => [library.id, library])).values(),
   ]
+}
+
+export function shareRemoteProjectWithOrganization(
+  config: CloudApiConfig,
+  id: string
+): Promise<RemoteProject> {
+  return cloudCall(config, (client) =>
+    projects.update_project_organization({ client, id })
+  )
 }
 
 export async function getRemoteProject(

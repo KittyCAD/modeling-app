@@ -46,6 +46,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   showDetails?: boolean
   showSourceStatusBadges?: boolean
   onCloneToLibrary?: (project: HomeProjectEntry) => void
+  onShareWithOrganization?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -159,6 +160,7 @@ function AppProjectCard({
   showDetails = true,
   showSourceStatusBadges = true,
   onCloneToLibrary,
+  onShareWithOrganization,
   ...props
 }: AppProjectCardProps) {
   useSignals()
@@ -566,6 +568,19 @@ function AppProjectCard({
         <ContextMenu
           menuTargetElement={menuTargetElement}
           items={[
+            ...(project.canShareWithOrganization && onShareWithOrganization
+              ? [
+                  <ContextMenuItem
+                    key="share-with-organization"
+                    icon="share"
+                    disabled={isBusy}
+                    data-testid="project-card-context-share-with-organization"
+                    onClick={() => onShareWithOrganization(project)}
+                  >
+                    Share with organization
+                  </ContextMenuItem>,
+                ]
+              : []),
             <ContextMenuItem
               key="duplicate"
               icon="clone"
