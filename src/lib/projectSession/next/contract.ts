@@ -19,7 +19,7 @@ export interface ProjectSourceSnapshot {
 
 /** Supplies execution consumers with open-document text in preference to storage, using the project opening captured at the start of `capture`. */
 export interface ProjectSourcesService {
-  /** `createKclExecution` uses this through its capability revision; it changes for live document text/paths and project file-tree replacement. */
+  /** Changes when the set of open documents, their text or paths, or the project's file tree changes; consumers can use it to request a fresh capture. */
   readonly revision: ReadonlySignal<unknown>
   capture: (request: {
     /** Explicit run input takes precedence over a live document at the same source path. */
