@@ -2834,7 +2834,6 @@ dependencies = [
  "console_error_panic_hook",
  "data-encoding",
  "futures",
- "getrandom 0.2.17",
  "getrandom 0.3.4",
  "gloo-utils",
  "js-sys",
