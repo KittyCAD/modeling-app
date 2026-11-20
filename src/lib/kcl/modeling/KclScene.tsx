@@ -1,4 +1,5 @@
 import type { KclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
+import { KclViewControls } from '@src/lib/kcl/modeling/KclViewControls'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import type { Executor } from '@src/lib/executors/registry/contract'
@@ -23,6 +24,7 @@ export function KclScene({
   }
 }) {
   useSignals()
+  const viewport = useRef<HTMLDivElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const { session, viewExecution } = context
   const state = session.state.value
@@ -36,7 +38,7 @@ export function KclScene({
     if (container.current) return session.attach(container.current)
   }, [session])
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div ref={viewport} className="relative h-full w-full overflow-hidden">
       <div ref={container} className="absolute inset-0" />
       {resource?.localHost && preferences && (
         <LocalWebGPUSceneView
@@ -50,8 +52,9 @@ export function KclScene({
           defaultPlaneVisibility={hiddenPlanes}
         />
       )}
+      {resource && <KclViewControls resource={resource} target={viewport} />}
       {selection && (
-        <div className="absolute bottom-4 right-4 z-40 flex items-center gap-2 rounded bg-2 p-2 text-2">
+        <div className="absolute bottom-4 right-28 z-40 flex items-center gap-2 rounded bg-2 p-2 text-2">
           <output aria-label="Scene selection">{selectedCount} selected</output>
           <button
             type="button"
