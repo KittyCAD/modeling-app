@@ -44,7 +44,12 @@ import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import { createCameraInputApplier } from '@src/lib/kcl/scene/applyPreferences'
+import {
+  observeViewportSize,
+  observeViewportDensity,
+  resizeSceneCanvas,
+} from '@src/lib/kcl/scene/viewport'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
@@ -90,15 +95,13 @@ export const ClientSideScene = ({
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
-  // Listen for changes to the camera controls setting
-  // and update the client-side scene's controls accordingly.
+  const applyCameraInput = useMemo(
+    () => createCameraInputApplier(sceneInfra.camControls),
+    [sceneInfra.camControls]
+  )
   useEffect(() => {
-    sceneInfra.camControls.interactionGuards =
-      cameraMouseDragGuards[cameraControls]
-  }, [cameraControls, sceneInfra.camControls])
-  useEffect(() => {
-    sceneInfra.camControls.initTouchControls(enableTouchControls)
-  }, [enableTouchControls, sceneInfra.camControls])
+    applyCameraInput({ mouseControls: cameraControls, enableTouchControls })
+  }, [applyCameraInput, cameraControls, enableTouchControls])
   useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []
@@ -121,32 +124,9 @@ export const ClientSideScene = ({
     const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
     container.addEventListener('mouseup', onMouseUp)
 
-    // Resizing the canvas and labels writes layout. Defer those writes until
-    // the next frame so they cannot trigger another resize in this delivery.
-    let resizeFrame: number | undefined
-    const observer = new ResizeObserver(() => {
-      if (resizeFrame !== undefined) return
-      resizeFrame = window.requestAnimationFrame(() => {
-        resizeFrame = undefined
-        sceneInfra.onCanvasResized()
-        sceneInfra.camControls.onWindowResize()
-      })
-    })
-    observer.observe(container)
-
-    // Detect dpr changes
-    let media = window.matchMedia(
-      `(resolution: ${window.devicePixelRatio}dppx)`
-    )
-    function handleChange() {
-      media.removeEventListener('change', handleChange)
-      media = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
-      media.addEventListener('change', handleChange)
-
-      sceneInfra.onCanvasResized()
-      sceneInfra.camControls.onWindowResize()
-    }
-    media.addEventListener('change', handleChange)
+    const resizeCanvas = () => resizeSceneCanvas(sceneInfra)
+    const stopSize = observeViewportSize(container, resizeCanvas)
+    const stopDensity = observeViewportDensity(resizeCanvas)
 
     // send
     sceneInfra.setSend(send)
@@ -159,9 +139,8 @@ export const ClientSideScene = ({
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
       cleanupSketchSolveGroup(sceneInfra)
 
-      observer.disconnect()
-      if (resizeFrame !== undefined) window.cancelAnimationFrame(resizeFrame)
-      media.removeEventListener('change', handleChange)
+      stopSize()
+      stopDensity()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

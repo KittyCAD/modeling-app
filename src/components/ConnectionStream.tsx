@@ -2,6 +2,7 @@ import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
+import { streamVideoObjectFit } from '@src/lib/kcl/scene/viewport'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
@@ -104,9 +105,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     abnormalCloseRetries,
   } = useTryConnect({ geometryOnly: isLocalRendering })
   const safariObjectFitClass = useMemo(() => {
-    // on safari we want to apply object-fit: fill to fix video resize bug
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-    return isSafari ? ' object-fill' : ''
+    return streamVideoObjectFit(navigator.userAgent) === 'fill'
+      ? ' object-fill'
+      : ''
   }, [])
 
   const reportEngineDisconnect = useCallback(

@@ -38,6 +38,20 @@ uses those model generations to avoid displaying geometry with an older graph.
 `SceneExecutionEvents` in this module defines the execution notifications that
 presentations consume.
 
+## Shared viewport behavior
+
+The legacy file route and Modeling editor views use the same canvas resize,
+pixel-density, streamed-video sizing, camera-input, and overlay-theme helpers.
+[`viewport.ts`](viewport.ts) owns the resize observers and browser sizing rule;
+[`applyPreferences.ts`](applyPreferences.ts) applies mouse/touch preferences and
+sketch foreground themes.
+
+The hosts retain their lifecycle and application policy. `ClientSideScene` observes
+its container size, while Modeling sessions own pane resizing. The legacy route
+keeps its sketch-mode projection guard and segment-color updates; Modeling views
+keep their per-connection projection and render-resume callbacks. Engine reconnect
+and idle scheduling remain outside these helpers.
+
 ## KCL refresh policy
 
 KCL extensions contribute refresh inputs through
