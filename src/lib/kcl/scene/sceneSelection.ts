@@ -1,7 +1,7 @@
 import { effect } from '@preact/signals-core'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import type { KclRuntime } from '@src/lib/kcl/runtime'
+import type { KclRuntime } from '@src/lib/kcl/execution/runtime'
 import { SceneExecutionEvents } from '@src/lib/kcl/scene/execution'
 import { createSceneSelection } from '@src/lib/scene/selection'
 import {

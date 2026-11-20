@@ -10,7 +10,7 @@ import {
   ContextMenuItem,
   ContextMenuDivider,
 } from '@src/components/ContextMenu'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type { KclSceneResource } from '@src/lib/kcl/scene/open'
 import type { ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 

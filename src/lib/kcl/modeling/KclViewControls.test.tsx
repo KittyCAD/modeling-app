@@ -9,13 +9,13 @@ vi.mock('@src/components/gizmo/GizmoView', () => ({
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { KclViewControls } from '@src/lib/kcl/KclViewControls'
+import { KclViewControls } from '@src/lib/kcl/modeling/KclViewControls'
 import {
   createTestKclScene,
   createTestSettings,
 } from '@src/lib/kcl/testFixtures'
 import { createSceneSelection } from '@src/lib/scene/selection'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type { KclSceneResource } from '@src/lib/kcl/scene/open'
 import { Themes } from '@src/lib/theme'
 
 function setup(id: string) {

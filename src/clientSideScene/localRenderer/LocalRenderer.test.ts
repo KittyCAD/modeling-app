@@ -597,6 +597,7 @@ describe('local GLB loading', () => {
     const claimInitialCameraFrame = vi.fn(() => false)
     const f = fixture(
       new PerspectiveCamera(45, 1, 0.1, 10000),
+      undefined,
       claimInitialCameraFrame
     )
     try {
