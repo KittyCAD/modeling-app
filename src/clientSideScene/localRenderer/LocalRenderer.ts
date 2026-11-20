@@ -32,6 +32,7 @@ import {
   type SceneExecutionDoneDetail,
 } from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -172,6 +173,8 @@ type AmbientOcclusionPipeline = {
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
 }
+/** What three.js reports for a lost WebGPU device or WebGL context. */
+type DeviceLostInfo = Parameters<WebGPURenderer['onDeviceLost']>[0]
 type DisposableGpuDevice = {
   destroy: () => void
 }
@@ -816,16 +819,30 @@ export class LocalRenderer {
     if (this.disposed) return
     console.error('[LocalRenderer] initialization failed', error)
     reportRejection(error)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
     this.onRendererFailed?.({
       kind: 'initialization',
       message: error instanceof Error ? error.message : String(error),
     })
   }
 
-  private readonly handleDeviceLost = (info: { message: string }) => {
+  private readonly handleDeviceLost = (info: DeviceLostInfo) => {
     // three.js ignores the loss that dispose() causes, but the scene may be gone.
     if (this.disposed) return
     console.error('[LocalRenderer] GPU device lost', info)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: lost',
+      error: info.message,
+      dedupeKey: 'LocalRenderer:lost',
+      extra: { kind: 'lost', api: info.api, reason: info.reason },
+    })
     // Stop rendering, so a later execution can't save a blank project thumbnail.
     this.dispose()
     this.onRendererFailed?.({ kind: 'lost', message: info.message })

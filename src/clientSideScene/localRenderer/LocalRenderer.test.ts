@@ -27,12 +27,17 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({ settings: { modeling: { base_unit: 'mm' } } }),
 }))
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock('@src/lib/clientErrors', () => ({
+  ClientErrorCode: { LocalRendererFailure: 'local_renderer_failure' },
+  reportClientError: vi.fn(async () => {}),
+}))
 vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn(async () => {}),
 }))
 
 import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
+import { reportClientError } from '@src/lib/clientErrors'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Artifact } from '@src/lang/wasm'
 
@@ -554,13 +559,13 @@ describe('local renderer GPU failures', () => {
     const prototype = LocalRenderer.prototype as unknown as RendererInternals
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(reportClientError).mockClear()
   })
   afterEach(() => vi.restoreAllMocks())
 
   it('reports a renderer that cannot start', async () => {
-    vi.spyOn(WebGPURenderer.prototype, 'init').mockRejectedValue(
-      new Error('Error creating WebGL context.')
-    )
+    const error = new Error('Error creating WebGL context.')
+    vi.spyOn(WebGPURenderer.prototype, 'init').mockRejectedValue(error)
     const f = fixture()
     await vi.waitFor(() =>
       expect(f.onRendererFailed).toHaveBeenCalledWith({
@@ -568,6 +573,13 @@ describe('local renderer GPU failures', () => {
         message: 'Error creating WebGL context.',
       })
     )
+    expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
+      code: 'local_renderer_failure',
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
     f.renderer.dispose()
   })
 
@@ -581,7 +593,7 @@ describe('local renderer GPU failures', () => {
     const lost = {
       api: 'WebGL' as const,
       message: 'Context lost',
-      reason: null,
+      reason: 'unknown',
       originalEvent: null,
     }
     const dispose = vi.spyOn(f.renderer, 'dispose')
@@ -590,14 +602,22 @@ describe('local renderer GPU failures', () => {
       kind: 'lost',
       message: 'Context lost',
     })
-    // A lost renderer stops, so it can't capture a blank thumbnail.
+    expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
+      code: 'local_renderer_failure',
+      message: 'Local renderer failed: lost',
+      error: 'Context lost',
+      dedupeKey: 'LocalRenderer:lost',
+      extra: { kind: 'lost', api: 'WebGL', reason: 'unknown' },
+    })
     // three.js's own handler still runs, so it skips work on the lost device.
     expect(Reflect.get(created, '_isDeviceLost')).toBe(true)
+    // A lost renderer stops, so it can't capture a blank thumbnail.
     expect(dispose).toHaveBeenCalledOnce()
     expect(f.renderer.readFrame(() => 'frame')).toBeUndefined()
     f.renderer.dispose()
     created.onDeviceLost(lost)
     expect(f.onRendererFailed).toHaveBeenCalledOnce()
+    expect(reportClientError).toHaveBeenCalledOnce()
   })
 })
 
