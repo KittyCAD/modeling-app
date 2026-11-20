@@ -23,6 +23,7 @@ import {
 } from '@src/lib/kcl/scene/connection'
 import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
 import { isErr } from '@src/lib/trap'
+import { isRecord } from '@src/lib/utils'
 import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
@@ -192,6 +193,9 @@ function watchConnection(
 ) {
   const ownedConnection = manager.connection
   const disconnect = (event: Event) => {
+    const detail: unknown =
+      event instanceof CustomEvent ? event.detail : undefined
+    const close = isRecord(detail) ? detail : {}
     if (!isClosed())
       onDisconnect(
         new SceneDisconnected(
@@ -199,6 +203,8 @@ function watchConnection(
           !manager.lastConnectionError?.terminal,
           {
             eventType: event.type,
+            websocketCloseCode: close.code,
+            reconnectRequested: close.reconnectRequested === true,
             connectionId: ownedConnection?.id,
             modelingApiCallId: ownedConnection?.apiCallId,
             pendingCommandCount: Object.keys(manager.pendingCommands).length,

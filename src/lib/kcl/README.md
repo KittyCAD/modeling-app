@@ -52,6 +52,18 @@ runtime are ready. Each attempt owns its callbacks, so late failures cannot
 replace a newer connection. KCL execution errors are reported separately from
 connection failures.
 
+Unexpected transport closes request automatic recovery, with a bounded retry
+budget shared with the legacy WebSocket hook. Terminal failures wait for manual
+retry. Browser connectivity and focus events recover only the affected session;
+they do not reopen healthy sibling views. Disconnect reports include a view ID,
+file, renderer, and the captured connection's diagnostic state.
+
+Streamed sessions honor the stream idle timeout. Input and execution postpone
+idling; activity resumes a paused scene. The session retains its last synchronized
+camera pose across idle and transient reconnects, restoring it after the next
+execution instead of framing the model again. Closing the view discards that pose.
+Local rendering is exempt from idle teardown.
+
 ## Rendering
 
 Both presentations use the application's `ConnectionManager` and camera controls:

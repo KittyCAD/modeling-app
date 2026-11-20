@@ -235,7 +235,7 @@ it('ignores late resize failures from a retired connection', async () => {
 })
 
 it.each(['local', 'streamed'] as const)(
-  'applies the idle timeout only to %s streamed sessions and restores the camera on activity',
+  'handles the idle timeout and camera restoration for %s scenes',
   async (presentation) => {
     vi.useFakeTimers()
     const first = scene(presentation),
@@ -387,6 +387,35 @@ it('bounds repeated startup failures after a transport loss until the user retri
     expect(session.state.peek().type).toBe('error')
     session.reconnect()
     await vi.advanceTimersByTimeAsync(0)
+    expect(open).toHaveBeenCalledTimes(5)
+  } finally {
+    session.dispose()
+  }
+})
+
+it('does not spend the failure retry budget on requested connection rebuilds', async () => {
+  vi.useFakeTimers()
+  let disconnect: (error: Error) => void = () => {}
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockImplementation(async (_size, _signal, closed) => {
+      disconnect = closed
+      return scene()
+    })
+  const session = createKclSession(open)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    for (let i = 0; i < 4; i++) {
+      disconnect(
+        new SceneDisconnected('Requested rebuild', true, {
+          reconnectRequested: true,
+        })
+      )
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(session.state.peek().type).toBe('ready')
+      await session.execute(snapshot, runSignal())
+    }
     expect(open).toHaveBeenCalledTimes(5)
   } finally {
     session.dispose()
