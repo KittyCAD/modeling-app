@@ -839,9 +839,13 @@ export class LocalRenderer {
     void reportClientError({
       code: ClientErrorCode.LocalRendererFailure,
       message: 'Local renderer failed: lost',
-      error: info.message,
       dedupeKey: 'LocalRenderer:lost',
-      extra: { kind: 'lost', api: info.api, reason: info.reason },
+      extra: {
+        kind: 'lost',
+        api: info.api,
+        reason: info.reason,
+        message: info.message,
+      },
     })
     // Stop rendering, so a later execution can't save a blank project thumbnail.
     this.dispose()

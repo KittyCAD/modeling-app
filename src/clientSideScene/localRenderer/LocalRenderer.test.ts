@@ -605,9 +605,13 @@ describe('local renderer GPU failures', () => {
     expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
       code: 'local_renderer_failure',
       message: 'Local renderer failed: lost',
-      error: 'Context lost',
       dedupeKey: 'LocalRenderer:lost',
-      extra: { kind: 'lost', api: 'WebGL', reason: 'unknown' },
+      extra: {
+        kind: 'lost',
+        api: 'WebGL',
+        reason: 'unknown',
+        message: 'Context lost',
+      },
     })
     // three.js's own handler still runs, so it skips work on the lost device.
     expect(Reflect.get(created, '_isDeviceLost')).toBe(true)
