@@ -1,6 +1,7 @@
 import {
   type Camera,
   Color,
+  DepthTexture,
   DoubleSide,
   type Material,
   Mesh,
@@ -18,6 +19,7 @@ import {
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
+import type { PickTiming } from '@src/clientSideScene/localRenderer/pickBenchmark'
 import {
   colorizePickBuffer,
   type PickBufferSnapshot,
@@ -260,13 +262,16 @@ export class IntegerIdPicker {
     streamWidth,
     streamHeight,
     camera,
+    onTiming,
   }: {
     x: number
     y: number
     streamWidth: number
     streamHeight: number
     camera: Camera
+    onTiming?: (timing: PickTiming) => void
   }): Promise<IntegerIdPickResult | null> {
+    const start = onTiming ? performance.now() : 0
     if (
       streamWidth <= 0 ||
       streamHeight <= 0 ||
@@ -296,10 +301,13 @@ export class IntegerIdPicker {
     const version = this.version
     const targetById = this.targetById
 
-    if (this.dirty) {
+    const rendered = this.dirty
+    const renderStart = onTiming ? performance.now() : 0
+    if (rendered) {
       this.renderIdBuffer(target, camera)
     }
 
+    const readbackStart = onTiming ? performance.now() : 0
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       this.growthPass?.target ?? target,
       readbackPixelX,
@@ -309,10 +317,17 @@ export class IntegerIdPicker {
       1,
       1
     )
+    const readbackEnd = onTiming ? performance.now() : 0
     const selectionId = selectionTargetId(
       decodeSelectionId(pixels, 0, this.packsIdsIntoColor)
     )
     const stale = version !== this.version
+    onTiming?.({
+      rendered,
+      submitMs: rendered ? readbackStart - renderStart : 0,
+      readbackMs: readbackEnd - readbackStart,
+      totalMs: performance.now() - start,
+    })
 
     return {
       target: stale ? null : (targetById[selectionId] ?? null),
@@ -395,6 +410,7 @@ export class IntegerIdPicker {
         minFilter: NearestFilter,
         magFilter: NearestFilter,
         depthBuffer: true,
+        depthTexture: new DepthTexture(width, height),
         stencilBuffer: false,
         samples: 0,
       })
@@ -439,7 +455,7 @@ export class IntegerIdPicker {
     this.renderer.render(this.scene, camera)
     if (this.growthPass) {
       const bounds = this.renderer.domElement.getBoundingClientRect()
-      this.growthPass.render(bounds.width, bounds.height)
+      this.growthPass.render(bounds.width, bounds.height, camera)
     }
     this.renderer.setRenderTarget(previousTarget)
     this.renderer.autoClear = previousAutoClear

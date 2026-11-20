@@ -25,6 +25,12 @@ import { createRegionMeshes } from '@src/clientSideScene/localRenderer/sketchReg
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
+import {
+  PICK_BENCHMARK_SAMPLE_COUNT,
+  type PickBenchmarkResult,
+  type PickTiming,
+  summarizePickTimings,
+} from '@src/clientSideScene/localRenderer/pickBenchmark'
 import { PickBufferDebugView } from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
@@ -54,6 +60,7 @@ import {
   PerspectiveCamera,
   Scene,
   Texture,
+  Vector2,
   Vector3,
 } from 'three'
 import {
@@ -196,7 +203,8 @@ export class LocalRenderer {
   private disposed = false
   private pickBufferDebugView: PickBufferDebugView | null = null
   private pickBufferDebugGeneration = 0
-  private pickBufferDebugRefreshing = false
+  private pickBufferDebugRead: Promise<void> | null = null
+  private pickBenchmarkRunning = false
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
   private selectedEntityIds: string[] = []
@@ -955,35 +963,160 @@ export class LocalRenderer {
     this.pickBufferDebugView = null
   }
 
-  private refreshPickBufferDebug() {
-    if (!this.pickBufferDebugView) return
+  async runPickBenchmark(): Promise<PickBenchmarkResult | Error> {
+    if (this.pickBenchmarkRunning) {
+      return new Error('Benchmark already running.')
+    }
+    const { gpu, camera } = this
+    if (
+      this.disposed ||
+      !gpu ||
+      !camera ||
+      !this.currentModel ||
+      !this.isLoadedSceneCurrent() ||
+      this.kclManager.isExecuting
+    ) {
+      return new Error('No current local model is available to benchmark.')
+    }
+
+    const { renderer, integerIdPicker: picker } = gpu
+    const { width, height } = renderer.domElement.getBoundingClientRect()
+    if (width <= 0 || height <= 0) {
+      return new Error('No local viewport is available to benchmark.')
+    }
+    const executionVersion = this.executionVersion
+    const bufferSize = renderer.getDrawingBufferSize(new Vector2())
+    const currentBufferSize = new Vector2()
+    const worldMatrix = camera.matrixWorld.clone()
+    const projectionMatrix = camera.projectionMatrix.clone()
+    const point = {
+      x: width / 2,
+      y: height / 2,
+      streamWidth: width,
+      streamHeight: height,
+      camera,
+    }
+    const viewChanged = () => {
+      if (
+        this.disposed ||
+        this.gpu !== gpu ||
+        this.camera !== camera ||
+        this.executionVersion !== executionVersion ||
+        this.kclManager.isExecuting ||
+        !this.isLoadedSceneCurrent()
+      ) {
+        return true
+      }
+      const rect = renderer.domElement.getBoundingClientRect()
+      return (
+        rect.width !== width ||
+        rect.height !== height ||
+        !renderer.getDrawingBufferSize(currentBufferSize).equals(bufferSize) ||
+        !camera.matrixWorld.equals(worldMatrix) ||
+        !camera.projectionMatrix.equals(projectionMatrix)
+      )
+    }
+    const sample = async (count: number, fresh?: boolean) => {
+      const timings: PickTiming[] = []
+      for (let i = 0; i < count; i++) {
+        if (viewChanged()) {
+          return new Error('Scene or viewport changed during the benchmark.')
+        }
+        if (fresh) {
+          picker.invalidate()
+        }
+        const result = await picker.pick({
+          ...point,
+          onTiming: (timing) => timings.push(timing),
+        })
+        if (
+          !result ||
+          result.stale ||
+          (fresh !== undefined && timings[i]?.rendered !== fresh)
+        ) {
+          return new Error('Picking targets changed during the benchmark.')
+        }
+      }
+      return timings
+    }
+
+    this.pickBenchmarkRunning = true
     this.pickBufferDebugGeneration++
-    if (this.pickBufferDebugRefreshing) return
-    this.pickBufferDebugRefreshing = true
-    void this.readPickBufferDebug().catch(reportRejection)
+    try {
+      await this.pickBufferDebugRead
+      picker.invalidate()
+      const warmup = await sample(5)
+      if (warmup instanceof Error) {
+        return warmup
+      }
+      const cached = await sample(PICK_BENCHMARK_SAMPLE_COUNT, false)
+      if (cached instanceof Error) {
+        return cached
+      }
+      const fresh = await sample(PICK_BENCHMARK_SAMPLE_COUNT, true)
+      if (fresh instanceof Error) {
+        return fresh
+      }
+      if (viewChanged()) {
+        return new Error('Scene or viewport changed during the benchmark.')
+      }
+      return {
+        backend: renderer.backend.constructor.name,
+        width,
+        height,
+        bufferWidth: bufferSize.x,
+        bufferHeight: bufferSize.y,
+        rows: [
+          summarizePickTimings('Cached', cached),
+          summarizePickTimings('Fresh', fresh),
+        ],
+      }
+    } catch (error) {
+      return error instanceof Error
+        ? error
+        : new Error('Picker benchmark failed.')
+    } finally {
+      this.pickBenchmarkRunning = false
+      this.refreshPickBufferDebug()
+    }
+  }
+
+  private refreshPickBufferDebug() {
+    if (!this.pickBufferDebugView || this.pickBenchmarkRunning) {
+      return
+    }
+    this.pickBufferDebugGeneration++
+    if (this.pickBufferDebugRead) {
+      return
+    }
+    this.pickBufferDebugRead = this.readPickBufferDebug()
+      .catch(reportRejection)
+      .finally(() => {
+        this.pickBufferDebugRead = null
+      })
   }
 
   private async readPickBufferDebug() {
-    try {
-      while (this.pickBufferDebugView && !this.disposed) {
-        const generation = this.pickBufferDebugGeneration
-        const camera = this.camera
-        const picker = this.gpu?.integerIdPicker
-        const snapshot =
-          camera &&
-          picker &&
-          this.currentModel &&
-          this.isLoadedSceneCurrent() &&
-          !this.kclManager.isExecuting
-            ? await picker.captureDebugBuffer(camera)
-            : null
-        if (generation !== this.pickBufferDebugGeneration) continue
-        if (snapshot) this.pickBufferDebugView?.update(snapshot)
-        else this.pickBufferDebugView?.clear()
-        break
-      }
-    } finally {
-      this.pickBufferDebugRefreshing = false
+    while (
+      this.pickBufferDebugView &&
+      !this.disposed &&
+      !this.pickBenchmarkRunning
+    ) {
+      const generation = this.pickBufferDebugGeneration
+      const camera = this.camera
+      const picker = this.gpu?.integerIdPicker
+      const snapshot =
+        camera &&
+        picker &&
+        this.currentModel &&
+        this.isLoadedSceneCurrent() &&
+        !this.kclManager.isExecuting
+          ? await picker.captureDebugBuffer(camera)
+          : null
+      if (generation !== this.pickBufferDebugGeneration) continue
+      if (snapshot) this.pickBufferDebugView?.update(snapshot)
+      else this.pickBufferDebugView?.clear()
+      break
     }
   }
 

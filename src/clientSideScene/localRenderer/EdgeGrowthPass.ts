@@ -1,13 +1,21 @@
-import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
+import {
+  LOCAL_WEBGPU_EDGE_PICK_MAX_RADIUS_PX,
+  LOCAL_WEBGPU_EDGE_PICK_MIN_RADIUS_PX,
+  LOCAL_WEBGPU_EDGE_PICK_ORTHO_CURVE,
+  LOCAL_WEBGPU_EDGE_PICK_PERSPECTIVE_CURVE,
+} from '@src/clientSideScene/localRenderer/config'
 import {
   encodeId,
   isBodyEdge,
   isSketchLine,
 } from '@src/clientSideScene/localRenderer/selectionId'
 import {
+  type Camera,
   NearestFilter,
   NoBlending,
   NoColorSpace,
+  OrthographicCamera,
+  PerspectiveCamera,
   RedIntegerFormat,
   UnsignedByteType,
   UnsignedIntType,
@@ -19,7 +27,11 @@ import {
   int,
   ivec2,
   Loop,
+  orthographicDepthToViewZ,
+  perspectiveDepthToViewZ,
+  pow,
   round,
+  select,
   textureLoad,
   textureSize,
   uint,
@@ -35,6 +47,11 @@ import {
   type Node,
   type WebGPURenderer,
 } from 'three/webgpu'
+
+const REFERENCE_SCREEN_SCALE_PX_PER_MM = 8
+const REFERENCE_GROWTH_RADIUS_PX = 4
+const ORTHO_REFERENCE_DEPTH_METERS = 0.025
+const ORTHO_DEPTH_FALLOFF = 0.5
 
 /* This runs shaders on the picker's render to grow the edges' pickable area
  * along the viewport. There are numerous problems trying to use the 3D render
@@ -60,6 +77,10 @@ export class EdgeGrowthPass {
   private readonly radiusY = uniform(0, 'int')
   private readonly pixelWidth = uniform(1)
   private readonly pixelHeight = uniform(1)
+  private readonly projectedMillimeter = uniform(1)
+  private readonly cameraNear = uniform(0.01)
+  private readonly cameraFar = uniform(1000)
+  private readonly isPerspective = uniform(true)
 
   constructor(
     private readonly renderer: WebGPURenderer,
@@ -115,6 +136,7 @@ export class EdgeGrowthPass {
       const point = ivec2(uv().mul(vec2(size)))
       const bestId = uint(0).toVar()
       const bestDx = int(256).toVar()
+      const bestSignedDx = int(0).toVar()
       Loop(
         { start: this.radiusX.negate(), end: this.radiusX.add(1) },
         ({ i }) => {
@@ -127,14 +149,17 @@ export class EdgeGrowthPass {
               If(isBodyEdge(candidate).and(dx.lessThan(bestDx)), () => {
                 bestId.assign(candidate)
                 bestDx.assign(dx)
+                bestSignedDx.assign(i)
               })
             }
           )
         }
       )
-      // By stuffing distance into the alpha channel, search is capped at 255
-      // pixels. At 12px radius, a very high DPR would be needed to break this
-      return vec4(encodeId(bestId), float(bestDx).min(255).div(255))
+      return vec4(
+        encodeId(bestId),
+        // store the signed distance as unsigned 8bit
+        float(bestSignedDx.add(127)).div(255)
+      )
     })
 
     const grownPass = Fn(() => {
@@ -145,7 +170,9 @@ export class EdgeGrowthPass {
       const centerId = rawSample(point)
       const bestId = centerId.toVar()
       // Avoid a square root by just keeping distance squared
-      const bestDistance = float(LOCAL_EDGE_PICK_RADIUS_PX ** 2).toVar()
+      const bestDistance = float(
+        LOCAL_WEBGPU_EDGE_PICK_MAX_RADIUS_PX ** 2
+      ).toVar()
       // Don't search for an edge if a sketch line is at the center
       If(isSketchLine(centerId).not(), () => {
         Loop(
@@ -167,13 +194,71 @@ export class EdgeGrowthPass {
                 // when searching horizontally and add the vertical component
                 // to get the total distance (keep the distance squared to
                 // avoid a sqrt calc)
-                const dx = round(sample.a.mul(255)).mul(this.pixelWidth)
+
+                // convert the unsigned distance in the alpha channel back to signed
+                const signedDx = int(round(sample.a.mul(255))).sub(127)
+                const dx = float(signedDx).mul(this.pixelWidth)
                 const dy = float(i).mul(this.pixelHeight)
                 const distance = dx.mul(dx).add(dy.mul(dy))
 
-                If(isBodyEdge(id).and(distance.lessThan(bestDistance)), () => {
-                  bestId.assign(id)
-                  bestDistance.assign(distance)
+                // use the depth to scale the radius
+                If(isBodyEdge(id), () => {
+                  const depth = textureLoad(
+                    raw.depthTexture!,
+                    ivec2(point.x.add(signedDx), neighborY)
+                  ).r
+                  const viewZ = select(
+                    this.isPerspective,
+                    perspectiveDepthToViewZ(
+                      depth,
+                      this.cameraNear,
+                      this.cameraFar
+                    ),
+                    orthographicDepthToViewZ(
+                      depth,
+                      this.cameraNear,
+                      this.cameraFar
+                    )
+                  ).toVar()
+                  const seedDepth = viewZ.negate().max(0.001).toVar()
+                  const screenScale = select(
+                    this.isPerspective,
+                    this.projectedMillimeter.div(seedDepth),
+                    this.projectedMillimeter
+                  )
+                  const orthoDepthFactor = select(
+                    this.isPerspective,
+                    float(1),
+                    pow(
+                      float(ORTHO_REFERENCE_DEPTH_METERS).div(seedDepth),
+                      ORTHO_DEPTH_FALLOFF
+                    )
+                  )
+                  const zoomCurve = select(
+                    this.isPerspective,
+                    float(LOCAL_WEBGPU_EDGE_PICK_PERSPECTIVE_CURVE),
+                    float(LOCAL_WEBGPU_EDGE_PICK_ORTHO_CURVE)
+                  )
+                  const radius = pow(
+                    screenScale.div(REFERENCE_SCREEN_SCALE_PX_PER_MM),
+                    zoomCurve
+                  )
+                    .mul(REFERENCE_GROWTH_RADIUS_PX)
+                    .mul(orthoDepthFactor)
+                    .clamp(
+                      LOCAL_WEBGPU_EDGE_PICK_MIN_RADIUS_PX,
+                      LOCAL_WEBGPU_EDGE_PICK_MAX_RADIUS_PX
+                    )
+                    .toVar()
+                  If(
+                    distance
+                      .lessThan(radius.mul(radius))
+                      .and(distance.lessThan(bestDistance)),
+                    () => {
+                      bestId.assign(id)
+                      bestDistance.assign(distance)
+                    }
+                  )
                 })
               }
             )
@@ -201,17 +286,28 @@ export class EdgeGrowthPass {
     this.target.setSize(width, height)
   }
 
-  render(cssWidth: number, cssHeight: number) {
+  render(cssWidth: number, cssHeight: number, camera: Camera) {
     // The radius is specified in CSS pixels, but texture loads use drawing-
     // buffer pixels. Convert between them for this render.
     this.pixelWidth.value = Math.max(cssWidth, 1) / this.raw.width
     this.pixelHeight.value = Math.max(cssHeight, 1) / this.raw.height
+    this.projectedMillimeter.value =
+      (0.001 * Math.max(cssHeight, 1) * camera.projectionMatrix.elements[5]) / 2
+    if (
+      camera instanceof PerspectiveCamera ||
+      camera instanceof OrthographicCamera
+    ) {
+      this.cameraNear.value = camera.near
+      this.cameraFar.value = camera.far
+    }
+    this.isPerspective.value = camera instanceof PerspectiveCamera
     this.radiusX.value = Math.min(
-      255,
-      Math.ceil(LOCAL_EDGE_PICK_RADIUS_PX / this.pixelWidth.value)
+      127,
+      Math.ceil(LOCAL_WEBGPU_EDGE_PICK_MAX_RADIUS_PX / this.pixelWidth.value)
     )
-    this.radiusY.value = Math.ceil(
-      LOCAL_EDGE_PICK_RADIUS_PX / this.pixelHeight.value
+    this.radiusY.value = Math.min(
+      127,
+      Math.ceil(LOCAL_WEBGPU_EDGE_PICK_MAX_RADIUS_PX / this.pixelHeight.value)
     )
     this.renderer.setRenderTarget(this.horizontalTarget)
     this.quad.material = this.horizontalMaterial
