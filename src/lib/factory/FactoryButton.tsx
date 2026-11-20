@@ -14,13 +14,12 @@ import {
 } from '@src/lib/factory/api'
 import {
   parseFactoryPart,
-  type FactoryDelivery,
   type FactoryPart,
-  type FactorySnapshot,
   type FactoryWorkspace,
   type SubmittedFactoryJob,
 } from '@src/lib/factory/jobs'
 import type { FactoryCatalog, FactoryFormContext } from '@src/lib/factory/types'
+import { createFactoryFormSession } from '@src/lib/factory/formSession'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Fuse from 'fuse.js'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
@@ -102,12 +101,8 @@ function FactoryPopover({
   const [loadError, setLoadError] = useState('')
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
-  const [preparing, setPreparing] = useState(false)
-  const snapshot = useRef<FactorySnapshot | undefined>(undefined)
-  const delivery = useRef<{ key: string; value: FactoryDelivery } | undefined>(
-    undefined
-  )
-  const submissionLock = useRef(false)
+  const [session] = useState(() => createFactoryFormSession(workspace))
+  const loaded = useRef(false)
   const alive = useRef(true)
   useEffect(() => {
     alive.current = true
@@ -117,7 +112,7 @@ function FactoryPopover({
   }, [])
   const isCurrent = () => alive.current && context.isCurrent()
   useEffect(() => {
-    if (!open || !signedIn || !ready || catalog) return
+    if (!open || !signedIn || !ready) return
     let cancelled = false
     setLoadError('')
     void context
@@ -126,7 +121,12 @@ function FactoryPopover({
         if (cancelled) return
         setCatalog(catalog)
         setPaths(paths)
-        setShipping(catalog.shipping)
+        if (!loaded.current) setShipping(catalog.shipping)
+        loaded.current = true
+        if (!session.snapshotCaptured.peek())
+          setSelected((current) =>
+            current.filter((path) => paths.includes(path))
+          )
       })
       .catch((error: unknown) => {
         if (!cancelled)
@@ -139,65 +139,34 @@ function FactoryPopover({
     return () => {
       cancelled = true
     }
-  }, [context, open, signedIn, ready, catalog, attempt])
-  const busy = preparing || workspace.pending.value
+  }, [context, open, signedIn, ready, attempt, session])
+  useEffect(() => {
+    if (!loaded.current || session.snapshotCaptured.peek()) return
+    if (parts.some((part) => !paths.includes(part.entrypoint))) {
+      setParts(parts.filter((part) => paths.includes(part.entrypoint)))
+      setStep('files')
+      setError(
+        'Some part files are no longer available. Review your selection.'
+      )
+    }
+  }, [parts, paths, session])
+  const busy = session.pending.value || workspace.pending.value
   const showNavigation = step !== 'jobs' && signedIn && Boolean(catalog)
-  const errorMessage = error || workspace.error.value
+  const errorMessage = error || session.error.value || workspace.error.value
   const submitLabel = busy
     ? 'Submitting...'
     : step === 'review'
       ? `Submit ${parts.length} ${parts.length === 1 ? 'Job' : 'Jobs'}`
       : 'Next'
+  const refresh = () => setAttempt((value) => value + 1)
   const submit = async () => {
-    if (
-      submissionLock.current ||
-      busy ||
-      workspace.uncertain.peek() ||
-      !isCurrent()
-    )
-      return
-    submissionLock.current = true
-    setPreparing(true)
     setError('')
-    try {
-      const captured = snapshot.current ?? (await context.capture(isCurrent))
-      snapshot.current = captured
-      if (!isCurrent()) return
-      const key = JSON.stringify(shipping)
-      const shared =
-        delivery.current?.key === key
-          ? delivery.current.value
-          : await context.saveDelivery(shipping)
-      delivery.current = { key, value: shared }
-      if (!isCurrent()) return
-      const completed = await workspace.submit(
-        parts,
-        captured,
-        shared,
-        requests
-      )
-      if (!isCurrent()) return
-      const remaining = parts.filter(
-        (part) => !completed.includes(part.entrypoint)
-      )
-      setParts(remaining)
-      setSelected(remaining.map((part) => part.entrypoint))
-      if (!remaining.length) {
-        setStep('jobs')
-        snapshot.current = undefined
-        delivery.current = undefined
-      }
-    } catch (error) {
-      if (isCurrent())
-        setError(
-          error instanceof Error
-            ? error.message
-            : 'The project could not be submitted.'
-        )
-    } finally {
-      submissionLock.current = false
-      if (alive.current) setPreparing(false)
-    }
+    const remaining = await session.submit(context, parts, shipping, isCurrent)
+    if (!remaining || !isCurrent()) return
+    setParts([...remaining])
+    setSelected(remaining.map((part) => part.entrypoint))
+    if (!remaining.length) setStep('jobs')
+    else if (!workspace.uncertain.peek()) refresh()
   }
   const next = () => {
     setError('')
@@ -265,6 +234,7 @@ function FactoryPopover({
                 catalog={catalog}
                 workspace={workspace}
                 requests={requests}
+                onRejected={refresh}
               />
             ))}
           </section>
@@ -281,6 +251,7 @@ function FactoryPopover({
               setParts([])
               setSelected([])
               setStep('files')
+              refresh()
             }}
           >
             Add Job
@@ -435,7 +406,7 @@ function FactoryPopover({
                         {shipping.state} {shipping.postal_code}, US
                         {shipping.is_expedited && ' (expedited)'}
                       </p>
-                      {local && !snapshot.current && (
+                      {local && !session.snapshotCaptured.value && (
                         <p>
                           This project will be duplicated into a cloud library.
                         </p>
@@ -497,7 +468,7 @@ function FactoryPopover({
                   type="button"
                   aria-label="Previous"
                   className="mr-auto !gap-1 !py-0 !pl-0.5 !pr-2"
-                  disabled={Boolean(snapshot.current) && step === 'parts'}
+                  disabled={session.snapshotCaptured.value && step === 'parts'}
                   onClick={() =>
                     setStep(
                       step === 'review'
@@ -714,11 +685,13 @@ function FactoryJobEditor({
   catalog,
   workspace,
   requests,
+  onRejected,
 }: {
   job: SubmittedFactoryJob
   catalog: Catalog | undefined
   workspace: FactoryWorkspace
   requests: FactoryFormContext['requests']
+  onRejected: () => void
 }) {
   useSignals()
   const [part, setPart] = useState(job.part)
@@ -750,7 +723,10 @@ function FactoryJobEditor({
           onSubmit={(event) => {
             event.preventDefault()
             setSaved(false)
-            void workspace.revise(job, part, requests).then(setSaved)
+            void workspace.revise(job, part, requests).then((saved) => {
+              setSaved(saved)
+              if (!saved && !workspace.uncertain.peek()) onRejected()
+            })
           }}
         >
           <fieldset

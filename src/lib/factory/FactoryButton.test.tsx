@@ -94,6 +94,8 @@ it('edits one part without changing another part specifications', () => {
 
 it('corrects a rejected part without repeating successful jobs, then revises a job and starts another form', async () => {
   const workspace = createFactoryWorkspace()
+  let catalogChanged = false
+  let availablePaths = ['main.kcl', 'parts/bracket.kcl']
   const capture = vi.fn<FactoryFormContext['capture']>(async () => ({
     files: [
       { relativePath: 'main.kcl', data: new Uint8Array([1]) },
@@ -101,8 +103,11 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
     ],
   }))
   const create = vi.fn<FactoryFormContext['requests']['create']>(
-    async (part) =>
-      part.entrypoint === 'parts/bracket.kcl' && part.quantity === 12
+    async (part) => {
+      const rejected =
+        part.entrypoint === 'parts/bracket.kcl' && part.quantity === 12
+      if (rejected) catalogChanged = true
+      return part.entrypoint === 'parts/bracket.kcl' && part.quantity === 12
         ? {
             ok: false,
             uncertain: false,
@@ -113,6 +118,7 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
             id: part.entrypoint === 'main.kcl' ? 'job-one' : 'job-two',
             status: 'new',
           }
+    }
   )
   const revise = vi.fn<FactoryFormContext['requests']['revise']>(
     async (job) => ({ ok: true, id: job.id, status: 'quoting' })
@@ -123,9 +129,9 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
     local: true,
     isCurrent: () => true,
     load: async () => ({
-      paths: ['main.kcl', 'parts/bracket.kcl'],
+      paths: availablePaths,
       catalog: {
-        materials: ['Aluminum', 'Steel'],
+        materials: catalogChanged ? ['Steel'] : ['Aluminum', 'Steel'],
         finishes: ['Anodized', 'As machined'],
         addresses: [],
         shipping: {
@@ -196,8 +202,16 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
   expect(screen.getByLabelText('Recipient')).toHaveValue('Recipient')
   fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('option', { name: 'Aluminum' })
+    ).not.toBeInTheDocument()
+  )
   const remainingPart = screen.getByRole('group', {
     name: 'Job 1: parts/bracket.kcl',
+  })
+  fireEvent.change(within(remainingPart).getByLabelText('Material'), {
+    target: { value: 'Steel' },
   })
   fireEvent.change(within(remainingPart).getByLabelText('Quantity'), {
     target: { value: '5' },
@@ -223,6 +237,9 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
   })
   fireEvent.click(firstSummary)
   const editor = firstSummary.parentElement!
+  fireEvent.change(within(editor).getByLabelText('Material'), {
+    target: { value: 'Steel' },
+  })
   fireEvent.change(within(editor).getByLabelText('Quantity'), {
     target: { value: '7' },
   })
@@ -236,7 +253,94 @@ it('corrects a rejected part without repeating successful jobs, then revises a j
     within(editor).getByRole('link', { name: 'View job on zoo.dev' })
   ).toHaveAttribute('href', expect.stringContaining('job=job-one'))
   await within(editor).findByText('Revision submitted.')
+  availablePaths = ['main.kcl', 'parts/new-part.kcl']
   fireEvent.click(screen.getByRole('button', { name: 'Add Job' }))
   expect(screen.getByRole('combobox', { name: 'Part files' })).toHaveValue('')
   expect(screen.getByText('0 files selected')).toBeVisible()
+  expect(
+    await screen.findByRole('option', { name: 'parts/new-part.kcl' })
+  ).toBeVisible()
+  expect(
+    screen.queryByRole('option', { name: 'parts/bracket.kcl' })
+  ).not.toBeInTheDocument()
+})
+
+it('returns to file selection when a reviewed file is deleted while closed and can submit the remaining part', async () => {
+  let paths = ['main.kcl', 'deleted.kcl']
+  const context: FactoryFormContext = {
+    signedIn: true,
+    ready: true,
+    local: false,
+    isCurrent: () => true,
+    load: async () => ({
+      paths,
+      catalog: {
+        materials: ['Steel'],
+        finishes: ['As machined'],
+        addresses: [],
+        shipping: {
+          name: 'Recipient',
+          company: '',
+          phone: '202-555-0100',
+          street1: '123 Example Street',
+          street2: '',
+          city: 'Seattle',
+          state: 'WA',
+          postal_code: '98101',
+          country: 'US',
+          is_expedited: false,
+        },
+      },
+    }),
+    capture: async () => ({
+      files: [{ relativePath: 'main.kcl', data: new Uint8Array([1]) }],
+    }),
+    saveDelivery: async () => ({
+      shipping_address_revision_id: 'delivery',
+      is_expedited: false,
+    }),
+    requests: {
+      create: vi.fn<FactoryFormContext['requests']['create']>(async () => ({
+        ok: true,
+        id: 'job',
+        status: 'new',
+      })),
+      revise: vi.fn(),
+    },
+  }
+  render(
+    <FactoryButton context={context} workspace={createFactoryWorkspace()} />
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Submit to Factory' }))
+  fireEvent.click(await screen.findByRole('option', { name: 'main.kcl' }))
+  fireEvent.click(screen.getByRole('option', { name: 'deleted.kcl' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  for (const input of screen.getAllByLabelText('Material'))
+    fireEvent.change(input, { target: { value: 'Steel' } })
+  for (const input of screen.getAllByLabelText('Finish'))
+    fireEvent.change(input, { target: { value: 'As machined' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Close Factory' }))
+  paths = ['main.kcl']
+  fireEvent.click(screen.getByRole('button', { name: 'Submit to Factory' }))
+  expect(
+    await screen.findByRole('heading', { name: 'Choose parts' })
+  ).toBeVisible()
+  expect(
+    screen.queryByRole('option', { name: 'deleted.kcl' })
+  ).not.toBeInTheDocument()
+  expect(screen.getByRole('option', { name: 'main.kcl' })).toHaveAttribute(
+    'aria-selected',
+    'true'
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  expect(screen.getByLabelText('Material')).toHaveValue('Steel')
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Submit 1 Job' }))
+  expect(
+    await screen.findByRole('button', { name: 'Submit to Factory (1)' })
+  ).toBeVisible()
+  expect(context.requests.create).toHaveBeenCalledTimes(1)
 })

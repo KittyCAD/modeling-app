@@ -14,6 +14,11 @@ revision. Confirmed jobs remain visible after a partial failure. Writes run once
 uncertain responses block another submission and link to Manufacturing Jobs.
 Disposal prevents late results from publishing state or starting another job.
 
+`formSession.ts` owns preparation and retry state for one form. It checks the
+captured account/project and form lifetime after each awaited preparation step.
+The view refreshes part paths on reopening or Add Job, and refreshes catalog
+choices after rejected submissions or revisions without discarding draft fields.
+
 `registry/projects.ts` adapts live app capabilities at the submission boundary.
 It supplies the form with captured account/project capabilities, saves open editors, clones Directory projects through the project-library
 contribution contract, and captures the cloud snapshot once for the batch.
