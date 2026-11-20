@@ -1,3 +1,4 @@
+import { validateProjectUpload } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { collectApiPages } from '@src/lib/apiPagination'
 import { ApiError, type Client, projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
@@ -300,6 +301,11 @@ function buildProjectUploadFiles(
   return withCloudFailureContextSync(
     { stage: 'archive', point: 'prepare-project-upload' },
     () => {
+      const error = validateProjectUpload(files)
+      if (error) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
       const upload = prepareProjectFilesForCloudUpload(
         projectPath,
         files,
