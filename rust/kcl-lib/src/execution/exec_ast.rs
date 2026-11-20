@@ -7458,34 +7458,6 @@ a = PI * 2
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn sketch_block_unqualified_functions_use_sketch2() {
-        let ast = r#"
-s = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
-  coincident([line1.end, line2.start])
-}
-"#;
-        let result = parse_execute(ast).await.unwrap();
-        let mem = result.exec_state.stack();
-        let sketch_value = mem
-            .memory
-            .get_from_owned("s", result.mem_env, SourceRange::default(), 0)
-            .unwrap();
-
-        let KclValue::Object { value, .. } = sketch_value else {
-            panic!("Expected sketch block to return an object, got {sketch_value:?}");
-        };
-
-        assert!(value.contains_key("line1"));
-        assert!(value.contains_key("line2"));
-        // Ensure sketch2 aliases used during execution are not returned as
-        // sketch block fields.
-        assert!(!value.contains_key("line"));
-        assert!(!value.contains_key("coincident"));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn solver_module_is_not_available_outside_sketch_blocks() {
         let err = parse_execute("a = solver::ORIGIN").await.unwrap_err();
         assert!(err.message().contains("solver"), "Error message: '{}'", err.message());

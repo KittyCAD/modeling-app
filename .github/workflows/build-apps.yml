@@ -53,7 +53,8 @@ jobs:
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
-          export VERSION=$DATE-main+$COMMIT
+          TIME=$(date +'%H%M')
+          export VERSION=$DATE-$TIME+$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
           npm run files:set-windows-codesign-config
@@ -118,7 +119,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: build-apps (${{ matrix.platform }})
     env:
-      VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       # The build runs out of memory with Node's default ~2GB heap on
       # the macOS and Windows runners.
       NODE_OPTIONS: --max-old-space-size=4096
@@ -234,7 +234,6 @@ jobs:
     # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
     if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
-      VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
@@ -283,14 +282,16 @@ jobs:
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
+          # CDN serves artifacts without the leading "v" or +<sha> build metadata
+          URL_VERSION="${VERSION#v}"; URL_VERSION="${URL_VERSION%%+*}"
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg mac_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-mac.dmg" \
-            --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-win.exe" \
-            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
-            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
+            --arg mac_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${URL_VERSION}-universal-mac.dmg" \
+            --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${URL_VERSION}-universal-win.exe" \
+            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${URL_VERSION}-arm64-linux.AppImage" \
+            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${URL_VERSION}-x86_64-linux.AppImage" \
             '{
               "version": $version,
               "pub_date": $pub_date,
