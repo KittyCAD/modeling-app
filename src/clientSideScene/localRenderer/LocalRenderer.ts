@@ -11,7 +11,8 @@ import {
   LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
 } from '@src/clientSideScene/localRenderer/config'
 import {
-  getEntityPoint,
+  getEntityPoints,
+  nearbyViewportPixels,
   projectEntityPoint,
 } from '@src/clientSideScene/localRenderer/projectEntityPoint'
 import {
@@ -1098,162 +1099,58 @@ export class LocalRenderer {
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
     const entities = []
-    for (const [id, [object]] of this.targetsByEntityId) {
+    for (const [id, meshes] of this.targetsByEntityId) {
       const kind =
-        typeof object.userData.edgeUuid === 'string' ? 'edge' : 'face'
-      object.updateWorldMatrix(true, false)
-      const point = getEntityPoint(object.geometry, kind)
-      if (!point) continue
-      point.applyMatrix4(object.matrixWorld)
-      const pointOnScreen = projectEntityPoint(point, camera, rect)
-      if (!pointOnScreen) continue
-      // The test mouse helpers use integer CSS pixels. Try the coordinates
-      // surrounding the projected center so rasterization does not hide a thin edge.
-      const xs = [
-        ...new Set([Math.floor(pointOnScreen.x), Math.ceil(pointOnScreen.x)]),
-      ]
-      const ys = [
-        ...new Set([Math.floor(pointOnScreen.y), Math.ceil(pointOnScreen.y)]),
-      ]
-      const candidates = xs
-        .flatMap((x) => ys.map((y) => ({ x, y })))
-        .filter(
-          ({ x, y }) =>
-            x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom
-        )
-        .sort(
-          (a, b) =>
-            (a.x - pointOnScreen.x) ** 2 +
-            (a.y - pointOnScreen.y) ** 2 -
-            ((b.x - pointOnScreen.x) ** 2 + (b.y - pointOnScreen.y) ** 2)
-        )
-      let projected = candidates[0]
-      if (!projected) continue
+        typeof meshes[0].userData.edgeUuid === 'string' ? 'edge' : 'face'
+      let projected: { x: number; y: number } | undefined
       let visible = false
-      for (const candidate of candidates) {
-        const result = await this.gpu?.integerIdPicker.pick({
-          x: candidate.x - rect.left,
-          y: candidate.y - rect.top,
-          streamWidth: rect.width,
-          streamHeight: rect.height,
-          camera,
-        })
-        if (this.disposed || version !== this.executionVersion || result?.stale)
-          return []
-        if (result?.target === object) {
-          projected = candidate
-          visible = true
-          break
-        }
-      }
-      entities.push({
-        id,
-        kind,
-        ...projected,
-        // This means the real picker would select this entity at its representative point.
-        visible,
-      })
-    }
-    return entities
-  }
-
-  // Find an interior point on a model face that the picker can click
-  async getPickableModelFacePoint() {
-    const camera = this.camera
-    const canvas = this.gpu?.renderer.domElement
-    const picker = this.gpu?.integerIdPicker
-    if (
-      !camera ||
-      !canvas ||
-      !picker ||
-      !this.currentModel ||
-      !this.isLoadedSceneCurrent() ||
-      this.host.executing.peek()
-    )
-      return null
-
-    camera.updateMatrixWorld(true)
-
-    // Get the triangles for every model face mesh, sort by the largest, keep
-    // 8. These are most likely going to be clear of any edge's picking area.
-    this.currentModel.updateWorldMatrix(true, true)
-    const faces = [...this.targetsByEntityId].flatMap(([id, meshes]) =>
-      meshes
-        .filter((mesh) => mesh.userData.bodyMeshIndex !== undefined)
-        .map((mesh) => {
-          const positions = mesh.geometry.getAttribute('position')
-          const index = mesh.geometry.index
-          const triangles: { point: Vector3; area: number }[] = []
-          if (positions) {
-            for (let i = 0; i + 2 < (index?.count ?? positions.count); i += 3) {
-              const vertex = (offset: number) =>
-                new Vector3()
-                  .fromBufferAttribute(
-                    positions,
-                    index ? index.getX(i + offset) : i + offset
-                  )
-                  .applyMatrix4(mesh.matrixWorld)
-              const a = vertex(0)
-              const b = vertex(1)
-              const c = vertex(2)
-              const area = b.clone().sub(a).cross(c.clone().sub(a)).length()
-              if (area > 0) {
-                triangles.push({
-                  point: a.add(b).add(c).divideScalar(3),
-                  area,
-                })
-              }
-            }
-          }
-          triangles.sort((a, b) => b.area - a.area)
-          return { id, mesh, triangles: triangles.slice(0, 8) }
-        })
-    )
-    faces.sort(
-      (a, b) => (b.triangles[0]?.area ?? 0) - (a.triangles[0]?.area ?? 0)
-    )
-
-    // Check nearby CSS coordaintes using the picker to see if it is clickable.
-    // A projected point may still be trumped by an edge.
-    const rect = canvas.getBoundingClientRect()
-    // used to test if this search is stale due to new KCL
-    const version = this.executionVersion
-    for (const { id, mesh, triangles } of faces) {
-      for (const { point } of triangles) {
-        // Project the centroid of each triangle
-        const projected = projectEntityPoint(point, camera, rect)
-        if (!projected) continue
-        // Test the four CSS pixels around the centroid
-        for (const x of [Math.floor(projected.x), Math.ceil(projected.x)]) {
-          for (const y of [Math.floor(projected.y), Math.ceil(projected.y)]) {
-            if (
-              x < rect.left ||
-              x >= rect.right ||
-              y < rect.top ||
-              y >= rect.bottom
-            )
-              continue
-            // Test if the picker can pick this pixel
-            const result = await picker.pick({
-              x: x - rect.left,
-              y: y - rect.top,
+      const tried = new Set<string>()
+      search: for (const mesh of meshes) {
+        mesh.updateWorldMatrix(true, false)
+        for (const point of getEntityPoints(mesh.geometry, kind)) {
+          const screen = projectEntityPoint(
+            point.applyMatrix4(mesh.matrixWorld),
+            camera,
+            rect
+          )
+          if (!screen) continue
+          for (const pixel of nearbyViewportPixels(screen, rect)) {
+            const key = `${pixel.x},${pixel.y}`
+            if (tried.has(key)) continue
+            tried.add(key)
+            projected ??= pixel
+            const result = await this.gpu?.integerIdPicker.pick({
+              x: pixel.x - rect.left,
+              y: pixel.y - rect.top,
               streamWidth: rect.width,
               streamHeight: rect.height,
               camera,
             })
-            // abandon if stale
             if (
               this.disposed ||
               version !== this.executionVersion ||
               result?.stale
             )
-              return null
-            if (result?.target === mesh) return { id, x, y }
+              return []
+            if (result?.target && meshes.includes(result.target)) {
+              projected = pixel
+              visible = true
+              break search
+            }
           }
         }
       }
+      if (projected)
+        entities.push({
+          id,
+          kind,
+          ...projected,
+          visible,
+          modelFace:
+            meshes[0].userData.bodyMeshIndex !== undefined && kind === 'face',
+        })
     }
-    return null
+    return entities
   }
 
   /**

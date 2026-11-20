@@ -145,39 +145,8 @@ export class SceneFixture {
       return view.getProjectedEntities()
     })
 
-  /**
-   * Find a model face's interior point that the picker actually selects.
-   * Edge picking may mask a face's projected representative point.
-   */
-  findPickableModelFace = async () => {
-    const lookup = () =>
-      this.page.evaluate(async () => {
-        const view = window.app.singletons.kclManager.sceneInfra.localRenderer
-        return (await view?.getPickableModelFacePoint()) ?? null
-      })
-    let previous: Awaited<ReturnType<typeof lookup>> = null
-    await expect
-      .poll(async () => {
-        const next = await lookup()
-        const stable =
-          next !== null &&
-          previous?.id === next.id &&
-          previous.x === next.x &&
-          previous.y === next.y
-        previous = next
-        return stable
-      })
-      .toBe(true)
-    const point = await lookup()
-    if (!point) throw new Error('No pickable model face found')
-    const bounds = await this.streamWrapper.boundingBox()
-    if (!bounds) throw new Error('No stream to click')
-    return this.makeMouseHelpers(
-      (point.x - bounds.x) / bounds.width,
-      (point.y - bounds.y) / bounds.height,
-      { format: 'ratio' }
-    )
-  }
+  findPickableModelFace = () =>
+    this.findEntity('face', 0, { modelFaceOnly: true })
 
   /**
    * Both modes share the same mouse actions; only the selection point differs.
@@ -217,13 +186,14 @@ export class SceneFixture {
     this.page.evaluate(() => window.engineCommandManager.geometryOnly)
 
   /** Index is zero-based within entities filtered by kind and visibility. */
-  private findEntity = async (
+  findEntity = async (
     kind: 'edge' | 'face',
     indexOrId: number | string,
     {
       timeout = 30_000,
       visible = true,
-    }: { timeout?: number; visible?: boolean } = {}
+      modelFaceOnly = false,
+    }: { timeout?: number; visible?: boolean; modelFaceOnly?: boolean } = {}
   ) => {
     if (
       typeof indexOrId === 'number' &&
@@ -233,7 +203,10 @@ export class SceneFixture {
     }
     const lookup = async () => {
       const entities = (await this.getProjectedEntities()).filter(
-        (entity) => entity.kind === kind && entity.visible === visible
+        (entity) =>
+          entity.kind === kind &&
+          entity.visible === visible &&
+          (!modelFaceOnly || entity.modelFace)
       )
       return typeof indexOrId === 'number'
         ? entities[indexOrId]
