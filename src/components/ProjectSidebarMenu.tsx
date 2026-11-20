@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useMemo, useRef } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -9,10 +9,12 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { useLspContext } from '@src/components/LspProvider'
+import { StepConversionDialog } from '@src/components/StepConversions'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import usePlatform from '@src/hooks/usePlatform'
+import { useStepFilePicker } from '@src/hooks/useStepFilePicker'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { APP_NAME } from '@src/lib/constants'
@@ -23,9 +25,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { IndexLoaderData } from '@src/lib/types'
 
 import fsZds from '@src/lib/fs-zds'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import { isStepFileName, stepToKclDraftBroker } from '@src/lib/stepToKcl'
+import { isStepFileName } from '@src/lib/stepToKcl'
 import toast from 'react-hot-toast'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -113,7 +113,7 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { machineManager, commands, settings, layout } = useApp()
+  const { machineManager, commands, settings } = useApp()
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
@@ -122,13 +122,7 @@ function ProjectMenuPopover({
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
-  const stepFileInputRef = useRef<HTMLInputElement>(null)
-
-  useMenuListener((data) => {
-    if (data.menuLabel === 'File.Import STEP as editable KCL') {
-      stepFileInputRef.current?.click()
-    }
-  })
+  const [conversionSource, setConversionSource] = useState<File>()
 
   const stageStepToKclDraft = (file: File) => {
     if (!isStepFileName(file.name)) {
@@ -136,20 +130,18 @@ function ProjectMenuPopover({
       return
     }
 
-    settings.actor.send({
-      type: 'set.app.zookeeperMode',
-      data: { level: 'project', value: 'thoughtful' },
-    })
-    layout.set(
-      togglePaneLayoutNode({
-        rootLayout: structuredClone(layout.signal.value),
-        targetNodeId: DefaultLayoutPaneID.TTC,
-        shouldExpand: true,
-      })
-    )
-    stepToKclDraftBroker.request(file)
-    toast.success('STEP reconstruction is ready to review in Zookeeper.')
+    if (!project?.path) {
+      toast.error('Open a project before converting a STEP file.')
+      return
+    }
+    setConversionSource(file)
   }
+  const { fileInputRef: stepFileInputRef, pickFile: pickStepFile } =
+    useStepFilePicker(stageStepToKclDraft)
+  useMenuListener((data) => {
+    if (data.menuLabel === 'File.Import STEP as editable KCL')
+      void pickStepFile()
+  })
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -209,13 +201,13 @@ function ProjectMenuPopover({
           'data-testid': 'step-to-kcl-import-button',
           children: (
             <>
-              <span className="flex-1">Import STEP as editable KCL…</span>
+              <span className="flex-1">Convert file…</span>
               <span className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
                 Experimental
               </span>
             </>
           ),
-          onClick: () => stepFileInputRef.current?.click(),
+          onClick: () => void pickStepFile(),
         },
         {
           id: 'export',
@@ -289,7 +281,6 @@ function ProjectMenuPopover({
       platform,
       findCommand,
       machineApiEnabled,
-      layout,
       settings.actor,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
@@ -311,6 +302,13 @@ function ProjectMenuPopover({
 
   return (
     <Popover className="relative">
+      {conversionSource && project?.path && (
+        <StepConversionDialog
+          source={conversionSource}
+          projectPath={project.path}
+          onClose={() => setConversionSource(undefined)}
+        />
+      )}
       <input
         ref={stepFileInputRef}
         type="file"
