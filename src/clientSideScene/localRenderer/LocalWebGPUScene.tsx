@@ -4,10 +4,12 @@ import {
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
+import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
+import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
+import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import { useSingletons } from '@src/lib/boot'
 import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
@@ -16,11 +18,35 @@ const THUMBNAIL_DELAY_MS = 500
 const PENDING_COMMAND_POLL_MS = 100
 
 /** Engine commands sent and not yet answered, as the status bar counts them. */
-function getPendingCommandCount(kclManager: KclManager) {
-  return Object.keys(kclManager.engineCommandManager.pendingCommands).length
+function getPendingCommandCount(host: LocalRendererHost) {
+  return Object.keys(host.commands.pendingCommands).length
 }
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
+  const { kclManager } = useSingletons()
+  const host = useMemo(() => legacyLocalRendererHost(kclManager), [kclManager])
+  const { state } = useModelingContext()
+  return (
+    <LocalWebGPUSceneView
+      {...props}
+      host={host}
+      pickingEnabled={state.matches('idle') || state.matches('Sketch no face')}
+      defaultPlaneVisibility={state.context.defaultPlaneVisibility}
+    />
+  )
+}
+
+/** Render a captured scene host without consulting app singletons or modeling React context. */
+export const LocalWebGPUSceneView = ({
+  host,
+  pickingEnabled,
+  defaultPlaneVisibility,
+  ...props
+}: LocalRendererProps & {
+  host: LocalRendererHost
+  pickingEnabled: boolean
+  defaultPlaneVisibility: PlaneVisibilityMap
+}) => {
   const {
     theme,
     enableSSAO,
@@ -31,12 +57,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
-  const { kclManager } = useSingletons()
-  const { state } = useModelingContext()
-  const pickingEnabled =
-    state.matches('idle') || state.matches('Sketch no face')
-  const defaultPlaneVisibility = state.context.defaultPlaneVisibility
-  const isExecuting = kclManager.isExecutingSignal.value
+  const isExecuting = host.executing.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
   const [pendingCommandCount, setPendingCommandCount] = useState(0)
   const isLoadingModel = isExecuting || isAwaitingModel
@@ -46,22 +67,22 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     if (isExecuting) {
       setIsAwaitingModel(true)
-      setPendingCommandCount(getPendingCommandCount(kclManager))
+      setPendingCommandCount(getPendingCommandCount(host))
       const intervalId = window.setInterval(
-        () => setPendingCommandCount(getPendingCommandCount(kclManager)),
+        () => setPendingCommandCount(getPendingCommandCount(host)),
         PENDING_COMMAND_POLL_MS
       )
       return () => window.clearInterval(intervalId)
     }
-  }, [isExecuting, kclManager])
+  }, [isExecuting, host])
 
   const handleModelLoadSettled = useCallback(
     (isNewModel?: boolean) => {
-      if (!kclManager.isExecutingSignal.value) {
+      if (!host.executing.value) {
         setIsAwaitingModel(false)
       }
       const renderer = rendererRef.current
-      const captureThumbnail = kclManager.captureProjectThumbnail
+      const captureThumbnail = host.captureThumbnail
       if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
           if (rendererRef.current !== renderer) return
@@ -69,7 +90,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
         }, THUMBNAIL_DELAY_MS)
       }
     },
-    [kclManager]
+    [host]
   )
 
   useEffect(() => {
@@ -78,23 +99,23 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       return
     }
 
-    const renderer = new LocalRenderer(container, kclManager, {
+    const renderer = new LocalRenderer(container, host, {
       ...latestPropsRef.current,
       onModelLoadSettled: handleModelLoadSettled,
     })
     rendererRef.current = renderer
-    kclManager.sceneInfra.localRenderer = renderer
+    host.sceneInfra.localRenderer = renderer
 
     return () => {
       if (rendererRef.current === renderer) {
         rendererRef.current = null
       }
-      if (kclManager.sceneInfra.localRenderer === renderer) {
-        kclManager.sceneInfra.localRenderer = null
+      if (host.sceneInfra.localRenderer === renderer) {
+        host.sceneInfra.localRenderer = null
       }
       renderer.dispose()
     }
-  }, [handleModelLoadSettled, kclManager])
+  }, [handleModelLoadSettled, host])
 
   useEffect(() => {
     rendererRef.current?.setTheme(theme)
@@ -102,11 +123,11 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
 
   useEffect(() => {
     rendererRef.current?.setPickingEnabled(pickingEnabled)
-  }, [pickingEnabled, kclManager])
+  }, [pickingEnabled, host])
 
   useEffect(() => {
     rendererRef.current?.setDefaultPlaneVisibility(defaultPlaneVisibility)
-  }, [defaultPlaneVisibility, kclManager])
+  }, [defaultPlaneVisibility, host])
 
   useEffect(() => {
     rendererRef.current?.setEnableSSAO(enableSSAO)
