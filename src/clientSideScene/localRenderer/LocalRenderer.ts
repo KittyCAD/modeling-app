@@ -32,6 +32,7 @@ import {
   type SceneExecutionDoneDetail,
 } from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -172,6 +173,8 @@ type AmbientOcclusionPipeline = {
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
 }
+/** What three.js reports for a lost WebGPU device or WebGL context. */
+type DeviceLostInfo = Parameters<WebGPURenderer['onDeviceLost']>[0]
 type DisposableGpuDevice = {
   destroy: () => void
 }
@@ -196,6 +199,12 @@ type RendererSettings = {
   pickingEnabled: boolean
   defaultPlaneVisibility: PlaneVisibilityMap
 }
+/** Why the local renderer cannot draw, so the scene can offer streaming instead. */
+export interface LocalRendererFailure {
+  /** 'initialization': no GPU renderer could start. 'lost': the GPU went away while rendering. */
+  kind: 'initialization' | 'lost'
+  message: string
+}
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
@@ -204,6 +213,7 @@ export interface LocalRendererProps {
   backfaceColor: string
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
+  onRendererFailed?: (failure: LocalRendererFailure) => void
 }
 
 export class LocalRenderer {
@@ -211,6 +221,7 @@ export class LocalRenderer {
   private readonly host: LocalRendererHost
   private readonly settings: RendererSettings
   private readonly onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
+  private readonly onRendererFailed: LocalRendererProps['onRendererFailed']
   private gpu: GpuResources | null = null
   /** Undo what this renderer registered elsewhere; dispose() runs them. */
   private readonly disposers: (() => void)[] = []
@@ -263,6 +274,7 @@ export class LocalRenderer {
       defaultPlaneVisibility: { xy: true, xz: true, yz: true },
     }
     this.onModelLoadSettled = props.onModelLoadSettled
+    this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
     this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
 
@@ -804,8 +816,40 @@ export class LocalRenderer {
   }
 
   private readonly handleInitializationError = (error: unknown) => {
+    if (this.disposed) return
     console.error('[LocalRenderer] initialization failed', error)
     reportRejection(error)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
+    this.onRendererFailed?.({
+      kind: 'initialization',
+      message: error instanceof Error ? error.message : String(error),
+    })
+  }
+
+  private readonly handleDeviceLost = (info: DeviceLostInfo) => {
+    // three.js ignores the loss that dispose() causes, but the scene may be gone.
+    if (this.disposed) return
+    console.error('[LocalRenderer] GPU device lost', info)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: lost',
+      dedupeKey: 'LocalRenderer:lost',
+      extra: {
+        kind: 'lost',
+        api: info.api,
+        reason: info.reason,
+        message: info.message,
+      },
+    })
+    // Stop rendering, so a later execution can't save a blank project thumbnail.
+    this.dispose()
+    this.onRendererFailed?.({ kind: 'lost', message: info.message })
   }
 
   private configureAmbientOcclusion(
@@ -1171,6 +1215,13 @@ export class LocalRenderer {
       alpha: false,
       device,
     })
+    // Covers both backends: a lost WebGPU device and a lost WebGL 2 context.
+    // Keep three.js's default handler, which marks the renderer as lost.
+    const defaultOnDeviceLost = renderer.onDeviceLost.bind(renderer)
+    renderer.onDeviceLost = (info) => {
+      defaultOnDeviceLost(info)
+      this.handleDeviceLost(info)
+    }
     await renderer.init()
     if (this.disposed) {
       await renderer.dispose()
