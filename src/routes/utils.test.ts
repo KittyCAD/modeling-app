@@ -21,7 +21,10 @@ afterEach(() => {
 describe('Routes utility functions', () => {
   describe('getRefFromVersion', () => {
     it('returns the short commit sha on staging version', () => {
-      expect(getRefFromVersion('25.6.17-main.fe581ff')).toBe('fe581ff')
+      expect(getRefFromVersion('25.6.17-main+fe581ff')).toBe('fe581ff')
+    })
+    it('returns a bare short commit sha', () => {
+      expect(getRefFromVersion('fe581ff')).toBe('fe581ff')
     })
     it('returns undefined on non-staging version', () => {
       expect(getRefFromVersion('1.0.5')).toBeUndefined()

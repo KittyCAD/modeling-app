@@ -43,10 +43,12 @@ describe('PlaneRenderer default planes', () => {
     planes.updateDefaultPlanes({ xy: 'xy-2', yz: 'yz-2', xz: 'xz-2' })
     expect([...planes.planes.keys()]).toEqual(['xy-2', 'yz-2', 'xz-2'])
     expect([...planes.planes.values()]).toEqual(originals)
-    expect(originals.map(({ mesh }) => mesh.name)).toEqual([
-      'xy-2',
-      'yz-2',
-      'xz-2',
+    expect(
+      originals.map(({ meshes }) => meshes.map(({ name }) => name))
+    ).toEqual([
+      Array(4).fill('xy-2'),
+      Array(4).fill('yz-2'),
+      Array(4).fill('xz-2'),
     ])
     planes.dispose()
   })
@@ -70,16 +72,16 @@ describe('PlaneRenderer default planes', () => {
     planes.setDefaultVisibility({ xy: false, yz: true, xz: true })
     planes.updateOffsetPlanes(new Map([['offset', offset]]))
     const oldOffset = planes.planes.get('offset')
-    expect(oldOffset?.mesh.geometry).toBe(defaults[0].mesh.geometry)
+    expect(oldOffset?.meshes[0].geometry).toBe(defaults[0].meshes[0].geometry)
     expect(oldOffset?.group.visible).toBe(true)
-    const dispose = vi.spyOn(defaults[0].mesh.geometry, 'dispose')
+    const dispose = vi.spyOn(defaults[0].meshes[0].geometry, 'dispose')
     planes.updateOffsetPlanes(new Map([['offset', offset]]))
     expect(planes.planes.get('offset')).not.toBe(oldOffset)
     expect(oldOffset?.group.parent).toBeNull()
     planes.updateOffsetPlanes(new Map())
     expect([...planes.planes.values()]).toEqual(defaults)
     expect(defaults[0].group.visible).toBe(false)
-    expect(defaults[0].group.children).toHaveLength(4)
+    expect(defaults[0].group.children).toHaveLength(7)
     expect(dispose).not.toHaveBeenCalled()
     planes.dispose()
     expect(dispose).toHaveBeenCalledOnce()
@@ -103,7 +105,7 @@ describe('PlaneRenderer default planes', () => {
     })
     expect(
       root.children.map((plane) =>
-        plane.children.slice(2).map((label) => label.name)
+        plane.children.slice(5).map((label) => label.name)
       )
     ).toEqual([
       ['XY', 'Top'],
@@ -127,7 +129,7 @@ describe('PlaneRenderer default planes', () => {
     ]
     root.children.forEach((plane, index) => {
       const fill = plane.children[0]
-      const border = plane.children[1]
+      const border = plane.children[4]
       expect(fill).toBeInstanceOf(Mesh)
       expect(border).toBeInstanceOf(LineSegments2)
       if (
@@ -150,7 +152,7 @@ describe('PlaneRenderer default planes', () => {
       expect(border.material.transparent).toBe(false)
       expect(border.material.depthTest).toBe(true)
       expect(border.material.depthWrite).toBe(true)
-      for (const label of plane.children.slice(2)) {
+      for (const label of plane.children.slice(5)) {
         if (!(label instanceof Mesh) || !(label.material instanceof Material))
           throw new Error('Missing plane label')
         expect(label.material.transparent).toBe(false)
@@ -184,6 +186,9 @@ describe('PlaneRenderer default planes', () => {
     expect(visibleNames()).toEqual([
       'reference-planes',
       'YZ',
+      'plane-yz',
+      'plane-yz',
+      'plane-yz',
       'plane-yz',
       'YZ-border',
       'YZ',

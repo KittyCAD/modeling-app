@@ -206,8 +206,9 @@ describe('local GLB loading', () => {
     } = f.gpu
     planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
     planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
-    const target = planes.planes.get(id)?.mesh
-    if (!target) throw new Error('Missing plane mesh')
+    const targets = planes.planes.get(id)?.meshes
+    const target = targets?.[0]
+    if (!targets || !target) throw new Error('Missing plane mesh')
     picker.pick.mockResolvedValue({ target, stale: false })
     const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
     f.state.camera = new PerspectiveCamera()
@@ -233,10 +234,11 @@ describe('local GLB loading', () => {
       )
     const defaultTargets = [...planes.planes.values()]
       .filter((plane) => plane.defaultPlane)
-      .map(({ mesh }) => mesh)
+      .flatMap(({ meshes }) => meshes)
     return {
       ...f,
       target,
+      targets,
       defaultTargets,
       picker,
       highlights,
@@ -253,7 +255,7 @@ describe('local GLB loading', () => {
         type: 'highlight_set_entity',
         data: { entity_id: id },
       })
-      expect(f.highlights.setHover).toHaveBeenLastCalledWith([f.target])
+      expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.targets)
       const result = await f.pick(true)
       expect(result?.modelingResponse).toEqual({
         type: 'query_entity_type_with_point',
@@ -274,7 +276,7 @@ describe('local GLB loading', () => {
         })
       engineSelects([id])
       await f.state.syncSelectionFromEngine()
-      expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+      expect(f.highlights.setSelection).toHaveBeenLastCalledWith(f.targets)
       engineSelects([])
       await f.state.syncSelectionFromEngine()
       expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
