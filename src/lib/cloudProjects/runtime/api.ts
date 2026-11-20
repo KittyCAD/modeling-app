@@ -274,6 +274,7 @@ export async function updateRemoteProject({
 
   const uploadFiles = buildProjectUploadFiles(projectPath, files, {
     expectedRevision,
+    fallbackTitle: project.title,
     entrypointPath,
     publicationMetadata,
     deletedPaths,
@@ -284,6 +285,7 @@ export async function updateRemoteProject({
 }
 
 type BuildProjectFormDataOptions = {
+  fallbackTitle?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
