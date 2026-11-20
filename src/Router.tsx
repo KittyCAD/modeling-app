@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
-import { ErrorPage } from '@src/components/ErrorPage'
+import { ErrorPage, ProjectErrorPage } from '@src/components/ErrorPage'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
@@ -64,7 +64,7 @@ export const Router = () => {
             {
               id: PATHS.PROJECT,
               path: PATHS.PROJECT.concat('/:id'),
-              errorElement: <ErrorPage />,
+              errorElement: <ProjectErrorPage />,
               loader: projectLoader({ app }),
               element: (
                 <>
@@ -113,7 +113,7 @@ export const Router = () => {
               },
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
-              errorElement: <ErrorPage />,
+              errorElement: <ProjectErrorPage />,
               element: (
                 <ModelingPageProvider>
                   <Suspense
