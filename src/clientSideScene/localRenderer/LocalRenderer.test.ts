@@ -591,6 +591,8 @@ describe('local renderer GPU failures', () => {
       message: 'Context lost',
     })
     // A lost renderer stops, so it can't capture a blank thumbnail.
+    // three.js's own handler still runs, so it skips work on the lost device.
+    expect(Reflect.get(created, '_isDeviceLost')).toBe(true)
     expect(dispose).toHaveBeenCalledOnce()
     expect(f.renderer.readFrame(() => 'frame')).toBeUndefined()
     f.renderer.dispose()

@@ -1195,7 +1195,12 @@ export class LocalRenderer {
       device,
     })
     // Covers both backends: a lost WebGPU device and a lost WebGL 2 context.
-    renderer.onDeviceLost = this.handleDeviceLost
+    // Keep three.js's default handler, which marks the renderer as lost.
+    const defaultOnDeviceLost = renderer.onDeviceLost.bind(renderer)
+    renderer.onDeviceLost = (info) => {
+      defaultOnDeviceLost(info)
+      this.handleDeviceLost(info)
+    }
     await renderer.init()
     if (this.disposed) {
       await renderer.dispose()
