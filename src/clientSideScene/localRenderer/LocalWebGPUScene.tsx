@@ -206,9 +206,10 @@ export const LocalWebGPUSceneView = ({
               Switch to streaming to keep working, or reload to try local
               rendering again.
             </p>
-            <p className="break-words font-mono text-xs text-3">
-              {failure.message}
-            </p>
+            <details className="text-xs text-3">
+              <summary className="cursor-pointer py-1">Details</summary>
+              <p className="break-words font-mono">{failure.message}</p>
+            </details>
             <div className="flex justify-end gap-2">
               <ActionButton
                 Element="button"
