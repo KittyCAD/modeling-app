@@ -1,3 +1,4 @@
+import { selectCommand } from '@src/lib/commandUtils'
 import type { NormalBufferAttributes } from 'three'
 import {
   BoxGeometry,
@@ -1860,14 +1861,11 @@ function createLengthIndicator({
     }
 
     // Command Bar
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        name: 'Constrain length',
-        groupId: 'modeling',
-        argDefaultValues: {
-          selection,
-        },
+    selectCommand(commandBarActor, {
+      name: 'Constrain length',
+      groupId: 'modeling',
+      argDefaultValues: {
+        selection,
       },
     })
   }

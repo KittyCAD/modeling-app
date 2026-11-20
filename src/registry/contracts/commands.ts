@@ -1,14 +1,9 @@
-import {
-  appendValueSpec,
-  defineContract,
-  defineService,
-  defineValueSpec,
-  provide,
-} from '@kittycad/registry'
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { contract, contribute, Facet, service } from 'plankton'
 import type { SnapshotFrom } from 'xstate'
 
 export { commandKey } from '@src/lib/commandUtils'
@@ -17,6 +12,7 @@ export const BASE_COMMAND_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_COMMAND_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE = 'code-editor-not-focused'
 export const EDITABLE_FOCUSED_COMMAND_SCOPE = 'editable-focused'
+export const MODELING_DIALOG_FOCUSED_COMMAND_SCOPE = 'modeling-dialog-focused'
 export const MODE_MODELING_COMMAND_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_COMMAND_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_COMMAND_SCOPE = 'mode-sketch-no-face'
@@ -131,6 +127,13 @@ export const DEFAULT_COMMAND_SCOPES: readonly CommandScope[] = [
     displayName: 'Editable control focused',
     group: COMMAND_CONTEXT_SCOPE_GROUP,
     priority: 1100,
+    userEditable: false,
+  },
+  {
+    id: MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
+    displayName: 'Modeling dialog focused',
+    group: COMMAND_CONTEXT_SCOPE_GROUP,
+    priority: 1200,
     userEditable: false,
   },
   {
@@ -295,33 +298,32 @@ function compareActiveScopeOrder(
     ? indexDifference
     : a.scope.localeCompare(b.scope)
 }
-
-export const commandsContract = defineContract({
-  commandScopeService: defineService<CommandScopeService>(
-    'command.scope-service'
+export const commandsContract = contract({
+  commandScopeService: service<CommandScopeService>('command.scope-service'),
+  commandScopesFacet: new Facet<CommandScope, CommandScope[]>(
+    'commands.scopes',
+    (inputs) => (inputs.length ? combineCommandScopes(inputs) : [])
   ),
-  commandScopesValueSpec: defineValueSpec<CommandScope, CommandScope[]>({
-    name: 'commands.scopes',
-    defaultValue: [],
-    combine: combineCommandScopes,
-  }),
-  commandSystemService: defineService<CommandSystemService>('command-system'),
-  commandsValueSpec: appendValueSpec<Command>('commands'),
+  commandSystemService: service<CommandSystemService>('command-system'),
+  commandsFacet: new Facet<Command, readonly Command[]>(
+    'commands',
+    (inputs) => inputs
+  ),
 })
 
 export const {
   commandScopeService,
-  commandScopesValueSpec,
+  commandScopesFacet,
   commandSystemService,
-  commandsValueSpec,
+  commandsFacet,
 } = commandsContract
 
 export function provideCommand(command: Command) {
-  return provide(commandsValueSpec, command, { key: commandKey(command) })
+  return contribute(commandsFacet, () => command, { key: commandKey(command) })
 }
 
 export function provideCommandScope(scope: CommandScope) {
-  return provide(commandScopesValueSpec, scope, { key: scope.id })
+  return contribute(commandScopesFacet, () => scope, { key: scope.id })
 }
 
 function combineCommandScopes(scopes: readonly CommandScope[]) {
@@ -340,3 +342,10 @@ function compareCommandScopeDisplayOrder(a: CommandScope, b: CommandScope) {
   const nameDifference = a.displayName.localeCompare(b.displayName)
   return nameDifference !== 0 ? nameDifference : a.id.localeCompare(b.id)
 }
+
+export const observations = inputs({
+  commandsFacet: observe(commandsFacet),
+  commandScopeService: observeService(commandScopeService),
+  commandSystemService: observeService(commandSystemService),
+  commandScopesFacet: observe(commandScopesFacet),
+})

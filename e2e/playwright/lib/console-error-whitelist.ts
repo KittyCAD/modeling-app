@@ -6,14 +6,14 @@ export const isErrorWhitelisted = (exception: Error) => {
     message: string
     stack: string
     foundInSpec: string
-    project: 'webkit' | 'Google Chrome'
+    project: 'webkit' | 'chrome' | 'firefox'
   }[] = [
     {
       name: '',
       message: 'undefined',
       stack: '',
       foundInSpec: `e2e/playwright/sketch-tests.spec.ts Existing sketch with bad code delete user's code`,
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: '"{"kind"',
@@ -21,14 +21,14 @@ export const isErrorWhitelisted = (exception: Error) => {
         '"engine","sourceRanges":[[0,0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}"',
       stack: '',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: '',
       message: 'false',
       stack: '',
       foundInSpec: 'e2e/playwright/testing-segment-overlays.spec.ts',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: '{"kind"',
@@ -36,7 +36,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       message: 'no connection to send on',
       stack: '',
       foundInSpec: 'e2e/playwright/various.spec.ts',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: '',
@@ -44,7 +44,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       foundInSpec:
         'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: 'engine error',
@@ -53,7 +53,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       foundInSpec:
         'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: '',
@@ -61,19 +61,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       foundInSpec:
         'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
-      project: 'Google Chrome',
-    },
-    {
-      name: 'fE',
-      message:
-        'engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")',
-      stack: `fE: engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")
-     at ET (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:49875:12)
-     at WGe.clearSceneAndBustCache (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91886:19)
-     at async a.onEngineConnectionOpened (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91483:9)`,
-      foundInSpec:
-        'e2e/playwright/testing-constraints.spec.ts is frequent but could be any spec',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: 'RangeError',
@@ -88,7 +76,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     at DOMObserver.flush (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6621:17)
     at MutationObserver.<anonymous> (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6322:14)`,
       foundInSpec: 'e2e/playwright/editor-tests.spec.ts fold gutters work',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: 'RangeError',
@@ -103,7 +91,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     +     at KclManager.selectRange (http://localhost:3000/src/lang/KclSingleton.ts:1255:22)
     +     at AST extrude (http://localhost:3000/src/machines/modelingMachine.ts:828:25)`,
       foundInSpec: 'e2e/playwright/editor-tests.spec.ts',
-      project: 'Google Chrome',
+      project: 'chrome',
     },
     {
       name: 'Unhandled Promise Rejection',
@@ -242,7 +230,7 @@ export const isErrorWhitelisted = (exception: Error) => {
      at <anonymous>:18:5
      at <anonymous>:19:7`,
       message: `Failed to read the 'localStorage' property from 'Window': Access is denied for this document.`,
-      project: 'Google Chrome',
+      project: 'chrome',
       foundInSpec: 'e2e/playwright/basic-sketch.spec.ts',
     },
     {
@@ -250,14 +238,14 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: `
 `,
       message: `Nothing to export`,
-      project: 'Google Chrome',
+      project: 'chrome',
       foundInSpec: 'e2e/playwright/regression-tests.spec.ts',
     },
     {
       name: '{"kind"',
       stack: ``,
       message: `engine","sourceRanges":[[0,0,0]],"msg":"Failed to wait for promise from engine: JsValue(\\"Force interrupt, executionIsStale, new AST requested\\")"}`,
-      project: 'Google Chrome',
+      project: 'chrome',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },
     // TODO: fix this error in the code
@@ -265,14 +253,14 @@ export const isErrorWhitelisted = (exception: Error) => {
       name: 'ReferenceError',
       message: '_testUtils is not defined',
       stack: '',
-      project: 'Google Chrome',
+      project: 'chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
     },
     {
       name: 'TypeError',
       message: 'Failed to fetch',
       stack: '',
-      project: 'Google Chrome',
+      project: 'chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
     },
     {
@@ -280,7 +268,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       message: 'The "path" argument must be of type string. Received undefined',
       stack:
         'Error: The "path" argument must be of type string. Received undefined',
-      project: 'Google Chrome',
+      project: 'chrome',
       foundInSpec: '', // many tests are impacted by this error
     },
   ]

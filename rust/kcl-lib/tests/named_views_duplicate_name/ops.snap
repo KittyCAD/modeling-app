@@ -3,93 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed named_views_duplicate_name.kcl
 ---
 {
-  "rust/kcl-lib/tests/named_views_duplicate_name/input.kcl": [
-    {
-      "type": "StdLibCall",
-      "name": "view::named",
-      "unlabeledArg": {
-        "value": {
-          "type": "String",
-          "value": "Front"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "baseline": {
-          "value": {
-            "type": "Enum",
-            "enum_name": "Visibility",
-            "variant": "Show"
-          },
-          "sourceRange": []
-        },
-        "camera": {
-          "value": {
-            "type": "CameraView"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "view::named",
-      "unlabeledArg": {
-        "value": {
-          "type": "String",
-          "value": "Front"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "baseline": {
-          "value": {
-            "type": "Enum",
-            "enum_name": "Visibility",
-            "variant": "Show"
-          },
-          "sourceRange": []
-        },
-        "camera": {
-          "value": {
-            "type": "CameraView"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": [],
-      "isError": true
-    }
-  ],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -192,7 +105,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -216,7 +129,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -240,7 +153,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -264,7 +177,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -288,7 +201,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -312,7 +225,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -336,7 +249,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -360,7 +273,7 @@ description: Operations executed named_views_duplicate_name.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

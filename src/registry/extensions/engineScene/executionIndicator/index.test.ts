@@ -1,84 +1,148 @@
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import type { ZDSProject } from '@src/lib/projectSession'
+import type {
+  ExecutingEditor,
+  ProjectSessionService,
+} from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
+import {
+  factory as defineFactory,
+  provide,
+  Registry,
+  type Factory,
+} from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 import executionIndicator from '.'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 
-function createExecutingEditorService(
+function createProjectSession(
   isExecuting = signal(false),
   executionElapsedMs = signal<number | null>(null)
-): ExecutingEditorService {
+): ProjectSessionService {
+  const project = signal<ZDSProject | undefined>(undefined)
+  const libraryId = signal<string | undefined>(undefined)
   return {
-    code: signal(''),
-    hasEditsSinceLastExecution: signal(false),
-    isExecuting,
-    executionElapsedMs,
-    selectionStatusLabel: signal('No selection'),
-    showExperimentalFeaturesStatusBarItem: signal(true),
-    getPendingCommandCount: vi.fn(() => 0),
-    executeCode: vi.fn(),
-    updateCode: vi.fn(),
+    storageFor: vi.fn(),
+    retrySave: vi.fn(async () => undefined),
+    deleteEntry: vi.fn(async () => undefined),
+    applyStorageSnapshot: vi.fn(async () => {}),
+    editorChanged: vi.fn(),
+    writeThumbnail: vi.fn(async () => {}),
+    refreshProject: vi.fn(async () => undefined),
+    openFile: vi.fn(async () => undefined),
+    rename: vi.fn(async () => undefined),
+    textFileIO: {
+      read: vi.fn(async () => ''),
+      write: vi.fn(async () => {}),
+      watch: vi.fn(),
+      unwatch: vi.fn(),
+    },
+    project,
+    currentProjectLibraryId: libraryId,
+    getProject: () => project.value,
+    setProject: (next) => {
+      project.value = next
+    },
+    clearProject: () => {
+      project.value = undefined
+    },
+    getCurrentProjectLibraryId: () => libraryId.value,
+    setCurrentProjectLibraryId: (next) => {
+      libraryId.value = next
+    },
+    executingEditor: signal({
+      code: signal(''),
+      hasEditsSinceLastExecution: signal(false),
+      isExecuting,
+      executionElapsedMs,
+      selectionStatusLabel: signal('No selection'),
+      showExperimentalFeaturesStatusBarItem: signal(true),
+      getPendingCommandCount: vi.fn(() => 0),
+      executeCode: vi.fn(),
+      updateCode: vi.fn(),
+    }),
   }
 }
 
 describe('executionIndicator', () => {
-  it('contributes the execution status item while the engine is executing', () => {
+  it('contributes the execution status item while the engine is executing', async () => {
     const isExecuting = signal(false)
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-executing-editor-service',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            createExecutingEditorService(isExecuting)
-          ),
-        ],
-      }),
+    await registry.configure([
+      [provide(projectSession, createProjectSession(isExecuting))],
       executionIndicator,
     ])
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toEqual([])
+    expect(registry.get(statusBarLocalItemsFacet)).toEqual([])
 
     isExecuting.value = true
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID])
   })
-
-  it('keeps a checkmark after execution finishes and restores the spinner on the next run', () => {
+  it('releases the old editor status when switching or closing editors', async () => {
+    const oldExecuting = signal(true)
+    const oldEditor = createProjectSession(oldExecuting).executingEditor.value
+    const nextEditor = createProjectSession(signal(false), signal(12))
+      .executingEditor.value
+    const current = signal<ExecutingEditor | undefined>(oldEditor)
+    const registry = new Registry()
+    await registry.configure([
+      defineFactory({
+        create: () => ({
+          items: [
+            provide(projectSession, {
+              ...createProjectSession(),
+              executingEditor: current,
+            }),
+          ],
+        }),
+      }) satisfies Factory,
+      executionIndicator,
+    ])
+    try {
+      expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
+        { icon: 'loading' },
+      ])
+      current.value = nextEditor
+      expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
+        { icon: 'checkmark' },
+      ])
+      oldExecuting.value = false
+      oldExecuting.value = true
+      expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
+        { icon: 'checkmark' },
+      ])
+      current.value = undefined
+      expect(registry.get(statusBarLocalItemsFacet)).toEqual([])
+    } finally {
+      await registry.dispose()
+    }
+  })
+  it('keeps a checkmark after execution finishes and restores the spinner on the next run', async () => {
     const isExecuting = signal(true)
     const executionElapsedMs = signal<number | null>(0)
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-executing-editor-service',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            createExecutingEditorService(isExecuting, executionElapsedMs)
-          ),
-        ],
-      }),
+    await registry.configure([
+      [
+        provide(
+          projectSession,
+          createProjectSession(isExecuting, executionElapsedMs)
+        ),
+      ],
       executionIndicator,
     ])
 
     expect(
-      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
     ).toEqual([EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID])
 
     executionElapsedMs.value = 1234
     isExecuting.value = false
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
       {
         id: EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID,
         icon: 'checkmark',
@@ -89,27 +153,18 @@ describe('executionIndicator', () => {
     isExecuting.value = true
     executionElapsedMs.value = 0
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
       { icon: 'loading', label: 'Engine executing' },
     ])
   })
-
-  it('shows a completed execution even when it took zero milliseconds', () => {
+  it('shows a completed execution even when it took zero milliseconds', async () => {
     const registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-executing-editor-service',
-        providesServices: [
-          provideService(
-            executingEditorService,
-            createExecutingEditorService(signal(false), signal(0))
-          ),
-        ],
-      }),
+    await registry.configure([
+      [provide(projectSession, createProjectSession(signal(false), signal(0)))],
       executionIndicator,
     ])
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+    expect(registry.get(statusBarLocalItemsFacet)).toMatchObject([
       { icon: 'checkmark' },
     ])
   })

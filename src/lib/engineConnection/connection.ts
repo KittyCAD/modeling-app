@@ -52,6 +52,10 @@ interface IDeferredPromise {
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
+  readonly geometryOnly: boolean
+  get webrtc(): boolean {
+    return !this.geometryOnly
+  }
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
   private _pingPongSpan: {
@@ -105,6 +109,7 @@ export class Connection extends EventTarget {
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
   private reconnectRequested = false
+  private reconnectInitiatedBy: 'api' | 'client' = 'api'
   private readonly onReconnectRequested: (connection: Connection) => void
 
   constructor({
@@ -116,9 +121,10 @@ export class Connection extends EventTarget {
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
     unitTestWebrtc,
-    unitTestPool,
+    unitTestGeometryOnly,
     handleMessage,
     getCloudProjectId,
+    geometryOnly = false,
     onReconnectRequested = (connection: Connection) =>
       connection.closeForReconnect(),
   }: {
@@ -130,9 +136,10 @@ export class Connection extends EventTarget {
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
-    unitTestPool?: 'cpu'
+    unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
+    geometryOnly?: boolean
     onReconnectRequested?: (connection: Connection) => void
   }) {
     markOnce('code/startInitialEngineConnect')
@@ -144,6 +151,7 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.url = url
+    this.geometryOnly = geometryOnly
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.recordShutdownTrigger = recordShutdownTrigger
@@ -172,7 +180,7 @@ export class Connection extends EventTarget {
       this.connectUnitTesting(
         callbackOnUnitTestingConnection,
         unitTestWebrtc,
-        unitTestPool
+        unitTestGeometryOnly
       )
       this.isUsingUnitTestingConnection = true
     }
@@ -181,17 +189,23 @@ export class Connection extends EventTarget {
   connectUnitTesting(
     callback: (message: string) => void,
     webrtc = true,
-    pool?: 'cpu'
+    geometryOnly = false
   ) {
     const webrtcQuery = webrtc ? '' : '&webrtc=false'
-    // The API derives the engine's geometry_only setting from the CPU pool.
-    const poolQuery = pool ? `&pool=${pool}` : ''
-    const postEffectQuery = pool ? '' : '&post_effect=ssao'
+    const geometryOnlyQuery = `&geometry_only=${geometryOnly}`
+    const postEffectQuery = geometryOnly ? '' : '&post_effect=ssao'
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${poolQuery}`
+      `?video_res_width=${256}&video_res_height=${256}${postEffectQuery}${webrtcQuery}${geometryOnlyQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
+    this.websocket.addEventListener('close', () => this.stopPingPong(), {
+      once: true,
+    })
+    const authenticated = () => {
+      if (this.pingIntervalId === undefined) this.startPingPong()
+      callback('auth success')
+    }
     const onWebSocketOpen = (event: Event) => {
       this.send({
         type: 'headers',
@@ -235,19 +249,21 @@ export class Connection extends EventTarget {
 
       switch (resp.type) {
         case 'pong':
+          this.setPong(Date.now())
+          this.setPing(undefined)
           break
 
         // Sessions without WebRTC use the session data response as the
         // successful connection handshake.
         case 'modeling_session_data':
           if (!webrtc) {
-            callback('auth success')
+            authenticated()
           }
           break
 
         // Only fires on successful authentication.
         case 'ice_server_info':
-          callback('auth success')
+          authenticated()
           return
         case 'debug':
         case 'modeling':
@@ -331,9 +347,6 @@ export class Connection extends EventTarget {
     }
 
     this.deferredConnection = promiseFactory<any>()
-    this.deferredPeerConnection = promiseFactory<any>()
-    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
-    this.deferredSdpAnswer = promiseFactory<any>()
 
     const warnAndRejectConnect = (e: any) => {
       console.warn(e)
@@ -344,6 +357,18 @@ export class Connection extends EventTarget {
     this.deferredConnection.promise.catch((e) => {
       console.warn(e)
     })
+
+    if (!this.webrtc) {
+      this.createWebSocketConnection()
+      await this.deferredConnection.promise
+      this.connected = true
+      return
+    }
+
+    this.deferredPeerConnection = promiseFactory<any>()
+    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
+    this.deferredSdpAnswer = promiseFactory<any>()
+
     this.deferredPeerConnection.promise.catch(warnAndRejectConnect)
     this.deferredMediaStreamAndWebrtcStatsCollector.promise.catch(
       warnAndRejectConnect
@@ -641,6 +666,19 @@ export class Connection extends EventTarget {
     return this.peerConnection
   }
 
+  requestReconnect(initiatedBy: 'api' | 'client' = 'client') {
+    if (
+      this.reconnectRequested ||
+      this.websocket?.readyState !== WebSocket.OPEN
+    ) {
+      return
+    }
+
+    this.reconnectRequested = true
+    this.reconnectInitiatedBy = initiatedBy
+    this.onReconnectRequested(this)
+  }
+
   closeForReconnect() {
     if (
       !this.reconnectRequested ||
@@ -651,7 +689,7 @@ export class Connection extends EventTarget {
 
     this.recordShutdownTrigger({
       route: 'websocket-closed',
-      initiatedBy: 'api',
+      initiatedBy: this.reconnectInitiatedBy,
       code: WebSocketCloseCode.NormalClosure.toString(),
       reason: 'reconnect requested',
       reconnectRequested: true,
@@ -663,7 +701,7 @@ export class Connection extends EventTarget {
   }
 
   createWebSocketConnection() {
-    if (!this.deferredSdpAnswer?.resolve) {
+    if (this.webrtc && !this.deferredSdpAnswer?.resolve) {
       console.warn('deferredSdpAnswer resolve is undefined')
       return
     }
@@ -682,6 +720,7 @@ export class Connection extends EventTarget {
       send: this.send.bind(this),
       token: this.token,
       dispatchEvent: this.dispatchEvent.bind(this),
+      onOpen: this.beginWebSocketOnlyHandshake.bind(this),
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
@@ -698,28 +737,20 @@ export class Connection extends EventTarget {
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       addIceCandidate: this.addIceCandidate.bind(this),
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
-      sdpAnswerResolve: this.deferredSdpAnswer.resolve,
-      sdpAnswerReject: this.deferredSdpAnswer.reject,
+      sdpAnswerResolve: this.deferredSdpAnswer?.resolve ?? (() => undefined),
+      sdpAnswerReject: this.deferredSdpAnswer?.reject ?? (() => undefined),
       setApiCallId: (apiCallId) => {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      webrtc: this.webrtc,
+      onWebSocketReady: this.establishWebSocketOnlyConnection.bind(this),
       getConnectionContext: () => ({
         connectionId: this.id,
         modelingApiCallId: this.apiCallId ?? null,
       }),
       tearDownManager: this.tearDownManager.bind(this),
-      requestReconnect: () => {
-        if (
-          this.reconnectRequested ||
-          this.websocket?.readyState !== WebSocket.OPEN
-        ) {
-          return
-        }
-
-        this.reconnectRequested = true
-        this.onReconnectRequested(this)
-      },
+      requestReconnect: () => this.requestReconnect('api'),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -764,6 +795,16 @@ export class Connection extends EventTarget {
       type: 'websocket',
     })
     this.websocket.addEventListener('message', onWebSocketMessage)
+    // Reliable commands can receive replies before WebRTC startup finishes.
+    const onCommandResponse = (event: MessageEvent) => {
+      this.handleMessage?.(event)
+    }
+    this.trackListener('websocket-command-response', {
+      event: 'message',
+      callback: onCommandResponse,
+      type: 'websocket',
+    })
+    this.websocket.addEventListener('message', onCommandResponse)
     this.trackListener('websocket-close', {
       event: 'close',
       callback: metaClose,
@@ -779,6 +820,37 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.mediaStream = mediaStream
+  }
+
+  private establishWebSocketOnlyConnection() {
+    if (this.webrtc || this.connected) {
+      return
+    }
+
+    this.connected = true
+    this.startPingPong()
+    this.cleanUpTimeouts()
+    markOnce('code/endInitialEngineConnect')
+    this.deferredConnection?.resolve(true)
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.ConnectionEstablished,
+        },
+      })
+    )
+  }
+
+  private beginWebSocketOnlyHandshake() {
+    if (this.webrtc) {
+      return
+    }
+
+    this.send({ type: 'ping' })
+    this._pingPongSpan = {
+      ping: Date.now(),
+      pong: undefined,
+    }
   }
 
   setWebrtcStatsCollector(webrtcStatsCollector: () => Promise<ClientMetrics>) {
@@ -826,7 +898,9 @@ export class Connection extends EventTarget {
     this.removeAllEventListeners()
     this.disconnectWebsocket()
     this.disconnectUnreliableDataChannel()
-    this.disconnectPeerConnection()
+    if (this.webrtc) {
+      this.disconnectPeerConnection()
+    }
     // Function generated from createPeerConnection workflow
     this.webrtcStatsCollector = undefined
     this.cleanUpTimeouts()

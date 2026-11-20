@@ -12,7 +12,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
-import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
+import { VIEW_NAMES_SEMANTIC, ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import {
   DefaultLayoutPaneID,
@@ -76,9 +76,18 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
+          kclManager.sceneInfra.camControls
+            .zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
+            .catch(reportRejection)
+        }}
+        hotkey="mod+alt+f"
+      >
+        Zoom to fit
+      </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
           resetCameraPosition({
             sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
@@ -149,11 +158,7 @@ export function useViewControlMenuItems() {
               data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
-            void selectSketchPlane(
-              planeOrFaceId,
-              modelingState.context.store.useSketchSolveMode?.current,
-              kclManager
-            )
+            void selectSketchPlane(planeOrFaceId, kclManager)
           }
         }}
         disabled={!planeOrFaceId}
@@ -202,7 +207,6 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.useSketchSolveMode,
       sketching,
       showSketchGrid,
       snapToGrid,

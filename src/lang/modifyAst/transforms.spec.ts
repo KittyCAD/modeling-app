@@ -53,7 +53,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -1264,6 +1264,31 @@ appearance(
 )`)
     })
 
+    it('should add a call with backfaceColor', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addAppearance({
+        ast,
+        artifactGraph,
+        objects,
+        color: '#FF0000',
+        backfaceColor: '#00aa11',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${box}
+appearance(extrude001, color = "#FF0000", backfaceColor = "#00aa11")`)
+    })
+
     async function runEditAppearanceTest(
       code: string,
       nodeToEdit: PathToNode,
@@ -1311,8 +1336,7 @@ appearance(extrude001, color = "#00FF00")`
         rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-    }, 30_000)
-
+    })
     it('should edit a call in pipe if og selection was in pipe', async () => {
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)

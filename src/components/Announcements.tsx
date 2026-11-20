@@ -1,12 +1,8 @@
-import type { Announcement } from '@kittycad/lib'
+import { type Announcement, meta } from '@kittycad/lib'
 import { MarkdownText } from '@src/components/MarkdownText'
-import { listClientItems } from '@src/lib/apiPagination'
+import { collectApiPages } from '@src/lib/apiPagination'
 import { createKCClient } from '@src/lib/kcClient'
 import { useEffect, useState } from 'react'
-
-import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
-
-const LEGACY_SKETCH_MODE_DEPRECATION_MESSAGE = `${LEGACY_SKETCH_MODE_REMOVED_MESSAGE}. This legacy sketch mode will soon be removed.`
 
 export function Announcements({ token }: { token?: string }) {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
@@ -16,11 +12,11 @@ export function Announcements({ token }: { token?: string }) {
 
     async function fetchAnnouncements() {
       try {
-        const client = createKCClient(token)
-        const result = await listClientItems<Announcement>(
-          client,
-          '/announcements',
-          controller.signal
+        const client = createKCClient(token, undefined, {
+          signal: controller.signal,
+        })
+        const result = await collectApiPages(
+          meta.get_announcements_pager({ client })
         )
         if (!controller.signal.aborted) {
           setAnnouncements(result)
@@ -57,26 +53,13 @@ function AnnouncementBanner({ announcement }: { announcement: Announcement }) {
       data-testid="announcement-banner"
       className="my-2 rounded-lg border border-primary/30 bg-chalkboard-10 px-4 py-3 text-xs dark:border-primary/40 dark:bg-chalkboard-90"
     >
-      <p className="font-bold text-primary">{announcement.title}</p>
+      <p className="mb-2 font-bold text-primary">{announcement.title}</p>
       {announcement.body && (
         <MarkdownText
           text={announcement.body}
-          className="mt-1 leading-5 text-chalkboard-90 dark:text-chalkboard-20"
+          className="leading-5 text-chalkboard-90 dark:text-chalkboard-20 [&_p+p]:mt-2"
         />
       )}
     </section>
-  )
-}
-
-export function LegacySketchModeBanner() {
-  return (
-    <div
-      data-testid="legacy-sketch-mode-banner"
-      className="mt-2 w-[min(34rem,calc(100vw-2rem))] py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg whitespace-normal"
-    >
-      <p className="text-xs text-center whitespace-normal break-words">
-        {LEGACY_SKETCH_MODE_DEPRECATION_MESSAGE}
-      </p>
-    </div>
   )
 }

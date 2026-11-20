@@ -21,6 +21,7 @@ import {
   recast,
 } from '@src/lang/wasm'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { clearActiveTextFile } from '@src/lib/activeTextFile'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -36,8 +37,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { listImportableProjectFiles } from '@src/lib/projectSession/projectTree'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 interface KclCommandConfig {
@@ -47,13 +47,12 @@ interface KclCommandConfig {
     providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
   kclManager: KclManager
-  systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
   settings: {
     defaultUnit: UnitLength
   }
-  project?: Project
+  getProject: () => Project | undefined
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
@@ -210,17 +209,16 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: () => {
             const providedOptions: { name: string; value: string }[] = []
-            const context = commandProps.systemIOActor.getSnapshot().context
-            const projectName = commandProps.project?.name
+            const project = commandProps.getProject()
             const sep = fsZds.sep
             const relevantFiles = relevantFileExtensions(
               commandProps.wasmInstance
             )
-            if (projectName && sep) {
-              const importableFiles = listAllImportFilesWithinProject(context, {
-                projectFolderName: projectName,
-                importExtensions: relevantFiles,
-              })
+            if (project?.name && sep) {
+              const importableFiles = listImportableProjectFiles(
+                project,
+                relevantFiles
+              )
               importableFiles.forEach((file) => {
                 providedOptions.push({
                   name: file.replaceAll(sep, '/'),
@@ -307,6 +305,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           localName,
           representation,
         })
+        clearActiveTextFile()
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,

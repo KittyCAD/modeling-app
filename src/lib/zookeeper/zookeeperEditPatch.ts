@@ -57,6 +57,21 @@ export function summarizeZookeeperEditPatch(
   return summary
 }
 
+export function formatZookeeperFileChangeSummary({
+  created,
+  modified,
+  deleted,
+}: ZookeeperFileChangeSummary): string {
+  const count = created + modified + deleted
+  if (count === 0) return 'No files changed'
+  const details = [
+    created && `${created} created`,
+    modified && `${modified} modified`,
+    deleted && `${deleted} deleted`,
+  ].filter(Boolean)
+  return `Successfully changed ${count} ${count === 1 ? 'file' : 'files'} (${details.join(', ')})`
+}
+
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
   { type: 'edit_kcl_code' }

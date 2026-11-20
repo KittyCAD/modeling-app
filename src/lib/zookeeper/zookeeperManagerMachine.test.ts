@@ -1,3 +1,9 @@
+import { createProjectForTest } from '@src/lib/projectTestUtils'
+import { parse as uuidParse } from 'uuid'
+import {
+  ControllableSetupWebSocket,
+  encodeReplayMessage,
+} from '@src/lib/zookeeper/testUtils'
 import type {
   AttachmentRef,
   ClientErrorReport,
@@ -5,12 +11,16 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
+import * as msgpack from '@msgpack/msgpack'
 import {
   initializeClientErrorReporting,
   resetReportedClientErrorsForTests,
 } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
+  appendReplayMessages,
+  prependReplayMessages,
+  type Exchange,
   type Conversation,
   createZookeeperManagerActor,
   createZookeeperCorrelation,
@@ -22,23 +32,29 @@ import {
   toMlCopilotFile,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
+  ZOOKEEPER_REPLAY_PAGE_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
   ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
   type ZookeeperManagerContext,
   type ZookeeperManagerEvents,
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  zookeeperDefaultContext,
   stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
+  ZOOKEEPER_MAX_MESSAGE_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
+import * as projectFileTransport from '@src/lib/zookeeper/projectFileTransport'
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import { createActor, fromPromise, toPromise, waitFor } from 'xstate'
+import toast from 'react-hot-toast'
 
 // Prompt construction is stubbed in the race test, so these dependencies are
 // only forwarded by the manager. Avoid loading the editor or Wasm for them.
@@ -71,6 +87,58 @@ function stubClientErrorFetch() {
   return { fetchMock, reports }
 }
 
+describe('appendReplayMessages', () => {
+  const notice = { info: { text: 'Previous activity' } }
+  const request = { type: 'user', content: 'Make a bracket' }
+  const reasoning = {
+    reasoning: { type: 'text', content: 'Checking constraints' },
+  }
+  const answer = { end_of_stream: { whole_response: 'Bracket created.' } }
+  const nextRequest = { type: 'user', content: 'Add a hole' }
+  const messages = [
+    notice,
+    request,
+    reasoning,
+    { delta: { delta: 'Bracket ' } },
+    answer,
+    nextRequest,
+  ].map(encodeReplayMessage)
+
+  it.each(Array.from({ length: messages.length + 1 }, (_, index) => index))(
+    'joins an older page split at message %i without changing the loaded exchanges',
+    (boundary) => {
+      const newer: Exchange[] = []
+      appendReplayMessages(newer, messages.slice(boundary))
+      const before = structuredClone(newer)
+      const expected: Exchange[] = []
+      appendReplayMessages(expected, messages)
+      expect(prependReplayMessages(newer, messages.slice(0, boundary))).toEqual(
+        expected
+      )
+      expect(newer).toEqual(before)
+    }
+  )
+
+  it.each(Array.from({ length: messages.length + 1 }, (_, index) => index))(
+    'preserves exchanges when chunks split at message %i',
+    (boundary) => {
+      const exchanges: Exchange[] = []
+      appendReplayMessages(exchanges, messages.slice(0, boundary))
+      appendReplayMessages(exchanges, messages.slice(boundary))
+
+      expect(exchanges).toEqual([
+        { responses: [notice], deltasAggregated: '' },
+        {
+          request,
+          responses: [reasoning, answer],
+          deltasAggregated: 'Bracket created.',
+        },
+        { request: nextRequest, responses: [], deltasAggregated: '' },
+      ])
+    }
+  )
+})
+
 class TestSocket extends EventTarget {
   sentPayloads: string[] = []
   readyState: number = WebSocket.CLOSED
@@ -80,60 +148,6 @@ class TestSocket extends EventTarget {
   }
 
   close = vi.fn()
-}
-
-class ControllableSetupWebSocket extends EventTarget {
-  static CONNECTING = 0
-  static OPEN = 1
-  static CLOSING = 2
-  static CLOSED = 3
-  static instances: ControllableSetupWebSocket[] = []
-
-  readonly url: string
-  readonly sentPayloads: string[] = []
-  binaryType: BinaryType = 'blob'
-  readyState = ControllableSetupWebSocket.CONNECTING
-
-  constructor(url: string) {
-    super()
-    this.url = url
-    ControllableSetupWebSocket.instances.push(this)
-  }
-
-  send(payload: string) {
-    this.sentPayloads.push(payload)
-  }
-
-  open() {
-    this.readyState = ControllableSetupWebSocket.OPEN
-    this.dispatchEvent(new Event('open'))
-  }
-
-  receive(payload: unknown) {
-    this.dispatchEvent(
-      new MessageEvent('message', {
-        data: JSON.stringify(payload),
-      })
-    )
-  }
-
-  close = vi.fn(() => {
-    this.closeWithCode(1000)
-  })
-
-  closeWithCode(code: number, reason = '') {
-    if (this.readyState === ControllableSetupWebSocket.CLOSED) {
-      return
-    }
-    this.readyState = ControllableSetupWebSocket.CLOSED
-    const closeEvent = new Event('close')
-    Object.defineProperties(closeEvent, {
-      code: { value: code },
-      reason: { value: reason },
-      wasClean: { value: code === 1000 },
-    })
-    this.dispatchEvent(closeEvent)
-  }
 }
 
 type TestWebSocket = Pick<ZookeeperManagerContext, 'ws'>['ws'] & TestSocket
@@ -286,16 +300,12 @@ describe('completed live edit retention', () => {
     actor.send({
       type: ZookeeperManagerTransitions.MessageSend,
       prompt: 'Next turn',
-      projectForPromptOutput: {
+      projectForPromptOutput: createProjectForTest('/demo', {
         name: 'demo',
-        path: '/demo',
         children: [currentFile.entry],
         default_file: currentFile.entry.path,
-        directory_count: 0,
         kcl_file_count: 1,
-        metadata: null,
-        readWriteAccess: true,
-      },
+      }),
       applicationProjectDirectory: '/',
       fileSelectedDuringPrompting: currentFile,
       projectFiles: [],
@@ -731,6 +741,176 @@ describe('zookeeperManagerMachine', () => {
       stubClientErrorFetch()
     })
 
+    it.each(
+      [
+        { info: { text: 'Message canceled by user.' } },
+        { error: { detail: 'Request failed.' } },
+        {
+          info: {
+            text: 'Temporary connection issue. Retrying automatically\u2026',
+          },
+        },
+        {
+          info: {
+            text: 'Manual edits detected since the last Zookeeper state.',
+          },
+        },
+      ].flatMap((notice) =>
+        ['legacy', 'page-json', 'page-msgpack'].map((format) => ({
+          notice,
+          format,
+        }))
+      )
+    )(
+      'keeps replayed notices with their exchange: %j',
+      async ({ notice, format }) => {
+        vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+        const actor = createActor(zookeeperManagerMachine, {
+          input: { apiToken: 'token' },
+        }).start()
+        const firstRequest = { type: 'user', content: 'Make a bracket' }
+        const firstAnswer = {
+          end_of_stream: { whole_response: 'Bracket created.' },
+        }
+        const secondRequest = { type: 'user', content: 'Add a hole' }
+        const reasoning = {
+          reasoning: { type: 'text', content: 'Checking constraints' },
+        }
+
+        try {
+          actor.send({
+            type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+            refParentSend: vi.fn(),
+            conversationId: 'conversation-id',
+          })
+          const socket = ControllableSetupWebSocket.instances[0]
+          expect(
+            new URL(socket.url).searchParams.get('replay_pagination')
+          ).toBe('true')
+          socket.open()
+          await vi.waitFor(() => {
+            expect(socket.sentPayloads).toContain(
+              JSON.stringify({ type: 'list_modes' })
+            )
+          })
+          const messages = [
+            notice,
+            firstRequest,
+            firstAnswer,
+            secondRequest,
+            reasoning,
+            notice,
+          ].map(encodeReplayMessage)
+          socket.receive(
+            format === 'legacy'
+              ? { replay: { messages } }
+              : {
+                  replay_page: {
+                    conversation_id: 'conversation-id',
+                    messages,
+                    next_cursor:
+                      format === 'page-msgpack'
+                        ? 'older-page-cursor'
+                        : undefined,
+                  },
+                },
+            format === 'page-msgpack' ? 'msgpack' : 'json'
+          )
+          socket.receive({
+            conversation_id: { conversation_id: 'conversation-id' },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+          )
+
+          expect(actor.getSnapshot().context.replayNextCursor).toBe(
+            format === 'page-msgpack' ? 'older-page-cursor' : undefined
+          )
+          expect(actor.getSnapshot().context.conversation?.exchanges).toEqual([
+            {
+              responses: [notice],
+              deltasAggregated: '',
+            },
+            {
+              request: firstRequest,
+              responses: [firstAnswer],
+              deltasAggregated: firstAnswer.end_of_stream.whole_response,
+            },
+            {
+              request: secondRequest,
+              responses: [reasoning, notice],
+              deltasAggregated: '',
+            },
+          ])
+          actor.send({ type: ZookeeperManagerTransitions.AbruptClose })
+          expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+          actor.send({
+            type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+            refParentSend: vi.fn(),
+            conversationId: 'another-conversation-id',
+          })
+          expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+        } finally {
+          actor.stop()
+        }
+      }
+    )
+
+    it.each([
+      {
+        response: {
+          replay_page: { conversation_id: 'wrong-conversation', messages: [] },
+        },
+      },
+      {
+        response: {
+          replay_page_error: {
+            code: 'load_failed',
+            detail: 'Unable to load history',
+          },
+        },
+      },
+      {
+        response: {
+          replay_page: {
+            conversation_id: 'conversation-id',
+            messages: [[123]],
+          },
+        },
+      },
+    ])('rejects an invalid initial page: %j', async ({ response }) => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive(response)
+        await vi.waitFor(() => {
+          expect(socket.close).toHaveBeenCalled()
+          expect(actor.getSnapshot().context.setupFailureReason).toBeTruthy()
+          expect(actor.getSnapshot().context.setupFailureReason).toBe(
+            'Unable to load conversation history.'
+          )
+        })
+        expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+        expect(actor.getSnapshot().context.conversation).toBeUndefined()
+      } finally {
+        actor.stop()
+      }
+    })
+
     it('waits for auth hydration before opening the setup websocket', async () => {
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
@@ -967,27 +1147,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({
-        conversation_id: { conversation_id: 'conversation-id' },
-      })
-
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles: [],
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
+      await completeSetupToReady(actor, socket)
 
       socket.receive({
         access_denied: {
@@ -1027,27 +1187,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({
-        conversation_id: { conversation_id: 'conversation-id' },
-      })
-
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles: [],
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
+      await completeSetupToReady(actor, socket)
 
       expect(socket.readyState).toBe(ControllableSetupWebSocket.OPEN)
       expect(socket.close).not.toHaveBeenCalled()
@@ -1227,6 +1367,77 @@ describe('zookeeperManagerMachine', () => {
       }
     })
 
+    it('allows slow uploads, then detects missing heartbeat replies', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        await completeSetupToContinueCheck(actor, socket)
+
+        socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
+        for (let interval = 0; interval < 12; interval += 1) {
+          await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+          expect(socket.close).not.toHaveBeenCalled()
+          socket.bufferedAmount -= 1024 * 1024
+        }
+        expect(socket.sentPayloads).not.toContain(
+          JSON.stringify({ type: 'ping' })
+        )
+
+        socket.bufferedAmount = 0
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+        expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+        expect(socket.close).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
+        expect(actor.getSnapshot().context.closeReason).toBe(
+          'Zookeeper connection timed out.'
+        )
+        expect(socket.close).toHaveBeenCalledOnce()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
+    it('times out a large upload when its send buffer stops draining', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        await completeSetupToContinueCheck(actor, socket)
+
+        socket.bufferedAmount = ZOOKEEPER_MAX_MESSAGE_BYTES / 2
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + 2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
+        expect(actor.getSnapshot().context.closeReason).toBe(
+          'Zookeeper connection timed out.'
+        )
+        expect(socket.close).toHaveBeenCalledOnce()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
     it('recovers if a responsive websocket later stops responding', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
@@ -1301,9 +1512,206 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 
+  it.each([
+    ['local', false],
+    ['cloud', false],
+    ['local', true],
+    ['cloud', true],
+  ] as const)(
+    'sends project files on prompts and resume (%s, SDK project tools: %s)',
+    async (storage, sdkHasProjectTools) => {
+      const selectTransport = projectFileTransport.usesCloudProjectTools
+      vi.spyOn(
+        projectFileTransport,
+        'usesCloudProjectTools'
+      ).mockImplementation((projectId) =>
+        selectTransport(projectId, sdkHasProjectTools)
+      )
+      const cloudTools = storage === 'cloud' && sdkHasProjectTools
+      const ws = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
+      const { kclManager, engineCommandManager, instance } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const binaryFile = new Blob([new Uint8Array([0, 255, 128])])
+      const readBinary = vi.spyOn(binaryFile, 'arrayBuffer')
+      const slowRead = storage === 'cloud' && !sdkHasProjectTools
+      if (slowRead) {
+        vi.useFakeTimers()
+        readBinary.mockImplementation(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 7_000))
+          return new Uint8Array([0, 255, 128]).buffer
+        })
+      }
+      const projectFiles: FileMeta[] = [
+        {
+          type: 'kcl',
+          relPath: 'parts/main.kcl',
+          absPath: '/demo/parts/main.kcl',
+          fileContents: '@settings(kclVersion = 3.0)\n',
+          execStateFileNamesIndex: 0,
+        },
+        { type: 'other', relPath: 'assets/reference.bin', data: binaryFile },
+      ]
+      const context = {
+        ...zookeeperDefaultContext({}),
+        ws,
+        conversation: {
+          exchanges: [
+            {
+              request: { type: 'user' as const, content: 'Inspect' },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        },
+      }
+      const prompt: Extract<
+        ZookeeperManagerEvents,
+        { type: ZookeeperManagerTransitions.MessageSend }
+      > = {
+        type: ZookeeperManagerTransitions.MessageSend,
+        prompt: 'Inspect the project',
+        projectForPromptOutput: createProjectForTest('/demo', {
+          name: 'demo',
+          default_file: '/demo/parts/main.kcl',
+          directory_count: 1,
+          kcl_file_count: 1,
+          ...(storage === 'cloud' ? { cloudProjectId: 'remote-one' } : {}),
+        }),
+        applicationProjectDirectory: '/demo',
+        fileSelectedDuringPrompting: {
+          entry: {
+            name: 'main.kcl',
+            path: '/demo/parts/main.kcl',
+            children: null,
+          },
+          content: '@settings(kclVersion = 3.0)\n',
+        },
+        projectFiles,
+        selections: null,
+        artifactGraph: new Map(),
+        kclManager,
+        engineCommandManager,
+        wasmInstance: instance,
+        additionalFiles: [new File(['reference'], 'reference.txt')],
+      }
+      const resume: Extract<
+        ZookeeperManagerEvents,
+        { type: ZookeeperManagerStates.ContinueCheck }
+      > = {
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectId: `${storage}:remote-one`,
+        projectFiles,
+        activeFile: 'parts/main.kcl',
+      }
+      for (const event of [prompt, resume]) {
+        const logic = zookeeperManagerMachine.implementations.actors[event.type]
+        if (!logic || !('transition' in logic))
+          throw new Error('Missing request actor')
+        const actor = createActor(logic, { input: { context, event } })
+        const result = toPromise(actor)
+        const sentBefore = send.mock.calls.length
+        actor.start()
+        if (slowRead) {
+          await vi.advanceTimersByTimeAsync(6_999)
+          expect(send).toHaveBeenCalledTimes(sentBefore)
+          await vi.advanceTimersByTimeAsync(1)
+        }
+        await result
+      }
+      const requests = send.mock.calls
+        .map(([payload]) =>
+          typeof payload === 'string'
+            ? JSON.parse(payload)
+            : msgpack.decode(payload)
+        )
+        .filter((request) => request.type !== 'system')
+      expect(requests).toHaveLength(2)
+      for (const request of requests) {
+        expect(request.project_id).toMatch(new RegExp(`^${storage}:`))
+        expect(request.active_file).toBe('parts/main.kcl')
+        expect(request.current_files).toEqual(
+          cloudTools
+            ? {}
+            : {
+                'parts/main.kcl': Array.from(
+                  new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+                ),
+                'assets/reference.bin': [0, 255, 128],
+              }
+        )
+      }
+      expect(readBinary).toHaveBeenCalledTimes(cloudTools ? 0 : 2)
+      expect(requests[0].additional_files[0].name).toBe('reference.txt')
+    }
+  )
+
+  it('rejects oversized encoded prompts before sending anything', async () => {
+    const encode = vi
+      .spyOn(msgpack, 'encode')
+      .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
+    const ws: TestWebSocket = new TestSocket() as TestWebSocket
+    const send = vi.fn()
+    ws.send = send
+    const { kclManager, engineCommandManager, instance } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const event: ZookeeperManagerEvents = {
+      type: ZookeeperManagerTransitions.MessageSend,
+      prompt: 'Inspect the project',
+      projectForPromptOutput: createProjectForTest('/demo', {
+        name: 'demo',
+        default_file: '/demo/main.kcl',
+        kcl_file_count: 1,
+      }),
+      applicationProjectDirectory: '/',
+      fileSelectedDuringPrompting: {
+        entry: {
+          name: 'main.kcl',
+          path: '/demo/main.kcl',
+          children: null,
+        },
+        content: '',
+      },
+      projectFiles: [],
+      selections: null,
+      artifactGraph: new Map(),
+      kclManager,
+      engineCommandManager,
+      wasmInstance: instance,
+    }
+    const logic =
+      zookeeperManagerMachine.implementations.actors[
+        ZookeeperManagerTransitions.MessageSend
+      ]
+    if (!logic || !('transition' in logic)) {
+      throw new Error('Missing request actor')
+    }
+    const actor = createActor(logic, {
+      input: {
+        context: {
+          ...zookeeperDefaultContext({}),
+          ws,
+          conversation: { exchanges: [] },
+        },
+        event,
+      },
+    })
+    const result = toPromise(actor)
+    actor.start()
+
+    await expect(result).rejects.toThrow('Your project files are too large')
+    expect(encode).toHaveBeenCalledOnce()
+    expect(send).not.toHaveBeenCalled()
+  })
+
   describe('ContinueCheck', () => {
-    it('sends continue requests when the last exchange was interrupted', async () => {
+    it('sends continue requests after rejecting oversized project context', async () => {
+      stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
       const interruptedConversation: Conversation = {
         exchanges: [
           {
@@ -1363,15 +1771,35 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
-      expect(ws.sentPayloads).toHaveLength(0)
+      expect(send).not.toHaveBeenCalled()
 
-      actor.send({
+      const event = {
         type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
         activeFile: 'newFile.kcl',
         engineApiCallId: 'engine-api-call-id',
+      } as const
+      const encode = vi
+        .spyOn(msgpack, 'encode')
+        .mockReturnValueOnce(new Uint8Array(ZOOKEEPER_MAX_MESSAGE_BYTES + 1))
+      const showError = vi.spyOn(toast, 'error')
+      actor.send(event)
+      await vi.waitFor(() => {
+        expect(showError).toHaveBeenCalledWith(
+          expect.stringContaining('Your project files are too large')
+        )
       })
+      expect(
+        actor.getSnapshot().matches(ZookeeperManagerStates.WaitForContinueCheck)
+      ).toBe(true)
+      expect(actor.getSnapshot().context.conversation).toBe(
+        interruptedConversation
+      )
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(send).not.toHaveBeenCalled()
+      encode.mockRestore()
+      actor.send(event)
 
       await waitFor(actor, (state) =>
         state.matches(ZookeeperManagerStates.Ready)
@@ -1381,12 +1809,12 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
         'zoo-project'
       )
-      expect(ws.sentPayloads).toHaveLength(2)
-      expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
+      expect(send).toHaveBeenCalledTimes(2)
+      expect(JSON.parse(send.mock.calls[0][0])).toStrictEqual({
         type: 'system',
         command: 'continue',
       })
-      expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
+      expect(msgpack.decode(send.mock.calls[1][0])).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
@@ -1499,27 +1927,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({
-        conversation_id: { conversation_id: 'conversation-id' },
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles: [],
-      })
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
+      await completeSetupToReady(actor, socket)
 
       socket.closeWithCode(
         ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
@@ -2257,3 +2665,587 @@ describe('zookeeperManagerMachine', () => {
     })
   })
 })
+
+describe('mirrored conversation messages', () => {
+  const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
+  beforeEach(() => {
+    ControllableSetupWebSocket.instances = []
+    vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+  })
+  afterEach(() => {
+    for (const actor of actors.splice(0)) actor.stop()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  const user = (content: string, correlation_id = 'peer-prompt') => ({
+    type: 'user',
+    content,
+    correlation_id,
+    current_files: {},
+    source_ranges: [],
+  })
+  const reasoning = {
+    reasoning: { type: 'markdown', content: 'Checking the model.' },
+  }
+  const final = { end_of_stream: { whole_response: 'Finished.' } }
+  const toolOutput = {
+    tool_output: {
+      result: {
+        type: 'project_write_file',
+        call_id: 'peer-write',
+        project_id: 'cloud:one',
+        ok: true,
+        output: {
+          id: 'one',
+          revision: '2',
+          path: 'main.kcl',
+          contents: 'x = 2',
+          encoding: 'utf-8',
+        },
+      },
+    },
+  }
+
+  async function connect(
+    format: 'json' | 'msgpack',
+    conversationId = 'conversation-id'
+  ) {
+    const actor = createActor(zookeeperManagerMachine, {
+      input: { apiToken: 'token' },
+    }).start()
+    actors.push(actor)
+    actor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      conversationId,
+      refParentSend: (event) => actor.send(event),
+    })
+    const socket = ControllableSetupWebSocket.instances[0]
+    socket.open()
+    await vi.waitFor(() =>
+      expect(socket.sentPayloads).toContain(
+        JSON.stringify({ type: 'list_modes' })
+      )
+    )
+    const receive = (payload: unknown) => {
+      socket.receive(payload, format)
+    }
+    const finishSetup = async () => {
+      receive({ conversation_id: { conversation_id: conversationId } })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+    }
+    const ready = async () => {
+      await finishSetup()
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+    }
+    return { actor, socket, receive, finishSetup, ready }
+  }
+
+  it('normalizes binary page UUIDs before matching conversations or fetching older history', async () => {
+    const conversationId = '00000000-0000-4000-8000-000000000001'
+    const cursor = '00000000-0000-4000-8000-000000000002'
+    const { actor, socket, receive, finishSetup } = await connect(
+      'msgpack',
+      conversationId
+    )
+    receive({
+      replay_page: {
+        conversation_id: uuidParse(conversationId),
+        messages: [],
+        next_cursor: uuidParse(cursor),
+      },
+    })
+    expect(socket.close).not.toHaveBeenCalled()
+    await finishSetup()
+    expect(actor.getSnapshot().context.replayNextCursor).toBe(cursor)
+    actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+    const requestId = actor.getSnapshot().context.replayPageRequestId
+    expect(JSON.parse(socket.sentPayloads.at(-1) ?? '')).toEqual({
+      type: 'fetch_replay_page',
+      request_id: requestId,
+      cursor,
+    })
+    receive({
+      replay_page: {
+        request_id: requestId,
+        conversation_id: uuidParse(conversationId),
+        messages: [],
+      },
+    })
+    expect(actor.getSnapshot().context.replayPageRequestId).toBeUndefined()
+    expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+    expect(actor.getSnapshot().context.replayPageError).toBeUndefined()
+  })
+
+  it.each(['unavailable', 'load_failed'] as const)(
+    'uses legacy replay only when the initial pagination error is unavailable (%s)',
+    async (code) => {
+      const { actor, socket, receive } = await connect('json')
+      receive({ replay_page_error: { code, detail: 'History unavailable' } })
+      await vi.waitFor(() =>
+        expect(ControllableSetupWebSocket.instances).toHaveLength(2)
+      )
+      expect(socket.close).toHaveBeenCalledOnce()
+      const retry = ControllableSetupWebSocket.instances[1]
+      expect(new URL(retry.url).searchParams.has('replay_pagination')).toBe(
+        code !== 'unavailable'
+      )
+      retry.open()
+      await vi.waitFor(() =>
+        expect(retry.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      )
+      const messages = [user('Saved question'), final].map(encodeReplayMessage)
+      retry.receive(
+        code === 'unavailable'
+          ? { replay: { messages } }
+          : { replay_page: { conversation_id: 'conversation-id', messages } },
+        'msgpack'
+      )
+      retry.receive({ conversation_id: { conversation_id: 'conversation-id' } })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      expect(actor.getSnapshot().context.conversation?.exchanges).toEqual([
+        {
+          request: user('Saved question'),
+          responses: [final],
+          deltasAggregated: 'Finished.',
+        },
+      ])
+      expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+      actor.send({ type: ZookeeperManagerTransitions.AbruptClose })
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        conversationId: 'another-conversation',
+        refParentSend: (event) => actor.send(event),
+      })
+      expect(
+        new URL(
+          ControllableSetupWebSocket.instances.at(-1)?.url ?? ''
+        ).searchParams.get('replay_pagination')
+      ).toBe('true')
+    }
+  )
+
+  it('resumes an interrupted initial page even when its user message is on an older page', async () => {
+    const { actor, socket, receive, finishSetup } = await connect('msgpack')
+    receive({
+      replay_page: {
+        conversation_id: 'conversation-id',
+        messages: [encodeReplayMessage(reasoning)],
+        next_cursor: 'older-cursor',
+      },
+    })
+    await finishSetup()
+    expect(
+      hasBeenInterruptedOnLast(
+        actor.getSnapshot().context.conversation?.exchanges ?? []
+      )
+    ).toBe(true)
+    actor.send({
+      type: ZookeeperManagerStates.ContinueCheck,
+      projectName: 'demo',
+      projectFiles: [],
+    })
+    await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
+    expect(socket.sentPayloads).toContain(
+      JSON.stringify({ type: 'system', command: 'continue' })
+    )
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+    receive(final)
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+    expect(actor.getSnapshot().context.replayNextCursor).toBe('older-cursor')
+  })
+
+  it('loads a 15,601-message history one requested page at a time', async () => {
+    const { actor, socket, receive, finishSetup } = await connect('msgpack')
+    const transcript = Array.from({ length: 15_601 }, (_, index) => {
+      const message =
+        index === 0
+          ? { info: { text: 'Conversation started' } }
+          : index % 2 === 1
+            ? user(`Question ${index}`, `prompt-${index}`)
+            : { end_of_stream: { whole_response: `Answer ${index}` } }
+      return encodeReplayMessage(message)
+    })
+    receive({
+      replay_page: {
+        conversation_id: 'conversation-id',
+        messages: transcript.slice(-100),
+        next_cursor: 'older-cursor',
+      },
+    })
+    await finishSetup()
+    expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(50)
+    expect(
+      socket.sentPayloads.some((payload) =>
+        payload.includes('fetch_replay_page')
+      )
+    ).toBe(false)
+    actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+    receive({
+      replay_page: {
+        request_id: actor.getSnapshot().context.replayPageRequestId,
+        conversation_id: 'conversation-id',
+        messages: transcript.slice(-200, -100),
+        next_cursor: 'next-cursor',
+      },
+    })
+    expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(
+      100
+    )
+    expect(
+      socket.sentPayloads.filter((payload) =>
+        payload.includes('fetch_replay_page')
+      )
+    ).toHaveLength(1)
+    expect(actor.getSnapshot().context.replayNextCursor).toBe('next-cursor')
+  })
+
+  it('keeps pagination off when creating a new conversation', async () => {
+    const actor = createActor(zookeeperManagerMachine, {
+      input: { apiToken: 'token' },
+    }).start()
+    actors.push(actor)
+    actor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: (event) => actor.send(event),
+    })
+    const socket = ControllableSetupWebSocket.instances[0]
+    const params = new URL(socket.url).searchParams
+    expect(params.has('replay_pagination')).toBe(false)
+    expect(params.has('replay')).toBe(false)
+    socket.open()
+    await vi.waitFor(() =>
+      expect(socket.sentPayloads).toContain(
+        JSON.stringify({ type: 'list_modes' })
+      )
+    )
+    socket.receive({
+      conversation_id: { conversation_id: 'new-conversation-id' },
+    })
+    await waitFor(actor, (state) =>
+      state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+    )
+    expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+  })
+
+  it('times out only the pending history request and preserves the conversation', async () => {
+    const { actor, socket, receive, finishSetup } = await connect('msgpack')
+    receive({
+      replay_page: {
+        conversation_id: 'conversation-id',
+        messages: [],
+        next_cursor: 'older-cursor',
+      },
+    })
+    await finishSetup()
+    vi.useFakeTimers()
+    try {
+      actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+      const requestId = actor.getSnapshot().context.replayPageRequestId
+      expect(requestId).toBeTruthy()
+      actor.send({
+        type: ZookeeperManagerTransitions.ReplayPageTimeout,
+        requestId: 'stale-request',
+      })
+      expect(actor.getSnapshot().context.replayPageRequestId).toBe(requestId)
+      receive({ info: { text: 'Still connected' } })
+      const before = actor.getSnapshot().context
+      vi.advanceTimersByTime(ZOOKEEPER_REPLAY_PAGE_TIMEOUT_MS)
+      const after = actor.getSnapshot().context
+      expect(after.replayPageRequestId).toBeUndefined()
+      expect(after.replayNextCursor).toBeUndefined()
+      expect(after.replayPageError).toBe(
+        'Loading older messages timed out. Please reconnect.'
+      )
+      expect(after.conversation).toBe(before.conversation)
+      expect(after.lastMessageId).toBe(before.lastMessageId)
+      expect(after.awaitingResponse).toBe(before.awaitingResponse)
+      expect(socket.readyState).toBe(WebSocket.OPEN)
+      receive({
+        replay_page: {
+          request_id: requestId,
+          conversation_id: 'conversation-id',
+          messages: [],
+        },
+      })
+      expect(actor.getSnapshot().context.conversation).toBe(before.conversation)
+    } finally {
+      actor.stop()
+      vi.useRealTimers()
+    }
+  })
+
+  it.each(['response', 'disconnect', 'offline'] as const)(
+    'cancels the history timeout after %s',
+    async (outcome) => {
+      const { actor, receive, finishSetup } = await connect('json')
+      receive({
+        replay_page: {
+          conversation_id: 'conversation-id',
+          messages: [],
+          next_cursor: 'cursor',
+        },
+      })
+      await finishSetup()
+      vi.useFakeTimers()
+      try {
+        actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+        expect(vi.getTimerCount()).toBe(1)
+        if (outcome === 'response') {
+          receive({
+            replay_page: {
+              request_id: actor.getSnapshot().context.replayPageRequestId,
+              conversation_id: 'conversation-id',
+              messages: [],
+            },
+          })
+        } else {
+          actor.send({
+            type:
+              outcome === 'disconnect'
+                ? ZookeeperManagerTransitions.AbruptClose
+                : ZookeeperManagerTransitions.NetworkOffline,
+          })
+        }
+
+        expect(vi.getTimerCount()).toBe(0)
+        expect(actor.getSnapshot().context.replayPageError).toBeUndefined()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it.each(['json', 'msgpack'] as const)(
+    'loads older history over %s without applying historical edits',
+    async (format) => {
+      const { actor, socket, receive, finishSetup } = await connect(format)
+      const encode = (messages: unknown[]) => messages.map(encodeReplayMessage)
+      receive({
+        replay_page: {
+          conversation_id: 'conversation-id',
+          messages: encode([reasoning, final]),
+          next_cursor: 'first-cursor',
+        },
+      })
+      await finishSetup()
+      const before = actor.getSnapshot().context
+      const load = () =>
+        actor.send({ type: ZookeeperManagerTransitions.ReplayPageFetch })
+      load()
+      const requestId = actor.getSnapshot().context.replayPageRequestId
+      expect(requestId).toBeTruthy()
+      expect(JSON.parse(socket.sentPayloads.at(-1) ?? '')).toEqual({
+        type: 'fetch_replay_page',
+        request_id: requestId,
+        cursor: 'first-cursor',
+      })
+      const sentCount = socket.sentPayloads.length
+      load()
+      expect(socket.sentPayloads).toHaveLength(sentCount)
+      const page = {
+        request_id: requestId,
+        conversation_id: 'conversation-id',
+        messages: encode([user('Original question'), toolOutput]),
+        next_cursor: 'second-cursor',
+      }
+      receive({ replay_page: { ...page, request_id: 'stale-request' } })
+      receive({
+        replay_page: { ...page, conversation_id: 'wrong-conversation' },
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.ReplayPageReceive,
+        webSocket: new WebSocket('wss://stale-connection'),
+        page,
+      })
+      expect(actor.getSnapshot().context.replayPageRequestId).toBe(requestId)
+      expect(actor.getSnapshot().context.conversation).toBe(before.conversation)
+
+      receive({
+        replay_page_error: {
+          request_id: requestId,
+          code: 'load_failed',
+          detail: 'Please try again',
+        },
+      })
+      expect(actor.getSnapshot().context.replayNextCursor).toBe('first-cursor')
+      expect(actor.getSnapshot().context.replayPageRequestId).toBeUndefined()
+      expect(actor.getSnapshot().context.replayPageError).toBe(
+        'Please try again'
+      )
+      load()
+      const retryId = actor.getSnapshot().context.replayPageRequestId
+      expect(retryId).toBeTruthy()
+      expect(retryId).not.toBe(requestId)
+      receive({ replay_page: page })
+      expect(actor.getSnapshot().context.replayPageRequestId).toBe(retryId)
+      receive({ replay_page: { ...page, request_id: retryId } })
+      const loaded = actor.getSnapshot().context
+      expect(loaded.conversation?.exchanges).toEqual([
+        {
+          request: user('Original question'),
+          responses: [toolOutput, reasoning, final],
+          deltasAggregated: 'Finished.',
+        },
+      ])
+      expect(loaded.replayNextCursor).toBe('second-cursor')
+      expect(loaded.replayPageRequestId).toBeUndefined()
+      expect(loaded.replayPageError).toBeUndefined()
+      expect(loaded.lastMessageId).toBe(before.lastMessageId)
+      expect(loaded.lastMessageType).toBe(before.lastMessageType)
+      expect(loaded.cloudProjectChange).toBe(before.cloudProjectChange)
+      expect(loaded.awaitingResponse).toBe(before.awaitingResponse)
+      receive({ replay_page: { ...page, request_id: retryId } })
+      expect(actor.getSnapshot().context.conversation).toBe(loaded.conversation)
+
+      load()
+      receive({
+        replay_page_error: {
+          request_id: actor.getSnapshot().context.replayPageRequestId,
+          code: 'invalid_cursor',
+          detail: 'Please reconnect',
+        },
+      })
+      expect(actor.getSnapshot().context.replayNextCursor).toBeUndefined()
+      const exhaustedCount = socket.sentPayloads.length
+      load()
+      expect(socket.sentPayloads).toHaveLength(exhaustedCount)
+    }
+  )
+
+  it.each(['json', 'msgpack'] as const)(
+    'reflects a user, reasoning, and replies over %s without resending them',
+    async (format) => {
+      const { actor, socket, receive, ready } = await connect(format)
+      await ready()
+      receive(user('Previous question', 'previous-prompt'))
+      receive({ delta: { delta: 'Previous answer' } })
+      receive({ end_of_stream: { whole_response: 'Previous answer' } })
+      const sent = [...socket.sentPayloads]
+
+      receive(user('Make it brown'))
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+      receive(reasoning)
+      const active = actor.getSnapshot().context.conversation?.exchanges.at(-1)
+      expect(active?.request).toMatchObject({ content: 'Make it brown' })
+      expect(active?.responses).toEqual([reasoning])
+      receive(toolOutput)
+      expect(actor.getSnapshot().context.cloudProjectChange).toEqual({
+        callId: 'peer-write',
+        projectId: 'one',
+        revision: '2',
+      })
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
+      ).toEqual([reasoning, toolOutput])
+      receive({ delta: { delta: 'Finished.' } })
+      receive(final)
+
+      const context = actor.getSnapshot().context
+      expect(context.conversation?.exchanges).toHaveLength(2)
+      expect(context.conversation?.exchanges[0].request).toMatchObject({
+        content: 'Previous question',
+      })
+      expect(context.conversation?.exchanges[0].deltasAggregated).toBe(
+        'Previous answer'
+      )
+      expect(context.conversation?.exchanges[1]).toMatchObject({
+        request: user('Make it brown'),
+        responses: [reasoning, toolOutput, final],
+        deltasAggregated: 'Finished.',
+      })
+      expect(context.awaitingResponse).toBe(false)
+      expect(socket.sentPayloads).toEqual(sent)
+
+      receive(user('Make it brown'))
+      expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(
+        2
+      )
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+    }
+  )
+
+  it.each(['json', 'msgpack'] as const)(
+    'buffers reflected user messages and reasoning during %s setup',
+    async (format) => {
+      const { actor, receive, finishSetup } = await connect(format)
+      receive(user('Make it brown'))
+      receive(reasoning)
+      receive({ delta: { delta: 'Finished.' } })
+      receive(final)
+      await finishSetup()
+      expect(actor.getSnapshot().context.conversation?.exchanges).toMatchObject(
+        [
+          {
+            request: user('Make it brown'),
+            responses: [reasoning, final],
+            deltasAggregated: 'Finished.',
+          },
+        ]
+      )
+    }
+  )
+
+  it('keeps reasoning and replies received before the editor is Ready', async () => {
+    const { actor, receive, finishSetup } = await connect('json')
+    await finishSetup()
+    receive(user('Make it brown'))
+    receive(reasoning)
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+    receive({ delta: { delta: 'Finished.' } })
+    receive(final)
+    expect(actor.getSnapshot().context.conversation?.exchanges).toMatchObject([
+      {
+        request: user('Make it brown'),
+        responses: [reasoning, final],
+        deltasAggregated: 'Finished.',
+      },
+    ])
+    expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+  })
+})
+
+async function completeSetupToReady(
+  actor: ZookeeperManagerActor,
+  socket: ControllableSetupWebSocket
+) {
+  await completeSetupToContinueCheck(actor, socket)
+  actor.send({
+    type: ZookeeperManagerStates.ContinueCheck,
+    projectName: 'zoo-project',
+    projectFiles: [],
+  })
+  await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
+}
+
+async function completeSetupToContinueCheck(
+  actor: ZookeeperManagerActor,
+  socket: ControllableSetupWebSocket
+) {
+  socket.open()
+  await vi.waitFor(() => {
+    expect(socket.sentPayloads).toContain(
+      JSON.stringify({ type: 'list_modes' })
+    )
+  })
+  socket.receive({
+    conversation_id: { conversation_id: 'conversation-id' },
+  })
+  await waitFor(actor, (state) =>
+    state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+  )
+}

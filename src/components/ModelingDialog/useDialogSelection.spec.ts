@@ -50,7 +50,12 @@ it('updates only the chosen field and synchronizes the scene only for the active
     const [values, setValues] = useState<Record<string, unknown>>({
       second: faces('other'),
     })
-    const [scene, setScene] = useState(faces('one', 'two'))
+    // After coercion, the face collector must reject the default plane
+    // without losing the accepted faces when it synchronizes the scene.
+    const [scene, setScene] = useState<Selections>({
+      ...faces('one', 'two'),
+      otherSelections: [{ name: 'XY', id: 'plane' }],
+    })
     return {
       ...useDialogSelection({
         context,
@@ -74,6 +79,7 @@ it('updates only the chosen field and synchronizes the scene only for the active
     }
   })
 
+  expect(result.current.scene).toEqual(faces('one', 'two'))
   act(() => result.current.select('second', arg))
   send.mockClear()
   act(() => result.current.update('first', faces('two')))

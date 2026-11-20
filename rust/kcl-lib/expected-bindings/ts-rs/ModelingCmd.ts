@@ -318,7 +318,7 @@ export type AnnotationMbdLeaderPosition = { "normalized_pos": {
 /**
  * The position
  */
-pos: Point2d<number>, } } | { "centroid": Record<symbol, never> };
+pos: Point2d<number>, } } | { "centroid": Record<symbol, never> } | { "step_from": Record<symbol, never> } | { "auto": Record<symbol, never> };
 
 /**
  * Options for annotations
@@ -1563,9 +1563,13 @@ edge_id?: string | null,
 edge_reference?: EdgeSpecifier | null, };
 
 /**
- * An edge/vertex can be defined by the faces that it is connected to.
+ * A reference identifying a selectable scene entity.
  */
-export type EntityReference = { "type": "plane", 
+export type EntityReference = { "type": "annotation", 
+/**
+ * Id of the annotation object being referenced.
+ */
+annotation_id: string, } | { "type": "plane", 
 /**
  * Id of the plane being referenced.
  */
@@ -1679,7 +1683,7 @@ opacity: number, };
 /**
  * The type of entity
  */
-export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup";
+export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup" | "annotation";
 
 /**
  * Export the scene to a file.
@@ -1694,7 +1698,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclProject | null, };
 
 /**
  * Export a sketch to a file.
@@ -1722,7 +1730,11 @@ entity_ids: Array<string>,
 /**
  * The file format to export to.
  */
-format: OutputFormat3d, };
+format: OutputFormat3d, 
+/**
+ * KCL source to embed in formats that support source metadata.
+ */
+kcl_source?: KclProject | null, };
 
 /**
  * Extend a path by adding a new segment which starts at the path's "pen".
@@ -2006,6 +2018,11 @@ export type GetSketchModePlane = Record<symbol, never>;
 export type GlobalAxis = "x" | "y" | "z";
 
 /**
+ * Additional data that can be included in a glTF 2.0 export.
+ */
+export type GltfExportExtra = "sketches" | "regions" | "imported_files" | "mbd" | "geometry_uuids";
+
+/**
  * Options for exporting glTF 2.0.
  */
 export type GltfExportOptions = { 
@@ -2018,9 +2035,17 @@ storage: GltfStorage,
  */
 presentation: GltfPresentation, 
 /**
- * Include engine UUIDs in glTF extras. Defaults to false.
+ * Include geometry UUIDs. Setting this to true is equivalent to adding `geometry_uuids` to `extras`.
  */
-include_uuids: boolean, };
+include_uuids: boolean, 
+/**
+ * Additional data to include in the exported glTF. Defaults to an empty set.
+ */
+extras: Array<GltfExportExtra>, 
+/**
+ * Named views in the scene.
+ */
+views: { [key in string]: NamedView }, };
 
 /**
  * Options for importing glTF 2.0.
@@ -2137,7 +2162,7 @@ format: InputFormat3d, };
 /**
  * Input format specifier.
  */
-export type InputFormat3d = { "type": "acis" } & AcisImportOptions | { "type": "catia" } & CatiaImportOptions | { "type": "creo" } & CreoImportOptions | { "type": "fbx" } & FbxImportOptions | { "type": "gltf" } & GltfImportOptions | { "type": "inventor" } & InventorImportOptions | { "type": "nx" } & NxImportOptions | { "type": "obj" } & ObjImportOptions | { "type": "parasolid" } & ParasolidImportOptions | { "type": "ply" } & PlyImportOptions | { "type": "sldprt" } & SldprtImportOptions | { "type": "step" } & StepImportOptions | { "type": "stl" } & StlImportOptions;
+export type InputFormat3d = { "type": "acis" } & AcisImportOptions | { "type": "catia" } & CatiaImportOptions | { "type": "creo" } & CreoImportOptions | { "type": "fbx" } & FbxImportOptions | { "type": "gltf" } & GltfImportOptions | { "type": "inventor" } & InventorImportOptions | { "type": "nx" } & NxImportOptions | { "type": "obj" } & ObjImportOptions | { "type": "parasolid" } & ParasolidImportOptions | { "type": "ply" } & PlyImportOptions | { "type": "sldprt" } & SldprtImportOptions | { "type": "step" } & StepImportOptions | { "type": "stl" } & StlImportOptions | { "type": "rhino" } & RhinoImportOptions;
 
 /**
  *Options for importing Autodesk Inventor part format.
@@ -2153,6 +2178,34 @@ coords: System,
  * Defaults to `false` but is implicitly `true` when importing into the engine.
  */
 split_closed_faces: boolean, };
+
+/**
+ * A file in a KCL project.
+ */
+export type KclFile = { 
+/**
+ * Where is the file, relative to the project directory?
+ */
+path: SafeFilepath, 
+/**
+ * Raw file contents. KCL source is UTF-8; imported assets may be binary.
+ */
+contents: Array<number>, };
+
+/**
+ * A KCL project.
+ */
+export type KclProject = { 
+/**
+ * All files in the project.
+ */
+files: Array<KclFile>, 
+/**
+ * Which file is the entrypoint?
+ * This is the first KCL file to be executed,
+ * the root of the KCL module tree.
+ */
+entrypoint: SafeFilepath, };
 
 /**
  * A length unit is wrapper around an f64 that represents a length in some unit.
@@ -2313,7 +2366,7 @@ id: string, } };
 /**
  * Commands that the KittyCAD engine can execute.
  */
-export type ModelingCmd = { "type": "engine_util_evaluate_path" } & EngineUtilEvaluatePath | { "type": "start_path" } & StartPath | { "type": "move_path_pen" } & MovePathPen | { "type": "extend_path" } & ExtendPath | { "type": "extrude" } & Extrude | { "type": "extrude_to_reference" } & ExtrudeToReference | { "type": "twist_extrude" } & TwistExtrude | { "type": "sweep" } & Sweep | { "type": "revolve" } & Revolve | { "type": "solid3d_shell_face" } & Solid3dShellFace | { "type": "solid3d_join" } & Solid3dJoin | { "type": "solid3d_multi_join" } & Solid3dMultiJoin | { "type": "surface_blend" } & SurfaceBlend | { "type": "solid3d_get_edge_uuid" } & Solid3dGetEdgeUuid | { "type": "solid3d_get_face_uuid" } & Solid3dGetFaceUuid | { "type": "solid3d_get_body_type" } & Solid3dGetBodyType | { "type": "revolve_about_edge" } & RevolveAboutEdge | { "type": "loft" } & Loft | { "type": "close_path" } & ClosePath | { "type": "camera_drag_start" } & CameraDragStart | { "type": "camera_drag_move" } & CameraDragMove | { "type": "camera_drag_end" } & CameraDragEnd | { "type": "default_camera_get_settings" } & DefaultCameraGetSettings | { "type": "default_camera_get_view" } & DefaultCameraGetView | { "type": "default_camera_set_view" } & DefaultCameraSetView | { "type": "default_camera_look_at" } & DefaultCameraLookAt | { "type": "default_camera_perspective_settings" } & DefaultCameraPerspectiveSettings | { "type": "default_camera_zoom" } & DefaultCameraZoom | { "type": "export2d" } & Export2d | { "type": "export3d" } & Export3d | { "type": "export" } & Export | { "type": "entity_get_parent_id" } & EntityGetParentId | { "type": "entity_get_num_children" } & EntityGetNumChildren | { "type": "entity_get_child_uuid" } & EntityGetChildUuid | { "type": "entity_get_index" } & EntityGetIndex | { "type": "entity_get_primitive_index" } & EntityGetPrimitiveIndex | { "type": "entity_delete_children" } & EntityDeleteChildren | { "type": "entity_get_all_child_uuids" } & EntityGetAllChildUuids | { "type": "entity_get_sketch_paths" } & EntityGetSketchPaths | { "type": "entity_get_distance" } & EntityGetDistance | { "type": "edge_get_length" } & EdgeGetLength | { "type": "entity_clone" } & EntityClone | { "type": "entity_linear_pattern_transform" } & EntityLinearPatternTransform | { "type": "entity_linear_pattern" } & EntityLinearPattern | { "type": "entity_circular_pattern" } & EntityCircularPattern | { "type": "entity_make_helix" } & EntityMakeHelix | { "type": "entity_make_helix_from_params" } & EntityMakeHelixFromParams | { "type": "entity_make_helix_from_edge" } & EntityMakeHelixFromEdge | { "type": "entity_mirror_across" } & EntityMirrorAcross | { "type": "entity_mirror" } & EntityMirror | { "type": "entity_mirror_across_edge" } & EntityMirrorAcrossEdge | { "type": "select_with_point" } & SelectWithPoint | { "type": "query_entity_type_with_point" } & QueryEntityTypeWithPoint | { "type": "query_entity_type" } & QueryEntityType | { "type": "select_add" } & SelectAdd | { "type": "select_remove" } & SelectRemove | { "type": "scene_clear_all" } & SceneClearAll | { "type": "select_replace" } & SelectReplace | { "type": "highlight_set_entity" } & HighlightSetEntity | { "type": "highlight_set_entities" } & HighlightSetEntities | { "type": "new_annotation" } & NewAnnotation | { "type": "update_annotation" } & UpdateAnnotation | { "type": "edge_lines_visible" } & EdgeLinesVisible | { "type": "object_visible" } & ObjectVisible | { "type": "object_bring_to_front" } & ObjectBringToFront | { "type": "object_set_material_params_pbr" } & ObjectSetMaterialParamsPbr | { "type": "object_set_name" } & ObjectSetName | { "type": "get_entity_type" } & GetEntityType | { "type": "solid3d_get_all_edge_faces" } & Solid3dGetAllEdgeFaces | { "type": "solid3d_flip" } & Solid3dFlip | { "type": "solid3d_flip_face" } & Solid3dFlipFace | { "type": "solid2d_add_hole" } & Solid2dAddHole | { "type": "solid3d_get_all_opposite_edges" } & Solid3dGetAllOppositeEdges | { "type": "solid3d_get_opposite_edge" } & Solid3dGetOppositeEdge | { "type": "solid3d_get_next_adjacent_edge" } & Solid3dGetNextAdjacentEdge | { "type": "solid3d_get_prev_adjacent_edge" } & Solid3dGetPrevAdjacentEdge | { "type": "solid3d_get_common_edge" } & Solid3dGetCommonEdge | { "type": "solid3d_fillet_edge" } & Solid3dFilletEdge | { "type": "solid3d_cut_edge_references" } & Solid3dCutEdgeReferences | { "type": "solid3d_cut_edges" } & Solid3dCutEdges | { "type": "face_is_planar" } & FaceIsPlanar | { "type": "face_get_position" } & FaceGetPosition | { "type": "face_get_center" } & FaceGetCenter | { "type": "face_get_gradient" } & FaceGetGradient | { "type": "send_object" } & SendObject | { "type": "entity_set_opacity" } & EntitySetOpacity | { "type": "entity_fade" } & EntityFade | { "type": "make_plane" } & MakePlane | { "type": "plane_set_color" } & PlaneSetColor | { "type": "set_tool" } & SetTool | { "type": "mouse_move" } & MouseMove | { "type": "mouse_click" } & MouseClick | { "type": "sketch_mode_disable" } & SketchModeDisable | { "type": "get_sketch_mode_plane" } & GetSketchModePlane | { "type": "curve_set_constraint" } & CurveSetConstraint | { "type": "enable_sketch_mode" } & EnableSketchMode | { "type": "set_background_color" } & SetBackgroundColor | { "type": "set_current_tool_properties" } & SetCurrentToolProperties | { "type": "set_default_system_properties" } & SetDefaultSystemProperties | { "type": "curve_get_type" } & CurveGetType | { "type": "curve_get_control_points" } & CurveGetControlPoints | { "type": "project_entity_to_plane" } & ProjectEntityToPlane | { "type": "project_points_to_plane" } & ProjectPointsToPlane | { "type": "take_snapshot" } & TakeSnapshot | { "type": "make_axes_gizmo" } & MakeAxesGizmo | { "type": "path_get_info" } & PathGetInfo | { "type": "path_get_curve_uuids_for_vertices" } & PathGetCurveUuidsForVertices | { "type": "path_get_curve_uuid" } & PathGetCurveUuid | { "type": "path_get_vertex_uuids" } & PathGetVertexUuids | { "type": "path_get_sketch_target_uuid" } & PathGetSketchTargetUuid | { "type": "handle_mouse_drag_start" } & HandleMouseDragStart | { "type": "handle_mouse_drag_move" } & HandleMouseDragMove | { "type": "handle_mouse_drag_end" } & HandleMouseDragEnd | { "type": "remove_scene_objects" } & RemoveSceneObjects | { "type": "plane_intersect_and_project" } & PlaneIntersectAndProject | { "type": "curve_get_end_points" } & CurveGetEndPoints | { "type": "reconfigure_stream" } & ReconfigureStream | { "type": "import_files" } & ImportFiles | { "type": "set_scene_units" } & SetSceneUnits | { "type": "mass" } & Mass | { "type": "density" } & Density | { "type": "volume" } & Volume | { "type": "center_of_mass" } & CenterOfMass | { "type": "surface_area" } & SurfaceArea | { "type": "physical_properties" } & PhysicalProperties | { "type": "default_camera_focus_on" } & DefaultCameraFocusOn | { "type": "set_selection_type" } & SetSelectionType | { "type": "set_selection_filter" } & SetSelectionFilter | { "type": "scene_get_entity_ids" } & SceneGetEntityIds | { "type": "default_camera_set_orthographic" } & DefaultCameraSetOrthographic | { "type": "default_camera_set_perspective" } & DefaultCameraSetPerspective | { "type": "default_camera_center_to_selection" } & DefaultCameraCenterToSelection | { "type": "default_camera_center_to_scene" } & DefaultCameraCenterToScene | { "type": "zoom_to_fit" } & ZoomToFit | { "type": "orient_to_face" } & OrientToFace | { "type": "view_isometric" } & ViewIsometric | { "type": "solid3d_get_extrusion_face_info" } & Solid3dGetExtrusionFaceInfo | { "type": "solid3d_get_adjacency_info" } & Solid3dGetAdjacencyInfo | { "type": "select_clear" } & SelectClear | { "type": "select_entity" } & SelectEntity | { "type": "select_get" } & SelectGet | { "type": "get_num_objects" } & GetNumObjects | { "type": "set_object_transform" } & SetObjectTransform | { "type": "boolean_union" } & BooleanUnion | { "type": "boolean_intersection" } & BooleanIntersection | { "type": "boolean_subtract" } & BooleanSubtract | { "type": "boolean_imprint" } & BooleanImprint | { "type": "make_offset_path" } & MakeOffsetPath | { "type": "add_hole_from_offset" } & AddHoleFromOffset | { "type": "set_grid_reference_plane" } & SetGridReferencePlane | { "type": "set_grid_scale" } & SetGridScale | { "type": "set_grid_auto_scale" } & SetGridAutoScale | { "type": "set_order_independent_transparency" } & SetOrderIndependentTransparency | { "type": "create_region" } & CreateRegion | { "type": "toggle_graphics" } & ToggleGraphics | { "type": "create_planar_surface" } & CreatePlanarSurface | { "type": "region_get_resolvable_intersection_info" } & RegionGetResolvableIntersectionInfo | { "type": "create_region_from_query_point" } & CreateRegionFromQueryPoint | { "type": "region_get_query_point" } & RegionGetQueryPoint | { "type": "select_region_from_point" } & SelectRegionFromPoint | { "type": "bounding_box" } & BoundingBox | { "type": "offset_surface" } & OffsetSurface | { "type": "begin_execution" } & BeginExecution | { "type": "end_execution" } & EndExecution | { "type": "closest_edge" } & ClosestEdge | { "type": "sketch_get_info" } & SketchGetInfo | { "type": "set_kcl_version" } & SetKclVersion;
+export type ModelingCmd = { "type": "engine_util_evaluate_path" } & EngineUtilEvaluatePath | { "type": "start_path" } & StartPath | { "type": "move_path_pen" } & MovePathPen | { "type": "extend_path" } & ExtendPath | { "type": "extrude" } & Extrude | { "type": "extrude_to_reference" } & ExtrudeToReference | { "type": "twist_extrude" } & TwistExtrude | { "type": "sweep" } & Sweep | { "type": "revolve" } & Revolve | { "type": "solid3d_shell_face" } & Solid3dShellFace | { "type": "solid3d_join" } & Solid3dJoin | { "type": "solid3d_multi_join" } & Solid3dMultiJoin | { "type": "surface_blend" } & SurfaceBlend | { "type": "solid3d_get_edge_uuid" } & Solid3dGetEdgeUuid | { "type": "solid3d_get_face_uuid" } & Solid3dGetFaceUuid | { "type": "solid3d_get_body_type" } & Solid3dGetBodyType | { "type": "revolve_about_edge" } & RevolveAboutEdge | { "type": "loft" } & Loft | { "type": "close_path" } & ClosePath | { "type": "camera_drag_start" } & CameraDragStart | { "type": "camera_drag_move" } & CameraDragMove | { "type": "camera_drag_end" } & CameraDragEnd | { "type": "default_camera_get_settings" } & DefaultCameraGetSettings | { "type": "default_camera_get_view" } & DefaultCameraGetView | { "type": "default_camera_set_view" } & DefaultCameraSetView | { "type": "default_camera_look_at" } & DefaultCameraLookAt | { "type": "default_camera_perspective_settings" } & DefaultCameraPerspectiveSettings | { "type": "default_camera_zoom" } & DefaultCameraZoom | { "type": "export2d" } & Export2d | { "type": "export3d" } & Export3d | { "type": "export" } & Export | { "type": "entity_get_parent_id" } & EntityGetParentId | { "type": "entity_get_num_children" } & EntityGetNumChildren | { "type": "entity_get_child_uuid" } & EntityGetChildUuid | { "type": "entity_get_index" } & EntityGetIndex | { "type": "entity_get_primitive_index" } & EntityGetPrimitiveIndex | { "type": "entity_delete_children" } & EntityDeleteChildren | { "type": "entity_get_all_child_uuids" } & EntityGetAllChildUuids | { "type": "entity_get_sketch_paths" } & EntityGetSketchPaths | { "type": "entity_get_distance" } & EntityGetDistance | { "type": "edge_get_length" } & EdgeGetLength | { "type": "entity_clone" } & EntityClone | { "type": "entity_linear_pattern_transform" } & EntityLinearPatternTransform | { "type": "entity_linear_pattern" } & EntityLinearPattern | { "type": "entity_circular_pattern" } & EntityCircularPattern | { "type": "entity_make_helix" } & EntityMakeHelix | { "type": "entity_make_helix_from_params" } & EntityMakeHelixFromParams | { "type": "entity_make_helix_from_edge" } & EntityMakeHelixFromEdge | { "type": "entity_mirror_across" } & EntityMirrorAcross | { "type": "entity_mirror" } & EntityMirror | { "type": "entity_mirror_across_edge" } & EntityMirrorAcrossEdge | { "type": "select_with_point" } & SelectWithPoint | { "type": "query_entity_type_with_point" } & QueryEntityTypeWithPoint | { "type": "query_entity_type" } & QueryEntityType | { "type": "select_add" } & SelectAdd | { "type": "select_remove" } & SelectRemove | { "type": "scene_clear_all" } & SceneClearAll | { "type": "select_replace" } & SelectReplace | { "type": "highlight_set_entity" } & HighlightSetEntity | { "type": "highlight_set_entities" } & HighlightSetEntities | { "type": "new_annotation" } & NewAnnotation | { "type": "update_annotation" } & UpdateAnnotation | { "type": "edge_lines_visible" } & EdgeLinesVisible | { "type": "object_visible" } & ObjectVisible | { "type": "object_is_hidden" } & ObjectIsHidden | { "type": "object_bring_to_front" } & ObjectBringToFront | { "type": "object_set_material_params_pbr" } & ObjectSetMaterialParamsPbr | { "type": "object_set_name" } & ObjectSetName | { "type": "get_entity_type" } & GetEntityType | { "type": "solid3d_get_all_edge_faces" } & Solid3dGetAllEdgeFaces | { "type": "solid3d_flip" } & Solid3dFlip | { "type": "solid3d_flip_face" } & Solid3dFlipFace | { "type": "solid2d_add_hole" } & Solid2dAddHole | { "type": "solid3d_get_all_opposite_edges" } & Solid3dGetAllOppositeEdges | { "type": "solid3d_get_opposite_edge" } & Solid3dGetOppositeEdge | { "type": "solid3d_get_next_adjacent_edge" } & Solid3dGetNextAdjacentEdge | { "type": "solid3d_get_prev_adjacent_edge" } & Solid3dGetPrevAdjacentEdge | { "type": "solid3d_get_common_edge" } & Solid3dGetCommonEdge | { "type": "solid3d_fillet_edge" } & Solid3dFilletEdge | { "type": "solid3d_cut_edge_references" } & Solid3dCutEdgeReferences | { "type": "solid3d_cut_edges" } & Solid3dCutEdges | { "type": "face_is_planar" } & FaceIsPlanar | { "type": "face_get_position" } & FaceGetPosition | { "type": "face_get_center" } & FaceGetCenter | { "type": "face_get_gradient" } & FaceGetGradient | { "type": "send_object" } & SendObject | { "type": "entity_set_opacity" } & EntitySetOpacity | { "type": "entity_fade" } & EntityFade | { "type": "make_plane" } & MakePlane | { "type": "plane_set_color" } & PlaneSetColor | { "type": "set_tool" } & SetTool | { "type": "mouse_move" } & MouseMove | { "type": "mouse_click" } & MouseClick | { "type": "sketch_mode_disable" } & SketchModeDisable | { "type": "get_sketch_mode_plane" } & GetSketchModePlane | { "type": "curve_set_constraint" } & CurveSetConstraint | { "type": "enable_sketch_mode" } & EnableSketchMode | { "type": "set_background_color" } & SetBackgroundColor | { "type": "set_current_tool_properties" } & SetCurrentToolProperties | { "type": "set_default_system_properties" } & SetDefaultSystemProperties | { "type": "curve_get_type" } & CurveGetType | { "type": "curve_get_control_points" } & CurveGetControlPoints | { "type": "project_entity_to_plane" } & ProjectEntityToPlane | { "type": "project_points_to_plane" } & ProjectPointsToPlane | { "type": "take_snapshot" } & TakeSnapshot | { "type": "make_axes_gizmo" } & MakeAxesGizmo | { "type": "path_get_info" } & PathGetInfo | { "type": "path_get_curve_uuids_for_vertices" } & PathGetCurveUuidsForVertices | { "type": "path_get_curve_uuid" } & PathGetCurveUuid | { "type": "path_get_vertex_uuids" } & PathGetVertexUuids | { "type": "path_get_sketch_target_uuid" } & PathGetSketchTargetUuid | { "type": "handle_mouse_drag_start" } & HandleMouseDragStart | { "type": "handle_mouse_drag_move" } & HandleMouseDragMove | { "type": "handle_mouse_drag_end" } & HandleMouseDragEnd | { "type": "remove_scene_objects" } & RemoveSceneObjects | { "type": "plane_intersect_and_project" } & PlaneIntersectAndProject | { "type": "curve_get_end_points" } & CurveGetEndPoints | { "type": "reconfigure_stream" } & ReconfigureStream | { "type": "import_files" } & ImportFiles | { "type": "set_scene_units" } & SetSceneUnits | { "type": "mass" } & Mass | { "type": "density" } & Density | { "type": "volume" } & Volume | { "type": "center_of_mass" } & CenterOfMass | { "type": "surface_area" } & SurfaceArea | { "type": "physical_properties" } & PhysicalProperties | { "type": "default_camera_focus_on" } & DefaultCameraFocusOn | { "type": "set_selection_type" } & SetSelectionType | { "type": "set_selection_filter" } & SetSelectionFilter | { "type": "scene_get_entity_ids" } & SceneGetEntityIds | { "type": "default_camera_set_orthographic" } & DefaultCameraSetOrthographic | { "type": "default_camera_set_perspective" } & DefaultCameraSetPerspective | { "type": "default_camera_center_to_selection" } & DefaultCameraCenterToSelection | { "type": "default_camera_center_to_scene" } & DefaultCameraCenterToScene | { "type": "zoom_to_fit" } & ZoomToFit | { "type": "orient_to_face" } & OrientToFace | { "type": "view_isometric" } & ViewIsometric | { "type": "solid3d_get_extrusion_face_info" } & Solid3dGetExtrusionFaceInfo | { "type": "solid3d_get_adjacency_info" } & Solid3dGetAdjacencyInfo | { "type": "select_clear" } & SelectClear | { "type": "select_entity" } & SelectEntity | { "type": "select_get" } & SelectGet | { "type": "get_num_objects" } & GetNumObjects | { "type": "set_object_transform" } & SetObjectTransform | { "type": "boolean_union" } & BooleanUnion | { "type": "boolean_intersection" } & BooleanIntersection | { "type": "boolean_subtract" } & BooleanSubtract | { "type": "boolean_imprint" } & BooleanImprint | { "type": "make_offset_path" } & MakeOffsetPath | { "type": "add_hole_from_offset" } & AddHoleFromOffset | { "type": "set_grid_reference_plane" } & SetGridReferencePlane | { "type": "set_grid_scale" } & SetGridScale | { "type": "set_grid_auto_scale" } & SetGridAutoScale | { "type": "set_order_independent_transparency" } & SetOrderIndependentTransparency | { "type": "create_region" } & CreateRegion | { "type": "toggle_graphics" } & ToggleGraphics | { "type": "create_planar_surface" } & CreatePlanarSurface | { "type": "region_get_resolvable_intersection_info" } & RegionGetResolvableIntersectionInfo | { "type": "create_region_from_query_point" } & CreateRegionFromQueryPoint | { "type": "region_get_query_point" } & RegionGetQueryPoint | { "type": "select_region_from_point" } & SelectRegionFromPoint | { "type": "bounding_box" } & BoundingBox | { "type": "offset_surface" } & OffsetSurface | { "type": "begin_execution" } & BeginExecution | { "type": "end_execution" } & EndExecution | { "type": "closest_edge" } & ClosestEdge | { "type": "sketch_get_info" } & SketchGetInfo | { "type": "set_kcl_version" } & SetKclVersion;
 
 /**
  * All commands have unique IDs. These should be randomly generated.
@@ -2364,6 +2417,37 @@ path: ModelingCmdId,
  * Where the path's pen should be.
  */
 to: Point3d<LengthUnit>, };
+
+/**
+ * Options for exporting glTF 2.0.
+ */
+export type NamedView = { 
+/**
+ * Vantage point.
+ */
+vantage: Point3d<number>, 
+/**
+ * Target point.
+ */
+target: Point3d<number>, 
+/**
+ * Up direction.
+ */
+up: Point3d<number>, 
+/**
+ * Projection kind.
+ */
+projection: Projection, 
+/**
+ * Baseline visibility.
+ *
+ * Determines whether entities are visible or by default.
+ */
+baseline: Visibility, 
+/**
+ * Exceptions to the baseline visibility.
+ */
+except_ids: Array<ModelingCmdId>, };
 
 /**
  * Create a new annotation
@@ -2446,6 +2530,17 @@ export type ObjectBringToFront = {
  * Which object to change
  */
 object_id: string, };
+
+/**
+ * Query whether each object is hidden, preserving input order.
+ * Missing objects are reported as `no_such_object` in the response.
+ */
+export type ObjectIsHidden = { 
+/**
+ * The IDs of the objects to query. Order and duplicates are preserved.
+ * An empty list returns an empty result.
+ */
+object_ids: Array<string>, };
 
 /**
  * Set the material properties of an object
@@ -2562,7 +2657,7 @@ export type OutputFormat2d = { "type": "dxf" } & DxfExportOptions;
 /**
  * Output 3D format specifier.
  */
-export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions;
+export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions | { "type": "rhino" } & RhinoExportOptions;
 
 /**
  *Options for importing Parasolid part format.
@@ -3016,6 +3111,11 @@ points: Array<Point3d<number>>,
 use_plane_coords: boolean, };
 
 /**
+ * Data item selection.
+ */
+export type Projection = { "type": "orthographic" } | { "type": "perspective" };
+
+/**
  * Query the type of entity given its id. E.g. if a face is selected the face id is
  * returned, if an edge/vertex is selected then the face ids that uniquely define the edge/vertex are
  * returned (typically two).
@@ -3175,6 +3275,47 @@ opposite: Opposite<Angle>,
 body_type: BodyType, };
 
 /**
+ * Options for exporting 3DM.
+ */
+export type RhinoExportOptions = { 
+/**
+ * Co-ordinate system of output data.
+ *
+ * Defaults to the [KittyCAD co-ordinate system].
+ *
+ * [KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+ */
+coords: System, 
+/**
+ * Export length unit.
+ *
+ * Defaults to millimeters.
+ */
+units: UnitLength, };
+
+/**
+ * Options for importing 3DM.
+ */
+export type RhinoImportOptions = { 
+/**
+ * Co-ordinate system of input data.
+ *
+ * Defaults to the [KittyCAD co-ordinate system].
+ *
+ * [KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+ */
+coords: System, 
+/**
+ * The units of the input data.
+ *
+ * This is very important for correct scaling and when calculating physics properties like
+ * mass, etc.
+ *
+ * Defaults to millimeters.
+ */
+units: UnitLength, };
+
+/**
  * A rotation defined by an axis, origin of rotation, and an angle.
  */
 export type Rotation = { 
@@ -3192,6 +3333,11 @@ angle: Angle,
  * Origin of the rotation. If one isn't provided, the object will rotate about its own bounding box center.
  */
 origin: OriginType, };
+
+/**
+ * Filepath which is guaranteed to be relative and not contain parent directory jumps like '..'
+ */
+export type SafeFilepath = string;
 
 /**
  * Removes all of the Objects in the scene
@@ -3952,7 +4098,15 @@ units: UnitLength,
 /**
  * Presentation style.
  */
-presentation: StepPresentation, };
+presentation: StepPresentation, 
+/**
+ * STEP application protocol schema. Defaults to AP242.
+ */
+schema: StepSchema, 
+/**
+ * Named views in the scene.
+ */
+views: { [key in string]: NamedView }, };
 
 /**
  * Options for importing STEP format.
@@ -3986,6 +4140,11 @@ export type StepImportTargetRepresentation = "mesh" | "brep";
  * Describes the presentation style of the EXPRESS exchange format.
  */
 export type StepPresentation = "compact" | "pretty";
+
+/**
+ * Specifies the STEP application protocol schema for export.
+ */
+export type StepSchema = "ap203" | "ap214" | "ap242";
 
 /**
  * Options for exporting STL.
@@ -4324,6 +4483,11 @@ export type ViewIsometric = {
  * and padding = -0.2 means the view will span 80% of the object(s) bounding box.
  */
 padding: number, };
+
+/**
+ * Identifies the visibility of entities.
+ */
+export type Visibility = "show" | "hide";
 
 /**
  * Get the volume of entities in the scene or the default scene.

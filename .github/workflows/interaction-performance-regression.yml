@@ -1,7 +1,14 @@
 name: Interaction performance
 
+# Due to test infrastructure scaling limitations, we do not automatically run
+# E2E tests on every push. Instead, PRs opt-in by applying the `run-e2e` label
+# once local development is complete. Remove the label to save CI costs if a PR
+# needs to undergo further changes. Consider only applying the label to the top
+# of large PR stacks.
+
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   push:
     branches: [main]
 
@@ -15,7 +22,16 @@ permissions:
 cache-mode: none
 
 jobs:
+  e2e-enabled:
+    if: >-
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'run-e2e')
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - run: echo "E2E is enabled for this event"
+
   resolve:
+    needs: [e2e-enabled]
     # Selected application refs must not update caches used by other workflows.
     runs-on: namespace-profile-ubuntu-2-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-resolve
     outputs:
@@ -33,7 +49,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
           ref: ${{ github.sha }}
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           package-manager-cache: false
@@ -100,7 +116,7 @@ jobs:
     name: Interaction performance regression
     needs: [resolve, build-wasm, build-app]
     # A failed dependency must fail this check instead of leaving it skipped.
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.resolve.result != 'skipped' }}
     runs-on: namespace-profile-macos-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-measure
     timeout-minutes: 15
     steps:

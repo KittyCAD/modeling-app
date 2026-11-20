@@ -1,5 +1,5 @@
-import type { Project } from '@src/lib/project'
-import { defineRegistryItem } from '@kittycad/registry'
+import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
 import {
@@ -16,9 +16,10 @@ import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
-import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { MachineManager } from '@src/lib/MachineManager'
+import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
@@ -33,19 +34,7 @@ import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { join } from 'path'
 import { createActor } from 'xstate'
 
-/** Minimal project metadata for editors whose tests need an owning project. */
-export function createProjectForTest(path = 'some-project'): Project {
-  return {
-    name: 'test',
-    path,
-    children: [],
-    default_file: join(path, 'main.kcl'),
-    directory_count: 0,
-    kcl_file_count: 0,
-    metadata: null,
-    readWriteAccess: true,
-  }
-}
+export { createProjectForTest } from '@src/lib/projectTestUtils'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -87,9 +76,13 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
     actor: {
       getSnapshot: () => ({
         matches: (state) => state === UserFeaturesState.Ready,
-        context: { fetchedAt: new Date() },
+        context: {
+          fetchedAt: new Date(),
+        },
       }),
-      subscribe: () => ({ unsubscribe: () => {} }),
+      subscribe: () => ({
+        unsubscribe: () => {},
+      }),
     },
   }
 }
@@ -99,10 +92,10 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine({
   webrtc = true,
-  pool,
+  geometryOnly = false,
 }: {
   webrtc?: boolean
-  pool?: 'cpu'
+  geometryOnly?: boolean
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
@@ -131,13 +124,9 @@ export async function buildTheWorldAndConnectToEngine({
   const rustContext = new RustContext(
     instancePromise,
     engineCommandManager,
-    settingsActor,
-    0,
-    pool === 'cpu'
+    settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
-    machineManager,
-    project: signal(createProjectForTest()),
     fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations, {
       watch: () => {},
@@ -145,12 +134,16 @@ export async function buildTheWorldAndConnectToEngine({
     }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
+    kclExecutionSettings: createTestKclExecutionSettings(() =>
+      getSettingsFromActorContext(settingsActor)
+    ),
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
     userFeatures: createSettledUserFeaturesForTest(),
+    project: signal(createProjectForTest()),
+    projectPath: signal('some-project'),
   })
-
   await new Promise((resolve, reject) => {
     kclManager.engineCommandManager
       .start({
@@ -166,14 +159,14 @@ export async function buildTheWorldAndConnectToEngine({
               'auth_token_invalid for the engine. Please set VITE_ZOO_API_TOKEN to the development token.'
             reject(reason)
           }
-
           if (message === 'auth success') {
             resolve(true)
             console.log('unit test connected!')
           }
         },
         unitTestWebrtc: webrtc,
-        unitTestPool: pool,
+        unitTestGeometryOnly: geometryOnly,
+        geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)
@@ -198,14 +191,10 @@ export async function loadWasm() {
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   return instancePromise
 }
-
 export function createTestWasmRegistryItem(
   wasmPromise: Promise<ModuleType> = loadWasm()
 ) {
-  return defineRegistryItem({
-    id: 'test.wasm-promise',
-    provides: [provideWasmPromise(wasmPromise)],
-  })
+  return [provideWasmPromise(() => wasmPromise)]
 }
 
 /**
@@ -217,7 +206,9 @@ export function createTestWasmRegistryItem(
  */
 export async function buildTheWorldNode() {
   const instance = loadWasm()
-  return { instance }
+  return {
+    instance,
+  }
 }
 
 // Initialize all the singletons and the WASM blob but do not connect to the engine
@@ -256,8 +247,6 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
-    machineManager,
-    project: signal(createProjectForTest()),
     fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations, {
       watch: () => {},
@@ -265,14 +254,17 @@ export async function buildTheWorldAndNoEngineConnection(
     }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
+    kclExecutionSettings: createTestKclExecutionSettings(() =>
+      getSettingsFromActorContext(settingsActor)
+    ),
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
     userFeatures,
+    project: signal(createProjectForTest()),
+    projectPath: signal('some-project'),
   })
-
   settingsActor.start()
-
   return {
     instance: await instancePromise,
     engineCommandManager: kclManager.engineCommandManager,

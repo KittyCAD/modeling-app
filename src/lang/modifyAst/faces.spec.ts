@@ -57,7 +57,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
+    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -878,8 +878,7 @@ fillet001 = fillet(
         `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line5)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    }, 15_000)
-
+    })
     it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])

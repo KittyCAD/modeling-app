@@ -143,7 +143,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
             if dep_map.get(&module).map(|v| v.len()).unwrap_or(0) == 0 {
                 // if it's None or empty, this is a node that we can process,
                 // and remove from the graph.
-                stage_modules.push(module.to_string());
+                stage_modules.push(module);
             }
         }
 
