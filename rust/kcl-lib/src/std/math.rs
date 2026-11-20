@@ -275,7 +275,7 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = input.n.log(base.n);
+    let result = libm::log(input.n) / libm::log(base.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -290,7 +290,7 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = input.n.log2();
+    let result = libm::log2(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -305,7 +305,7 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = input.n.log10();
+    let result = libm::log10(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -320,7 +320,7 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = input.n.ln();
+    let result = libm::log(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
