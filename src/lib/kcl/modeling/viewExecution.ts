@@ -18,9 +18,22 @@ export interface KclViewExecutionState {
 }
 
 /**
- * Run shared snapshots in one view's session. Its child scope closes with the
- * view or the executor; closing the child does not cancel sibling views. Scope.fork
- * also removes a closed child's finalizer from the parent, releasing its references.
+ * Run the shared executor's source snapshots in one view's native session.
+ * `createKclRuntime` binds its WASM Context to that session's engine connection;
+ * executing builds geometry in that connection's scene. Sharing the snapshot
+ * therefore does not share native execution. Local rendering currently uses
+ * the same path through a geometry-only engine connection.
+ *
+ * Sharing native execution later requires a reusable geometry/artifact result
+ * independent of a connection, plus a way for each view's scene to present it.
+ * Cameras, selection, and reconnects must remain view-owned. This bridge could
+ * then consume shared results instead of calling `session.execute`; removing it
+ * alone would leave sibling connections without their geometry. See the KCL
+ * README's "Sharing native execution" section for the required boundaries.
+ *
+ * Its child scope closes with the view or the executor; closing the child does
+ * not cancel sibling views. Scope.fork also removes a closed child's finalizer
+ * from the parent, releasing its references.
  */
 export function createKclViewExecution(
   executor: Executor,
