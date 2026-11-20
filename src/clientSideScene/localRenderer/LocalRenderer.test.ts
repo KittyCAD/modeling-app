@@ -779,9 +779,12 @@ describe('local GLB loading', () => {
       expect(f.state.executionPreviewModel).not.toBe(previous)
     }
     expect(worker.postMessage).toHaveBeenCalledTimes(3)
-    expect(
+    const previewCommand =
       f.manager.engineCommandManager.sendCommand.mock.calls[0][1].command.cmd
-    ).toMatchObject({ format: { type: 'gltf', brep_only: true } })
+    expect(previewCommand).toMatchObject({
+      format: { type: 'gltf', brep_only: true },
+    })
+    expect(previewCommand).not.toHaveProperty('compression')
     const id = worker.postMessage.mock.calls[2][0].id as number
     const onmessage = worker.onmessage
     if (!onmessage) throw new Error('Missing worker callback')
