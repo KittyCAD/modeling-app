@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals-core'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
-import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
+import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUSceneView'
 import { Themes } from '@src/lib/theme'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
