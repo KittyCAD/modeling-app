@@ -16,6 +16,8 @@ it('preserves arbitrary bytes for unknown files, with no mutable buffer shared w
       const backing = createEditorBacking(parsed)
       if (backing.type !== 'binary')
         return expect.fail('Unknown files must retain their bytes')
+      expect(backing.byteLength).toBe(expected.byteLength)
+      expect(backing.readBytes(1, 17)).toEqual(expected.slice(1, 17))
       bytes.fill(0)
       expect(backing.readBytes()).toEqual(expected)
       backing.readBytes().fill(0)
@@ -57,4 +59,15 @@ it('honors a higher priority binary declaration over a text declaration', () => 
     parseEditorFile('notes.txt', new TextEncoder().encode('hello'), formats)
       .type
   ).toBe('binary')
+})
+
+it('owns Buffer-backed input and returns independent byte ranges', () => {
+  const input = Buffer.from([0, 65, 255, 126])
+  const backing = createEditorBacking({ type: 'binary', bytes: input })
+  if (backing.type !== 'binary') return expect.fail('Expected binary data')
+  input.fill(0)
+  const preview = backing.readBytes(1, 3)
+  expect(preview).toEqual(new Uint8Array([65, 255]))
+  preview.fill(0)
+  expect(backing.readBytes()).toEqual(new Uint8Array([0, 65, 255, 126]))
 })

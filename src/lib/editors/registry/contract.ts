@@ -17,7 +17,12 @@ import type { ComponentType } from 'react'
 /** Storage identity is fixed at opening; syntax choices never convert binary bytes into editable text. */
 export type EditorBacking =
   | { readonly type: 'text' }
-  | { readonly type: 'binary'; readonly readBytes: () => Uint8Array }
+  | {
+      readonly type: 'binary'
+      readonly byteLength: number
+      /** Return an independent byte range, defaulting to the whole file. */
+      readonly readBytes: (start?: number, end?: number) => Uint8Array
+    }
 
 /** File types opt into text decoding before a CodeMirror document is created. Unknown types remain binary. */
 export interface EditorFileFormat {

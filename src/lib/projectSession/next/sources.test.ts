@@ -157,6 +157,7 @@ it('reads an open byte-backed model from storage when capturing a KCL import', a
       contents: signal('lossy text'),
       backing: {
         type: 'binary',
+        byteLength: 3,
         readBytes: () => new Uint8Array([0, 255, 128]),
       },
     },

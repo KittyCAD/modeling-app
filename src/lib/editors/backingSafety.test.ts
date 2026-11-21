@@ -121,6 +121,12 @@ it.each([
     const view = requireSuccess(service.createView(editor))
     await Promise.resolve()
     expect(service.viewState(view).peek().selected?.id).toBe('editors.binary')
+    expect(
+      service
+        .viewState(view)
+        .peek()
+        .available.some(({ id }) => id === 'editors.code')
+    ).toBe(false)
     change(editor)
     await vi.advanceTimersByTimeAsync(3000)
     expect(editor.contents.peek()).toBe('')

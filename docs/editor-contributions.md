@@ -28,7 +28,8 @@ binary backing, as do declared text files with invalid UTF-8 or NUL characters.
 Binary backings preserve original bytes, remain read-only, and reject text saves
 and text snapshot adoption. Renaming, changing language, and replacing contributions
 do not change the backing. The Code view matches text backings; binary files have
-a read-only File fallback unless a specialized viewer matches.
+a read-only File fallback unless a specialized viewer matches. File mode displays
+file metadata and a bounded hex/ASCII header preview using the original bytes.
 
 Use `createEditor(contents)` for an authored text draft or `openEditor(src, text)`
 when the caller already owns known text. These deliberately create text backings;

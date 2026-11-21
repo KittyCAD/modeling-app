@@ -35,6 +35,10 @@ export function parseEditorFile(
 /** Keep a private byte snapshot so callers cannot mutate the backing through either buffer. */
 export function createEditorBacking(input: EditorInput): EditorBacking {
   if (input.type === 'text') return { type: 'text' }
-  const bytes = input.bytes.slice()
-  return { type: 'binary', readBytes: () => bytes.slice() }
+  const bytes = Uint8Array.from(input.bytes)
+  return {
+    type: 'binary',
+    byteLength: bytes.byteLength,
+    readBytes: (start, end) => bytes.slice(start, end),
+  }
 }

@@ -51,8 +51,11 @@ contribution contracts, language descriptors, and explicit language choices.
 `openFile(src, bytes)` parses bytes using `editorFileFormatsFacet`. A declared
 text format must decode as strict UTF-8 without NUL characters. Unknown formats,
 explicit binary formats, and invalid text retain an owned copy of the original
-bytes. Binary backings expose `readBytes()` copies and a read-only File fallback;
-they never install a Code surface. Specialized viewers can still present them.
+bytes. Binary backings expose their `byteLength` and independent `readBytes(start,
+end)` copies. File mode shows the name, size, extension, path, and a hex/ASCII
+preview of the first 64 bytes. It reads only that bounded range, including for
+large files. Binary backings never install a Code surface; specialized viewers
+can still present them.
 Core declarations cover `.txt`, `.toml`, and `.json`; the KCL and Markdown
 extensions separately contribute `.kcl` and `.md`. Higher-priority declarations
 win, with registration order breaking ties.
