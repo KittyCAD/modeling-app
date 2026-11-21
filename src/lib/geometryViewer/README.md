@@ -33,9 +33,9 @@ the action does not write either file to storage. Existing unsaved edits remain.
   Geometry imports wait for this delivery even after their JavaScript pending
   command has settled. Replies bypass the execution/export queue to avoid waiting
   behind the import they complete; disposal drains in-flight deliveries.
-- Model editors are read-only and declare `storage: 'bytes'`. Opening raw bytes
-  creates an empty text document; project source capture reads byte-backed imports
-  from storage, preserving binary data even while their viewers are open.
+- Model formats declare binary backings through `editorFileFormatsFacet`. The
+  editor retains original bytes, prohibits edits and text saves, and source capture
+  reads binary imports from storage even while their viewers are open.
 - Project replacement, tree changes, and executor cancellation invalidate pending
   byte captures. Import insertion checks its captured project again after loading
   the target and never writes into a replacement project.

@@ -25,6 +25,7 @@ function editor() {
       get state() {
         return document.document.state
       },
+      backing: { type: 'text' as const },
       id: Symbol(),
       src: signal('/main.kcl'),
       classification: signal({ languageId: 'kcl' }),

@@ -15,8 +15,7 @@ import { isErr } from '@src/lib/trap'
  */
 export function createProjectSources(
   getProjects: () => ProjectSessionService | undefined,
-  getDocuments: () => readonly (Pick<Editor, 'src' | 'contents'> &
-    Partial<Pick<Editor, 'classification'>>)[]
+  getDocuments: () => readonly Pick<Editor, 'src' | 'contents' | 'backing'>[]
 ): ProjectSourcesService {
   // Metadata updates retain `contents`; this intermediate computed prevents a
   // title/default-file change from invalidating the execution source revision.
@@ -28,7 +27,7 @@ export function createProjectSources(
     documents: getDocuments().map((document) => ({
       src: document.src.value,
       contents: document.contents.value,
-      storage: document.classification?.value?.storage,
+      backing: document.backing.type,
     })),
   }))
   return {
@@ -55,7 +54,7 @@ export function createProjectSources(
       const encode = (text: string) => new TextEncoder().encode(text)
       const working = new Map<string, Uint8Array>()
       for (const open of getDocuments()) {
-        if (open.classification?.peek()?.storage === 'bytes') continue
+        if (open.backing.type !== 'text') continue
         const path = open.src.peek()
         if (path && !working.has(fsZds.join(path)))
           working.set(fsZds.join(path), encode(open.contents.peek()))

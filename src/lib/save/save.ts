@@ -6,7 +6,11 @@ import type {
   EditorResourceHost,
   CodeEditorHost,
 } from '@src/lib/editors/registry/contract'
-import type { EditorSave, EditorOnSave } from '@src/lib/save/registry/contract'
+import type {
+  EditorSave,
+  EditorOnSave,
+  EditorSaveSnapshot,
+} from '@src/lib/save/registry/contract'
 import { matchesEditor } from '@src/lib/editors/matching'
 import { isErr, trap, reportRejection } from '@src/lib/trap'
 
@@ -52,6 +56,8 @@ export function createEditorSave(
   const service: EditorSave = {
     lastFocusedEditor,
     adopt: (editor, contents) => {
+      if (editor.backing.type !== 'text')
+        return new Error('Cannot adopt text into a binary editor')
       if (disposed || !attached.has(editor))
         return new Error('This editor is no longer open')
       const entry = entryFor(editor)
@@ -73,10 +79,7 @@ export function createEditorSave(
         if (!disposed && attached.has(editor)) entry.error.value = error
         return error
       }
-      if (
-        editor.readOnly.peek() ||
-        editor.classification.peek()?.storage === 'bytes'
-      )
+      if (editor.readOnly.peek() || editor.backing.type !== 'text')
         return Promise.resolve(fail(new Error('This editor is read-only')))
       const src = editor.src.peek()
       if (!src)
@@ -84,10 +87,11 @@ export function createEditorSave(
           fail(new Error('Assign a file path before saving this buffer'))
         )
       const document: Text = editor.state.doc
-      const saved = {
+      const saved: EditorSaveSnapshot = {
         editor,
         src,
         contents: document.toString(),
+        backing: editor.backing.type,
         ...editor.classification.peek(),
       }
       const queue: SourceSaveQueue = saves.get(src) ?? { adoption: 0 }
@@ -103,10 +107,7 @@ export function createEditorSave(
           return fail(new Error('The editor changed before saving started'))
         }
         if (queue.adoption !== adoption) return undefined
-        if (
-          editor.readOnly.peek() ||
-          editor.classification.peek()?.storage === 'bytes'
-        )
+        if (editor.readOnly.peek() || editor.backing.type !== 'text')
           return fail(new Error('This editor is read-only'))
         try {
           const handlers = getSaveHandlers()

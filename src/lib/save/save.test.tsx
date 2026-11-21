@@ -205,6 +205,7 @@ describe('contributed editor saving', () => {
       editor,
       src: editor.src.peek(),
       contents: 'save elsewhere',
+      backing: 'text',
     })
     expect(saving().state(editor).value.dirty).toBe(false)
     expect(writeFile).not.toHaveBeenCalled()
@@ -240,6 +241,7 @@ describe('contributed editor saving', () => {
       editor,
       src: editor.src.peek(),
       contents: 'to save',
+      backing: 'text',
     })
     expect(unrelated).not.toHaveBeenCalled()
     saved.mockClear()

@@ -52,6 +52,7 @@ describe('executors extension', () => {
       get state() {
         return backing.document.state
       },
+      backing: { type: 'text' as const },
       id: Symbol(src),
       src: source,
       classification: signal(undefined),

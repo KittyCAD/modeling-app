@@ -14,6 +14,7 @@ function target(contents: string) {
     get state() {
       return backing.document.state
     },
+    backing: { type: 'text' as const },
     id: Symbol(),
     src: signal('/model/assembly/main.kcl'),
     readOnly,

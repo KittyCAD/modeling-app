@@ -4,6 +4,7 @@ import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
 import {
   observations as editorInputs,
   editorLanguagesFacet,
+  editorFileFormatsFacet,
   editorReadOnlyPoliciesFacet,
   editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
@@ -113,9 +114,14 @@ const extension = factory({
     })
     return {
       items: [
+        contribute(editorFileFormatsFacet, () => ({
+          id: 'geometry',
+          matches: isGeometryFile,
+          type: 'binary' as const,
+          priority: 100,
+        })),
         contribute(editorLanguagesFacet, () => ({
           id: 'geometry',
-          storage: 'bytes' as const,
           matches: ({ src }) => isGeometryFile(src),
         })),
         contribute(editorReadOnlyPoliciesFacet, () => ({

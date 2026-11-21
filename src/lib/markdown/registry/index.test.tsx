@@ -81,10 +81,24 @@ describe('Markdown extension', () => {
       ])
       expect(isolated.get(editorViewsFacet)).toEqual([
         expect.objectContaining({
-          matches: '.md',
           id: 'markdown.preview',
         }),
       ])
+      const preview = isolated.get(editorViewsFacet)[0]
+      expect(
+        matchesEditor(preview.matches, {
+          src: '/notes.md',
+          contents: '# Text',
+          backing: 'text',
+        })
+      ).toBe(true)
+      expect(
+        matchesEditor(preview.matches, {
+          src: '/notes.md',
+          contents: '',
+          backing: 'binary',
+        })
+      ).toBe(false)
       expect(isolated.optional(editorsService)).toBeUndefined()
       expect(isolated.optional(executorsService)).toBeUndefined()
     } finally {

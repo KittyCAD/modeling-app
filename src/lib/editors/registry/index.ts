@@ -1,3 +1,9 @@
+import {
+  createEditorBacking,
+  parseEditorFile,
+  type EditorInput,
+} from '@src/lib/editors/backing'
+import { BinaryFileView } from '@src/lib/editors/BinaryFileView'
 import { matchesEditor } from '@src/lib/editors/matching'
 import { ReadOnlyIndicator } from '@src/lib/editors/ReadOnlyIndicator'
 import type { EditorView as NativeEditorView } from '@codemirror/view'
@@ -31,6 +37,7 @@ import {
   editorsService,
   editorViewsFacet,
   editorTabIndicatorsFacet,
+  editorFileFormatsFacet,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import { observations as nextProjectSessionObservations } from '@src/lib/projectSession/next/contract'
@@ -113,6 +120,83 @@ const extension: Factory = defineFactory({
       record.dispose()
     }
     let disposed = false
+    const openDocument = (
+      src: string | undefined,
+      input: EditorInput
+    ): Editor | Error => {
+      const blocked = contextBoundary.checkCanManageEditors()
+      if (blocked) return blocked
+      if (disposed) return new Error('The editors service is closed')
+      // A later project selection must not adopt resources being constructed for this opening.
+      const lifetime =
+        nextProjectSessionInputs.projectSessionService.current.value?.currentSession.peek()
+          ?.signal
+      const resources = createEditorCleanup()
+      const source = signal(src)
+      const storage = createEditorBacking(input)
+      const backing = createEditorDocument(
+        input.type === 'text' ? input.contents : '',
+        () => !readOnly.peek()
+      )
+      resources.onDispose(backing.dispose)
+      const text = backing.document.contents
+      const language = createEditorClassification(source, text, languages)
+      const readOnly: ReadonlySignal<boolean> = computed(
+        () =>
+          storage.type === 'binary' ||
+          editorsInputs.editorReadOnlyPoliciesFacet.value.some(
+            (policy) =>
+              policy.readOnly.value &&
+              matchesEditor(policy.matches, {
+                src: source.value ?? '',
+                contents: text.value,
+                backing: storage.type,
+                ...language.classification.value,
+              })
+          )
+      )
+      const editor: Editor = {
+        backing: storage,
+        readOnly,
+        ...backing.document,
+        get state() {
+          return backing.document.state
+        },
+        id: Symbol(src),
+        src: source,
+        contents: text,
+        classification: language.classification,
+      }
+      try {
+        // Register before contributed code runs, so project shutdown can release partial initialization.
+        records.set(editor.id, {
+          editor,
+          source,
+          language,
+          dispose: resources.dispose,
+        })
+        const close = () => closeEditor(editor.id)
+        lifetime?.addEventListener('abort', close, {
+          once: true,
+        })
+        resources.onDispose(() => lifetime?.removeEventListener('abort', close))
+        resources.onDispose(
+          watchEditorCapabilities(editor, capabilities, contextBoundary)
+        )
+        if (resources.closed || lifetime?.aborted || disposed) {
+          closeEditor(editor.id)
+          resources.dispose()
+          return new Error('The editor closed during initialization')
+        }
+        // Subscribers may react to publication; always append to the current collection.
+        editors.value = [...editors.peek(), editor]
+        return editor
+      } catch (cause) {
+        closeEditor(editor.id)
+        resources.dispose()
+        return isErr(cause) ? cause : new Error(String(cause))
+      }
+    }
     const service: EditorsService = {
       editors,
       views: presentations,
@@ -159,84 +243,17 @@ const extension: Factory = defineFactory({
           closeEditor(record.instance.editor.id)
       },
       createEditor: (contents = '') => service.openEditor(undefined, contents),
-      openEditor: (src, contents) => {
-        const blocked = contextBoundary.checkCanManageEditors()
-        if (blocked) return blocked
-        if (disposed) return new Error('The editors service is closed')
-        // A later project selection must not adopt resources being constructed for this opening.
-        const lifetime =
-          nextProjectSessionInputs.projectSessionService.current.value?.currentSession.peek()
-            ?.signal
-        const resources = createEditorCleanup()
-        const source = signal(src)
-        const input =
-          typeof contents === 'string'
-            ? contents
-            : createEditorClassification(
-                  source,
-                  signal(''),
-                  languages
-                ).classification.peek()?.storage === 'bytes'
-              ? ''
-              : new TextDecoder().decode(contents)
-        const backing = createEditorDocument(input, () => !readOnly.peek())
-        resources.onDispose(backing.dispose)
-        const text = backing.document.contents
-        const language = createEditorClassification(source, text, languages)
-        const readOnly: ReadonlySignal<boolean> = computed(() =>
-          editorsInputs.editorReadOnlyPoliciesFacet.value.some(
-            (policy) =>
-              policy.readOnly.value &&
-              matchesEditor(policy.matches, {
-                src: source.value ?? '',
-                contents: text.value,
-                ...language.classification.value,
-              })
+      openEditor: (src, contents) =>
+        openDocument(src, { type: 'text', contents }),
+      openFile: (src, bytes) =>
+        openDocument(
+          src,
+          parseEditorFile(
+            src,
+            bytes,
+            editorsInputs.editorFileFormatsFacet.peek()
           )
-        )
-        const editor: Editor = {
-          readOnly,
-          ...backing.document,
-          get state() {
-            return backing.document.state
-          },
-          id: Symbol(src),
-          src: source,
-          contents: text,
-          classification: language.classification,
-        }
-        try {
-          // Register before contributed code runs, so project shutdown can release partial initialization.
-          records.set(editor.id, {
-            editor,
-            source,
-            language,
-            dispose: resources.dispose,
-          })
-          const close = () => closeEditor(editor.id)
-          lifetime?.addEventListener('abort', close, {
-            once: true,
-          })
-          resources.onDispose(() =>
-            lifetime?.removeEventListener('abort', close)
-          )
-          resources.onDispose(
-            watchEditorCapabilities(editor, capabilities, contextBoundary)
-          )
-          if (resources.closed || lifetime?.aborted || disposed) {
-            closeEditor(editor.id)
-            resources.dispose()
-            return new Error('The editor closed during initialization')
-          }
-          // Subscribers may react to publication; always append to the current collection.
-          editors.value = [...editors.peek(), editor]
-          return editor
-        } catch (cause) {
-          closeEditor(editor.id)
-          resources.dispose()
-          return isErr(cause) ? cause : new Error(String(cause))
-        }
-      },
+        ),
       setSource: (id, src) => {
         const blocked = contextBoundary.checkCanManageEditors()
         if (blocked) return blocked
@@ -289,7 +306,7 @@ const extension: Factory = defineFactory({
       })({
         id: 'editors.code',
         label: 'Code',
-        matches: '*',
+        matches: ({ backing }) => backing === 'text',
         priority: -100,
         Component: ({ context, active }) =>
           createElement(CodeMirrorView, {
@@ -318,6 +335,22 @@ const extension: Factory = defineFactory({
           component: ReadOnlyIndicator,
         })),
         contribute(editorViewsFacet, () => _editorViewsContribution),
+        contribute(editorViewsFacet, () =>
+          defineEditorView({
+            id: 'editors.binary',
+            label: 'File',
+            matches: ({ backing }) => backing === 'binary',
+            priority: -100,
+            Component: BinaryFileView,
+          })
+        ),
+        ...['.txt', '.toml', '.json'].map((extension) =>
+          contribute(editorFileFormatsFacet, () => ({
+            id: `text${extension}`,
+            matches: extension as `.${string}`,
+            type: 'text' as const,
+          }))
+        ),
         contribute(
           keymapEventOwnersFacet,
           () => _keymapEventOwnersContribution

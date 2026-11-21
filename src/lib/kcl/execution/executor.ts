@@ -18,7 +18,8 @@ export function createKclExecution(
   const capability = defineExecutorCapability({
     id: 'kcl.execution',
     revision,
-    matches: ({ languageId }) => languageId === 'kcl',
+    matches: ({ languageId, backing }) =>
+      backing === 'text' && languageId === 'kcl',
     async execute(contents: string, context: ExecutorRunContext) {
       const sources = await loadSources(contents, context)
       if (isErr(sources)) return sources

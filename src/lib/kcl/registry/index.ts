@@ -5,6 +5,7 @@ import { editorKclHighlight } from '@src/editor/plugins/theme'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
+  editorFileFormatsFacet,
   editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
@@ -50,12 +51,18 @@ const extension = factory({
     const modelingView = defineEditorView(scenes.bind(execution.capability))({
       id: 'kcl.modeling',
       label: 'Modeling',
-      matches: ({ languageId }) => languageId === 'kcl',
+      matches: ({ languageId, backing }) =>
+        backing === 'text' && languageId === 'kcl',
       priority: 1000,
       Component: KclScene,
     })
     return {
       items: [
+        contribute(editorFileFormatsFacet, () => ({
+          id: 'kcl',
+          matches: '.kcl' as const,
+          type: 'text' as const,
+        })),
         contribute(executorCapabilityFacet, () => execution.capability),
         contribute(editorViewsFacet, () => modelingView),
         contribute(editorLanguagesFacet, () => ({
@@ -65,7 +72,8 @@ const extension = factory({
 
         contribute(codeEditorsExtensionFacet, () => ({
           id: 'editors.kcl',
-          matches: ({ languageId }) => languageId === 'kcl',
+          matches: ({ languageId, backing }) =>
+            backing === 'text' && languageId === 'kcl',
           extensions: [kcl(), editorKclHighlight],
         })),
       ],
