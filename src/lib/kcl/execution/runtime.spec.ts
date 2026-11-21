@@ -83,11 +83,8 @@ async function runtime(
     ...hooks,
   }
   const nativeSettings = createTestKclExecutionSettings(() => settings)
-  const model = await createKclRuntime(
-    Promise.resolve(instance),
-    engine,
-    () => nativeSettings.configuration.peek(),
-    () => nativeSettings.rebuildRevision.peek()
+  const model = await createKclRuntime(Promise.resolve(instance), engine, () =>
+    nativeSettings.configuration.peek()
   )
   runtimes.push(model)
   return model
@@ -214,68 +211,30 @@ it('updates streamed edge visibility when settings change with unchanged KCL', a
   })
 })
 
-it('rebuilds native streamed scenes only when a declared rebuild input changes', async () => {
-  const cleared: string[] = []
-  class Context extends wasm.Context {
-    async bustCacheAndResetScene(
-      ...args: Parameters<
-        InstanceType<ModuleType['Context']>['bustCacheAndResetScene']
-      >
-    ) {
-      cleared.push(args[0])
-      return super.bustCacheAndResetScene(...args)
-    }
-  }
+it('reapplies streamed backface settings without changing the native scene generation', async () => {
   const settings = createSettings()
-  const model = await runtime({ ...wasm, Context }, settings)
+  const requests: EngineCommand[] = []
+  const model = await runtime(wasm, settings, requests)
   const source = snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
   await model.execute(source)
-  settings.modeling.highlightEdges.user = false
+  const generation = model.state.peek().engineSceneGeneration
+  requests.length = 0
+  settings.modeling.backfaceColor.user = '#00ff00'
   await model.execute(source)
-  expect(cleared).toEqual([])
-  settings.modeling.backfaceColor.user = '#123456'
-  await model.execute(source)
-  expect(cleared).toHaveLength(1)
-  expect(JSON.parse(cleared[0]).settings.modeling.backface_color).toBe(
-    '#123456'
+  const commands = requests.flatMap((request) =>
+    request.type === 'modeling_cmd_batch_req'
+      ? request.requests.map((item) => item.cmd)
+      : request.type === 'modeling_cmd_req'
+        ? [request.cmd]
+        : []
   )
-  await model.execute(source)
-  expect(cleared).toHaveLength(1)
-  expect(model.state.peek().variables.answer).toMatchObject({ value: 42 })
-})
-
-it('does not start execution after a scene closes during a native rebuild', async () => {
-  const clearing = Promise.withResolvers<undefined>()
-  const calls: string[] = []
-  class Context extends wasm.Context {
-    async bustCacheAndResetScene(
-      ...args: Parameters<
-        InstanceType<ModuleType['Context']>['bustCacheAndResetScene']
-      >
-    ) {
-      calls.push('rebuild')
-      await clearing.promise
-      return super.bustCacheAndResetScene(...args)
-    }
-    async execute(
-      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
-    ) {
-      calls.push('execute')
-      return super.execute(...args)
-    }
-  }
-  const settings = createSettings()
-  const model = await runtime({ ...wasm, Context }, settings)
-  const source = snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
-  await model.execute(source)
-  settings.modeling.backfaceColor.user = '#123456'
-  const run = model.execute(source)
-  await vi.waitFor(() => expect(calls).toEqual(['execute', 'rebuild']))
-  const closing = model.dispose()
-  clearing.resolve(undefined)
-  await expect(run).rejects.toBeInstanceOf(Error)
-  await closing
-  expect(calls).toEqual(['execute', 'rebuild'])
+  expect(commands).toContainEqual(
+    expect.objectContaining({
+      type: 'set_default_system_properties',
+      backface_color: { r: 0, g: 1, b: 0, a: 1 },
+    })
+  )
+  expect(model.state.peek().engineSceneGeneration).toBe(generation)
 })
 
 it.each(['execute', 'drain'] as const)(

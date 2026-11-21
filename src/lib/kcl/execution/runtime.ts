@@ -45,8 +45,7 @@ const fromPromise = <A>(work: () => Promise<A>) =>
 export async function createKclRuntime(
   wasmPromise: Promise<ModuleType>,
   engine: NativeEngine,
-  getSettings: () => object,
-  getRebuildRevision: () => string = () => ''
+  getSettings: () => object
 ) {
   const wasm = await wasmPromise
   let files: ReadonlyMap<string, Uint8Array> = new Map()
@@ -71,7 +70,6 @@ export async function createKclRuntime(
     },
   })
   const settings = () => JSON.stringify(getSettings())
-  let rebuiltRevision = getRebuildRevision()
   // A rejected operation must not poison later runs. Only the caller receives
   // its rejection; `queue` settles so disposal and subsequent operations can proceed.
   const enqueue = <T>(work: () => Promise<T>): Promise<T> => {
@@ -99,13 +97,6 @@ export async function createKclRuntime(
       if (!resultIsOk(ast))
         return yield* Effect.fail(new Error('Fix KCL syntax before executing'))
       const configuration = settings()
-      const rebuildRevision = getRebuildRevision()
-      if (rebuiltRevision !== rebuildRevision) {
-        yield* fromPromise(() =>
-          native.bustCacheAndResetScene(configuration, snapshot.src)
-        )
-        rebuiltRevision = rebuildRevision
-      }
       if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
       const delta: SceneGraphDelta = yield* fromPromise(() =>
         native.execute(JSON.stringify(ast.program), snapshot.src, configuration)
