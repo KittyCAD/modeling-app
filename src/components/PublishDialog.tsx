@@ -19,7 +19,7 @@ import type {
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-type PublishDialogMarkdownEditorKeymap = {
+export type PublishDialogMarkdownEditorKeymap = {
   focusScope: {
     onFocus: () => void
     onBlur: () => void

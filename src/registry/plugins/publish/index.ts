@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { PublishButton } from '@src/components/PublishButton'
+import { LegacyPublishButton } from '@src/lib/publishing/LegacyPublishButton'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderEndItemsFacet } from '@src/registry/contracts/appHeader'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
@@ -11,7 +11,7 @@ function PublishHeaderItem({ app }: AppHeaderItemProps) {
   if (!app.projectSignal.value) {
     return null
   }
-  return createElement(PublishButton, {
+  return createElement(LegacyPublishButton, {
     app,
   })
 }
