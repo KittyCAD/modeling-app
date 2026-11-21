@@ -40,6 +40,7 @@ export default defineConfig({
             'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'packages/plankton/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'e2e/performance/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'e2e/playwright/lib/*.test.ts',
           ],
         },
       },

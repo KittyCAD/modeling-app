@@ -1,5 +1,12 @@
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 import type { ReporterDescription } from '@playwright/test'
+
+if (process.env.ZDS_VCR_DIR && !process.env.ZDS_VCR_STATE) {
+  process.env.ZDS_VCR_STATE = mkdtempSync(join(tmpdir(), 'zds-vcr-'))
+}
 
 const discoveryReporters: ReporterDescription[] =
   process.env.PLAYWRIGHT_INTERACTION_DISCOVERY === '1'

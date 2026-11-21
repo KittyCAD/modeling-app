@@ -13,7 +13,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
   schedule:
-    - cron: 0 * * * * # hourly
+    - cron: "0 0,6,12,18 * * *" # refresh engine cassettes within the hourly E2E run
+    - cron: "0 1-5,7-11,13-17,19-23 * * *"
   workflow_call:
     inputs:
       grep:
@@ -42,7 +43,8 @@ jobs:
   e2e-enabled:
     if: >-
       github.event_name != 'pull_request' ||
-      contains(github.event.pull_request.labels.*.name, 'run-e2e')
+      contains(github.event.pull_request.labels.*.name, 'run-e2e') ||
+      contains(github.event.pull_request.labels.*.name, 'run-live-engine')
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - run: echo "E2E is enabled for this event"
@@ -409,8 +411,27 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
+      - name: Prepare engine cassettes
+        id: engine-cassettes
+        if: >-
+          matrix.config.label == 'chrome' &&
+          (github.event_name == 'schedule' || github.event_name == 'push' ||
+          (github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository))
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          SHARD_INDEX: ${{ matrix.shardIndex }}
+          SHARD_TOTAL: ${{ matrix.shardTotal }}
+          FORCE_LIVE: ${{ github.event.schedule == '0 0,6,12,18 * * *' || contains(github.event.pull_request.labels.*.name, 'run-live-engine') }}
+        run: bash .github/ci-cd-scripts/prepare-engine-cassettes.sh
+
       - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
+          ZDS_VCR_DIR: ${{ steps.engine-cassettes.outputs.directory }}
+          ZDS_VCR_RECORDINGS: ${{ steps.engine-cassettes.outputs.recordings }}
+          ZDS_VCR_LIVE: ${{ steps.engine-cassettes.outputs.live }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
@@ -418,6 +439,46 @@ jobs:
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:web
           TARGET: web
+
+      - name: Verify fresh engine cassette
+        id: verify-engine-cassette
+        if: ${{ !cancelled() && steps.engine-cassettes.outputs.recordings != '' }}
+        env:
+          ZDS_VCR_DIR: ${{ steps.engine-cassettes.outputs.recordings }}
+          ZDS_VCR_VERIFY: '1'
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TARGET: web
+        run: |
+          if compgen -G "$ZDS_VCR_DIR/*.json" > /dev/null; then
+            npm run test:e2e:web -- --grep @vcr --retries=0 --output=test-results/vcr-verification --reporter=list
+            for recording in "$ZDS_VCR_DIR"/*.json; do
+              if [[ ! -f "$recording.verified" ]]; then
+                echo "::error::Replay verification did not run for $(basename "$recording")"
+                exit 1
+              fi
+            done
+            echo "verified=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload failed cassette verification diagnostics
+        if: ${{ !cancelled() && steps.verify-engine-cassette.outcome == 'failure' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: engine-cassette-verification-shard-${{ matrix.shardIndex }}
+          path: test-results/vcr-verification/
+          if-no-files-found: ignore
+          retention-days: 7
+          overwrite: true
+
+      - name: Upload fresh engine cassettes
+        if: ${{ !cancelled() && steps.verify-engine-cassette.outputs.verified == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.engine-cassettes.outputs.name }}
+          path: ${{ steps.engine-cassettes.outputs.recordings }}/*.json
+          if-no-files-found: ignore
+          retention-days: 7
+          overwrite: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v7
