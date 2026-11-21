@@ -45,7 +45,10 @@ export function LegacySceneToolsProvider({
           DEFAULT_DEFAULT_LENGTH_UNIT,
         executionKey: 'legacy',
         sendModelingCommand,
-        container: document.getElementById('stream'),
+        // Resolve when a panel opens; the stream can mount or be replaced after this provider renders.
+        get container() {
+          return document.getElementById('stream')
+        },
         measurement: measurementToolService,
         physicalAnalysis: physicalAnalysisService,
       }}
