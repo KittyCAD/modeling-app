@@ -111,3 +111,103 @@ it('rematches an unnamed editor when its language is chosen and cleared', async 
   expect(executor.output.value.get(capability)).toBeUndefined()
   expect(editor.src.value).toBeUndefined()
 })
+
+it('runs only requested nonmatching capabilities for unnamed buffers and shares their leases', async () => {
+  const renderMarkdown = vi.fn((contents: string) => ({ text: contents }))
+  const renderKcl = vi.fn((contents: string) => ({ text: contents }))
+  const markdown = defineExecutorCapability({
+    id: 'markdown',
+    matches: '.md',
+    execute: renderMarkdown,
+  })
+  const kcl = defineExecutorCapability({
+    id: 'kcl',
+    matches: '.kcl',
+    execute: renderKcl,
+  })
+  registry = new Registry()
+  await registry.configure([
+    editorsExtension,
+    executorsExtension,
+    contribute(executorCapabilityFacet, () => markdown),
+    contribute(executorCapabilityFacet, () => kcl),
+  ])
+  const editors = registry.required(editorsService)
+  const executors = registry.required(executorsService)
+  const editor = requireSuccess(editors.createEditor('draft'))
+  const keeper = requireSuccess(executors.acquireExecutor(editor))
+  const first = requireSuccess(executors.acquireExecutor(editor, markdown))
+  const second = requireSuccess(executors.acquireExecutor(editor, markdown))
+  expect(first.executor).toBe(keeper.executor)
+  expect(second.executor).toBe(keeper.executor)
+  await vi.waitFor(() =>
+    expect(first.executor.output.peek().get(markdown)?.text).toBe('draft')
+  )
+  expect(renderKcl).not.toHaveBeenCalled()
+  first.release()
+  editor.dispatch({ changes: { from: 0, insert: 'edited ' } })
+  await vi.waitFor(() =>
+    expect(second.executor.output.peek().get(markdown)?.text).toBe(
+      'edited draft'
+    )
+  )
+  second.release()
+  await vi.waitFor(() =>
+    expect(keeper.executor.output.peek().get(markdown)).toBeUndefined()
+  )
+  const kclLease = requireSuccess(executors.acquireExecutor(editor, kcl))
+  await vi.waitFor(() =>
+    expect(kclLease.executor.output.peek().get(kcl)?.text).toBe('edited draft')
+  )
+  requireSuccess(editors.setSource(editor.id, '/project/notes.md'))
+  await vi.waitFor(() =>
+    expect(keeper.executor.output.peek().get(markdown)?.text).toBe(
+      'edited draft'
+    )
+  )
+  expect(keeper.executor.output.peek().get(kcl)).toBeUndefined()
+  keeper.release()
+  kclLease.release()
+  expect(executors.executors.peek()).toEqual([])
+})
+
+it('interrupts an unnamed-mode computation when its last request is released', async () => {
+  let finish!: (result: { text: string }) => void
+  let running: AbortSignal | undefined
+  const execute = vi.fn(
+    (_contents: string, { signal }: { signal: AbortSignal }) => {
+      running = signal
+      return new Promise<{ text: string }>((resolve) => {
+        finish = resolve
+      })
+    }
+  )
+  const capability = defineExecutorCapability({
+    id: 'markdown',
+    matches: '.md',
+    execute,
+  })
+  registry = new Registry()
+  await registry.configure([
+    editorsExtension,
+    executorsExtension,
+    contribute(executorCapabilityFacet, () => capability),
+  ])
+  const editor = requireSuccess(
+    registry.required(editorsService).createEditor('draft')
+  )
+  const executors = registry.required(executorsService)
+  const keeper = requireSuccess(executors.acquireExecutor(editor))
+  const requested = requireSuccess(
+    executors.acquireExecutor(editor, capability)
+  )
+  await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+  requested.release()
+  await vi.waitFor(() => expect(running?.aborted).toBe(true))
+  finish({ text: 'stale result' })
+  await vi.waitFor(() =>
+    expect(keeper.executor.output.peek().running).toBe(false)
+  )
+  expect(keeper.executor.output.peek().get(capability)).toBeUndefined()
+  keeper.release()
+})

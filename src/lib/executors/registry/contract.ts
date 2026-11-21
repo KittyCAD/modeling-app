@@ -70,7 +70,11 @@ export interface Executor {
 export interface ExecutorsService {
   executors: ReadonlySignal<readonly Executor[]>
   createExecutor: (editor: Editor) => Executor | Error
-  acquireExecutor: (editor: Editor) =>
+  /** A mode may request its registered capability while an unnamed buffer has no source to match. */
+  acquireExecutor: (
+    editor: Editor,
+    capability?: ExecutorCapability
+  ) =>
     | {
         executor: Executor
         release: () => void

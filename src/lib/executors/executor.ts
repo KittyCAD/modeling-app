@@ -31,14 +31,17 @@ interface ExecutionInput {
 export function createExecutor(
   editor: Editor,
   contributions: ReadonlySignal<readonly ExecutorCapability[]>,
-  onEditorDestroyed: () => void
+  onEditorDestroyed: () => void,
+  requested?: ReadonlySignal<readonly ExecutorCapability[]>
 ): { executor: Executor; dispose: () => void } {
   const refresh = signal(0)
   let disposed = false
   const snapshot = (): ExecutionInput => {
     const context = editorMatchContext(editor)
-    const capabilities = contributions.value.filter((capability) =>
-      matchesEditor(capability.matches, context)
+    const capabilities = contributions.value.filter(
+      (capability) =>
+        matchesEditor(capability.matches, context) ||
+        (!editor.src.value && (requested?.value.includes(capability) ?? false))
     )
     return {
       ...context,

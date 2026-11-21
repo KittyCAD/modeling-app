@@ -38,7 +38,12 @@ export function createEditorNaming(
     operation: () => Promise<undefined | Error>
   ) => Promise<undefined | Error>,
   focusEditor: (editor: Editor) => void,
-  options: { defaultExtension?: `.${string}` } = {}
+  options: {
+    defaultExtension?: (
+      editor: Editor,
+      viewId: symbol | undefined
+    ) => `.${string}` | undefined
+  } = {}
 ) {
   const entries = new WeakMap<Editor, ReturnType<typeof createEntry>>()
   const activeEditors = new Set<Editor>()
@@ -126,8 +131,10 @@ export function createEditorNaming(
     return result
   }
   function parseDestination(
+    editor: Editor,
     current: PathRequest,
-    value: string
+    value: string,
+    viewId: symbol | undefined
   ): string | Error {
     const root = current.session.project.peek().contents.path
     const path = value.trim()
@@ -155,7 +162,7 @@ export function createEditorNaming(
     )
       return new Error('File path must stay within its project')
     if (!current.source && !fsZds.extname(destination))
-      destination += options.defaultExtension ?? ''
+      destination += options.defaultExtension?.(editor, viewId) ?? ''
     return destination
   }
   function isActive(editor: Editor, current: PathRequest) {
@@ -286,7 +293,7 @@ export function createEditorNaming(
         if (entry.request === current)
           entry.state.value = { ...state, pending: false, error: message }
       }
-      const destination = parseDestination(current, value)
+      const destination = parseDestination(editor, current, value, state.viewId)
       if (isErr(destination)) {
         fail(destination.message)
         return
