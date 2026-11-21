@@ -1,13 +1,16 @@
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { CustomIcon } from '@src/components/CustomIcon'
 import {
-  HeaderMenuItems,
-  type HeaderMenuItem,
   type HeaderMenuAction,
+  type HeaderMenuItem,
+  HeaderMenuItems,
   headerMenuItemClassName,
   headerMenuPanelClassName,
+  projectMenuCaretClassName,
+  projectMenuLabelClassName,
+  projectMenuTriggerClassName,
 } from '@src/components/HeaderMenu'
-import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
@@ -425,10 +428,10 @@ export function ProjectBreadcrumbButton({
 
   return (
     <Popover.Button
-      className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground hover:bg-3"
+      className={projectMenuTriggerClassName}
       data-testid="project-sidebar-toggle"
     >
-      <div className="flex min-w-0 items-baseline py-0.5 text-sm">
+      <div className={projectMenuLabelClassName}>
         {project && (
           <>
             <span
@@ -484,10 +487,7 @@ export function ProjectBreadcrumbButton({
           </span>
         )
       })}
-      <CustomIcon
-        name="caretDown"
-        className="w-4 h-4 shrink-0 text-2 ui-open:rotate-180"
-      />
+      <CustomIcon name="caretDown" className={projectMenuCaretClassName} />
       {isBreadCrumbTruncated && (
         <Tooltip
           position="bottom-left"

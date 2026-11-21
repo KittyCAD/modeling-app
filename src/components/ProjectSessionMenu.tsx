@@ -3,12 +3,15 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
   HeaderMenuItems,
-  headerMenuPanelClassName,
   headerMenuItemClassName,
+  headerMenuPanelClassName,
+  projectMenuCaretClassName,
+  projectMenuLabelClassName,
+  projectMenuTriggerClassName,
 } from '@src/components/HeaderMenu'
 import type { App } from '@src/lib/app'
-import { projectMenuItemsFacet } from '@src/lib/projectSession/next/projectMenu'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
+import { projectMenuItemsFacet } from '@src/lib/projectSession/next/projectMenu'
 
 /** Project actions stay bound to the captured opening, independent of legacy modeling. */
 export function ProjectSessionMenu({
@@ -24,19 +27,24 @@ export function ProjectSessionMenu({
   return (
     <div className="flex min-w-0 items-stretch gap-2">
       <Popover className="relative min-w-0 self-center [-webkit-app-region:no-drag]">
-        <h1 className="min-w-0 text-sm font-semibold">
+        <h1 className="min-w-0 text-sm font-normal text-default">
           <Popover.Button
             data-testid="project-sidebar-toggle"
-            className="flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent px-2 py-1 text-default hover:bg-3"
+            className={projectMenuTriggerClassName}
             title={project.contents.path}
           >
-            <span data-testid="app-header-project-name" className="truncate">
-              {project.metadata.title}
-            </span>
+            <div className={projectMenuLabelClassName}>
+              <span
+                data-testid="app-header-project-name"
+                className="min-w-0 truncate text-default whitespace-nowrap"
+              >
+                {project.metadata.title}
+              </span>
+            </div>
             <CustomIcon
               name="caretDown"
               aria-hidden
-              className="h-4 w-4 shrink-0 ui-open:rotate-180"
+              className={projectMenuCaretClassName}
             />
           </Popover.Button>
         </h1>

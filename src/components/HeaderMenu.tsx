@@ -14,6 +14,13 @@ export type HeaderMenuItem =
   | HeaderMenuAction
   | { id: string; kind: 'custom'; render: (close: () => void) => ReactNode }
 
+export const projectMenuTriggerClassName =
+  'gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground hover:bg-3'
+export const projectMenuLabelClassName =
+  'flex min-w-0 items-baseline py-0.5 text-sm'
+export const projectMenuCaretClassName =
+  'w-4 h-4 shrink-0 text-2 ui-open:rotate-180'
+
 export const headerMenuItemClassName =
   'relative !font-sans flex min-h-8 w-full items-center justify-start gap-2 rounded-sm px-2 py-1 cursor-pointer hover:bg-3 border-none text-left text-sm leading-5 text-default focus-visible:outline-appForeground disabled:cursor-default'
 export const headerMenuPanelClassName =
