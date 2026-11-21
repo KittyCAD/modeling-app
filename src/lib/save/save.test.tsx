@@ -1,5 +1,15 @@
-import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import markdownExtension from '@src/lib/markdown/registry'
+import kclExtension from '@src/lib/kcl/registry'
+import executorsExtension from '@src/lib/executors/registry'
+import {
+  NEW_EDITOR_COMMAND,
+  OPEN_EDITOR_COMMAND,
+} from '@src/lib/editors/commands'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import { Registry, contribute, provide, slot } from 'plankton'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import {
@@ -21,6 +31,7 @@ import {
 } from '@src/lib/save/registry/contract'
 import editorsExtension from '@src/lib/editors/registry'
 import {
+  editorNamingService,
   editorCapabilityFacet,
   editorTabIndicatorsFacet,
   editorsService,
@@ -34,6 +45,8 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { LayoutType } from '@src/lib/layout/types'
 import { commandsFacet } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { createProjectSessionService } from '@src/lib/projectSession/next/session'
+import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 vi.mock('@src/lib/paths', () => ({
   PATHS: {
@@ -56,6 +69,8 @@ function deferred() {
 describe('contributed editor saving', () => {
   let registry: Registry
   const writeFile = vi.fn<typeof testFileOperations.writeFile>()
+  const createFile = vi.fn<typeof testFileOperations.createFile>()
+  const rename = vi.fn<typeof testFileOperations.rename>()
   const extra = slot()
   beforeAll(async () => {
     await moduleFsViaModuleImport({
@@ -64,6 +79,8 @@ describe('contributed editor saving', () => {
     })
   })
   beforeEach(async () => {
+    createFile.mockReset().mockResolvedValue(undefined)
+    rename.mockReset().mockResolvedValue(undefined)
     writeFile.mockReset().mockResolvedValue(undefined)
     registry = new Registry()
     await registry.configure([
@@ -74,6 +91,8 @@ describe('contributed editor saving', () => {
         provide(fileOperationsService, {
           ...testFileOperations,
           writeFile,
+          createFile,
+          rename,
         }),
       ],
     ])
@@ -97,7 +116,7 @@ describe('contributed editor saving', () => {
       },
     })
   const saving = () => registry.required(editorSaveService)
-  it('saves the Modeling document after clicking its background without focusing Code first', async () => {
+  it('targets the Modeling document after clicking its background without focusing Code first', async () => {
     await registry.replace(extra, [
       [
         contribute(editorViewsFacet, () =>
@@ -130,11 +149,10 @@ describe('contributed editor saving', () => {
     fireEvent.pointerDown(backgrounds[1])
     expect(document.activeElement).not.toBe(document.body)
     expect(document.activeElement).toContainElement(backgrounds[1])
-    fireEvent.keyDown(document.activeElement!, {
-      key: 's',
-      code: 'KeyS',
-      ctrlKey: true,
-    })
+    const command = registry
+      .get(commandsFacet)
+      .find(({ id }) => id === SAVE_EDITOR_COMMAND.id)
+    await command?.onSubmit()
     await vi.waitFor(() =>
       expect(writeFile).toHaveBeenCalledExactlyOnceWith(
         second.src.peek(),
@@ -180,6 +198,534 @@ describe('contributed editor saving', () => {
     expect(writeFile).toHaveBeenCalledWith('/project/new.txt', '')
     expect(saving().state(editor).value.dirty).toBe(false)
   })
+  async function namingProject() {
+    const projects = createProjectSessionService(testFileOperations)
+    projects.openProject({
+      contents: { name: 'project', path: '/project', children: [] },
+      metadata: { title: 'Project', readWriteAccess: true },
+    })
+    await registry.replace(extra, [[provide(projectSessionService, projects)]])
+    return projects
+  }
+  const naming = () => registry.required(editorNamingService)
+  function renderNamingPane() {
+    render(
+      <EditorsPane
+        editors={registry.required(editorsService)}
+        naming={naming()}
+        layout={{
+          id: 'editors',
+          label: 'Editors',
+          type: LayoutType.Simple,
+          areaType: 'editors',
+        }}
+      />
+    )
+  }
+  it('prompts on first Save, validates the relative path, and names the same buffer', async () => {
+    await namingProject()
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('unsaved contents'))
+    editors.createView(editor)
+    renderNamingPane()
+    let saved!: Promise<undefined | Error>
+    act(() => {
+      saved = saving().save(editor)
+    })
+    const input = screen.getByRole('textbox', {
+      name: 'Project-relative file path',
+    })
+    expect(input).toHaveFocus()
+    expect(input.closest('button')).toBeNull()
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Enter a relative file path'
+    )
+    expect(createFile).not.toHaveBeenCalled()
+    fireEvent.change(input, { target: { value: 'notes.txt' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    await act(async () => {
+      expect(await saved).toBeUndefined()
+    })
+    expect(createFile).toHaveBeenCalledWith(
+      '/project/notes.txt',
+      'unsaved contents'
+    )
+    expect(editor.src.peek()).toBe('/project/notes.txt')
+    expect(screen.getByRole('tab', { name: 'notes.txt' })).toBeInTheDocument()
+    expect(saving().state(editor).peek().dirty).toBe(false)
+  })
+  it.each([
+    { path: 'bracket', source: '/project/bracket.kcl', language: 'kcl' },
+    {
+      path: 'models.v1/bracket',
+      source: '/project/models.v1/bracket.kcl',
+      language: 'kcl',
+    },
+    { path: ' bracket ', source: '/project/bracket.kcl', language: 'kcl' },
+    { path: 'bracket.KCL', source: '/project/bracket.KCL', language: 'kcl' },
+    { path: 'notes.md', source: '/project/notes.md', language: 'markdown' },
+  ])(
+    'applies the ZDS first-save extension policy to "$path"',
+    async ({ path, source, language }) => {
+      const projects = await namingProject()
+      await registry.replace(extra, [
+        kclExtension,
+        markdownExtension,
+        provide(projectSessionService, projects),
+      ])
+      const editor = requireSuccess(
+        registry.required(editorsService).createEditor('// draft')
+      )
+      const saved = saving().save(editor)
+      await naming().submit(editor, path)
+      expect(await saved).toBeUndefined()
+      expect(createFile).toHaveBeenCalledWith(source, '// draft')
+      expect(editor.src.peek()).toBe(source)
+      expect(editor.classification.peek()?.languageId).toBe(language)
+      expect(saving().state(editor).peek().dirty).toBe(false)
+    }
+  )
+  it('does not overwrite an existing KCL file when the first-save path omits its extension', async () => {
+    await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('// draft')
+    )
+    createFile.mockRejectedValueOnce(new Error('File already exists'))
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'bracket')
+    expect(createFile).toHaveBeenCalledWith('/project/bracket.kcl', '// draft')
+    expect(writeFile).not.toHaveBeenCalled()
+    expect(editor.src.peek()).toBeUndefined()
+    expect(naming().state(editor).peek()?.error).toBe('File already exists')
+    naming().cancel(editor)
+    await saved
+  })
+  it('keeps an extensionless destination when renaming an established buffer', async () => {
+    await namingProject()
+    const editor = open()
+    naming().rename(editor)
+    await naming().submit(editor, 'notes')
+    expect(rename).toHaveBeenCalledWith('/project/notes.txt', '/project/notes')
+    expect(editor.src.peek()).toBe('/project/notes')
+  })
+  it.each([
+    '',
+    '   ',
+    '/outside.txt',
+    '../outside.txt',
+    '.',
+    'folder/',
+    'C:\\outside.txt',
+  ])(
+    'rejects invalid project-relative path %j without writing',
+    async (path) => {
+      await namingProject()
+      const editor = requireSuccess(
+        registry.required(editorsService).createEditor('keep me')
+      )
+      const saved = saving().save(editor)
+      await naming().submit(editor, path)
+      expect(naming().state(editor).peek()?.error).toBeTruthy()
+      expect(editor.src.peek()).toBeUndefined()
+      expect(createFile).not.toHaveBeenCalled()
+      naming().cancel(editor)
+      expect(await saved).toBeUndefined()
+      expect(editor.contents.peek()).toBe('keep me')
+    }
+  )
+  it('cancels first Save with Escape and leaves an unnamed dirty buffer', async () => {
+    await namingProject()
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('keep me'))
+    editors.createView(editor)
+    renderNamingPane()
+    let saved!: Promise<undefined | Error>
+    act(() => {
+      saved = saving().save(editor)
+    })
+    fireEvent.keyDown(
+      screen.getByRole('textbox', { name: 'Project-relative file path' }),
+      { key: 'Escape' }
+    )
+    await act(async () => {
+      expect(await saved).toBeUndefined()
+    })
+    expect(editor.src.peek()).toBeUndefined()
+    expect(saving().state(editor).peek().dirty).toBe(true)
+    expect(createFile).not.toHaveBeenCalled()
+  })
+  it('keeps a failed first save unnamed and permits correcting the path', async () => {
+    await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('new contents')
+    )
+    createFile.mockRejectedValueOnce(new Error('File already exists'))
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'existing.txt')
+    expect(naming().state(editor).peek()?.error).toBe('File already exists')
+    expect(editor.src.peek()).toBeUndefined()
+    expect(writeFile).not.toHaveBeenCalled()
+    await naming().submit(editor, 'different.txt')
+    expect(await saved).toBeUndefined()
+    expect(editor.src.peek()).toBe('/project/different.txt')
+  })
+  it('renames on double-click without discarding unsaved text or replacing views', async () => {
+    await namingProject()
+    const editor = open()
+    change(editor, 'dirty contents')
+    const editors = registry.required(editorsService)
+    const view = editors.views.peek()[0]
+    renderNamingPane()
+    const tab = screen.getByRole('tab', { name: 'notes.txt' })
+    fireEvent.doubleClick(tab)
+    const input = screen.getByRole('textbox', {
+      name: 'Project-relative file path',
+    })
+    expect(input).toHaveValue('notes.txt')
+    fireEvent.change(input, { target: { value: 'renamed.txt' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    await screen.findByRole('tab', { name: 'renamed.txt' })
+    expect(rename).toHaveBeenCalledWith(
+      '/project/notes.txt',
+      '/project/renamed.txt'
+    )
+    expect(editor.contents.peek()).toBe('dirty contents')
+    expect(editors.views.peek()[0]).toBe(view)
+    expect(saving().state(editor).peek().dirty).toBe(true)
+    await saving().save(editor)
+    expect(writeFile).toHaveBeenCalledWith(
+      '/project/renamed.txt',
+      'dirty contents'
+    )
+  })
+  it('shows a single path input when multiple views share a document', async () => {
+    await namingProject()
+    const editor = open()
+    const editors = registry.required(editorsService)
+    editors.createView(editor)
+    renderNamingPane()
+    fireEvent.doubleClick(screen.getAllByRole('tab', { name: 'notes.txt' })[1])
+    expect(
+      screen.getAllByRole('textbox', { name: 'Project-relative file path' })
+    ).toHaveLength(1)
+    expect(
+      screen.getByRole('textbox', { name: 'Project-relative file path' })
+    ).toHaveFocus()
+    await act(async () => {
+      await naming().submit(editor, 'shared.txt')
+    })
+    expect(screen.getAllByRole('tab', { name: 'shared.txt' })).toHaveLength(2)
+  })
+  it('keeps edits made during first creation and saves the newest text', async () => {
+    await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('first snapshot')
+    )
+    const pending = deferred()
+    createFile.mockReturnValueOnce(pending.promise)
+    const saved = saving().save(editor)
+    const submitted = naming().submit(editor, 'new.txt')
+    change(editor, 'newer edits')
+    pending.resolve()
+    await submitted
+    expect(await saved).toBeUndefined()
+    expect(createFile).toHaveBeenCalledWith(
+      '/project/new.txt',
+      'first snapshot'
+    )
+    expect(writeFile).toHaveBeenCalledWith('/project/new.txt', 'newer edits')
+    expect(editor.contents.peek()).toBe('newer edits')
+    expect(saving().state(editor).peek().dirty).toBe(false)
+  })
+  it('cancels the first-save input on blur', async () => {
+    await namingProject()
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('draft'))
+    editors.createView(editor)
+    renderNamingPane()
+    const view = codeSurface(editors, editor)
+    act(() => {
+      view.focus()
+    })
+    let saved!: Promise<undefined | Error>
+    act(() => {
+      saved = saving().save(editor)
+    })
+    const input = screen.getByRole('textbox', {
+      name: 'Project-relative file path',
+    })
+    expect(input).toHaveFocus()
+    await act(async () => {
+      input.blur()
+    })
+    expect(
+      screen.queryByRole('textbox', { name: 'Project-relative file path' })
+    ).toBeNull()
+    await saved
+    expect(editor.contents.peek()).toBe('draft')
+    expect(createFile).not.toHaveBeenCalled()
+  })
+  it('waits for existing writes before renaming a source', async () => {
+    await namingProject()
+    const editor = open()
+    const pending = deferred()
+    writeFile.mockReturnValueOnce(pending.promise)
+    change(editor, 'saved contents')
+    const saved = saving().save(editor)
+    naming().rename(editor)
+    const renamed = naming().submit(editor, 'renamed.txt')
+    await vi.waitFor(() => expect(writeFile).toHaveBeenCalled())
+    expect(rename).not.toHaveBeenCalled()
+    pending.resolve()
+    await saved
+    await renamed
+    expect(editor.src.peek()).toBe('/project/renamed.txt')
+    expect(saving().state(editor).peek().dirty).toBe(false)
+  })
+  it('updates surviving buffers when the buffer that requested a rename closes during IO', async () => {
+    await namingProject()
+    const editor = open()
+    const survivor = open()
+    const pending = deferred()
+    rename.mockReturnValueOnce(pending.promise)
+    naming().rename(editor)
+    const submitted = naming().submit(editor, 'renamed.txt')
+    await vi.waitFor(() => expect(rename).toHaveBeenCalled())
+    registry.required(editorsService).closeEditor(editor.id)
+    pending.resolve()
+    await submitted
+    expect(survivor.src.peek()).toBe('/project/renamed.txt')
+    change(survivor, 'surviving edits')
+    await saving().save(survivor)
+    expect(writeFile).toHaveBeenCalledWith(
+      '/project/renamed.txt',
+      'surviving edits'
+    )
+  })
+  it('saves to the new source when Save is requested during a rename', async () => {
+    await namingProject()
+    const editor = open()
+    change(editor, 'pending edits')
+    const pending = deferred()
+    rename.mockReturnValueOnce(pending.promise)
+    naming().rename(editor)
+    const renamed = naming().submit(editor, 'renamed.txt')
+    await vi.waitFor(() => expect(rename).toHaveBeenCalled())
+    const saved = saving().save(editor)
+    expect(writeFile).not.toHaveBeenCalled()
+    pending.resolve()
+    await renamed
+    expect(await saved).toBeUndefined()
+    expect(writeFile).toHaveBeenCalledExactlyOnceWith(
+      '/project/renamed.txt',
+      'pending edits'
+    )
+    expect(saving().state(editor).peek().dirty).toBe(false)
+  })
+  it('allows a queued save to proceed after a failed rename', async () => {
+    await namingProject()
+    const editor = open()
+    change(editor, 'pending edits')
+    const pending = deferred()
+    rename.mockReturnValueOnce(pending.promise)
+    naming().rename(editor)
+    const renamed = naming().submit(editor, 'existing.txt')
+    await vi.waitFor(() => expect(rename).toHaveBeenCalled())
+    const saved = saving().save(editor)
+    pending.reject(new Error('Destination exists'))
+    await renamed
+    expect(await saved).toBeUndefined()
+    expect(writeFile).toHaveBeenCalledWith(
+      '/project/notes.txt',
+      'pending edits'
+    )
+    expect(saving().state(editor).peek().dirty).toBe(false)
+    naming().cancel(editor)
+  })
+  it('retains the original source and dirty contents when a rename fails', async () => {
+    await namingProject()
+    const editor = open()
+    change(editor, 'dirty contents')
+    rename.mockRejectedValueOnce(new Error('Destination exists'))
+    naming().rename(editor)
+    await naming().submit(editor, 'existing.txt')
+    expect(editor.src.peek()).toBe('/project/notes.txt')
+    expect(editor.contents.peek()).toBe('dirty contents')
+    expect(saving().state(editor).peek().dirty).toBe(true)
+    expect(naming().state(editor).peek()?.error).toBe('Destination exists')
+    naming().cancel(editor)
+  })
+  it('does not assign a completed first save to an editor after its project closes', async () => {
+    const projects = await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('original')
+    )
+    const pending = deferred()
+    createFile.mockReturnValueOnce(pending.promise)
+    const saved = saving().save(editor)
+    const submitted = naming().submit(editor, 'new.txt')
+    projects.closeProject()
+    pending.resolve()
+    await submitted
+    expect(await saved).toBeInstanceOf(Error)
+    expect(editor.src.peek()).toBeUndefined()
+    expect(writeFile).not.toHaveBeenCalled()
+  })
+  it('publishes the editor source and project membership together after confirmed writes', async () => {
+    const projects = await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('contents')
+    )
+    const observed: { source: string | undefined; files: string[] }[] = []
+    const stop = projects.currentProject.subscribe(() =>
+      observed.push({
+        source: editor.src.peek(),
+        files: projects.listFiles().map((file) => file.path),
+      })
+    )
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'new.md')
+    await saved
+    naming().rename(editor)
+    await naming().submit(editor, 'renamed.md')
+    stop()
+    expect(observed).toEqual([
+      { source: undefined, files: [] },
+      { source: '/project/new.md', files: ['/project/new.md'] },
+      { source: '/project/renamed.md', files: ['/project/renamed.md'] },
+    ])
+  })
+  it('records a successful creation even if its editor closes while the write is pending', async () => {
+    const projects = await namingProject()
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('saved contents'))
+    const pending = deferred()
+    createFile.mockReturnValueOnce(pending.promise)
+    const saved = saving().save(editor)
+    const submitted = naming().submit(editor, 'new.md')
+    expect(projects.listFiles()).toEqual([])
+    editors.closeEditor(editor.id)
+    pending.resolve()
+    await submitted
+    expect(await saved).toBeInstanceOf(Error)
+    expect(projects.listFiles().map((file) => file.path)).toEqual([
+      '/project/new.md',
+    ])
+  })
+  it('leaves project membership unchanged when creation or rename fails', async () => {
+    const projects = await namingProject()
+    const editors = registry.required(editorsService)
+    const draft = requireSuccess(editors.createEditor('draft'))
+    createFile.mockRejectedValueOnce(new Error('File already exists'))
+    const saved = saving().save(draft)
+    await naming().submit(draft, 'existing.md')
+    expect(projects.listFiles()).toEqual([])
+    naming().cancel(draft)
+    await saved
+    const source = open('/project/kept.md')
+    projects.applyFileMutation(projects.currentSession.peek()!, {
+      type: 'created',
+      path: '/project/kept.md',
+    })
+    rename.mockRejectedValueOnce(new Error('Rename failed'))
+    naming().rename(source)
+    await naming().submit(source, 'wrong.md')
+    expect(projects.listFiles().map((file) => file.path)).toEqual([
+      '/project/kept.md',
+    ])
+    naming().cancel(source)
+  })
+  it.each(['tab', 'command'])(
+    'selects Markdown preview and lists a newly saved buffer created from the %s',
+    async (createFrom) => {
+      const root = await mkdtemp(join(tmpdir(), 'zds-first-save-'))
+      try {
+        createFile.mockImplementation(testFileOperations.createFile)
+        writeFile.mockImplementation(testFileOperations.writeFile)
+        rename.mockImplementation(testFileOperations.rename)
+        const projects = createProjectSessionService(testFileOperations)
+        projects.openProject({
+          contents: { name: 'project', path: root, children: [] },
+          metadata: { title: 'Project', readWriteAccess: true },
+        })
+        await registry.replace(extra, [
+          executorsExtension,
+          markdownExtension,
+          provide(projectSessionService, projects),
+        ])
+        renderNamingPane()
+        if (createFrom === 'tab')
+          fireEvent.click(screen.getByRole('button', { name: 'New editor' }))
+        else
+          await act(async () => {
+            await registry
+              .get(commandsFacet)
+              .find(({ id }) => id === NEW_EDITOR_COMMAND.id)
+              ?.onSubmit()
+          })
+        const editors = registry.required(editorsService)
+        const editor = editors.editors.peek()[0]
+        const view = editors.views.peek()[0]
+        act(() => {
+          change(editor, '# New document')
+        })
+        fireEvent.doubleClick(screen.getByRole('tab', { name: 'Untitled' }))
+        const input = screen.getByRole('textbox', {
+          name: 'Project-relative file path',
+        })
+        fireEvent.change(input, { target: { value: 'new.md' } })
+        fireEvent.keyDown(input, { key: 'Enter' })
+        await screen.findByRole('heading', { name: 'New document' })
+        expect(editors.viewState(view).peek().selected?.id).toBe(
+          'markdown.preview'
+        )
+        expect(
+          screen.getByRole('button', { name: 'Mode for new.md' })
+        ).toBeInTheDocument()
+        const arg = registry
+          .get(commandsFacet)
+          .find(({ id }) => id === OPEN_EDITOR_COMMAND.id)?.args?.src
+        if (arg?.inputType !== 'options')
+          throw new Error('Expected Open Editor source options')
+        const options = () =>
+          typeof arg.options === 'function'
+            ? arg.options({ argumentsToSubmit: {} })
+            : arg.options
+        await vi.waitFor(() =>
+          expect(options()).toContainEqual({
+            name: 'new.md',
+            value: join(root, 'new.md'),
+          })
+        )
+        expect(
+          new TextDecoder().decode(
+            await testFileOperations.readFile(join(root, 'new.md'))
+          )
+        ).toBe('# New document')
+        expect(saving().state(editor).peek().dirty).toBe(false)
+        act(() => {
+          requireSuccess(editors.setView(view.id, 'editors.code'))
+        })
+        expect(editors.viewState(view).peek().selected?.id).toBe('editors.code')
+        naming().rename(editor)
+        await act(async () => {
+          await naming().submit(editor, 'renamed.md')
+        })
+        expect(editors.viewState(view).peek().selected?.id).toBe('editors.code')
+        expect(options()).toContainEqual({
+          name: 'renamed.md',
+          value: join(root, 'renamed.md'),
+        })
+        expect(options()).not.toContainEqual({
+          name: 'new.md',
+          value: join(root, 'new.md'),
+        })
+      } finally {
+        await rm(root, { recursive: true, force: true })
+      }
+    }
+  )
   it('supports save behavior without file persistence or a fileOperations service', async () => {
     await registry.configure([editorsExtension, saveExtension, extra])
     const editor = open()
@@ -451,7 +997,7 @@ describe('contributed editor saving', () => {
     registry.required(editorsService).closeEditor(editor.id)
     expect(await saving().save(editor)).toBeInstanceOf(Error)
   })
-  it('shows contributed indicators independently and saves the focused buffer with the shortcut and command', async () => {
+  it('shows contributed indicators independently and saves the focused buffer with the command', async () => {
     const first = open(),
       second = open('/project/other.md')
     const indicators = registry.observe(editorTabIndicatorsFacet)
@@ -492,16 +1038,7 @@ describe('contributed editor saving', () => {
         })
       )
       codeSurface(registry.required(editorsService), first).focus()
-      fireEvent.keyDown(
-        codeSurface(registry.required(editorsService), first).contentDOM,
-        {
-          key: 's',
-          code: 'KeyS',
-          keyCode: 83,
-          ctrlKey: !/Mac/.test(navigator.platform),
-          metaKey: /Mac/.test(navigator.platform),
-        }
-      )
+      await saving().save(first)
     })
     expect(writeFile).toHaveBeenCalledWith(first.src.peek(), 'save first')
     expect(

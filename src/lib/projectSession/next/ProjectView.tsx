@@ -1,5 +1,4 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
 import { Logo } from '@src/components/Logo'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
@@ -7,6 +6,7 @@ import { useApp } from '@src/lib/boot'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import {
+  editorNamingService,
   editorsService,
   editorTabIndicatorsFacet,
 } from '@src/lib/editors/registry/contract'
@@ -19,6 +19,7 @@ import {
 import { PATHS } from '@src/lib/paths'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 import { reportRejection } from '@src/lib/trap'
+import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -76,6 +77,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
           <EditorsPane
             {...props}
             editors={editors}
+            naming={registry.optional(editorNamingService)}
             indicators={registry.observe(editorTabIndicatorsFacet)}
             onOpenEditor={() =>
               commands.send({

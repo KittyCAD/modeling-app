@@ -7,6 +7,10 @@ export interface TabItem<Id> {
   id: Id
   label: ReactNode
   title?: string
+  /** An inline control beside the hidden tab button, never nested inside it. */
+  labelEditor?: ReactNode
+  onDoubleClick?: () => void
+  onFocus?: () => void
   /** A control beside the tab button, within the same tab outline. */
   accessory?: ReactNode
   close?: {
@@ -88,7 +92,9 @@ export function Tabs<Id extends string | number | symbol>({
               >
                 <Tab
                   title={item.title}
-                  className={styles.tab}
+                  className={item.labelEditor ? 'sr-only' : styles.tab}
+                  onDoubleClick={item.onDoubleClick}
+                  onFocus={item.onFocus}
                   onKeyDown={(event) => {
                     if (event.key === 'Delete' && item.close) {
                       event.preventDefault()
@@ -98,6 +104,7 @@ export function Tabs<Id extends string | number | symbol>({
                 >
                   {item.label}
                 </Tab>
+                {item.labelEditor}
                 {item.accessory && (
                   <div className={styles.accessory}>{item.accessory}</div>
                 )}

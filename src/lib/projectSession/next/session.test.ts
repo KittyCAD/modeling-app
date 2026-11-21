@@ -1,4 +1,4 @@
-import type { FileContents } from '@src/lib/fileSystem/fileOperations'
+import type { FileContents, FileStat } from '@src/lib/fileSystem/fileOperations'
 import type { Project } from '@src/lib/projectSession/next/types'
 import { createProjectSessionService } from '@src/lib/projectSession/next/session'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,6 +10,9 @@ vi.mock('@src/lib/fs-zds', async () => {
   const paths = await import('node:path')
   return {
     default: {
+      dirname: (path: string) => paths[platform.value].dirname(path),
+      basename: (path: string) => paths[platform.value].basename(path),
+      join: (...parts: string[]) => paths[platform.value].join(...parts),
       resolve: (...parts: string[]) => paths[platform.value].resolve(...parts),
       relative: (root: string, path: string) =>
         paths[platform.value].relative(root, path),
@@ -29,6 +32,21 @@ function project(path: string, canWrite = true): Project {
 
 function setup() {
   const storage = {
+    stat: vi.fn(
+      async (path: string): Promise<FileStat> => ({
+        kind: path.endsWith('.md') ? 'file' : 'directory',
+        device: 0,
+        inode: 0,
+        size: 0,
+        accessedAt: 0,
+        modifiedAt: 0,
+        changedAt: 0,
+        createdAt: 0,
+      })
+    ),
+    readDirectory: vi.fn(
+      async (_path: string): Promise<readonly string[]> => []
+    ),
     readFile: vi.fn(
       async (_path: string): Promise<Uint8Array> =>
         new TextEncoder().encode('contents')
@@ -192,4 +210,92 @@ it('publishes metadata updates only to the captured current opening and preserve
   service.closeProject()
   service.updateMetadata(second, { title: 'Closed update' })
   expect(second.project.value.metadata.title).toBe('Project')
+})
+
+it('records created and renamed files against the latest in-memory project without reading storage', () => {
+  platform.value = 'posix'
+  const { storage, service } = setup()
+  const owner = service.openProject(project('/project'))
+  service.updateMetadata(owner, {
+    title: 'Current title',
+    defaultFile: 'main.kcl',
+  })
+  expect(
+    service.applyFileMutation(owner, {
+      type: 'created',
+      path: '/project/new.md',
+    })
+  ).toBeUndefined()
+  expect(service.listFiles().map((file) => file.path)).toEqual([
+    '/project/new.md',
+  ])
+  expect(
+    service.applyFileMutation(owner, {
+      type: 'renamed',
+      source: '/project/new.md',
+      destination: '/project/nested/renamed.md',
+    })
+  ).toBeUndefined()
+  expect(service.listFiles().map((file) => file.path)).toEqual([
+    '/project/nested/renamed.md',
+  ])
+  expect(owner.project.peek().metadata).toEqual({
+    title: 'Current title',
+    readWriteAccess: true,
+    defaultFile: 'main.kcl',
+  })
+  expect(storage.stat).not.toHaveBeenCalled()
+  expect(storage.readDirectory).not.toHaveBeenCalled()
+  expect(storage.readFile).not.toHaveBeenCalled()
+  expect(storage.writeFile).not.toHaveBeenCalled()
+})
+
+it('applies a completed mutation to the latest snapshot without discarding unrelated files', () => {
+  platform.value = 'posix'
+  const { service } = setup()
+  const owner = service.openProject(project('/project'))
+  const newer = project('/project')
+  const remote = {
+    name: 'remote.md',
+    path: '/project/remote.md',
+    children: null,
+  }
+  newer.contents.children = [remote]
+  service.updateProject(owner, newer)
+  service.applyFileMutation(owner, { type: 'created', path: '/project/new.md' })
+  expect(service.listFiles().map((file) => file.path)).toEqual([
+    '/project/remote.md',
+    '/project/new.md',
+  ])
+  expect(service.listFiles()[0]).toBe(remote)
+})
+
+it('ignores completed file mutations from replaced or closed openings', () => {
+  const { service } = setup()
+  const old = service.openProject(project('/project'))
+  const current = service.openProject(project('/project'))
+  expect(
+    service.applyFileMutation(old, {
+      type: 'created',
+      path: '/project/stale.md',
+    })
+  ).toBeUndefined()
+  expect(service.listFiles()).toEqual([])
+  service.closeProject()
+  service.applyFileMutation(current, {
+    type: 'created',
+    path: '/project/closed.md',
+  })
+  expect(current.project.peek().contents.children).toEqual([])
+})
+
+it('rejects a mutation outside the project without changing the snapshot', () => {
+  platform.value = 'posix'
+  const { service } = setup()
+  const owner = service.openProject(project('/project'))
+  const before = owner.project.peek()
+  expect(
+    service.applyFileMutation(owner, { type: 'created', path: '/outside.md' })
+  ).toBeInstanceOf(Error)
+  expect(owner.project.peek()).toBe(before)
 })
