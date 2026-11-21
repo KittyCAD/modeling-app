@@ -16,6 +16,7 @@ async fn assert_trim_result(snapshot_name: &str, base_kcl_code: &str, trim_point
     match result {
         Ok(result) => {
             let result_normalized = result.kcl_code.trim();
+            get_objects_from_kcl(result_normalized).await;
             insta::assert_snapshot!(snapshot_name, result_normalized);
         }
         Err(e) => {
@@ -96,6 +97,108 @@ sketch001 = sketch(on = YZ) {
         &trim_points,
     )
     .await;
+}
+
+fn reloaded_point_coordinates(objects: &[kcl_api::Object], id: ObjectId) -> [f64; 2] {
+    objects
+        .iter()
+        .find_map(|object| match &object.kind {
+            kcl_api::ObjectKind::Segment {
+                segment: kcl_api::Segment::Point(point),
+            } if object.id == id => Some([point.position.x.value, point.position.y.value]),
+            _ => None,
+        })
+        .expect("expected a point in the reloaded sketch")
+}
+
+#[tokio::test]
+async fn test_trim_preserves_fractional_line_coordinates_after_reload() {
+    let source = r#"@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.125mm, var 0.375mm], end = [var 1.125mm, var 0.375mm])
+  horizontal(line1)
+  line2 = line(start = [var 0.625mm, var 0.125mm], end = [var 0.625mm, var 0.875mm])
+  vertical(line2)
+}"#;
+    let result = execute_trim_flow(
+        source,
+        &[Coords2d { x: 0.25, y: 0.25 }, Coords2d { x: 0.25, y: 0.5 }],
+        ObjectId(1),
+    )
+    .await
+    .unwrap();
+    assert!(result.kcl_code.contains("horizontal("));
+    assert!(result.kcl_code.contains("coincident("));
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let lines: Vec<_> = objects
+        .iter()
+        .filter_map(|object| match &object.kind {
+            kcl_api::ObjectKind::Segment {
+                segment: kcl_api::Segment::Line(line),
+            } => Some([
+                reloaded_point_coordinates(&objects, line.start),
+                reloaded_point_coordinates(&objects, line.end),
+            ]),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(lines.len(), 2);
+    for expected in [[[0.625, 0.375], [1.125, 0.375]], [[0.625, 0.125], [0.625, 0.875]]] {
+        assert!(
+            lines.iter().any(|line| line
+                .iter()
+                .flatten()
+                .zip(expected.iter().flatten())
+                .all(|(actual, expected)| (actual - expected).abs() < 1e-12)),
+            "{lines:?}\n{}",
+            result.kcl_code
+        );
+    }
+}
+
+#[tokio::test]
+async fn test_trim_preserves_circle_radius_and_intersections_after_reload() {
+    let source = r#"@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 1.125mm, var 0.125mm], center = [var 0.125mm, var 0.125mm])
+  line1 = line(start = [var 0.375mm, var -1.375mm], end = [var 0.375mm, var 1.625mm])
+  vertical(line1)
+}"#;
+    let result = execute_trim_flow(
+        source,
+        &[Coords2d { x: 0.875, y: 0.125 }, Coords2d { x: 1.375, y: 0.125 }],
+        ObjectId(1),
+    )
+    .await
+    .unwrap();
+    assert!(result.kcl_code.contains("coincident("));
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let arcs: Vec<_> = objects
+        .iter()
+        .filter_map(|object| match &object.kind {
+            kcl_api::ObjectKind::Segment {
+                segment: kcl_api::Segment::Arc(arc),
+            } => Some(arc),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(arcs.len(), 1);
+    let arc = arcs[0];
+    let center = reloaded_point_coordinates(&objects, arc.center);
+    for coordinate in center {
+        assert!((coordinate - 0.125).abs() < 1e-12, "{center:?}\n{}", result.kcl_code);
+    }
+    let offset = (1.0_f64 - 0.25_f64.powi(2)).sqrt();
+    let mut endpoints = [
+        reloaded_point_coordinates(&objects, arc.start),
+        reloaded_point_coordinates(&objects, arc.end),
+    ];
+    endpoints.sort_by(|a, b| a[1].total_cmp(&b[1]));
+    for (point, y) in endpoints.into_iter().zip([0.125 - offset, 0.125 + offset]) {
+        assert!((point[0] - 0.375).abs() < 1e-12, "{point:?}\n{}", result.kcl_code);
+        assert!((point[1] - y).abs() < 1e-12, "{point:?}\n{}", result.kcl_code);
+        assert!((libm::hypot(point[0] - center[0], point[1] - center[1]) - 1.0).abs() < 1e-12);
+    }
 }
 
 mod sync {
@@ -2840,6 +2943,7 @@ async fn get_objects_from_kcl(kcl_code: &str) -> Vec<kcl_api::Object> {
         );
     }
 
+    mock_ctx.close().await;
     scene_graph.objects
 }
 

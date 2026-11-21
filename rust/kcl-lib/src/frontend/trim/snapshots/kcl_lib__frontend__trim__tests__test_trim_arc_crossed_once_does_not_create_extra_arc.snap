@@ -1,20 +1,60 @@
 ---
 source: kcl-lib/src/frontend/trim/tests.rs
-assertion_line: 16
 expression: result_normalized
 ---
 @settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = YZ) {
-  arc1 = arc(start = [var 1.03mm, var -0.6mm], end = [var 1.34mm, var -3.19mm], center = [var -4.83mm, var -2.61mm])
+  arc1 = arc(
+    start = [
+      var 1.0311650422990757mm,
+      var -0.5996003864220183mm
+    ],
+    end = [
+      var 1.3393868673319222mm,
+      var -3.189942363544923mm
+    ],
+    center = [
+      var -4.82993877697136mm,
+      var -2.6105148864434837mm
+    ],
+  )
   line1 = line(start = [var -1.21mm, var 2.31mm], end = [var -1.17mm, var -0.13mm])
-  line4 = line(start = [var -2.01mm, var -8.09mm], end = [var -9.3mm, var 2.73mm])
+  line4 = line(
+    start = [
+      var -2.0100097429962824mm,
+      var -8.090006564371583mm
+    ],
+    end = [
+      var -9.300048033806126mm,
+      var 2.7299676370975465mm
+    ],
+  )
   line2 = line(start = [var -1.49mm, var -1.06mm], end = [var 0mm, var 3.31mm])
   vertical([line2.end, ORIGIN])
-  line3 = line(start = [var 0mm, var 3.31mm], end = [var 1.34mm, var -3.19mm])
+  line3 = line(
+    start = [var 0mm, var 3.31mm],
+    end = [
+      var 1.3393868673325353mm,
+      var -3.1899423635449806mm
+    ],
+  )
   coincident([line2.end, line3.start])
   vertical([line3.start, ORIGIN])
-  arc2 = arc(start = [var -8.07mm, var 0.91mm], end = [var -8.85mm, var -4.14mm], center = [var -5mm, var -2.15mm])
+  arc2 = arc(
+    start = [
+      var -8.071056656645005mm,
+      var 0.9058818866193068mm
+    ],
+    end = [
+      var -8.84945075733258mm,
+      var -4.13971610570247mm
+    ],
+    center = [
+      var -5.000110968242032mm,
+      var -2.1507199892084032mm
+    ],
+  )
   coincident([arc1.end, line3.end])
   point(at = [var -4.81mm, var 5.29mm])
   point(at = [var -5.43mm, var 2.88mm])

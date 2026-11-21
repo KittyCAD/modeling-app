@@ -3,14 +3,59 @@ source: kcl-lib/src/frontend/trim/tests.rs
 expression: result_normalized
 ---
 sketch(on = YZ) {
-  line1 = line(start = [var -1.99mm, var 6.14mm], end = [var 0.21mm, var 4.53mm])
-  line2 = line(start = [var -4.15mm, var 0mm], end = [var -3.03mm, var -0.82mm])
+  line1 = line(
+    start = [
+      var -1.9891829524514026mm,
+      var 6.144849666000792mm
+    ],
+    end = [
+      var 0.20918295245304938mm,
+      var 4.525150330524773mm
+    ],
+  )
+  line2 = line(
+    start = [var -4.15mm, var 0mm],
+    end = [
+      var -3.0321216077566873mm,
+      var -0.8236239858979211mm
+    ],
+  )
   parallel([line1, line2])
   line3 = line(start = [var -3.1mm, var 1.3mm], end = [var -2.96mm, var -3.08mm])
-  line4 = line(start = [var -0.57mm, var -0.81mm], end = [var -1.13mm, var -4.94mm])
-  line5 = line(start = [var 0.11mm, var -2.98mm], end = [var -0.11mm, var -5.63mm])
-  line6 = line(start = [var 1.14mm, var -3.73mm], end = [var 3.5mm, var -1.84mm])
-  line7 = line(start = [var -0.78mm, var -2.33mm], end = [var 1.14mm, var -3.73mm])
+  line4 = line(
+    start = [
+      var -0.5705639726435382mm,
+      var -0.8112570398782624mm
+    ],
+    end = [
+      var -1.1243281635145594mm,
+      var -4.940755575723726mm
+    ],
+  )
+  line5 = line(
+    start = [
+      var 0.11336353101557546mm,
+      var -2.9742244690994766mm
+    ],
+    end = [var -0.11mm, var -5.63mm],
+  )
+  line6 = line(
+    start = [
+      var 1.1395700185603175mm,
+      var -3.730306958474538mm
+    ],
+    end = [var 3.5mm, var -1.84mm],
+  )
+  line7 = line(
+    start = [
+      var -0.773039456489117mm,
+      var -2.321145595094806mm
+    ],
+    end = [
+      var 1.1395700185603175mm,
+      var -3.730306958474538mm
+    ],
+  )
   coincident([line2.end, line3])
   coincident([line7.start, line4])
   coincident([line7.end, line6.start])

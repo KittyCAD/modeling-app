@@ -3,7 +3,23 @@ source: kcl-lib/src/frontend.rs
 expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  point1 = point(at = [var 5.97, var 2.33])
-  arc1 = arc(start = [var 5.97, var 2.33], end = [var 5.97, var 2.33], center = [var 6.08, var 2.01])
+  point1 = point(at = [
+    var 5.974188659432742,
+    var 2.331658556068602
+  ])
+  arc1 = arc(
+    start = [
+      var 5.974188659397903,
+      var 2.3316585560110714
+    ],
+    end = [
+      var 5.974188661912064,
+      var 2.331658555820866
+    ],
+    center = [
+      var 6.077431839316523,
+      var 2.005024084695408
+    ],
+  )
   midpoint(arc1, point = point1)
 }
