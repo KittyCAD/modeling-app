@@ -163,12 +163,12 @@ export async function openKclScene({
       localHost: view.localHost,
       preferences,
       snapshotCamera: () => sceneInfra.camControls.snapshotCameraView(),
-      restoreCamera: (view) =>
-        sceneInfra.camControls.setCameraView({
-          ...view,
-          is_ortho:
-            preferences.camera.peek().cameraProjection === 'orthographic',
-        }),
+      restoreCamera: (cameraView) => {
+        // A restored camera replaces initial framing, even if the local GLB
+        // finishes loading after the camera has already been restored.
+        view.localHost?.claimInitialCameraFrame?.()
+        return sceneInfra.camControls.setCameraView(cameraView)
+      },
       resize: view.resize,
       applySettings: view.applySettings,
       frameModel: view.frameModel,

@@ -12,7 +12,7 @@ type KclConnectionState =
   | { type: 'error'; error: Error }
 /**
  * One attempt to obtain a `KclSceneResource` from `openKclScene`.
- * `recover` replaces this object; `current` checks its identity before an async
+ * `replaceScene` replaces this object; `current` checks its identity before an async
  * callback can publish a resource or change the session's connection state.
  */
 function opening() {
@@ -52,7 +52,7 @@ function opening() {
  */
 export function createKclSession(
   open: OpenKclScene,
-  onReconnect: () => void = () => {},
+  onSceneReplaced: () => void = () => {},
   isBusy: () => boolean = () => false
 ) {
   const element = document.createElement('div')
@@ -71,7 +71,11 @@ export function createKclSession(
   let queue: Promise<unknown> = Promise.resolve()
   let retired: Promise<void> | undefined
   let stopSettings: (() => void) | undefined
-  let savedCamera: CameraViewState | undefined
+  // Renderer swaps preserve the full camera. Recovery continues to honor a
+  // projection preference changed while the connection was unavailable.
+  let savedCamera:
+    | { view: CameraViewState; projection: 'snapshot' | 'settings' }
+    | undefined
   let retryTimer: ReturnType<typeof setTimeout> | undefined
   let retryCount = 0
   let lastInput = Date.now()
@@ -79,10 +83,13 @@ export function createKclSession(
     clearTimeout(retryTimer)
     retryTimer = undefined
   }
-  const rememberCamera = () => {
+  const rememberCamera = (projection: 'snapshot' | 'settings' = 'settings') => {
     const active = resource.peek()
-    if (active && (attempt.framed || active.presentation === 'local'))
-      savedCamera = active.snapshotCamera()
+    if (
+      active &&
+      (attempt.framed || (active.presentation === 'local' && !savedCamera))
+    )
+      savedCamera = { view: active.snapshotCamera(), projection }
   }
   const retry = (consumeBudget = true) => {
     cancelRetry()
@@ -206,6 +213,30 @@ export function createKclSession(
     )
     void openAndAttachScene(size, owner)
   }
+  // A renderer change needs a new connection even when the old one is healthy.
+  // Keep the session and camera, and settle calls waiting on the retired attempt.
+  const replaceScene = (projection: 'snapshot' | 'settings' = 'settings') => {
+    if (disposed) return
+    cancelRetry()
+    rememberCamera(projection)
+    const previous = attempt
+    clearTimeout(previous.timer)
+    previous.lifetime.abort()
+    const error = new Error('The scene connection was replaced')
+    previous.ready.resolve(error)
+    previous.closed.resolve(error)
+    retire()
+    attempt = opening()
+    started = false
+    state.value = { type: 'connecting' }
+    const container = element.parentElement
+    if (container && container.clientWidth >= 4 && container.clientHeight >= 4)
+      beginOpeningAttempt({
+        width: container.clientWidth,
+        height: container.clientHeight,
+      })
+    onSceneReplaced()
+  }
   // Manual retry, viewport resize, and focus recovery use the same checks.
   // Only an attached viewport with a usable size can replace a failed/stale resource.
   const recover = (container: HTMLElement) => {
@@ -226,15 +257,29 @@ export function createKclSession(
       return
     const stale = resource.peek()?.isConnected?.() === false
     if (failed.type !== 'error' && failed.type !== 'idle' && !stale) return
-    cancelRetry()
     if (stale) fail(new Error('The scene connection expired'))
-    attempt = opening()
-    state.value = { type: 'connecting' }
-    beginOpeningAttempt({
-      width: container.clientWidth,
-      height: container.clientHeight,
+    replaceScene()
+  }
+  const restoreSavedCamera = async (
+    scene: KclSceneResource,
+    owner: ReturnType<typeof opening>
+  ) => {
+    const camera = savedCamera
+    if (!camera) return false
+    await scene.restoreCamera({
+      ...camera.view,
+      is_ortho:
+        camera.projection === 'snapshot'
+          ? camera.view.is_ortho
+          : scene.preferences.camera.peek().cameraProjection === 'orthographic',
     })
-    onReconnect() // The owning view replays its latest shared source snapshot into this connection.
+    if (
+      scene.presentation === 'local' &&
+      current(owner) &&
+      savedCamera === camera
+    )
+      savedCamera = undefined
+    return true
   }
   const idle = setInterval(() => {
     const active = resource.peek()
@@ -262,6 +307,11 @@ export function createKclSession(
     state,
     resource,
     element,
+    /** Replace renderer-bound resources while retaining this view's camera and executor input. */
+    replaceScene: () => {
+      retryCount = 0
+      replaceScene('snapshot')
+    },
     /** Retry this mounted view; healthy, detached, and disposed sessions are left alone. */
     reconnect: () => {
       const container = element.parentElement
@@ -375,16 +425,14 @@ export function createKclSession(
               return new Error('KCL execution was cancelled')
             await scene.applySettings()
             if (!owner.framed && scene.presentation === 'streamed') {
-              if (savedCamera) await scene.restoreCamera(savedCamera)
-              else await scene.frameModel()
+              if (!(await restoreSavedCamera(scene, owner)))
+                await scene.frameModel()
               owner.framed = true
             }
             if (!current(owner) || signal.aborted)
               return new Error('KCL execution was cancelled')
-            if (scene.presentation === 'local' && savedCamera) {
-              await scene.restoreCamera(savedCamera)
-              savedCamera = undefined
-            }
+            if (scene.presentation === 'local')
+              await restoreSavedCamera(scene, owner)
             if (!current(owner) || signal.aborted)
               return new Error('KCL execution was cancelled')
             lastInput = Date.now()

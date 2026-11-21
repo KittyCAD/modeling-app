@@ -16,6 +16,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeEach, expect, it, vi } from 'vitest'
 import {
   createTestKclRuntime,
+  createTestKclScene,
   createTestSettings,
 } from '@src/lib/kcl/testFixtures'
 
@@ -50,6 +51,7 @@ const owned = vi.hoisted(() => {
       onWindowResize: vi.fn(),
       initTouchControls: vi.fn(),
       setCameraProjection: vi.fn(async () => {}),
+      setCameraView: vi.fn(async () => {}),
     }
     constructor() {
       cameras.push(this.camControls)
@@ -354,3 +356,18 @@ it.each([
     preferences.dispose()
   }
 )
+
+it('does not fit a newly loaded local model over a restored camera', async () => {
+  const { options, preferences } = setup()
+  const scene = await openKclScene({ ...options, presentation: 'local' })
+  if (scene instanceof Error) return expect.fail(scene.message)
+  const pose = { ...createTestKclScene().snapshotCamera(), is_ortho: true }
+  try {
+    await scene.restoreCamera(pose)
+    expect(scene.localHost?.claimInitialCameraFrame?.()).toBe(false)
+    expect(owned.cameras[0].setCameraView).toHaveBeenCalledWith(pose)
+  } finally {
+    await scene.dispose()
+    preferences.dispose()
+  }
+})
