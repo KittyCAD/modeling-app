@@ -802,7 +802,8 @@ export function createCloudProjectRuntime(
   }
   const createProject = async (
     title: string,
-    archive: readonly ProjectArchiveFile[]
+    archive: readonly ProjectArchiveFile[],
+    options: { libraryId?: string } = {}
   ) => {
     if (isOffline()) return Promise.reject(offlineError())
     await ready
@@ -816,7 +817,8 @@ export function createCloudProjectRuntime(
     const remote = await api.createRemoteProject(
       requestConfig,
       title,
-      filesWithTitle
+      filesWithTitle,
+      options
     )
     if (config().accountId !== requestConfig.accountId)
       return Promise.reject(new Error('Cloud account changed during creation.'))
@@ -1083,9 +1085,10 @@ export function createCloudProjectRuntime(
     deleteProject,
     createProject: async (
       title: string,
-      archive: readonly ProjectArchiveFile[]
+      archive: readonly ProjectArchiveFile[],
+      options: { libraryId?: string } = {}
     ) => {
-      const result = await createProject(title, archive)
+      const result = await createProject(title, archive, options)
       notify([{ path: result.path, eventType: 'addDir' }])
       return result
     },
@@ -1102,7 +1105,9 @@ export function createCloudProjectRuntime(
     duplicateProject: async (id: string, title: string) => {
       await openProject(id)
       await opened.get(id)?.queue.catch(() => undefined)
-      return createProject(title, await collect(pathFor(id)))
+      return createProject(title, await collect(pathFor(id)), {
+        libraryId: opened.get(id)?.remote.library_id,
+      })
     },
     batch: <T>(
       path: string,

@@ -10,10 +10,12 @@ export function shouldShowFreeCloudProjectTrainingDisclosure({
   library,
   hasSubscription,
 }: {
-  library?: Pick<ProjectLibrary, 'type'>
+  library?: Pick<ProjectLibrary, 'type' | 'organizationId'>
   hasSubscription: boolean | undefined
 }) {
   return (
-    library?.type === CLOUD_PROJECT_LIBRARY_TYPE && hasSubscription === false
+    library?.type === CLOUD_PROJECT_LIBRARY_TYPE &&
+    !library.organizationId &&
+    hasSubscription === false
   )
 }
