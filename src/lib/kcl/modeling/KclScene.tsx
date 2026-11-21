@@ -31,7 +31,6 @@ export function KclScene({
   const resource = session.resource.value
   const preferences = resource?.preferences.localRenderer.value
   const selection = resource?.selection
-  const selectedCount = selection?.displayed.value.length ?? 0
   const output = viewExecution.state.value
   const error = selection?.error.value ?? output.error
   useEffect(() => {
@@ -53,18 +52,6 @@ export function KclScene({
         />
       )}
       {resource && <KclViewControls resource={resource} target={viewport} />}
-      {selection && (
-        <div className="absolute bottom-4 right-28 z-40 flex items-center gap-2 rounded bg-2 p-2 text-2">
-          <output aria-label="Scene selection">{selectedCount} selected</output>
-          <button
-            type="button"
-            disabled={!selectedCount || !selection.pickingEnabled.value}
-            onClick={() => selection.clear()}
-          >
-            Clear selection
-          </button>
-        </div>
-      )}
       <KclConnectionStatus session={session} />
       {state.type === 'ready' && error ? (
         <p
