@@ -1,3 +1,4 @@
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 const UNRENDERED_CHANGES_DISABLED_REASON =
@@ -5,16 +6,23 @@ const UNRENDERED_CHANGES_DISABLED_REASON =
 
 type BooleanSettingSnapshot = {
   current?: unknown
+  currentSignal?: ReadonlySignal<unknown>
 }
 
 export function getAutomaticallyRenderEnabledFromSettings(
-  settings: Pick<SettingsType, 'textEditor'>
+  settings: Pick<SettingsType, 'textEditor'>,
+  { reactive = false }: { reactive?: boolean } = {}
 ): boolean {
   const textEditorSettings = settings.textEditor as
     | Record<string, BooleanSettingSnapshot>
     | undefined
 
-  return textEditorSettings?.automaticallyRender?.current !== false
+  const setting = textEditorSettings?.automaticallyRender
+  return (
+    (reactive
+      ? (setting?.currentSignal?.value ?? setting?.current)
+      : setting?.current) !== false
+  )
 }
 
 export function shouldDisableModelingForUnrenderedChanges({

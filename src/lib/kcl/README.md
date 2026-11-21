@@ -2,7 +2,10 @@
 
 This package adds KCL syntax to Code views and Modeling and Variables modes to project-owned
 editors. A Code view edits the live document; a Modeling view executes its current
-contents and presents the resulting model without waiting for a save. These
+requested contents and presents the resulting model without waiting for a save.
+Automatically Render controls requests after edits; Off retains the displayed
+model and marks it out of date until Render is requested. Opening a Modeling
+context requests its initial model with either setting value. These
 contributions require `zds_project_shell_refactor`.
 
 Modeling views of one editor lease a shared executor. Its KCL output is a captured
@@ -26,10 +29,14 @@ The registry contribution connects these parts:
    open imported buffers, including unsaved edits. Project sessions supply byte
    reads for other files. KCL declares its supported import types.
 2. **Publish shared input.** The shared executor publishes the source snapshot.
-   Buffer, imported-buffer, and project changes replace it for all consumers.
+   Buffer, imported-buffer, and project changes mark its result stale.
+   A separate shared policy requests current sources while automatic rendering is on;
+   explicit Render requests use the same capability. Open buffers are copied before
+   asynchronous file-type discovery or storage reads.
    External storage updates enter through project/editor services first.
-3. **Execute per scene.** `createKclViewExecution` sends that snapshot to each
-   view's native runtime. Execution settings can refresh a scene without
+3. **Execute per scene.** `acquireKclExecutionPolicy` explicitly requests that snapshot in each
+   view's `createKclViewExecution` owner and native runtime. Execution settings can
+   request a scene while automatic rendering is on without
    recapturing sources. Native results and failures remain local to that view;
    source-capture failures are shared.
 4. **Present.** `KclScene` attaches the scene and displays its streamed or local
@@ -74,10 +81,15 @@ finish opening after their owner has closed.
 Connection progress uses the shared `Loading` view. A connection failure displays
 `ConnectionRecovery` with a Reconnect action. Manual retry and returning focus to
 a failed or stale mounted scene use the same recovery path: start opening a fresh
-connection and replay the latest shared snapshot in that scene. A healthy sibling
+connection and replay that scene's retained requested snapshot. With automatic
+rendering off, recovery retains its captured native configuration as well; newer
+edits remain unrendered. With automatic rendering on, recovery uses current native
+settings, and the source policy independently catches up to current document input. A healthy sibling
 does not rerun, and recovery does not refresh the shared executor. Source capture
 can run while connections open; each native execution waits for its own scene.
-Each attempt owns its callbacks, so late failures cannot replace a newer
+Edits never cancel requested source capture or native work; automatic policies wait
+for active work to finish and then request the newest input. Retained results carry
+freshness separately from progress. Each attempt owns its callbacks, so late failures cannot replace a newer
 connection. KCL execution errors are reported separately from connection failures.
 
 Unexpected transport closes request automatic recovery, with a bounded retry
@@ -162,8 +174,8 @@ settings to be reapplied.
 Changing the renderer preference replaces the connection and native runtime in
 existing Modeling views. Geometry-only mode is fixed when an engine connection
 opens, so switching renderers requires a new connection. Each view keeps its
-shared executor and full camera, including projection, and executes the latest
-shared snapshot in its replacement scene. Hidden or detached views release their
+shared executor and full camera, including projection, and replays its retained requested
+input in its replacement scene. Hidden or detached views release their
 old scene immediately and open the replacement once their viewport has a usable
 size. Repeated switches discard stale startup results and camera updates.
 
@@ -201,3 +213,29 @@ See [the selection contract](scene/README.md#view-selection-and-dialog-picking).
 - [`execution/runtime.ts`](execution/runtime.ts): owns native KCL operations.
 - [`scene/open.ts`](scene/open.ts): assembles a connection, runtime, camera, and renderer host.
 - [`modeling/KclScene.tsx`](modeling/KclScene.tsx): renders the Modeling viewport.
+
+## Explicit Render and freshness
+
+The KCL registry owns automatic policy leases in mode contexts, separately from
+React presentation. Multiple views share one source policy and retain independent
+native execution policies. Automatically Render Off stops requests from source,
+import, and execution-setting changes. It does not cancel a requested run, remove
+geometry, or prevent connection recovery and renderer replacement from replaying
+retained input. Re-enabling automatic rendering catches up to the newest source
+before applying native settings, avoiding an intermediate render of older source.
+
+Every Modeling view exposes Render and a freshness indicator. The registered
+`kcl.render` command targets the focused editor, including its Code view when a
+Modeling context has been acquired. Its default `mod+s` binding uses the existing
+keymap system and supports user remapping. Opening the command palette retains its
+originating editor until dismissal or submission. Other documents are unaffected;
+views sharing the requested editor consume the same new capture.
+
+`createKclViewExecution.run` captures native settings when the scene request is
+made, before connection startup or queued native work. The runtime serializes that
+configuration before its queue. `refresh` replays the retained request for recovery.
+Source-capture errors remain shared; native errors remain local to their scene.
+
+Selection and modeling commands must distinguish an execution's geometry identity
+from freshness relative to working text. Editing marks the displayed model stale;
+actual native re-execution replaces geometry and invalidates its references.

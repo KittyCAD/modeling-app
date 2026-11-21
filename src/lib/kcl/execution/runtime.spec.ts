@@ -372,3 +372,32 @@ it('waits for native execution and command draining before closing, without publ
     commands.resolve(undefined)
   }
 })
+
+it('captures native settings before waiting behind an earlier execution', async () => {
+  const settings = createSettings()
+  settings.modeling.defaultUnit.user = 'mm'
+  const pending = Promise.withResolvers<undefined>()
+  const configurations: object[] = []
+  class Context extends wasm.Context {
+    async execute(
+      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
+    ) {
+      configurations.push(JSON.parse(args[2]))
+      if (configurations.length === 1) await pending.promise
+      return super.execute(...args)
+    }
+  }
+  const model = await runtime({ ...wasm, Context }, settings)
+  const source = snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
+  const first = model.execute(source)
+  await vi.waitFor(() => expect(configurations).toHaveLength(1))
+  settings.modeling.defaultUnit.user = 'in'
+  const queued = model.execute(source)
+  settings.modeling.defaultUnit.user = 'mm'
+  pending.resolve(undefined)
+  await Promise.all([first, queued])
+  expect(configurations).toMatchObject([
+    { settings: { modeling: { base_unit: 'mm' } } },
+    { settings: { modeling: { base_unit: 'in' } } },
+  ])
+})

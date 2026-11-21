@@ -2,7 +2,7 @@ import * as Effect from 'effect/Effect'
 import * as Scope from 'effect/Scope'
 import * as Exit from 'effect/Exit'
 import * as ExecutionStrategy from 'effect/ExecutionStrategy'
-import { computed, effect, signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import type { ExecState } from '@src/lang/wasm'
 import type { Executor } from '@src/lib/executors/registry/contract'
 import type { KclExecutionCapability } from '@src/lib/kcl/execution/executor'
@@ -12,7 +12,9 @@ import { isErr } from '@src/lib/trap'
 
 /** Native results and failures belong to one scene; their entity IDs cannot be used by a sibling connection. */
 export interface KclViewExecutionState {
+  readonly revision?: unknown
   readonly running: boolean
+  readonly stale: boolean
   readonly result?: ExecState
   readonly error?: Error
 }
@@ -39,61 +41,52 @@ export function createKclViewExecution(
   executor: Executor,
   capability: KclExecutionCapability,
   session: Pick<KclSession, 'execute' | 'dispose'>,
-  readRevision: () => unknown = () => undefined
+  readRevision: () => unknown = () => undefined,
+  readConfiguration: () => object | undefined = () => undefined
 ) {
-  const state = signal<KclViewExecutionState>({ running: true })
-  const refresh = signal(0)
+  const state = signal<Omit<KclViewExecutionState, 'stale' | 'revision'>>({
+    running: false,
+  })
   let disposed = false
   let run = 0
   let controller: AbortController | undefined
-  let previous:
-    | { sources: KclSourceSnapshot; revision: unknown; refresh: number }
+  let retained:
+    | { sources: KclSourceSnapshot; revision: unknown; configuration?: object }
     | undefined
-  const stop = effect(() => {
-    const output = executor.output.value
-    const sources = output.get(capability)?.sources
-    const revision = readRevision()
-    const requested = refresh.value
-    const error = output.errors[capability.id]
-    if (!sources || error) {
-      run++
-      controller?.abort()
-      previous = undefined
-      state.value = { running: output.running, error }
-      return
-    }
-    if (
-      previous?.sources === sources &&
-      Object.is(previous.revision, revision) &&
-      previous.refresh === requested
-    )
-      return
-    previous = { sources, revision, refresh: requested }
+  let published: typeof retained
+  let completedRevision: unknown
+  const execute = (input: NonNullable<typeof retained>) => {
+    if (disposed) return
+    retained = input
     const owner = ++run
     controller?.abort()
     const lifetime = new AbortController()
     controller = lifetime
-    state.value = { running: true }
-    // Calling execute here captures the session's current connection attempt.
-    const execute = async () => session.execute(sources, lifetime.signal)
-    void execute().then(
-      (result) => {
-        if (disposed || owner !== run || lifetime.signal.aborted) return
-        state.value = isErr(result)
-          ? { running: false, error: result }
-          : { running: false, result: result.result }
-      },
-      (cause) => {
-        if (disposed || owner !== run || lifetime.signal.aborted) return
-        state.value = {
-          running: false,
-          error: isErr(cause)
-            ? cause
-            : new Error('KCL scene execution failed', { cause }),
+    state.value = { ...state.peek(), running: true, error: undefined }
+    void session
+      .execute(input.sources, lifetime.signal, input.configuration)
+      .then(
+        (result) => {
+          if (disposed || owner !== run || lifetime.signal.aborted) return
+          completedRevision = input.revision
+          if (!isErr(result)) published = input
+          state.value = isErr(result)
+            ? { ...state.peek(), running: false, error: result }
+            : { running: false, result: result.result }
+        },
+        (cause) => {
+          if (disposed || owner !== run || lifetime.signal.aborted) return
+          completedRevision = input.revision
+          state.value = {
+            ...state.peek(),
+            running: false,
+            error: isErr(cause)
+              ? cause
+              : new Error('KCL scene execution failed', { cause }),
+          }
         }
-      }
-    )
-  })
+      )
+  }
   const lifetime = Effect.runSync(
     Scope.fork(executor.scope, ExecutionStrategy.sequential)
   )
@@ -103,7 +96,6 @@ export function createKclViewExecution(
       Effect.sync(() => {
         disposed = true
         run++
-        stop()
         controller?.abort()
         session.dispose()
         state.value = { running: false }
@@ -111,10 +103,34 @@ export function createKclViewExecution(
     )
   )
   return {
-    state: computed(() => state.value),
-    /** Rebuild only this scene from the latest shared snapshot. */
-    refresh: () => {
-      if (!disposed) refresh.value++
+    state: computed(() => ({
+      ...state.value,
+      revision: completedRevision,
+      running: state.value.running || executor.result(capability).value.running,
+      error: executor.result(capability).value.error ?? state.value.error,
+      stale:
+        executor.result(capability).value.stale ||
+        published?.sources !== executor.output.value.get(capability)?.sources ||
+        !Object.is(published?.revision, readRevision()),
+    })),
+    run: (sources: KclSourceSnapshot) =>
+      execute({
+        sources,
+        revision: readRevision(),
+        configuration: readConfiguration(),
+      }),
+    /** Rebuild this scene from its last requested input, even when the document has newer edits. */
+    refresh: (currentSettings = false) => {
+      if (retained)
+        execute(
+          currentSettings
+            ? {
+                sources: retained.sources,
+                revision: readRevision(),
+                configuration: readConfiguration(),
+              }
+            : retained
+        )
     },
     dispose: () => Effect.runSync(Scope.close(lifetime, Exit.void)),
   }

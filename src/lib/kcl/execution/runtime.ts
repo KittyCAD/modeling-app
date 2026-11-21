@@ -79,7 +79,10 @@ export async function createKclRuntime(
     queue = result.catch(() => undefined)
     return result
   }
-  const executionProgram = (snapshot: KclSourceSnapshot) =>
+  const executionProgram = (
+    snapshot: KclSourceSnapshot,
+    configuration: string
+  ) =>
     Effect.gen(function* () {
       files = new Map(
         [...snapshot.files].map(([path, bytes]) => [
@@ -96,7 +99,6 @@ export async function createKclRuntime(
       if (isErr(ast)) return yield* Effect.fail(ast)
       if (!resultIsOk(ast))
         return yield* Effect.fail(new Error('Fix KCL syntax before executing'))
-      const configuration = settings()
       if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
       const delta: SceneGraphDelta = yield* fromPromise(() =>
         native.execute(JSON.stringify(ast.program), snapshot.src, configuration)
@@ -128,8 +130,12 @@ export async function createKclRuntime(
         })
       )
     )
-  const execute = (snapshot: KclSourceSnapshot) =>
-    enqueue(async () => {
+  const execute = (
+    snapshot: KclSourceSnapshot,
+    configuration: object = getSettings()
+  ) => {
+    const capturedSettings = JSON.stringify(configuration)
+    return enqueue(async () => {
       // The WASM Promise cannot be interrupted safely. Keep this Effect
       // uninterruptible so `enqueue` waits for native execution to settle before
       // `dispose` frees the context. Successful runs also drain engine commands;
@@ -141,7 +147,7 @@ export async function createKclRuntime(
             executing.value = true
             return stopTracking
           }),
-          () => executionProgram(snapshot),
+          () => executionProgram(snapshot, capturedSettings),
           (stopTracking, exit) =>
             Effect.sync(() => {
               const successful = Exit.isSuccess(exit)
@@ -170,6 +176,7 @@ export async function createKclRuntime(
         ? exit.value
         : Promise.reject(Cause.squash(exit.cause))
     })
+  }
   return {
     state,
     executing,
