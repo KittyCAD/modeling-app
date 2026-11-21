@@ -11,7 +11,8 @@ import {
   LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
 } from '@src/clientSideScene/localRenderer/config'
 import {
-  getEntityPoint,
+  getEntityPoints,
+  nearbyViewportPixels,
   projectEntityPoint,
 } from '@src/clientSideScene/localRenderer/projectEntityPoint'
 import {
@@ -57,6 +58,7 @@ import {
   PerspectiveCamera,
   Scene,
   Texture,
+  Vector2,
   Vector3,
 } from 'three'
 import {
@@ -118,6 +120,14 @@ function addToGroup<K>(groups: Map<K, Mesh[]>, key: K, mesh: Mesh) {
 
 // A frame size in device pixels.
 export type FrameSize = { width: number; height: number }
+
+export type ProjectedEntity = {
+  id: string
+  kind: 'edge' | 'bodyFace' | 'sketchFace'
+  x: number
+  y: number
+  visible: boolean
+}
 
 // Changes the camera to the aspect ratio, still showing all it shows now.
 function widenCameraToAspect(
@@ -241,6 +251,8 @@ export class LocalRenderer {
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
   private disposed = false
+  private readonly frameListeners = new Set<() => void>()
+  private readonly lifetime = new AbortController()
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
   private selectedEntityIds: string[] = []
@@ -708,6 +720,8 @@ export class LocalRenderer {
     }
 
     this.disposed = true
+    this.lifetime.abort()
+    this.frameListeners.clear()
     for (const dispose of this.disposers.splice(0)) {
       dispose()
     }
@@ -1017,6 +1031,65 @@ export class LocalRenderer {
     selectionHighlightRenderer.render(camera)
   }
 
+  subscribeFrames(listener: () => void) {
+    this.frameListeners.add(listener)
+    return () => this.frameListeners.delete(listener)
+  }
+
+  getPickView() {
+    const { gpu, camera, executionVersion, currentModel } = this
+    if (
+      this.disposed ||
+      !gpu ||
+      !camera ||
+      !currentModel ||
+      !this.isLoadedSceneCurrent() ||
+      this.host.executing.peek()
+    ) {
+      return null
+    }
+    const { integerIdPicker: picker, renderer } = gpu
+    const { width, height } = renderer.domElement.getBoundingClientRect()
+    const size = renderer.getDrawingBufferSize(new Vector2())
+    const scratch = new Vector2()
+    const world = camera.matrixWorld.clone()
+    const projection = camera.projectionMatrix.clone()
+    return {
+      width,
+      height,
+      bufferWidth: size.x,
+      bufferHeight: size.y,
+      backend: renderer.backend.constructor.name,
+      buffer: picker.buffer,
+      pick: (x: number, y: number, buffer = picker.buffer) =>
+        picker.pick(
+          { x, y, streamWidth: width, streamHeight: height, camera },
+          buffer
+        ),
+      invalidate: () => picker.invalidate(),
+      capture: () => picker.captureDebugBuffer(camera),
+      container: this.container,
+      signal: this.lifetime.signal,
+      isCurrent: () => {
+        const rect = renderer.domElement.getBoundingClientRect()
+        return (
+          !this.disposed &&
+          this.gpu === gpu &&
+          this.camera === camera &&
+          rect.width === width &&
+          rect.height === height &&
+          renderer.getDrawingBufferSize(scratch).equals(size) &&
+          camera.matrixWorld.equals(world) &&
+          camera.projectionMatrix.equals(projection) &&
+          this.executionVersion === executionVersion &&
+          this.currentModel === currentModel &&
+          !this.host.executing.peek() &&
+          this.isLoadedSceneCurrent()
+        )
+      },
+    }
+  }
+
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
   async getProjectedEntities() {
     const camera = this.camera
@@ -1033,62 +1106,55 @@ export class LocalRenderer {
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
-    const entities = []
-    for (const [id, [object]] of this.targetsByEntityId) {
+    const entities: ProjectedEntity[] = []
+    for (const [id, meshes] of this.targetsByEntityId) {
+      const { edgeUuid, isSketchRegion } = meshes[0].userData
       const kind =
-        typeof object.userData.edgeUuid === 'string' ? 'edge' : 'face'
-      object.updateWorldMatrix(true, false)
-      const point = getEntityPoint(object.geometry, kind)
-      if (!point) continue
-      point.applyMatrix4(object.matrixWorld)
-      const pointOnScreen = projectEntityPoint(point, camera, rect)
-      if (!pointOnScreen) continue
-      // The test mouse helpers use integer CSS pixels. Try the coordinates
-      // surrounding the projected center so rasterization does not hide a thin edge.
-      const xs = [
-        ...new Set([Math.floor(pointOnScreen.x), Math.ceil(pointOnScreen.x)]),
-      ]
-      const ys = [
-        ...new Set([Math.floor(pointOnScreen.y), Math.ceil(pointOnScreen.y)]),
-      ]
-      const candidates = xs
-        .flatMap((x) => ys.map((y) => ({ x, y })))
-        .filter(
-          ({ x, y }) =>
-            x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom
-        )
-        .sort(
-          (a, b) =>
-            (a.x - pointOnScreen.x) ** 2 +
-            (a.y - pointOnScreen.y) ** 2 -
-            ((b.x - pointOnScreen.x) ** 2 + (b.y - pointOnScreen.y) ** 2)
-        )
-      let projected = candidates[0]
-      if (!projected) continue
+        typeof edgeUuid === 'string'
+          ? 'edge'
+          : isSketchRegion === true
+            ? 'sketchFace'
+            : 'bodyFace'
+      const geometryKind = kind === 'edge' ? 'edge' : 'face'
+      let projected: { x: number; y: number } | undefined
       let visible = false
-      for (const candidate of candidates) {
-        const result = await this.gpu?.integerIdPicker.pick({
-          x: candidate.x - rect.left,
-          y: candidate.y - rect.top,
-          streamWidth: rect.width,
-          streamHeight: rect.height,
-          camera,
-        })
-        if (this.disposed || version !== this.executionVersion || result?.stale)
-          return []
-        if (result?.target === object) {
-          projected = candidate
-          visible = true
-          break
+      const tried = new Set<string>()
+      search: for (const mesh of meshes) {
+        mesh.updateWorldMatrix(true, false)
+        for (const point of getEntityPoints(mesh.geometry, geometryKind)) {
+          const screen = projectEntityPoint(
+            point.applyMatrix4(mesh.matrixWorld),
+            camera,
+            rect
+          )
+          if (!screen) continue
+          for (const pixel of nearbyViewportPixels(screen, rect)) {
+            const key = `${pixel.x},${pixel.y}`
+            if (tried.has(key)) continue
+            tried.add(key)
+            projected ??= pixel
+            const result = await this.gpu?.integerIdPicker.pick({
+              x: pixel.x - rect.left,
+              y: pixel.y - rect.top,
+              streamWidth: rect.width,
+              streamHeight: rect.height,
+              camera,
+            })
+            if (
+              this.disposed ||
+              version !== this.executionVersion ||
+              result?.stale
+            )
+              return []
+            if (result?.target && meshes.includes(result.target)) {
+              projected = pixel
+              visible = true
+              break search
+            }
+          }
         }
       }
-      entities.push({
-        id,
-        kind,
-        ...projected,
-        // This means the real picker would select this entity at its representative point.
-        visible,
-      })
+      if (projected) entities.push({ id, kind, ...projected, visible })
     }
     return entities
   }
@@ -1131,6 +1197,7 @@ export class LocalRenderer {
       }
 
       this.render()
+      this.frameListeners.forEach((listener) => listener())
     })
   }
 

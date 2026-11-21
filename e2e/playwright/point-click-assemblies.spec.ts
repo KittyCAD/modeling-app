@@ -248,12 +248,11 @@ test.describe(
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
-          const [clickBracketInScene] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            // The end cap stays visible when the bracket rotates.
-            index: 2,
-            stream: { x: 0.75, y: 0.92, format: 'ratio' },
-          })
+          const [clickBracketInScene] = test
+            .info()
+            .tags.includes('@localRenderer')
+            ? await scene.findEntity('bodyFace', 0)
+            : scene.makeMouseHelpers(0.75, 0.92, { format: 'ratio' })
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return

@@ -16,6 +16,16 @@ import {
   type EdgeSelectionTarget,
   SELECTION_INDEX_ATTRIBUTE,
 } from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import { EdgeGrowthPass } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
+import {
+  colorizePickBuffer,
+  type PickBufferSnapshot,
+} from '@src/clientSideScene/localRenderer/pickBufferDebug'
+import {
+  EdgeTargetType,
+  selectionTargetId,
+  selectionTypeTag,
+} from '@src/clientSideScene/localRenderer/selectionId'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import {
   attribute,
@@ -36,8 +46,9 @@ import {
   type WebGPURenderer,
 } from 'three/webgpu'
 
-const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
-const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
+// Rasterize thin seeds; EdgeGrowthPass supplies the selection radius.
+const PICK_SEED_WIDTH_PX = 2
+
 // The ID of whatever can't be picked: occluders, line segments that aren't
 // targets, and the background, which clears to 0. targetById[0] is null to match.
 const NO_TARGET_ID = 0
@@ -50,6 +61,11 @@ export type IntegerIdPickResult = {
   stale: boolean
 }
 
+export interface PickBufferIO {
+  render(target: RenderTarget, camera: Camera): void
+  read: WebGPURenderer['readRenderTargetPixelsAsync']
+}
+
 export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
   private readonly scene = new Scene()
@@ -58,10 +74,20 @@ export class IntegerIdPicker {
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
   private targetById: Array<Mesh | null> = [null]
   private renderTarget: RenderTarget | null = null
+
+  private growthPass: EdgeGrowthPass | null = null
+  private grownTarget: RenderTarget | null = null
+
   private edgeObject: LineSegments2 | null = null
+  private readonly growthSeeds = new Set<Mesh>()
   private edgesVisible = true
   private dirty = true
   private version = 0
+
+  readonly buffer: PickBufferIO = {
+    render: (target, camera) => this.renderIdBuffer(target, camera),
+    read: (...args) => this.renderer.readRenderTargetPixelsAsync(...args),
+  }
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
@@ -149,20 +175,23 @@ export class IntegerIdPicker {
       addMesh(target, this.targetById.push(target) - 1)
     }
     if (edges) {
-      this.edgeObject = this.addLines(edges)
+      this.edgeObject = this.addLines(edges, EdgeTargetType.BodyEdge)
       if (this.edgeObject) {
         this.edgeObject.visible = this.edgesVisible
       }
     }
     if (sketchLines) {
-      this.addLines(sketchLines)
+      this.addLines(sketchLines, EdgeTargetType.SketchLine)
     }
   }
 
   // One batch of lines, each segment drawn with its target ID. The lines are
   // drawn from the source's geometry, which is not ours to dispose: disposing a
   // geometry destroys the GPU buffers of all its attributes.
-  private addLines({ source, targets }: LineTargets) {
+  private addLines(
+    { source, targets }: LineTargets,
+    targetType: EdgeTargetType
+  ) {
     // The source numbers its targets from 1, in this order.
     const idBeforeFirstTarget = this.targetById.length - 1
     for (const { object } of targets) {
@@ -175,7 +204,7 @@ export class IntegerIdPicker {
     }
 
     const material = new Line2NodeMaterial({
-      linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
+      linewidth: PICK_SEED_WIDTH_PX,
     })
     material.worldUnits = false
     material.alphaToCoverage = false
@@ -197,10 +226,13 @@ export class IntegerIdPicker {
     const selectionId = select(
       selectionIndex.equal(uint(0)),
       uint(NO_TARGET_ID),
-      uniform(idBeforeFirstTarget, 'uint').add(selectionIndex)
+      uniform(idBeforeFirstTarget, 'uint')
+        .add(selectionIndex)
+        .bitOr(uint(selectionTypeTag(targetType)))
     )
     material.outputNode = this.idOutput(varying(selectionId))
     const object = new LineSegments2(source.geometry, material)
+    if (targets.length > 0) this.growthSeeds.add(object)
     object.frustumCulled = false
     object.renderOrder = 2
     this.sourceByProxy.set(object, source)
@@ -222,19 +254,22 @@ export class IntegerIdPicker {
     this.version += 1
   }
 
-  async pick({
-    x,
-    y,
-    streamWidth,
-    streamHeight,
-    camera,
-  }: {
-    x: number
-    y: number
-    streamWidth: number
-    streamHeight: number
-    camera: Camera
-  }): Promise<IntegerIdPickResult | null> {
+  async pick(
+    {
+      x,
+      y,
+      streamWidth,
+      streamHeight,
+      camera,
+    }: {
+      x: number
+      y: number
+      streamWidth: number
+      streamHeight: number
+      camera: Camera
+    },
+    buffer = this.buffer
+  ): Promise<IntegerIdPickResult | null> {
     if (
       streamWidth <= 0 ||
       streamHeight <= 0 ||
@@ -244,6 +279,14 @@ export class IntegerIdPicker {
     }
 
     const target = this.ensureRenderTarget()
+
+    // [x, y] are the coords in the "stream", which is the video element
+    // that still exists even when local renderer is used.
+    // getNormalisedCoordinates turns mouse events into stream coordinates, but
+    // local renderer is hijacking/getting the command so we have to turn them
+    // back into renderer coordinates
+    const clampPixel = (value: number, size: number) =>
+      Math.max(0, Math.min(value, size - 1))
     const readbackPixelX = clampPixel(
       Math.floor((x / streamWidth) * target.width),
       target.width
@@ -252,26 +295,26 @@ export class IntegerIdPicker {
       Math.floor((y / streamHeight) * target.height),
       target.height
     )
+
     const version = this.version
     const targetById = this.targetById
 
     if (this.dirty) {
-      this.renderIdBuffer(target, camera, streamWidth)
+      buffer.render(target, camera)
     }
 
-    const pixels = await this.renderer.readRenderTargetPixelsAsync(
-      target,
+    const pixels = await buffer.read(
+      this.grownTarget ?? target,
       readbackPixelX,
-      // WebGL counts rows from the bottom.
       this.packsIdsIntoColor
         ? target.height - 1 - readbackPixelY
         : readbackPixelY,
       1,
       1
     )
-    const selectionId = this.packsIdsIntoColor
-      ? pixels[0] | (pixels[1] << 8) | (pixels[2] << 16)
-      : Number(pixels[0] ?? 0)
+    const selectionId = selectionTargetId(
+      decodeSelectionId(pixels, 0, this.packsIdsIntoColor)
+    )
     const stale = version !== this.version
 
     return {
@@ -280,10 +323,47 @@ export class IntegerIdPicker {
     }
   }
 
+  async captureDebugBuffer(camera: Camera): Promise<PickBufferSnapshot | null> {
+    if (this.scene.children.length === 0) return null
+    const target = this.ensureRenderTarget()
+    if (this.dirty) this.renderIdBuffer(target, camera)
+    const version = this.version
+    const read = async (source: RenderTarget) => {
+      const pixels = await this.renderer.readRenderTargetPixelsAsync(
+        source,
+        0,
+        0,
+        target.width,
+        target.height
+      )
+      return version === this.version
+        ? colorizePickBuffer(
+            pixels,
+            target.width,
+            target.height,
+            this.packsIdsIntoColor
+          )
+        : null
+    }
+    const grownTarget = this.grownTarget
+    const pixels = await read(grownTarget ?? target)
+    if (!pixels || version !== this.version) return null
+    const seedPixels = grownTarget ? await read(target) : pixels
+    if (!seedPixels || version !== this.version) return null
+    return {
+      width: target.width,
+      height: target.height,
+      pixels,
+      seedPixels,
+    }
+  }
+
   clearModel() {
     this.sourceByProxy.clear()
     this.scene.clear()
     this.edgeObject = null
+    this.growthSeeds.clear()
+    this.grownTarget = null
     this.targetById = [null]
     this.materials.forEach((material) => {
       material.dispose()
@@ -295,6 +375,8 @@ export class IntegerIdPicker {
   dispose() {
     this.clearModel()
     this.renderTarget?.dispose()
+    this.growthPass?.dispose()
+    this.growthPass = null
     this.renderTarget = null
   }
 
@@ -321,17 +403,15 @@ export class IntegerIdPicker {
       this.renderTarget.height !== height
     ) {
       this.renderTarget.setSize(width, height)
+      this.growthPass?.resize(width, height)
       this.invalidate()
     }
 
     return this.renderTarget
   }
 
-  private renderIdBuffer(
-    target: RenderTarget,
-    camera: Camera,
-    viewportWidth: number
-  ) {
+  private renderIdBuffer(target: RenderTarget, camera: Camera) {
+    let growLines = false
     for (const [proxy, source] of this.sourceByProxy) {
       source.updateWorldMatrix(true, false)
       proxy.matrix.copy(source.matrixWorld)
@@ -342,28 +422,47 @@ export class IntegerIdPicker {
       })
       proxy.visible &&=
         source.visible && (proxy !== this.edgeObject || this.edgesVisible)
+      if (
+        this.growthSeeds.has(proxy) &&
+        proxy.visible &&
+        camera.layers.test(proxy.layers)
+      ) {
+        growLines = true
+      }
     }
     const previousTarget = this.renderer.getRenderTarget()
     const previousAutoClear = this.renderer.autoClear
-    const selectionLineWidth =
-      (SELECTION_LINE_WIDTH_AT_REFERENCE_PX * viewportWidth) /
-      SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
-
-    this.materials.forEach((material) => {
-      if (material instanceof Line2NodeMaterial) {
-        material.linewidth = selectionLineWidth
-      }
-    })
-
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
+    this.grownTarget = null
+    if (growLines) {
+      this.growthPass ??= new EdgeGrowthPass(
+        this.renderer,
+        target,
+        target.width,
+        target.height,
+        this.packsIdsIntoColor,
+        (id) => this.idOutput(id)
+      )
+      const bounds = this.renderer.domElement.getBoundingClientRect()
+      this.growthPass.render(bounds.width, bounds.height)
+      this.grownTarget = this.growthPass.target
+    }
     this.renderer.setRenderTarget(previousTarget)
     this.renderer.autoClear = previousAutoClear
     this.dirty = false
   }
 }
 
-function clampPixel(value: number, size: number) {
-  return Math.max(0, Math.min(size - 1, value))
+function decodeSelectionId(
+  pixels: ArrayLike<number>,
+  index: number,
+  packed: boolean
+) {
+  return packed
+    ? (pixels[index] ?? 0) |
+        ((pixels[index + 1] ?? 0) << 8) |
+        ((pixels[index + 2] ?? 0) << 16)
+    : Number(pixels[index] ?? 0)
 }
