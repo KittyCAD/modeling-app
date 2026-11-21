@@ -150,6 +150,11 @@ describe('Markdown extension', () => {
     const executor = requireSuccess(
       registry.required(executorsService).acquireExecutor(editor)
     ).executor
+    const slowCapability = registry
+      .get(executorCapabilityFacet)
+      .find((capability) => capability.id === 'slow-analysis')!
+    void executor.run(slowCapability)
+    await executor.run(markdownExecutorCapability)
     try {
       render(<MarkdownPreview executor={executor} />)
       expect(
@@ -183,6 +188,7 @@ describe('Markdown extension', () => {
     const executor = requireSuccess(
       registry.required(executorsService).acquireExecutor(editor)
     ).executor
+    await executor.run(markdownExecutorCapability)
     const { container } = render(<MarkdownPreview executor={executor} />)
     await screen.findByRole('heading', { name: 'Preview' })
     expect(
