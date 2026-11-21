@@ -88,7 +88,7 @@ export function EditorsPane({
               onClick={() => {
                 const editor = service.createEditor()
                 if (trap(editor)) return
-                const view = service.createView(editor, 'editors.code')
+                const view = service.createView(editor)
                 if (trap(view)) service.closeEditor(editor.id)
               }}
             >
@@ -158,7 +158,11 @@ export function EditorsPane({
                   naming={naming}
                   onFinish={() => {
                     const codeView = instance.codeView.peek()
-                    if (codeView) codeView.focus()
+                    if (
+                      codeView &&
+                      instance.element.peek()?.contains(codeView.dom)
+                    )
+                      codeView.focus()
                     else instance.element.peek()?.focus()
                   }}
                 />

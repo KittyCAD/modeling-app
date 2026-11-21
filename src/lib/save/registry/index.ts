@@ -58,7 +58,7 @@ const extension = factory({
       (editor) => naming.request(editor)
     )
     const naming = createEditorNaming(
-      () => project.projectSessionService.current.value?.currentSession.peek(),
+      () => project.projectSessionService.current.value,
       () => editorsInputs.editorsService.current.value,
       () => files.fileOperationsService.current.value,
       saving.service,

@@ -1,4 +1,4 @@
-import type { FileContents } from '@src/lib/fileSystem/fileOperations'
+import type { FileContents, FileStat } from '@src/lib/fileSystem/fileOperations'
 import type { Project } from '@src/lib/projectSession/next/types'
 import { createProjectSessionService } from '@src/lib/projectSession/next/session'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,6 +10,8 @@ vi.mock('@src/lib/fs-zds', async () => {
   const paths = await import('node:path')
   return {
     default: {
+      basename: (path: string) => paths[platform.value].basename(path),
+      join: (...parts: string[]) => paths[platform.value].join(...parts),
       resolve: (...parts: string[]) => paths[platform.value].resolve(...parts),
       relative: (root: string, path: string) =>
         paths[platform.value].relative(root, path),
@@ -29,6 +31,21 @@ function project(path: string, canWrite = true): Project {
 
 function setup() {
   const storage = {
+    stat: vi.fn(
+      async (path: string): Promise<FileStat> => ({
+        kind: path.endsWith('.md') ? 'file' : 'directory',
+        device: 0,
+        inode: 0,
+        size: 0,
+        accessedAt: 0,
+        modifiedAt: 0,
+        changedAt: 0,
+        createdAt: 0,
+      })
+    ),
+    readDirectory: vi.fn(
+      async (_path: string): Promise<readonly string[]> => []
+    ),
     readFile: vi.fn(
       async (_path: string): Promise<Uint8Array> =>
         new TextEncoder().encode('contents')
@@ -192,4 +209,61 @@ it('publishes metadata updates only to the captured current opening and preserve
   service.closeProject()
   service.updateMetadata(second, { title: 'Closed update' })
   expect(second.project.value.metadata.title).toBe('Project')
+})
+
+it('refreshes file membership while retaining metadata updated during the read', async () => {
+  const { storage, service } = setup()
+  const owner = service.openProject(project('/project'))
+  let finish!: (names: readonly string[]) => void
+  storage.readDirectory.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  )
+  const refreshed = service.refreshContents(owner)
+  await vi.waitFor(() => expect(storage.readDirectory).toHaveBeenCalled())
+  service.updateMetadata(owner, { title: 'New title', defaultFile: 'new.md' })
+  finish(['new.md'])
+  expect(await refreshed).toBeUndefined()
+  expect(service.listFiles().map((file) => file.path)).toEqual([
+    '/project/new.md',
+  ])
+  expect(owner.project.peek().metadata.title).toBe('New title')
+  expect(owner.project.peek().metadata.defaultFile).toBe('new.md')
+})
+
+it.each(['replacement', 'snapshot'])(
+  'discards an older file-tree read after a project %s',
+  async (change) => {
+    const { storage, service } = setup()
+    const owner = service.openProject(project('/project'))
+    let finish!: (names: readonly string[]) => void
+    storage.readDirectory.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finish = resolve
+      })
+    )
+    const refreshed = service.refreshContents(owner)
+    await vi.waitFor(() => expect(storage.readDirectory).toHaveBeenCalled())
+    if (change === 'replacement') service.openProject(project('/project'))
+    else service.updateProject(owner, project('/project'))
+    finish(['stale.md'])
+    expect(await refreshed).toBeUndefined()
+    expect(service.listFiles()).toEqual([])
+  }
+)
+
+it('retains the existing tree and reports a failed refresh', async () => {
+  const { storage, service } = setup()
+  const data = project('/project')
+  data.contents.children = [
+    { name: 'kept.md', path: '/project/kept.md', children: null },
+  ]
+  const owner = service.openProject(data)
+  const failure = new Error('Directory is unavailable')
+  storage.readDirectory.mockRejectedValueOnce(failure)
+  expect(await service.refreshContents(owner)).toBe(failure)
+  expect(service.listFiles().map((file) => file.path)).toEqual([
+    '/project/kept.md',
+  ])
 })

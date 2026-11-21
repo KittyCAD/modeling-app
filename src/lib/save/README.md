@@ -40,7 +40,13 @@ Saving an unnamed buffer prompts for a project-relative file path in its tab.
 Enter submits; Escape or leaving the input cancels without discarding the buffer.
 Empty, absolute, and escaping paths are rejected. First saves use strict creation,
 so existing files are never overwritten; failures leave the input available for
-correction. Autosave never opens a naming prompt.
+correction. Autosave never opens a naming prompt. New buffers follow the highest
+priority matching mode after naming, so a first save as `.md` opens the registered
+Markdown preview. Explicit mode choices remain in place across later renames.
+
+Creation and rename refresh the captured project's file tree, so Open Editor
+immediately offers the new path and drops the old name. Refreshes retain current
+metadata and cannot overwrite a replacement opening or a newer project snapshot.
 
 Double-clicking a tab or pressing F2 on a focused tab opens the same path input for renaming. Renames wait for
 previously requested writes, reject existing destinations, and update every buffer

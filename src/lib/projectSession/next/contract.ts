@@ -34,6 +34,8 @@ export interface ProjectSessionService {
     session: OpenProjectSession,
     project: Project
   ) => Error | undefined
+  /** Refresh file membership for this opening without replacing its current metadata. */
+  refreshContents: (session: OpenProjectSession) => Promise<Error | undefined>
   /** Refresh descriptive metadata for the captured opening; closed/replaced openings are ignored. */
   updateMetadata: (
     session: OpenProjectSession,

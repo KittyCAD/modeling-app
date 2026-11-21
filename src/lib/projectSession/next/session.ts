@@ -1,3 +1,5 @@
+import { getProjectContents } from '@src/lib/projectSession/next/contents'
+import { isErr } from '@src/lib/trap'
 import { batch, computed, signal, type Signal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/projectSession/next/types'
@@ -15,7 +17,7 @@ interface MutableProjectSession extends OpenProjectSession {
 
 type ProjectStorage = Pick<
   FileOperationsRegistryService,
-  'readFile' | 'writeFile'
+  'readFile' | 'writeFile' | 'stat' | 'readDirectory'
 >
 
 /**
@@ -80,6 +82,7 @@ export function createProjectSessionService(
 ): ProjectSessionService {
   const currentSession = signal<MutableProjectSession | undefined>(undefined)
   let lifetime: AbortController | undefined
+  let contentsRevision = 0
   const currentProject = computed(() => currentSession.value?.project.value)
   return {
     currentSession,
@@ -116,7 +119,37 @@ export function createProjectSessionService(
         previous.storage?.projectId !== project.storage?.projectId
       )
         return new Error('A snapshot cannot change the project identity')
+      contentsRevision++
       current.project.value = project
+    },
+    refreshContents: async (session) => {
+      if (currentSession.peek() !== session || session.signal.aborted) return
+      const revision = ++contentsRevision
+      try {
+        const contents = await getProjectContents(
+          storage,
+          session.project.peek().contents.path,
+          session.signal
+        )
+        const current = currentSession.peek()
+        if (
+          current !== session ||
+          session.signal.aborted ||
+          revision !== contentsRevision
+        )
+          return
+        current.project.value = { ...current.project.peek(), contents }
+      } catch (cause) {
+        if (
+          currentSession.peek() !== session ||
+          session.signal.aborted ||
+          revision !== contentsRevision
+        )
+          return
+        return isErr(cause)
+          ? cause
+          : new Error('Unable to refresh project files', { cause })
+      }
     },
     updateMetadata: (session, metadata) => {
       const current = currentSession.peek()

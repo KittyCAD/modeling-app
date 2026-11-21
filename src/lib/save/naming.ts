@@ -6,13 +6,17 @@ import type {
   EditorsService,
 } from '@src/lib/editors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
-import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
+import type {
+  OpenProjectSession,
+  ProjectSessionService,
+} from '@src/lib/projectSession/next/contract'
 import type { EditorSave } from '@src/lib/save/registry/contract'
-import { isErr } from '@src/lib/trap'
+import { isErr, trap } from '@src/lib/trap'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /** A naming transaction retains the original opening until it completes or is cancelled. */
 interface PathRequest {
+  projects: ProjectSessionService
   session: OpenProjectSession
   source: string | undefined
   result: Promise<undefined | Error>
@@ -22,7 +26,7 @@ interface PathRequest {
 
 /** Path requests capture their project opening and source before any asynchronous work. */
 export function createEditorNaming(
-  getSession: () => OpenProjectSession | undefined,
+  getProjects: () => ProjectSessionService | undefined,
   getEditors: () => EditorsService | undefined,
   getFiles: () => FileOperationsRegistryService | undefined,
   saving: EditorSave,
@@ -67,8 +71,9 @@ export function createEditorNaming(
   ): Promise<undefined | Error> {
     const entry = entryFor(editor)
     if (entry.request) return entry.request.result
-    const session = getSession()
-    if (!session || session.signal.aborted)
+    const projects = getProjects()
+    const session = projects?.currentSession.peek()
+    if (!projects || !session || session.signal.aborted)
       return Promise.resolve(new Error('Open a project before naming a buffer'))
     if (
       editor.signal.aborted ||
@@ -87,6 +92,7 @@ export function createEditorNaming(
     session.signal.addEventListener('abort', abort, { once: true })
     activeEditors.add(editor)
     entry.request = {
+      projects,
       session,
       source,
       result,
@@ -222,7 +228,8 @@ export function createEditorNaming(
             if (!active()) return new Error('The editor changed while saving')
             const result = editors.setSource(editor.id, destination)
             if (isErr(result)) return result
-            return saving.adopt(editor, contents)
+            const adopted = saving.adopt(editor, contents)
+            if (isErr(adopted)) return adopted
           }
         }
         const result = current.source
@@ -232,6 +239,10 @@ export function createEditorNaming(
           fail(result.message)
           return
         }
+        const refreshed = await current.projects.refreshContents(
+          current.session
+        )
+        if (isErr(refreshed)) trap(refreshed)
         complete(editor)
       } catch (cause) {
         fail(isErr(cause) ? cause.message : 'Unable to name this buffer')

@@ -1,5 +1,14 @@
-import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import markdownExtension from '@src/lib/markdown/registry'
+import executorsExtension from '@src/lib/executors/registry'
+import {
+  NEW_EDITOR_COMMAND,
+  OPEN_EDITOR_COMMAND,
+} from '@src/lib/editors/commands'
+import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import { Registry, contribute, provide, slot } from 'plankton'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import {
@@ -190,6 +199,7 @@ describe('contributed editor saving', () => {
   })
   async function namingProject() {
     const projects = createProjectSessionService(testFileOperations)
+    vi.spyOn(projects, 'refreshContents').mockResolvedValue(undefined)
     projects.openProject({
       contents: { name: 'project', path: '/project', children: [] },
       metadata: { title: 'Project', readWriteAccess: true },
@@ -508,6 +518,96 @@ describe('contributed editor saving', () => {
     expect(editor.src.peek()).toBeUndefined()
     expect(writeFile).not.toHaveBeenCalled()
   })
+  it.each(['tab', 'command'])(
+    'selects Markdown preview and lists a newly saved buffer created from the %s',
+    async (createFrom) => {
+      const root = await mkdtemp(join(tmpdir(), 'zds-first-save-'))
+      try {
+        createFile.mockImplementation(testFileOperations.createFile)
+        writeFile.mockImplementation(testFileOperations.writeFile)
+        rename.mockImplementation(testFileOperations.rename)
+        const projects = createProjectSessionService(testFileOperations)
+        projects.openProject({
+          contents: { name: 'project', path: root, children: [] },
+          metadata: { title: 'Project', readWriteAccess: true },
+        })
+        await registry.replace(extra, [
+          executorsExtension,
+          markdownExtension,
+          provide(projectSessionService, projects),
+        ])
+        renderNamingPane()
+        if (createFrom === 'tab')
+          fireEvent.click(screen.getByRole('button', { name: 'New editor' }))
+        else
+          await act(async () => {
+            await registry
+              .get(commandsFacet)
+              .find(({ id }) => id === NEW_EDITOR_COMMAND.id)
+              ?.onSubmit()
+          })
+        const editors = registry.required(editorsService)
+        const editor = editors.editors.peek()[0]
+        const view = editors.views.peek()[0]
+        act(() => {
+          change(editor, '# New document')
+        })
+        fireEvent.doubleClick(screen.getByRole('tab', { name: 'Untitled' }))
+        const input = screen.getByRole('textbox', {
+          name: 'Project-relative file path',
+        })
+        fireEvent.change(input, { target: { value: 'new.md' } })
+        fireEvent.keyDown(input, { key: 'Enter' })
+        await screen.findByRole('heading', { name: 'New document' })
+        expect(editors.viewState(view).peek().selected?.id).toBe(
+          'markdown.preview'
+        )
+        expect(
+          screen.getByRole('button', { name: 'Mode for new.md' })
+        ).toBeInTheDocument()
+        const arg = registry
+          .get(commandsFacet)
+          .find(({ id }) => id === OPEN_EDITOR_COMMAND.id)?.args?.src
+        if (arg?.inputType !== 'options')
+          throw new Error('Expected Open Editor source options')
+        const options = () =>
+          typeof arg.options === 'function'
+            ? arg.options({ argumentsToSubmit: {} })
+            : arg.options
+        await vi.waitFor(() =>
+          expect(options()).toContainEqual({
+            name: 'new.md',
+            value: join(root, 'new.md'),
+          })
+        )
+        expect(
+          new TextDecoder().decode(
+            await testFileOperations.readFile(join(root, 'new.md'))
+          )
+        ).toBe('# New document')
+        expect(saving().state(editor).peek().dirty).toBe(false)
+        act(() => {
+          requireSuccess(editors.setView(view.id, 'editors.code'))
+        })
+        expect(editors.viewState(view).peek().selected?.id).toBe('editors.code')
+        naming().rename(editor)
+        await act(async () => {
+          await naming().submit(editor, 'renamed.md')
+        })
+        expect(editors.viewState(view).peek().selected?.id).toBe('editors.code')
+        expect(options()).toContainEqual({
+          name: 'renamed.md',
+          value: join(root, 'renamed.md'),
+        })
+        expect(options()).not.toContainEqual({
+          name: 'new.md',
+          value: join(root, 'new.md'),
+        })
+      } finally {
+        await rm(root, { recursive: true, force: true })
+      }
+    }
+  )
   it('supports save behavior without file persistence or a fileOperations service', async () => {
     await registry.configure([editorsExtension, saveExtension, extra])
     const editor = open()
