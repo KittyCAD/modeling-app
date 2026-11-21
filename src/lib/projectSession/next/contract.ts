@@ -29,7 +29,7 @@ export interface ProjectSourcesService {
     /** Cancels this capture independently of project replacement. */
     signal: AbortSignal
     /** Select other project files; the explicit entrypoint is always included. */
-    include?: (path: string) => boolean
+    include?: (path: string) => boolean | Promise<boolean>
   }) => Promise<ProjectSourceSnapshot | Error>
 }
 
