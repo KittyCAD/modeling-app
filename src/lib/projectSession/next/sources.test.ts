@@ -76,6 +76,7 @@ it.each(['replace', 'close', 'abort', 'change membership'] as const)(
     const read = Promise.withResolvers<Uint8Array>()
     storage.readFile.mockReturnValue(read.promise)
     const pending = sources.capture(request)
+    await vi.waitFor(() => expect(storage.readFile).toHaveBeenCalledOnce())
     if (action === 'replace') projects.openProject(project('/other'))
     if (action === 'close') projects.closeProject()
     if (action === 'abort') cancellation.abort()
@@ -138,4 +139,22 @@ it('invalidates readers for source changes while ignoring metadata-only updates'
   expect(sources.revision.value).toBe(renamed)
   projects.openProject(project('/other'))
   expect(sources.revision.value).not.toBe(renamed)
+})
+
+it('captures working imports before asynchronous file eligibility is resolved', async () => {
+  const { documents, sources, request } = setup()
+  const text = signal('requested import')
+  documents.value = [{ src: signal('/model/module.kcl'), contents: text }]
+  const eligible = Promise.withResolvers<boolean>()
+  const pending = sources.capture({
+    ...request,
+    include: () => eligible.promise,
+  })
+  text.value = 'unrequested edit'
+  eligible.resolve(true)
+  const snapshot = await pending
+  if (snapshot instanceof Error) return expect.fail(snapshot.message)
+  expect(
+    new TextDecoder().decode(snapshot.files.get('/model/module.kcl'))
+  ).toBe('requested import')
 })

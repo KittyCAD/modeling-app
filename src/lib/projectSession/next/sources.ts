@@ -65,7 +65,7 @@ export function createProjectSources(
       try {
         const files = new Map<string, Uint8Array>()
         for (const path of paths) {
-          if (path !== fsZds.join(src) && !include(path)) continue
+          if (path !== fsZds.join(src) && !(await include(path))) continue
           if (cancelled()) return new Error('Source capture was cancelled')
           const data =
             working.get(path) ??
