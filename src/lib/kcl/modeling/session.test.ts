@@ -180,7 +180,7 @@ it('reopens a disconnected mounted scene on focus and refreshes its current exec
   expect(refresh).toHaveBeenCalledOnce()
   const latest = { ...snapshot, src: 'latest.kcl' }
   await session.execute(latest, runSignal())
-  expect(second.runtime.execute).toHaveBeenCalledWith(latest)
+  expect(vi.mocked(second.runtime.execute).mock.calls[0][0]).toBe(latest)
   disconnect(new Error('Late close from previous connection'))
   expect(session.resource.peek()).toBe(second)
   detach()

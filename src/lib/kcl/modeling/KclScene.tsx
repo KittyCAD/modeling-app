@@ -17,6 +17,7 @@ export function KclScene({
   context,
 }: {
   context: {
+    render: () => Promise<void>
     executor: Executor
     session: KclSession
     viewExecution: KclViewExecution
@@ -24,7 +25,7 @@ export function KclScene({
 }) {
   useSignals()
   const container = useRef<HTMLDivElement>(null)
-  const { session, viewExecution } = context
+  const { session, viewExecution, render } = context
   const state = session.state.value
   const resource = session.resource.value
   const preferences = resource?.preferences.localRenderer.value
@@ -48,6 +49,19 @@ export function KclScene({
           defaultPlaneVisibility={hiddenPlanes}
         />
       )}
+      <div className="absolute right-4 top-4 z-40 flex items-center gap-2 rounded bg-2 p-2 text-2">
+        <output aria-label="Model freshness">
+          {output.stale ? 'Model is out of date' : 'Model is up to date'}
+        </output>
+        <button
+          type="button"
+          onClick={() => {
+            void render()
+          }}
+        >
+          Render
+        </button>
+      </div>
       <KclConnectionStatus session={session} />
       {state.type === 'ready' && error ? (
         <p
