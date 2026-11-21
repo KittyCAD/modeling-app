@@ -1,3 +1,4 @@
+import { exportModelAction } from '@src/lib/layout/configs/default'
 import type { Layout } from '@src/lib/layout/types'
 
 /**
@@ -106,12 +107,7 @@ export const playwrightLayoutConfig = {
           icon: 'importFile',
           actionType: 'addFileToProject',
         },
-        {
-          id: 'export',
-          label: 'Export',
-          icon: 'floppyDiskArrow',
-          actionType: 'export',
-        },
+        exportModelAction,
         {
           id: 'make',
           label: 'Make part',

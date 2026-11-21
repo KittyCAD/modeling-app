@@ -203,6 +203,15 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
   EXECUTE_AST_INTERRUPT_ERROR
 )
 
+export const EXPORT_MODEL_LABEL = 'Export 3D model'
+export const EXPORT_MODEL_ICON = 'exportModel'
+export const EXPORT_PROJECT_ARCHIVE_LABEL = 'Export KCL project'
+export const EXPORT_PROJECT_ARCHIVE_ICON = 'exportFolder'
+export const EXPORT_PROJECT_ARCHIVE_COMMAND = {
+  name: 'export-project-zip',
+  groupId: 'application',
+}
+
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
