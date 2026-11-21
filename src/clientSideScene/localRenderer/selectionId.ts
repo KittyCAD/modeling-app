@@ -11,6 +11,8 @@ import { type Node } from 'three/webgpu'
 // Store ID in the last 22 bits, type in the first 2
 export const SELECTION_ID_TYPE_SHIFT = 22
 export const SELECTION_ID_MASK = (1 << SELECTION_ID_TYPE_SHIFT) - 1
+const FACE_TYPE = 3
+export const FACE_SELECTION_TAG = FACE_TYPE << SELECTION_ID_TYPE_SHIFT
 
 export function selectionTypeTag(type: EdgeTargetType) {
   return (type + 1) << SELECTION_ID_TYPE_SHIFT
@@ -29,6 +31,9 @@ export const isBodyEdge = (id: Node<'uint'>) =>
 
 export const isSketchLine = (id: Node<'uint'>) =>
   getSelectionTypeFromId(id).equal(uint(EdgeTargetType.SketchLine + 1))
+
+export const isFace = (id: Node<'uint'>) =>
+  getSelectionTypeFromId(id).equal(uint(FACE_TYPE))
 
 export const encodeId = (id: Node<'uint'>) => {
   const byte = (shift: number) =>

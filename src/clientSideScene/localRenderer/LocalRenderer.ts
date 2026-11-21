@@ -26,6 +26,11 @@ import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import {
+  PICK_BENCHMARK_MODES,
+  type PickBenchmarkResult,
+  summarizePickTimings,
+} from '@src/clientSideScene/localRenderer/pickBenchmark'
+import {
   type EdgePickingMode,
   getPickBufferDebugState,
   PickBufferDebugView,
@@ -963,6 +968,106 @@ export class LocalRenderer {
     this.refreshPickBufferDebug()
   }
 
+  private pickBenchmarkRunning = false
+
+  async runPickBenchmark(): Promise<PickBenchmarkResult | Error> {
+    if (this.pickBenchmarkRunning)
+      return new Error('Benchmark already running.')
+    const gpu = this.gpu
+    const camera = this.camera
+    if (
+      this.disposed ||
+      !gpu ||
+      !camera ||
+      !this.currentModel ||
+      !this.isLoadedSceneCurrent() ||
+      this.kclManager.isExecuting
+    ) {
+      return new Error('No current local model is available to benchmark.')
+    }
+
+    const picker = gpu.integerIdPicker
+    const rect = gpu.renderer.domElement.getBoundingClientRect()
+    if (rect.width <= 0 || rect.height <= 0) {
+      return new Error('The local renderer has no viewport to benchmark.')
+    }
+    const previousMode = getPickBufferDebugState().mode
+    const executionVersion = this.executionVersion
+    const point = {
+      x: rect.width / 2,
+      y: rect.height / 2,
+      streamWidth: rect.width,
+      streamHeight: rect.height,
+      camera,
+    }
+    const rows: PickBenchmarkResult['rows'] = []
+    this.pickBenchmarkRunning = true
+    this.pickBufferDebugGeneration++
+    picker.setPickTimingEnabled(true)
+    try {
+      const pick = async (): Promise<Error | undefined> => {
+        const currentRect = gpu.renderer.domElement.getBoundingClientRect()
+        if (
+          this.disposed ||
+          this.camera !== camera ||
+          this.gpu !== gpu ||
+          this.kclManager.isExecuting ||
+          executionVersion !== this.executionVersion ||
+          !this.isLoadedSceneCurrent() ||
+          currentRect.width !== rect.width ||
+          currentRect.height !== rect.height
+        ) {
+          return new Error('Scene or viewport changed during the benchmark.')
+        }
+        const result = await picker.pick(point)
+        if (!result || result.stale) {
+          return new Error('Picking targets changed during the benchmark.')
+        }
+      }
+      const sample = async (count: number, fresh: boolean) => {
+        for (let i = 0; i < count; i++) {
+          if (fresh) picker.invalidate()
+          const error = await pick()
+          if (error) return error
+        }
+      }
+
+      for (const mode of PICK_BENCHMARK_MODES) {
+        picker.setMode(mode)
+        const warmupError = await sample(5, false)
+        if (warmupError) return warmupError
+        picker.takePickTimings()
+
+        const cachedError = await sample(30, false)
+        if (cachedError) return cachedError
+        rows.push(
+          summarizePickTimings(mode, 'cached', picker.takePickTimings())
+        )
+
+        const freshError = await sample(30, true)
+        if (freshError) return freshError
+        rows.push(summarizePickTimings(mode, 'fresh', picker.takePickTimings()))
+      }
+      return {
+        backend: gpu.renderer.backend.constructor.name,
+        width: rect.width,
+        height: rect.height,
+        x: point.x,
+        y: point.y,
+        rows,
+      }
+    } catch (error) {
+      return error instanceof Error
+        ? error
+        : new Error('Picker benchmark failed.')
+    } finally {
+      picker.setPickTimingEnabled(false)
+      if (!this.disposed && this.gpu === gpu) picker.setMode(previousMode)
+      this.pickBenchmarkRunning = false
+      this.refreshPickBufferDebug()
+    }
+  }
+
   closePickBufferDebug() {
     this.pickBufferDebugGeneration++
     this.pickBufferDebugView?.dispose()
@@ -970,7 +1075,7 @@ export class LocalRenderer {
   }
 
   private refreshPickBufferDebug() {
-    if (!this.pickBufferDebugView) return
+    if (!this.pickBufferDebugView || this.pickBenchmarkRunning) return
     this.pickBufferDebugGeneration++
     if (this.pickBufferDebugRefreshing) return
     this.pickBufferDebugRefreshing = true
@@ -979,7 +1084,11 @@ export class LocalRenderer {
 
   private async readPickBufferDebug() {
     try {
-      while (this.pickBufferDebugView && !this.disposed) {
+      while (
+        this.pickBufferDebugView &&
+        !this.disposed &&
+        !this.pickBenchmarkRunning
+      ) {
         const generation = this.pickBufferDebugGeneration
         const camera = this.camera
         const picker = this.gpu?.integerIdPicker

@@ -82,6 +82,116 @@ test.describe(
   'Local edge picker comparison',
   { tag: ['@web', '@browsers', '@localRenderer'] },
   () => {
+    const faceProtectionModes = [
+      'face-protect-growth',
+      'face-strip-growth',
+      'three-edge-growth',
+      'score-growth',
+      'coverage-growth',
+    ] as const
+    for (const mode of faceProtectionModes) {
+      test(`preserves face pixels on a thin solid: ${mode}`, async ({
+        page,
+        homePage,
+        editor,
+        scene,
+      }) => {
+        await page.setBodyDimensions({ width: 1200, height: 800 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        const horizontalStrip = mode === 'face-strip-growth'
+        const width = horizontalStrip ? 1 : 10
+        const height = horizontalStrip
+          ? 10
+          : mode === 'three-edge-growth'
+            ? 0.9
+            : 0.6
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode(
+            '',
+            `@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {
+  line(start = [0mm, 0mm], end = [${width}mm, 0mm])
+  line(start = [${width}mm, 0mm], end = [${width}mm, 10mm])
+  line(start = [${width}mm, 10mm], end = [0mm, 10mm])
+  line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+hide(profile)
+section = region(point = [${width / 2}mm, 5mm], sketch = profile)
+body = extrude(section, length = ${height}mm)`
+          )
+        )
+        await scene.moveCameraTo(
+          { x: width / 2, y: -60, z: height / 2 },
+          { x: width / 2, y: 0, z: height / 2 }
+        )
+        await scene.settled()
+        const bounds = await scene.streamWrapper.boundingBox()
+        if (!bounds) throw new Error('No stream to click')
+        const x = bounds.x + bounds.width / 2
+        const y = bounds.y + bounds.height / 2
+        const setMode = (
+          mode: 'gpu-growth' | (typeof faceProtectionModes)[number]
+        ) =>
+          page.evaluate((mode) => {
+            window.app.singletons.kclManager.sceneInfra.localRenderer?.setEdgePickingMode(
+              mode
+            )
+          }, mode)
+
+        await setMode('gpu-growth')
+        const baseline = await pickIdAt(page, x, y)
+        const outsideEdge =
+          mode === 'score-growth' || mode === 'coverage-growth'
+            ? await pickIdAt(page, x, y - 9)
+            : null
+        if (mode === 'three-edge-growth') {
+          const entities = await scene.getProjectedEntities()
+          const leftEdge = entities.find(
+            (entity) =>
+              entity.kind === 'edge' &&
+              entity.visible &&
+              entity.x < x - 20 &&
+              Math.abs(entity.y - y) <= 1
+          )
+          if (!leftEdge) throw new Error('No visible left edge on thin face')
+          const nearEnd = leftEdge.x + 6
+          const baselineNearEnd = await pickIdAt(page, nearEnd, y)
+          expect(entities.find(({ id }) => id === baselineNearEnd)?.kind).toBe(
+            'edge'
+          )
+          await setMode(mode)
+          expect(await pickIdAt(page, x, y)).toBe(baseline)
+          const protectedId = await pickIdAt(page, nearEnd, y)
+          expect(entities.find(({ id }) => id === protectedId)?.kind).toBe(
+            'face'
+          )
+          expect(await pickIdAt(page, leftEdge.x, leftEdge.y)).toBe(leftEdge.id)
+          return
+        }
+        await setMode(mode)
+        const protectedId = await pickIdAt(page, x, y)
+        const entities = await scene.getProjectedEntities()
+        expect(entities.find(({ id }) => id === baseline)?.kind).toBe('edge')
+        expect(entities.find(({ id }) => id === protectedId)?.kind).toBe('face')
+        if (mode === 'score-growth' || mode === 'coverage-growth') {
+          expect(entities.find(({ id }) => id === outsideEdge)?.kind).toBe(
+            'edge'
+          )
+          expect(await pickIdAt(page, x, y - 9)).toBe(outsideEdge)
+        }
+        if (horizontalStrip) {
+          expect(await pickIdAt(page, x - 3, y)).toBe(protectedId)
+        }
+        const boundary = await pickIdAt(
+          page,
+          horizontalStrip ? x - 5 : x,
+          horizontalStrip ? y : y - 3
+        )
+        expect(entities.find(({ id }) => id === boundary)?.kind).toBe('edge')
+      })
+    }
+
     for (const mode of faceModes) {
       test(`two cubes from the top-front-right corner: ${mode}`, async ({
         page,

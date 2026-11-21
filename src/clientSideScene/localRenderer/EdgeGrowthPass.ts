@@ -2,6 +2,7 @@ import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/co
 import {
   encodeId,
   isBodyEdge,
+  isFace,
   isSketchLine,
 } from '@src/clientSideScene/localRenderer/selectionId'
 import {
@@ -22,6 +23,7 @@ import {
   ivec2,
   Loop,
   round,
+  select,
   textureLoad,
   textureSize,
   uint,
@@ -38,6 +40,10 @@ import {
   type WebGPURenderer,
 } from 'three/webgpu'
 
+// The horizontal buffer holds only body-edge IDs or zero, so bit 23 is free.
+const PROTECTED_FACE_BIT = 1 << 23
+const FACE_STRIP_WIDTH_PX = 8
+
 /* This runs shaders on the picker's render to grow the edges' pickable area
  * along the viewport. There are numerous problems trying to use the 3D render
  * to expand the area that will target an edge. (See #15097). This approach
@@ -51,10 +57,14 @@ export class EdgeGrowthPass {
   // needed for every pixel.
   private readonly horizontalTarget: RenderTarget
   private readonly horizontalMaterial: NodeMaterial
+  private readonly horizontalFaceStripMaterial: NodeMaterial
 
   // The final material that uses the horizontal calculations to figure out
   // closest edge ID.
   private readonly grownMaterial: NodeMaterial
+  private readonly faceProtectingMaterial: NodeMaterial
+  private readonly threeEdgeMaterial: NodeMaterial
+  private readonly faceStripMaterial: NodeMaterial
 
   private readonly quad: QuadMesh
 
@@ -111,86 +121,193 @@ export class EdgeGrowthPass {
 
     // Get the nearest edge looking only horizontally. These act as "cached"
     // values when doing searches for edges at every pixel in the grownPass
-    const horizontalPass = Fn(() => {
-      const size = textureSize(
-        textureLoad(raw.texture)
-      ) as unknown as Node<'ivec2'>
-      const point = ivec2(uv().mul(vec2(size)))
-      const bestId = uint(0).toVar()
-      const bestDx = int(256).toVar()
-      Loop(
-        { start: this.radiusX.negate(), end: this.radiusX.add(1) },
-        ({ i }) => {
-          const neighborX = point.x.add(i)
-          If(
-            neighborX.greaterThanEqual(0).and(neighborX.lessThan(size.x)),
-            () => {
+    const horizontalPass = (protectStrip: boolean) =>
+      Fn(() => {
+        const size = textureSize(
+          textureLoad(raw.texture)
+        ) as unknown as Node<'ivec2'>
+        const point = ivec2(uv().mul(vec2(size)))
+        const bestId = uint(0).toVar()
+        const bestDx = int(256).toVar()
+        const centerId = protectStrip ? rawSample(point).toVar() : null
+        const left = protectStrip ? int(256).toVar() : null
+        const right = protectStrip ? int(256).toVar() : null
+        if (centerId) {
+          If(isBodyEdge(centerId), () => {
+            bestId.assign(centerId)
+            bestDx.assign(0)
+          })
+        }
+        Loop(
+          { start: this.radiusX.negate(), end: this.radiusX.add(1) },
+          ({ i }) => {
+            const neighborX = point.x.add(i)
+            const inBounds = neighborX
+              .greaterThanEqual(0)
+              .and(neighborX.lessThan(size.x))
+            If(protectStrip ? inBounds.and(i.notEqual(0)) : inBounds, () => {
               const candidate = rawSample(ivec2(neighborX, point.y))
               const dx = i.abs()
+              if (centerId && left && right) {
+                If(isFace(centerId).and(candidate.notEqual(centerId)), () => {
+                  If(i.lessThan(0), () => left.assign(dx)).ElseIf(
+                    dx.lessThan(right),
+                    () => right.assign(dx)
+                  )
+                })
+              }
               If(isBodyEdge(candidate).and(dx.lessThan(bestDx)), () => {
                 bestId.assign(candidate)
                 bestDx.assign(dx)
               })
-            }
-          )
-        }
-      )
-      // By stuffing distance into the alpha channel, search is capped at 255
-      // pixels. At 12px radius, a very high DPR would be needed to break this
-      return vec4(encodeId(bestId), float(bestDx).min(255).div(255))
-    })
-
-    const grownPass = Fn(() => {
-      const size = textureSize(
-        textureLoad(this.horizontalTarget.texture)
-      ) as unknown as Node<'ivec2'>
-      const point = ivec2(uv().mul(vec2(size)))
-      const centerId = rawSample(point)
-      const bestId = centerId.toVar()
-      // Avoid a square root by just keeping distance squared
-      const bestDistance = this.radiusSquared.toVar()
-      // Don't search for an edge if a sketch line is at the center
-      If(isSketchLine(centerId).not(), () => {
-        Loop(
-          { start: this.radiusY.negate(), end: this.radiusY.add(1) },
-          ({ i }) => {
-            const neighborY = point.y.add(i)
-            If(
-              neighborY.greaterThanEqual(0).and(neighborY.lessThan(size.y)),
-              () => {
-                const sample = textureLoad(
-                  this.horizontalTarget.texture,
-                  ivec2(point.x, neighborY)
-                )
-                const id = uint(round(sample.r.mul(255)))
-                  .add(uint(round(sample.g.mul(255))).shiftLeft(8))
-                  .add(uint(round(sample.b.mul(255))).shiftLeft(16))
-
-                // Take the pre-calculated distance to the nearest edge found
-                // when searching horizontally and add the vertical component
-                // to get the total distance (keep the distance squared to
-                // avoid a sqrt calc)
-                const dx = round(sample.a.mul(255)).mul(this.pixelWidth)
-                const dy = float(i).mul(this.pixelHeight)
-                const distance = dx.mul(dx).add(dy.mul(dy))
-
-                If(isBodyEdge(id).and(distance.lessThan(bestDistance)), () => {
-                  bestId.assign(id)
-                  bestDistance.assign(distance)
-                })
-              }
-            )
+            })
           }
         )
-      })
-      return bestId
-    })
+        if (left && right) {
+          // A mismatch at distance d bounds d - 1 same-ID neighbors on that side.
+          // The difference in the distances is twice the distance to the midpoint.
+          If(
+            left
+              .lessThanEqual(this.radiusX)
+              .and(right.lessThanEqual(this.radiusX))
+              .and(
+                float(left.sub(right).abs())
+                  .mul(this.pixelWidth)
+                  .lessThanEqual(FACE_STRIP_WIDTH_PX)
+              ),
+            () => bestId.assign(bestId.bitOr(uint(PROTECTED_FACE_BIT)))
+          )
+        }
+        // By stuffing distance into the alpha channel, search is capped at 255
+        // pixels. At 12px radius, a very high DPR would be needed to break this
+        return vec4(encodeId(bestId), float(bestDx).min(255).div(255))
+      })()
+
+    const grownPass = (edgeThreshold?: 2 | 3, protectStrip = false) =>
+      Fn(() => {
+        const size = textureSize(
+          textureLoad(this.horizontalTarget.texture)
+        ) as unknown as Node<'ivec2'>
+        const point = ivec2(uv().mul(vec2(size)))
+        const centerId = rawSample(point).toVar()
+        const bestId = centerId.toVar()
+        // Avoid a square root by just keeping distance squared
+        const bestDistance = this.radiusSquared.toVar()
+        const firstEdge = edgeThreshold ? uint(0).toVar() : null
+        const secondEdge = edgeThreshold === 3 ? uint(0).toVar() : null
+        const reachedThreshold = edgeThreshold ? uint(0).toVar() : null
+        const keepFace = protectStrip ? uint(0).toVar() : null
+        // Don't search for an edge if a sketch line is at the center
+        If(isSketchLine(centerId).not(), () => {
+          Loop(
+            { start: this.radiusY.negate(), end: this.radiusY.add(1) },
+            ({ i }) => {
+              const neighborY = point.y.add(i)
+              If(
+                neighborY.greaterThanEqual(0).and(neighborY.lessThan(size.y)),
+                () => {
+                  const sample = textureLoad(
+                    this.horizontalTarget.texture,
+                    ivec2(point.x, neighborY)
+                  )
+                  const packedId = uint(round(sample.r.mul(255)))
+                    .add(uint(round(sample.g.mul(255))).shiftLeft(8))
+                    .add(uint(round(sample.b.mul(255))).shiftLeft(16))
+                  if (keepFace) {
+                    If(i.equal(0), () =>
+                      keepFace.assign(packedId.bitAnd(uint(PROTECTED_FACE_BIT)))
+                    )
+                  }
+                  const id = protectStrip
+                    ? packedId.bitAnd(uint(PROTECTED_FACE_BIT - 1))
+                    : packedId
+
+                  // Take the pre-calculated distance to the nearest edge found
+                  // when searching horizontally and add the vertical component
+                  // to get the total distance (keep the distance squared to
+                  // avoid a sqrt calc)
+                  const dx = round(sample.a.mul(255)).mul(this.pixelWidth)
+                  const dy = float(i).mul(this.pixelHeight)
+                  const distance = dx.mul(dx).add(dy.mul(dy))
+
+                  if (firstEdge && reachedThreshold) {
+                    If(
+                      isFace(centerId)
+                        .and(isBodyEdge(id))
+                        .and(distance.lessThan(this.radiusSquared)),
+                      () => {
+                        If(
+                          firstEdge.notEqual(0).and(firstEdge.notEqual(id)),
+                          () => {
+                            if (secondEdge) {
+                              If(
+                                secondEdge
+                                  .notEqual(0)
+                                  .and(secondEdge.notEqual(id)),
+                                () => {
+                                  reachedThreshold.assign(1)
+                                }
+                              )
+                              If(secondEdge.equal(0), () => {
+                                secondEdge.assign(id)
+                              })
+                            } else {
+                              reachedThreshold.assign(1)
+                            }
+                          }
+                        )
+                        If(firstEdge.equal(0), () => {
+                          firstEdge.assign(id)
+                        })
+                      }
+                    )
+                  }
+                  If(
+                    isBodyEdge(id).and(distance.lessThan(bestDistance)),
+                    () => {
+                      bestId.assign(id)
+                      bestDistance.assign(distance)
+                    }
+                  )
+                }
+              )
+            }
+          )
+        })
+        if (keepFace) return select(keepFace.notEqual(0), centerId, bestId)
+        if (!reachedThreshold) return bestId
+        const keep = reachedThreshold.equal(1)
+        If(
+          edgeThreshold === 2
+            ? keep.and(bestDistance.greaterThanEqual(2 ** 2))
+            : keep,
+          () => {
+            bestId.assign(centerId)
+          }
+        )
+        return bestId
+      })()
 
     this.horizontalMaterial = new NodeMaterial()
-    this.horizontalMaterial.fragmentNode = horizontalPass()
+    this.horizontalMaterial.fragmentNode = horizontalPass(false)
+    this.horizontalFaceStripMaterial = new NodeMaterial()
+    this.horizontalFaceStripMaterial.fragmentNode = horizontalPass(true)
     this.grownMaterial = new NodeMaterial()
     this.grownMaterial.fragmentNode = idOutput(grownPass())
-    for (const material of [this.horizontalMaterial, this.grownMaterial]) {
+    this.faceProtectingMaterial = new NodeMaterial()
+    this.faceProtectingMaterial.fragmentNode = idOutput(grownPass(2))
+    this.threeEdgeMaterial = new NodeMaterial()
+    this.threeEdgeMaterial.fragmentNode = idOutput(grownPass(3))
+    this.faceStripMaterial = new NodeMaterial()
+    this.faceStripMaterial.fragmentNode = idOutput(grownPass(undefined, true))
+    for (const material of [
+      this.horizontalMaterial,
+      this.horizontalFaceStripMaterial,
+      this.grownMaterial,
+      this.faceProtectingMaterial,
+      this.threeEdgeMaterial,
+      this.faceStripMaterial,
+    ]) {
       material.depthTest = false
       material.depthWrite = false
       material.blending = NoBlending
@@ -207,7 +324,8 @@ export class EdgeGrowthPass {
   render(
     cssWidth: number,
     cssHeight: number,
-    radius = LOCAL_EDGE_PICK_RADIUS_PX
+    radius = LOCAL_EDGE_PICK_RADIUS_PX,
+    faceProtection?: 'multiple-edges' | 'three-edges' | 'horizontal-strip'
   ) {
     // The radius is specified in CSS pixels, but texture loads use drawing-
     // buffer pixels. Convert between them for this render.
@@ -220,10 +338,20 @@ export class EdgeGrowthPass {
     )
     this.radiusY.value = Math.ceil(radius / this.pixelHeight.value)
     this.renderer.setRenderTarget(this.horizontalTarget)
-    this.quad.material = this.horizontalMaterial
+    this.quad.material =
+      faceProtection === 'horizontal-strip'
+        ? this.horizontalFaceStripMaterial
+        : this.horizontalMaterial
     this.quad.render(this.renderer)
     this.renderer.setRenderTarget(this.target)
-    this.quad.material = this.grownMaterial
+    this.quad.material =
+      faceProtection === 'horizontal-strip'
+        ? this.faceStripMaterial
+        : faceProtection === 'multiple-edges'
+          ? this.faceProtectingMaterial
+          : faceProtection === 'three-edges'
+            ? this.threeEdgeMaterial
+            : this.grownMaterial
     this.quad.render(this.renderer)
   }
 
@@ -231,7 +359,11 @@ export class EdgeGrowthPass {
     this.horizontalTarget.dispose()
     this.target.dispose()
     this.horizontalMaterial.dispose()
+    this.horizontalFaceStripMaterial.dispose()
     this.grownMaterial.dispose()
+    this.faceProtectingMaterial.dispose()
+    this.threeEdgeMaterial.dispose()
+    this.faceStripMaterial.dispose()
   }
 }
 

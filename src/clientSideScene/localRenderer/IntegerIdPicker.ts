@@ -1,5 +1,6 @@
 import {
   type Camera,
+  DepthTexture,
   Color,
   DoubleSide,
   type Material,
@@ -23,12 +24,14 @@ import {
   projectedEdgePickRadius,
 } from '@src/clientSideScene/localRenderer/EdgeGrowthPass'
 import { LOCAL_EDGE_PICK_RADIUS_PX } from '@src/clientSideScene/localRenderer/config'
+import { PickScorePass } from '@src/clientSideScene/localRenderer/PickScorePass'
 import {
   colorizePickBuffer,
   type EdgePickingMode,
   type PickBufferSnapshot,
 } from '@src/clientSideScene/localRenderer/pickBufferDebug'
 import {
+  FACE_SELECTION_TAG,
   selectionTargetId,
   selectionTypeTag,
 } from '@src/clientSideScene/localRenderer/selectionId'
@@ -105,6 +108,8 @@ export class IntegerIdPicker {
   private renderTarget: RenderTarget | null = null
 
   private growthPass: EdgeGrowthPass | null = null
+  private pickScorePass: PickScorePass | null = null
+  private pickCoveragePass: PickScorePass | null = null
 
   private edgeObject: LineSegments2 | null = null
   private edgesVisible = true
@@ -176,7 +181,17 @@ export class IntegerIdPicker {
       const proxy = source.clone(false)
       proxy.material =
         source.userData.isSketchRegion === true ? regionMaterial : meshMaterial
-      proxy.userData.pickId = id
+      proxy.userData.pickId =
+        id !== NO_TARGET_ID &&
+        (this.mode === 'face-protect-growth' ||
+          this.mode === 'score-growth' ||
+          this.mode === 'coverage-growth' ||
+          this.mode === 'three-edge-growth' ||
+          this.mode === 'face-strip-growth') &&
+        typeof source.userData.faceUuid === 'string' &&
+        source.userData.isSketchRegion !== true
+          ? id | FACE_SELECTION_TAG
+          : id
       proxy.matrixAutoUpdate = false
       this.sourceByProxy.set(proxy, source)
       this.scene.add(proxy)
@@ -314,6 +329,18 @@ export class IntegerIdPicker {
     }
   }
 
+  private usesGpuGrowth() {
+    return (
+      this.mode === 'gpu-growth' ||
+      this.mode === 'zoom-growth' ||
+      this.mode === 'face-protect-growth' ||
+      this.mode === 'score-growth' ||
+      this.mode === 'coverage-growth' ||
+      this.mode === 'three-edge-growth' ||
+      this.mode === 'face-strip-growth'
+    )
+  }
+
   setFocusDistance(distance: number) {
     this.focusDistance = distance
     this.invalidate()
@@ -411,9 +438,7 @@ export class IntegerIdPicker {
     const readbackStartedAt = profiling ? performance.now() : 0
 
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
-      this.mode === 'gpu-growth' || this.mode === 'zoom-growth'
-        ? (this.growthPass?.target ?? target)
-        : target,
+      this.usesGpuGrowth() ? (this.growthPass?.target ?? target) : target,
       left,
       this.packsIdsIntoColor ? target.height - 1 - bottom : top,
       width,
@@ -482,9 +507,7 @@ export class IntegerIdPicker {
     const version = this.version
     const targets = this.targetById
     const grown = await this.renderer.readRenderTargetPixelsAsync(
-      this.mode === 'gpu-growth' || this.mode === 'zoom-growth'
-        ? (this.growthPass?.target ?? target)
-        : target,
+      this.usesGpuGrowth() ? (this.growthPass?.target ?? target) : target,
       0,
       0,
       target.width,
@@ -521,7 +544,7 @@ export class IntegerIdPicker {
         ),
       }
     }
-    if (this.mode !== 'gpu-growth' && this.mode !== 'zoom-growth') {
+    if (!this.usesGpuGrowth()) {
       return {
         width: target.width,
         height: target.height,
@@ -579,6 +602,10 @@ export class IntegerIdPicker {
     this.clearModel()
     this.renderTarget?.dispose()
     this.growthPass?.dispose()
+    this.pickScorePass?.dispose()
+    this.pickScorePass = null
+    this.pickCoveragePass?.dispose()
+    this.pickCoveragePass = null
     this.growthPass = null
     this.renderTarget = null
   }
@@ -596,6 +623,7 @@ export class IntegerIdPicker {
         minFilter: NearestFilter,
         magFilter: NearestFilter,
         depthBuffer: true,
+        depthTexture: new DepthTexture(width, height),
         stencilBuffer: false,
         samples: 0,
       })
@@ -642,9 +670,7 @@ export class IntegerIdPicker {
           this.mode === 'original-main'
             ? (SELECTION_LINE_WIDTH_PX * bounds.width) /
               SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX
-            : (this.mode === 'gpu-growth' ||
-                  this.mode === 'zoom-growth' ||
-                  this.mode === 'cpu-search') &&
+            : (this.usesGpuGrowth() || this.mode === 'cpu-search') &&
                 material === this.edgeObject?.material
               ? VISIBLE_EDGE_LINE_WIDTH_PX
               : SELECTION_LINE_WIDTH_PX
@@ -653,16 +679,49 @@ export class IntegerIdPicker {
     this.renderer.autoClear = true
     this.renderer.setRenderTarget(target)
     this.renderer.render(this.scene, camera)
-    if (
-      (this.mode === 'gpu-growth' || this.mode === 'zoom-growth') &&
-      this.growthPass
-    ) {
+    if (this.mode === 'coverage-growth' && this.growthPass) {
+      this.pickCoveragePass ??= new PickScorePass(
+        this.renderer,
+        target,
+        this.packsIdsIntoColor,
+        (id) => this.idOutput(id),
+        true
+      )
+      this.pickCoveragePass.render(
+        this.growthPass.target,
+        bounds.width,
+        bounds.height,
+        camera,
+        this.focusDistance
+      )
+    } else if (this.mode === 'score-growth' && this.growthPass) {
+      this.pickScorePass ??= new PickScorePass(
+        this.renderer,
+        target,
+        this.packsIdsIntoColor,
+        (id) => this.idOutput(id)
+      )
+      this.pickScorePass.render(
+        this.growthPass.target,
+        bounds.width,
+        bounds.height,
+        camera,
+        this.focusDistance
+      )
+    } else if (this.usesGpuGrowth() && this.growthPass) {
       this.growthPass.render(
         bounds.width,
         bounds.height,
         this.mode === 'zoom-growth' && this.focusDistance !== null
           ? projectedEdgePickRadius(camera, this.focusDistance, bounds.height)
-          : LOCAL_EDGE_PICK_RADIUS_PX
+          : LOCAL_EDGE_PICK_RADIUS_PX,
+        this.mode === 'face-strip-growth'
+          ? 'horizontal-strip'
+          : this.mode === 'face-protect-growth'
+            ? 'multiple-edges'
+            : this.mode === 'three-edge-growth'
+              ? 'three-edges'
+              : undefined
       )
     }
     this.renderer.setRenderTarget(previousTarget)

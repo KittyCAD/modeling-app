@@ -16,6 +16,11 @@ export type EdgePickingMode =
   | 'depth-offset'
   | 'cpu-search'
   | 'zoom-growth'
+  | 'face-protect-growth'
+  | 'face-strip-growth'
+  | 'three-edge-growth'
+  | 'score-growth'
+  | 'coverage-growth'
 
 type DebugViewState = {
   active: boolean
@@ -67,14 +72,14 @@ const FACE_COLORS = [
 ] as const
 
 const EDGE_COLORS = [
-  [255, 40, 210],
-  [235, 55, 245],
-  [255, 72, 169],
-  [213, 44, 222],
-  [255, 96, 202],
-  [232, 64, 178],
-  [255, 58, 236],
-  [222, 80, 192],
+  [255, 74, 74],
+  [45, 210, 210],
+  [255, 207, 45],
+  [119, 96, 255],
+  [105, 225, 76],
+  [255, 79, 188],
+  [55, 145, 255],
+  [255, 139, 54],
 ] as const
 
 export function colorizePickBuffer(
