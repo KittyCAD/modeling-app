@@ -28,7 +28,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           # Caching is handled by the Namespace cache volume below. Enabling
           # both would store the same content twice, once through GitHub's
@@ -62,4 +62,4 @@ jobs:
           # We specifically want to test the disable-println feature
           # Since it is not enabled by default, we need to specify it
           # This is used in kcl-lsp
-          cargo check --workspace --features disable-println --features pyo3 --features cli
+          CARGO_BUILD_WARNINGS=deny cargo check --workspace --features disable-println --features pyo3 --features cli

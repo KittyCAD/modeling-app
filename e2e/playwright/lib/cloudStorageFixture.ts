@@ -6,6 +6,7 @@ import {
   projectFileId,
   zipProject,
   type CloudProject,
+  type ProjectFiles,
 } from '@e2e/playwright/lib/cloudProjectTestUtils'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
@@ -20,10 +21,12 @@ export async function uploadedProject(route: Route) {
     headers: request.headers(),
     body: new Uint8Array(body).buffer,
   }).formData()
-  const files: Record<string, string> = {}
+  const files: ProjectFiles = {}
   for (const [name, value] of form.entries()) {
     if (name !== 'body' && typeof value !== 'string') {
-      files[name] = await value.text()
+      const data = Buffer.from(await value.arrayBuffer())
+      const text = data.toString('utf8')
+      files[name] = data.equals(Buffer.from(text)) ? text : data
     }
   }
   const metadataPart = form.get('body')

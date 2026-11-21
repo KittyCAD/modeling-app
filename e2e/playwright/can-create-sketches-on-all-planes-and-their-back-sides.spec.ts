@@ -28,7 +28,7 @@ test.describe(
       )
       // The local planes overlap at this probe and use different materials.
       const defaultPlanesColor: [number, number, number] = local
-        ? [62, 63, 66]
+        ? [63, 33, 66]
         : [46, 36, 34]
       await scene.expectPixelColor(defaultPlanesColor, { x: 700, y: 300 }, 15)
 

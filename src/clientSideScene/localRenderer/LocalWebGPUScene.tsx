@@ -1,13 +1,19 @@
 import {
   LocalRenderer,
+  type LocalRendererFailure,
   type LocalRendererProps,
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { ActionButton } from '@src/components/ActionButton'
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
-import { useSingletons } from '@src/lib/boot'
+import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
+import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
+import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { reportRejection } from '@src/lib/trap'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { waitFor } from 'xstate'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
@@ -16,11 +22,53 @@ const THUMBNAIL_DELAY_MS = 500
 const PENDING_COMMAND_POLL_MS = 100
 
 /** Engine commands sent and not yet answered, as the status bar counts them. */
-function getPendingCommandCount(kclManager: KclManager) {
-  return Object.keys(kclManager.engineCommandManager.pendingCommands).length
+function getPendingCommandCount(host: LocalRendererHost) {
+  return Object.keys(host.commands.pendingCommands).length
 }
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
+  const { kclManager } = useSingletons()
+  const host = useMemo(() => legacyLocalRendererHost(kclManager), [kclManager])
+  const { settings } = useApp()
+  const { state } = useModelingContext()
+
+  // The engine session is chosen when the scene mounts, so streaming needs a reload.
+  const switchToStreaming = useCallback(() => {
+    settings.send({
+      type: 'set.modeling.useLocalRenderer',
+      data: { level: 'user', value: false },
+    })
+    // Reloading before the change is saved would start with the old value.
+    waitFor(settings.actor, (snapshot) => snapshot.matches('idle'))
+      .then(() => window.location.reload())
+      .catch(reportRejection)
+  }, [settings])
+
+  return (
+    <LocalWebGPUSceneView
+      {...props}
+      host={host}
+      onSwitchToStreaming={switchToStreaming}
+      pickingEnabled={state.matches('idle') || state.matches('Sketch no face')}
+      defaultPlaneVisibility={state.context.defaultPlaneVisibility}
+    />
+  )
+}
+
+/** Render a captured scene host without consulting app singletons or modeling React context. */
+export const LocalWebGPUSceneView = ({
+  host,
+  pickingEnabled,
+  defaultPlaneVisibility,
+  onSwitchToStreaming,
+  ...props
+}: LocalRendererProps & {
+  host: LocalRendererHost
+  pickingEnabled: boolean
+  defaultPlaneVisibility: PlaneVisibilityMap
+  /** Offered when the renderer fails; the button is hidden when omitted. */
+  onSwitchToStreaming?: () => void
+}) => {
   const {
     theme,
     enableSSAO,
@@ -31,37 +79,33 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
-  const { kclManager } = useSingletons()
-  const { state } = useModelingContext()
-  const pickingEnabled =
-    state.matches('idle') || state.matches('Sketch no face')
-  const defaultPlaneVisibility = state.context.defaultPlaneVisibility
-  const isExecuting = kclManager.isExecutingSignal.value
+  const isExecuting = host.executing.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
   const [pendingCommandCount, setPendingCommandCount] = useState(0)
-  const isLoadingModel = isExecuting || isAwaitingModel
+  const [failure, setFailure] = useState<LocalRendererFailure | null>(null)
+  const isLoadingModel = !failure && (isExecuting || isAwaitingModel)
 
   latestPropsRef.current = props
 
   useEffect(() => {
     if (isExecuting) {
       setIsAwaitingModel(true)
-      setPendingCommandCount(getPendingCommandCount(kclManager))
+      setPendingCommandCount(getPendingCommandCount(host))
       const intervalId = window.setInterval(
-        () => setPendingCommandCount(getPendingCommandCount(kclManager)),
+        () => setPendingCommandCount(getPendingCommandCount(host)),
         PENDING_COMMAND_POLL_MS
       )
       return () => window.clearInterval(intervalId)
     }
-  }, [isExecuting, kclManager])
+  }, [isExecuting, host])
 
   const handleModelLoadSettled = useCallback(
     (isNewModel?: boolean) => {
-      if (!kclManager.isExecutingSignal.value) {
+      if (!host.executing.value) {
         setIsAwaitingModel(false)
       }
       const renderer = rendererRef.current
-      const captureThumbnail = kclManager.captureProjectThumbnail
+      const captureThumbnail = host.captureThumbnail
       if (isNewModel && renderer && captureThumbnail) {
         setTimeout(() => {
           if (rendererRef.current !== renderer) return
@@ -69,7 +113,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
         }, THUMBNAIL_DELAY_MS)
       }
     },
-    [kclManager]
+    [host]
   )
 
   useEffect(() => {
@@ -78,23 +122,24 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       return
     }
 
-    const renderer = new LocalRenderer(container, kclManager, {
+    const renderer = new LocalRenderer(container, host, {
       ...latestPropsRef.current,
       onModelLoadSettled: handleModelLoadSettled,
+      onRendererFailed: setFailure,
     })
     rendererRef.current = renderer
-    kclManager.sceneInfra.localRenderer = renderer
+    host.sceneInfra.localRenderer = renderer
 
     return () => {
       if (rendererRef.current === renderer) {
         rendererRef.current = null
       }
-      if (kclManager.sceneInfra.localRenderer === renderer) {
-        kclManager.sceneInfra.localRenderer = null
+      if (host.sceneInfra.localRenderer === renderer) {
+        host.sceneInfra.localRenderer = null
       }
       renderer.dispose()
     }
-  }, [handleModelLoadSettled, kclManager])
+  }, [handleModelLoadSettled, host])
 
   useEffect(() => {
     rendererRef.current?.setTheme(theme)
@@ -102,11 +147,11 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
 
   useEffect(() => {
     rendererRef.current?.setPickingEnabled(pickingEnabled)
-  }, [pickingEnabled, kclManager])
+  }, [pickingEnabled, host])
 
   useEffect(() => {
     rendererRef.current?.setDefaultPlaneVisibility(defaultPlaneVisibility)
-  }, [defaultPlaneVisibility, kclManager])
+  }, [defaultPlaneVisibility, host])
 
   useEffect(() => {
     rendererRef.current?.setEnableSSAO(enableSSAO)
@@ -144,6 +189,42 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
             </span>
           </div>
         </output>
+      )}
+      {failure && (
+        <div
+          role="alert"
+          data-testid="local-renderer-failure"
+          className="absolute inset-0 z-40 flex items-center justify-center p-4"
+        >
+          <div className="flex max-w-md flex-col gap-3 rounded-md border b-4 bg-default p-4 text-default shadow-md">
+            <h2 className="text-base font-semibold">
+              {failure.kind === 'lost'
+                ? 'Local rendering lost access to the GPU'
+                : "Local rendering couldn't start on this device"}
+            </h2>
+            <p className="text-sm text-2">
+              Reload to try local rendering again, or switch to streaming.
+            </p>
+            <details className="text-xs text-3">
+              <summary className="cursor-pointer py-1">Details</summary>
+              <p className="break-words font-mono">{failure.message}</p>
+            </details>
+            <div className="flex justify-end gap-2">
+              <ActionButton
+                Element="button"
+                onClick={() => window.location.reload()}
+                iconStart={{ icon: 'refresh', size: 'sm', className: 'p-1' }}
+              >
+                Reload
+              </ActionButton>
+              {onSwitchToStreaming && (
+                <ActionButton Element="button" onClick={onSwitchToStreaming}>
+                  Switch to streaming
+                </ActionButton>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   )

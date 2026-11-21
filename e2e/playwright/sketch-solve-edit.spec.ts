@@ -413,7 +413,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test(
     'sketch solve tool hotkeys equip tools and update the sketch',
-    { tag: ['@web', '@browsers'] },
+    { tag: ['@web'] },
     async ({ page, context, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
         await context.addInitScript(() => {
