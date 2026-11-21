@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   mode: 'sketchSolveMode',
-  onCameraMoving: (_isMoving: boolean, _isTween: boolean) => {},
+  onCameraMoving: (_isMoving: boolean) => {},
   sceneInfra: {
     localRenderer: null as object | null,
     renderer: { domElement: null as HTMLCanvasElement | null },
@@ -108,50 +108,30 @@ describe('client scene visibility during camera movement', () => {
   afterEach(cleanup)
 
   it.each(['Sketch', 'sketchSolveMode'])(
-    'hides the client overlay, not the streamed solid, during animations in %s',
+    'hides the streamed solid, not the client sketch, during camera movement in %s',
     (mode) => {
       mocks.mode = mode
       const scene = renderScene()
 
-      act(() => mocks.onCameraMoving(true, true))
-      expect(scene).toHaveClass('opacity-0')
-      expect(scene).not.toHaveClass('bg-chalkboard-10')
-      expect(opacity(scene)).toBe('')
-
-      act(() => mocks.onCameraMoving(false, true))
-      expect(scene).toHaveClass('opacity-100', 'bg-chalkboard-10')
-      expect(opacity(scene)).toBe(mode === 'Sketch' ? '0.8' : '0.3')
-    }
-  )
-
-  it.each(['Sketch', 'sketchSolveMode'])(
-    'hides the streamed solid, not the client sketch, during manual movement in %s',
-    (mode) => {
-      mocks.mode = mode
-      const scene = renderScene()
-
-      act(() => mocks.onCameraMoving(true, false))
+      act(() => mocks.onCameraMoving(true))
       expect(scene).toHaveClass('opacity-100', 'bg-chalkboard-10')
       expect(opacity(scene)).toBe('1')
 
-      act(() => mocks.onCameraMoving(false, false))
+      act(() => mocks.onCameraMoving(false))
       expect(opacity(scene)).toBe(mode === 'Sketch' ? '0.8' : '0.3')
     }
   )
 
   it.each(['Sketch', 'sketchSolveMode'])(
-    'keeps the local solid and sketch visible during drags and animations in %s',
+    'keeps the local solid and sketch visible during camera movement in %s',
     (mode) => {
       mocks.mode = mode
       mocks.sceneInfra.localRenderer = {}
       const scene = renderScene()
 
-      for (const isTween of [false, true]) {
-        act(() => mocks.onCameraMoving(true, isTween))
-        expect(scene).toHaveClass('opacity-100', 'bg-chalkboard-10')
-        expect(opacity(scene)).toBe(mode === 'Sketch' ? '0.8' : '0.3')
-        act(() => mocks.onCameraMoving(false, isTween))
-      }
+      act(() => mocks.onCameraMoving(true))
+      expect(scene).toHaveClass('opacity-100', 'bg-chalkboard-10')
+      expect(opacity(scene)).toBe(mode === 'Sketch' ? '0.8' : '0.3')
     }
   )
 
@@ -159,11 +139,11 @@ describe('client scene visibility during camera movement', () => {
     mocks.mode = 'idle'
     const scene = renderScene()
 
-    act(() => mocks.onCameraMoving(true, false))
+    act(() => mocks.onCameraMoving(true))
     expect(scene).toHaveClass('opacity-0')
     expect(scene).not.toHaveClass('bg-chalkboard-10')
 
-    act(() => mocks.onCameraMoving(false, false))
+    act(() => mocks.onCameraMoving(false))
     expect(scene).toHaveClass('opacity-100')
   })
 
@@ -172,13 +152,10 @@ describe('client scene visibility during camera movement', () => {
     mocks.sceneInfra.localRenderer = {}
     const scene = renderScene()
 
-    for (const isTween of [false, true]) {
-      act(() => mocks.onCameraMoving(true, isTween))
-      expect(scene).toHaveClass('opacity-100')
-      expect(scene).not.toHaveClass('bg-chalkboard-10')
-      expect(opacity(scene)).toBe('')
-      act(() => mocks.onCameraMoving(false, isTween))
-    }
+    act(() => mocks.onCameraMoving(true))
+    expect(scene).toHaveClass('opacity-100')
+    expect(scene).not.toHaveClass('bg-chalkboard-10')
+    expect(opacity(scene)).toBe('')
   })
 
   it.each([0, 0.3, 1])(
