@@ -21,6 +21,11 @@ export interface OpenProjectSession {
   readonly files: ProjectFiles
 }
 
+/** A completed backing operation whose file membership can be recorded without more I/O. */
+export type ProjectFileMutation =
+  | { type: 'created'; path: string }
+  | { type: 'renamed'; source: string; destination: string }
+
 /** Experimental project route state, independent of the existing editor session. */
 export interface ProjectSessionService {
   /** Selection for views. Project operations receive a captured session instead. */
@@ -34,8 +39,11 @@ export interface ProjectSessionService {
     session: OpenProjectSession,
     project: Project
   ) => Error | undefined
-  /** Refresh file membership for this opening without replacing its current metadata. */
-  refreshContents: (session: OpenProjectSession) => Promise<Error | undefined>
+  /** Amend this opening's latest file tree after a successful backing operation; stale openings are ignored. */
+  applyFileMutation: (
+    session: OpenProjectSession,
+    mutation: ProjectFileMutation
+  ) => Error | undefined
   /** Refresh descriptive metadata for the captured opening; closed/replaced openings are ignored. */
   updateMetadata: (
     session: OpenProjectSession,

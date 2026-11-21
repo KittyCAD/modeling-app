@@ -200,7 +200,6 @@ describe('contributed editor saving', () => {
   })
   async function namingProject() {
     const projects = createProjectSessionService(testFileOperations)
-    vi.spyOn(projects, 'refreshContents').mockResolvedValue(undefined)
     projects.openProject({
       contents: { name: 'project', path: '/project', children: [] },
       metadata: { title: 'Project', readWriteAccess: true },
@@ -572,6 +571,70 @@ describe('contributed editor saving', () => {
     expect(await saved).toBeInstanceOf(Error)
     expect(editor.src.peek()).toBeUndefined()
     expect(writeFile).not.toHaveBeenCalled()
+  })
+  it('publishes the editor source and project membership together after confirmed writes', async () => {
+    const projects = await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('contents')
+    )
+    const observed: { source: string | undefined; files: string[] }[] = []
+    const stop = projects.currentProject.subscribe(() =>
+      observed.push({
+        source: editor.src.peek(),
+        files: projects.listFiles().map((file) => file.path),
+      })
+    )
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'new.md')
+    await saved
+    naming().rename(editor)
+    await naming().submit(editor, 'renamed.md')
+    stop()
+    expect(observed).toEqual([
+      { source: undefined, files: [] },
+      { source: '/project/new.md', files: ['/project/new.md'] },
+      { source: '/project/renamed.md', files: ['/project/renamed.md'] },
+    ])
+  })
+  it('records a successful creation even if its editor closes while the write is pending', async () => {
+    const projects = await namingProject()
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('saved contents'))
+    const pending = deferred()
+    createFile.mockReturnValueOnce(pending.promise)
+    const saved = saving().save(editor)
+    const submitted = naming().submit(editor, 'new.md')
+    expect(projects.listFiles()).toEqual([])
+    editors.closeEditor(editor.id)
+    pending.resolve()
+    await submitted
+    expect(await saved).toBeInstanceOf(Error)
+    expect(projects.listFiles().map((file) => file.path)).toEqual([
+      '/project/new.md',
+    ])
+  })
+  it('leaves project membership unchanged when creation or rename fails', async () => {
+    const projects = await namingProject()
+    const editors = registry.required(editorsService)
+    const draft = requireSuccess(editors.createEditor('draft'))
+    createFile.mockRejectedValueOnce(new Error('File already exists'))
+    const saved = saving().save(draft)
+    await naming().submit(draft, 'existing.md')
+    expect(projects.listFiles()).toEqual([])
+    naming().cancel(draft)
+    await saved
+    const source = open('/project/kept.md')
+    projects.applyFileMutation(projects.currentSession.peek()!, {
+      type: 'created',
+      path: '/project/kept.md',
+    })
+    rename.mockRejectedValueOnce(new Error('Rename failed'))
+    naming().rename(source)
+    await naming().submit(source, 'wrong.md')
+    expect(projects.listFiles().map((file) => file.path)).toEqual([
+      '/project/kept.md',
+    ])
+    naming().cancel(source)
   })
   it.each(['tab', 'command'])(
     'selects Markdown preview and lists a newly saved buffer created from the %s',

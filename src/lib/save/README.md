@@ -47,9 +47,11 @@ correction. Autosave never opens a naming prompt. New buffers follow the highest
 priority matching mode after naming, so a first save as `.md` opens the registered
 Markdown preview. Explicit mode choices remain in place across later renames.
 
-Creation and rename refresh the captured project's file tree, so Open Editor
-immediately offers the new path and drops the old name. Refreshes retain current
-metadata and cannot overwrite a replacement opening or a newer project snapshot.
+After creation or rename succeeds, the project session amends its current
+in-memory file tree with that confirmed operation. Open Editor immediately offers
+the new path and drops the old name without rereading the backing. Unrelated
+entries and metadata are retained, and operations from closed or replaced
+openings are ignored. The editor source and tree membership are published together.
 
 Double-clicking a tab or pressing F2 on a focused tab opens the same path input for renaming. Renames wait for
 previously requested writes, reject existing destinations, and update every buffer
