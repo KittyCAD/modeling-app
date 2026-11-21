@@ -177,7 +177,7 @@ it.each([false, true])(
         expect(runs.at(-1)?.[0]).toEqual(runs[0][0])
       }
       await act(async () => {
-        settings.modeling.useLocalRenderer.user = !local
+        settings.modeling.useLocalRenderer.user = local
       })
       await vi.waitFor(() =>
         expect(
@@ -210,7 +210,7 @@ it.each([false, true])(
       )
       await vi.waitFor(() => expect(resources).toHaveLength(3))
       const fresh = resources[2]
-      expect(fresh.presentation).toBe(local ? 'streamed' : 'local')
+      expect(fresh.presentation).toBe(local ? 'local' : 'streamed')
       expect(registry.required(executorsService).executors.peek()).toEqual([
         sharedExecutor,
       ])
@@ -224,7 +224,7 @@ it.each([false, true])(
       await vi.waitFor(() => {
         for (const resource of existing)
           expect(resource.runtime.execute).toHaveBeenCalledTimes(executions)
-        expect(fresh.runtime.execute).toHaveBeenCalledTimes(local ? 2 : 1)
+        expect(fresh.runtime.execute).toHaveBeenCalledTimes(local ? 1 : 2)
       })
       thirdMounted.unmount()
       mounted.unmount()
@@ -410,3 +410,104 @@ it('keeps a pending shared capture alive when one Modeling view closes', async (
     await registry.dispose()
   }
 })
+
+it.each([false, true])(
+  'switches existing views when the renderer setting changes, retaining cameras and the shared executor (initial local: %s)',
+  async (local) => {
+    vi.mocked(openKclScene).mockClear()
+    vi.mocked(readKclFileExtensions).mockClear()
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
+    const resources: KclSceneResource[] = []
+    vi.mocked(openKclScene).mockImplementation(async (options) => {
+      const resource = createTestKclScene(options.presentation)
+      resources.push(resource)
+      return resource
+    })
+    const settings = createTestSettings()
+    settings.current.peek().modeling.useLocalRenderer.user = local
+    const registry = new Registry()
+    await registry.configure([
+      editorsExtension,
+      executorsExtension,
+      kclExtension,
+      [
+        [provide(settingsService, settings)],
+        [contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {}))],
+      ],
+    ])
+    try {
+      const editors = registry.required(editorsService)
+      const editor = requireSuccess(
+        editors.createEditor('@settings(kclVersion = 3.0)\nanswer = 42')
+      )
+      requireSuccess(editors.setLanguage(editor.id, 'kcl'))
+      const first = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+      const second = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+      const a = editors.viewState(first).peek().binding
+      const b = editors.viewState(second).peek().binding
+      if (a.type !== 'ready' || b.type !== 'ready')
+        return expect.fail('Modeling did not bind')
+      render(
+        <>
+          <a.Component editor={editor} instance={first} active />
+          <b.Component editor={editor} instance={second} active />
+        </>
+      )
+      await vi.waitFor(() => {
+        expect(resources).toHaveLength(2)
+        for (const resource of resources)
+          expect(resource.runtime.execute).toHaveBeenCalledOnce()
+      })
+      const shared = registry.required(executorsService).executors.peek()[0]
+      const poses = resources.map((resource, index) => ({
+        ...resource.snapshotCamera(),
+        eye_offset: 100 + index * 50,
+        is_ortho: index === 1,
+      }))
+      resources.forEach((resource, index) =>
+        vi.mocked(resource.snapshotCamera).mockReturnValue(poses[index])
+      )
+      for (const desired of [!local, local]) {
+        const retired = resources.slice(-2)
+        const count = resources.length
+        await act(async () => {
+          settings.current.peek().modeling.useLocalRenderer.user = desired
+        })
+        await vi.waitFor(() => {
+          expect(resources).toHaveLength(count + 2)
+          const next = resources.slice(-2)
+          for (const resource of next) {
+            expect(resource.presentation).toBe(desired ? 'local' : 'streamed')
+            expect(resource.runtime.execute).toHaveBeenCalledOnce()
+            expect(resource.restoreCamera).toHaveBeenCalledOnce()
+            expect(resource.frameModel).not.toHaveBeenCalled()
+          }
+          expect(
+            next.flatMap((resource) =>
+              vi.mocked(resource.restoreCamera).mock.calls.map(([pose]) => pose)
+            )
+          ).toEqual(expect.arrayContaining(poses))
+        })
+        for (const resource of retired)
+          expect(resource.dispose).toHaveBeenCalledOnce()
+        expect(registry.required(executorsService).executors.peek()).toEqual([
+          shared,
+        ])
+        expect(readKclFileExtensions).toHaveBeenCalledOnce()
+        resources
+          .slice(-2)
+          .forEach((resource, index) =>
+            vi.mocked(resource.snapshotCamera).mockReturnValue(poses[index])
+          )
+      }
+      await act(async () => {
+        settings.current.peek().modeling.useLocalRenderer.user = local
+      })
+      expect(resources).toHaveLength(6)
+      requireSuccess(editors.closeEditor(editor.id))
+    } finally {
+      await registry.dispose()
+    }
+  }
+)

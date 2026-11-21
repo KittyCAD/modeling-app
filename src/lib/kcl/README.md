@@ -125,10 +125,18 @@ appearance, local-renderer, and unit inputs by consumer. Renderer-only updates
 leave camera controls and the streamed connection unchanged. Native execution and
 export share a queue so disposal can wait for borrowed native memory. Rust decides when execution requires cache invalidation or graphics
 settings to be reapplied.
-The renderer choice is captured when the scene opens; reopen the Modeling view
-after changing it. Each view's settings revision uses that captured choice,
-so an already-open streamed view still receives streamed-only execution refreshes
-even if the preference now selects local rendering for new views.
+Changing the renderer preference replaces the connection and native runtime in
+existing Modeling views. Geometry-only mode is fixed when an engine connection
+opens, so switching renderers requires a new connection. Each view keeps its
+shared executor and full camera, including projection, and executes the latest
+shared snapshot in its replacement scene. Hidden or detached views release their
+old scene immediately and open the replacement once their viewport has a usable
+size. Repeated switches discard stale startup results and camera updates.
+
+Each connection keeps its presentation fixed for its lifetime. The refresh policy
+follows the intended renderer, and reconnects use that same choice. Restoring a
+camera into a local scene also consumes initial framing so a delayed model load
+cannot replace the saved viewpoint with zoom-to-fit.
 
 The [scene boundary](scene/README.md) describes the shared host and legacy
 adapters. Zoo-web-view remains the intended presentation integration; the

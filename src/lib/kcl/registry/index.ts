@@ -4,7 +4,7 @@ import {
 } from '@src/lib/kcl/scene/executionSettingsRegistry'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { factory, contribute } from 'plankton'
-import { signal } from '@preact/signals-core'
+import { signal, effect, untracked, batch } from '@preact/signals-core'
 import { editorKclHighlight } from '@src/editor/plugins/theme'
 import {
   codeEditorsExtensionFacet,
@@ -90,10 +90,10 @@ const extension = factory({
       )
       onDispose(preferences.dispose)
       const choosePresentation = (): ScenePresentation =>
-        settings.current.peek().modeling.useLocalRenderer.current
+        settings.current.value.modeling.useLocalRenderer.currentSignal.value
           ? 'local'
           : 'streamed'
-      const presentation = signal(choosePresentation())
+      const presentation = signal(untracked(choosePresentation))
       const settingsRevision = nativeSettings.revision(
         () => presentation.value === 'local'
       )
@@ -102,18 +102,20 @@ const extension = factory({
       const session = createKclSession(
         async (size, signal, onDisconnect) => {
           const wasm = getWasm()
-          presentation.value = choosePresentation()
+          const renderer = presentation.peek()
           const version = await readKclVersion(
             executor.editor.contents.peek(),
             wasm
           )
+          if (signal.aborted)
+            return new Error('The KCL scene closed while opening')
           return openKclScene({
             wasm,
             settings,
             nativeSettings,
             preferences,
             token: auth.authService.current.value?.token.peek(),
-            presentation: presentation.peek(),
+            presentation: renderer,
             kclVersion: isErr(version) ? undefined : version,
             size,
             signal,
@@ -136,7 +138,7 @@ const extension = factory({
                     kclSourceLength: executor.editor.contents.peek().length,
                     viewId,
                     currentFileName: executor.editor.src.peek(),
-                    renderer: presentation.peek(),
+                    renderer,
                   },
                 })
               onDisconnect(error)
@@ -155,6 +157,20 @@ const extension = factory({
         () => settingsRevision.value
       )
       onDispose(viewExecution.dispose)
+      onDispose(
+        effect(() => {
+          const renderer = choosePresentation()
+          untracked(() => {
+            if (presentation.peek() === renderer) return
+            // Publish the renderer and replace the attempt before native execution
+            // observes the new revision. All views still lease the same executor.
+            batch(() => {
+              presentation.value = renderer
+              session.replaceScene()
+            })
+          })
+        })
+      )
       return { executor, session, viewExecution }
     })({
       id: 'kcl.modeling',

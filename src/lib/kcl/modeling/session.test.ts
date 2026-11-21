@@ -283,7 +283,11 @@ it('restores the streamed camera after resuming from idle', async () => {
     parent.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
     await vi.advanceTimersByTimeAsync(0)
     await session.execute(snapshot, runSignal())
-    expect(second.restoreCamera).toHaveBeenCalledWith(pose)
+    expect(second.restoreCamera).toHaveBeenCalledWith({
+      ...pose,
+      is_ortho:
+        second.preferences.camera.peek().cameraProjection === 'orthographic',
+    })
     expect(second.frameModel).not.toHaveBeenCalled()
   } finally {
     session.dispose()
@@ -343,7 +347,12 @@ it.each([true, false])(
       if (retryable) {
         expect(session.resource.peek()).toBe(replacement)
         await session.execute(snapshot, runSignal())
-        expect(replacement.restoreCamera).toHaveBeenCalledWith(pose)
+        expect(replacement.restoreCamera).toHaveBeenCalledWith({
+          ...pose,
+          is_ortho:
+            replacement.preferences.camera.peek().cameraProjection ===
+            'orthographic',
+        })
         expect(replacement.frameModel).not.toHaveBeenCalled()
       } else {
         window.dispatchEvent(new Event('focus'))
@@ -437,6 +446,145 @@ it('does not spend the failure retry budget on requested connection rebuilds', a
       await session.execute(snapshot, runSignal())
     }
     expect(open).toHaveBeenCalledTimes(5)
+  } finally {
+    session.dispose()
+  }
+})
+
+it('retires a hidden scene on renderer changes and opens its replacement when the viewport becomes visible', async () => {
+  const first = scene('local'),
+    second = scene('streamed')
+  const disposed = Promise.withResolvers<undefined>()
+  vi.mocked(first.dispose).mockImplementation(() => disposed.promise)
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockResolvedValueOnce(first)
+    .mockResolvedValueOnce(second)
+  const session = createKclSession(open)
+  const parent = container()
+  const detach = session.attach(parent)
+  try {
+    await session.execute(snapshot, runSignal())
+    const pose = first.snapshotCamera()
+    Object.defineProperty(parent, 'clientWidth', { value: 0 })
+    session.replaceScene()
+    const run = session.execute(snapshot, runSignal())
+    expect(first.dispose).toHaveBeenCalledOnce()
+    expect(open).toHaveBeenCalledOnce()
+    expect(session.resource.peek()).toBeUndefined()
+    Object.defineProperty(parent, 'clientWidth', { value: 200 })
+    resize()
+    await Promise.resolve()
+    expect(open).toHaveBeenCalledOnce()
+    disposed.resolve(undefined)
+    expect(await run).not.toBeInstanceOf(Error)
+    expect(open).toHaveBeenCalledTimes(2)
+    expect(second.restoreCamera).toHaveBeenCalledWith(pose)
+    expect(second.frameModel).not.toHaveBeenCalled()
+  } finally {
+    disposed.resolve(undefined)
+    detach()
+    session.dispose()
+  }
+})
+
+it('discards late startup results after switching the renderer again', async () => {
+  const pending = Promise.withResolvers<KclSceneResource | Error>()
+  const late = scene('local'),
+    replacement = scene('streamed')
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockImplementationOnce(() => pending.promise)
+    .mockResolvedValueOnce(replacement)
+  const session = createKclSession(open)
+  session.attach(container())
+  const abandoned = session.execute(snapshot, runSignal())
+  try {
+    session.replaceScene()
+    expect(await abandoned).toBeInstanceOf(Error)
+    expect(await session.execute(snapshot, runSignal())).not.toBeInstanceOf(
+      Error
+    )
+    pending.resolve(late)
+    await vi.waitFor(() => expect(late.dispose).toHaveBeenCalledOnce())
+    expect(session.resource.peek()).toBe(replacement)
+    expect(replacement.restoreCamera).not.toHaveBeenCalled()
+  } finally {
+    pending.resolve(late)
+    session.dispose()
+  }
+})
+
+it('retains the original camera when another renderer switch interrupts camera restoration', async () => {
+  const first = scene('streamed'),
+    second = scene('local'),
+    third = scene('streamed')
+  const restoring = Promise.withResolvers<undefined>()
+  const executing = Promise.withResolvers<ReturnType<typeof emptyExecState>>()
+  vi.mocked(second.restoreCamera).mockImplementation(() => restoring.promise)
+  vi.mocked(third.runtime.execute).mockImplementation(() => executing.promise)
+  const pose = { ...first.snapshotCamera(), eye_offset: 789 }
+  vi.mocked(first.snapshotCamera).mockReturnValue(pose)
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockResolvedValueOnce(first)
+    .mockResolvedValueOnce(second)
+    .mockResolvedValueOnce(third)
+  const session = createKclSession(open)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    session.replaceScene()
+    const abandoned = session.execute(snapshot, runSignal())
+    await vi.waitFor(() =>
+      expect(second.restoreCamera).toHaveBeenCalledWith(pose)
+    )
+    session.replaceScene()
+    const latest = session.execute(snapshot, runSignal())
+    expect(await abandoned).toBeInstanceOf(Error)
+    await vi.waitFor(() => expect(third.runtime.execute).toHaveBeenCalledOnce())
+    restoring.resolve(undefined)
+    await Promise.resolve()
+    executing.resolve(emptyExecState())
+    expect(await latest).not.toBeInstanceOf(Error)
+    expect(third.restoreCamera).toHaveBeenCalledWith(pose)
+    expect(third.frameModel).not.toHaveBeenCalled()
+  } finally {
+    restoring.resolve(undefined)
+    executing.resolve(emptyExecState())
+    session.dispose()
+  }
+})
+
+it('honors a changed projection preference during ordinary connection recovery', async () => {
+  let connected = true
+  const first = scene('streamed', { isConnected: () => connected })
+  const second = scene('streamed')
+  second.preferences = {
+    ...second.preferences,
+    camera: signal({
+      ...second.preferences.camera.peek(),
+      cameraProjection: 'orthographic',
+    }),
+  }
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockResolvedValueOnce(first)
+    .mockResolvedValueOnce(second)
+  const session = createKclSession(open)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    const pose = first.snapshotCamera()
+    connected = false
+    session.reconnect()
+    expect(await session.execute(snapshot, runSignal())).not.toBeInstanceOf(
+      Error
+    )
+    expect(second.restoreCamera).toHaveBeenCalledWith({
+      ...pose,
+      is_ortho: true,
+    })
   } finally {
     session.dispose()
   }
