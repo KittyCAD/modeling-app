@@ -9,6 +9,7 @@ export interface EditorSourceContext {
 
 /** A source snapshot shared by editor behavior, execution, and view matching. */
 export interface EditorMatchContext extends EditorSourceContext {
+  readonly backing?: Editor['backing']['type']
   readonly languageId?: string
   readonly mediaType?: string
 }
@@ -24,6 +25,7 @@ export function editorMatchContext(editor: Editor): EditorMatchContext {
   return {
     src: editor.src.value ?? '',
     contents: editor.contents.value,
+    backing: editor.backing.type,
     ...editor.classification.value,
   }
 }

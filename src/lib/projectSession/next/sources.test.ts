@@ -30,7 +30,9 @@ function setup() {
   }
   const projects = createProjectSessionService(storage)
   projects.openProject(project('/model'))
-  const documents = signal<readonly Pick<Editor, 'src' | 'contents'>[]>([])
+  const documents = signal<
+    readonly Pick<Editor, 'src' | 'contents' | 'backing'>[]
+  >([])
   const sources = createProjectSources(
     () => projects,
     () => documents.value
@@ -49,7 +51,13 @@ it('captures working documents before storage reads and preserves binary imports
   const imported = new Uint8Array([0, 255, 128, 42])
   storage.readFile.mockResolvedValue(imported)
   const text = signal('unsaved module')
-  documents.value = [{ src: signal('/model/module.kcl'), contents: text }]
+  documents.value = [
+    {
+      src: signal('/model/module.kcl'),
+      contents: text,
+      backing: { type: 'text' },
+    },
+  ]
   const pending = sources.capture(request)
   text.value = 'later edit'
   const result = await pending
@@ -124,7 +132,7 @@ it('invalidates readers for source changes while ignoring metadata-only updates'
   const { projects, documents, sources } = setup()
   const contents = signal('original'),
     src = signal('/model/module.kcl')
-  documents.value = [{ src, contents }]
+  documents.value = [{ src, contents, backing: { type: 'text' } }]
   const original = sources.revision.value
   contents.value = 'unsaved edit'
   const edited = sources.revision.value
@@ -147,11 +155,11 @@ it('reads an open byte-backed model from storage when capturing a KCL import', a
     {
       src: signal('/model/body.glb'),
       contents: signal('lossy text'),
-      classification: signal({
-        languageId: 'geometry',
-        storage: 'bytes' as const,
-      }),
-    } as Pick<Editor, 'src' | 'contents' | 'classification'>,
+      backing: {
+        type: 'binary',
+        readBytes: () => new Uint8Array([0, 255, 128]),
+      },
+    },
   ]
   const result = await sources.capture(request)
   if (result instanceof Error) return expect.fail(result.message)

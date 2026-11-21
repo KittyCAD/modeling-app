@@ -1,7 +1,7 @@
 # Editor classification and mode ownership
 
-An editor owns a text buffer and its undo history. View instances independently
-choose modes and own their Code selections and scroll positions. Multiple views
+An editor owns a fixed text or binary backing. A text backing has a buffer and
+undo history. View instances independently choose modes and own their Code selections and scroll positions. Multiple views
 can display one editor; closing its last view releases that editor. Low-level
 `openEditor` still creates an independent document, even for the same source.
 The Open command instead reuses an existing document and creates another view.
@@ -9,6 +9,30 @@ The Open command instead reuses an existing document and creates another view.
 An editor's `src` is optional and describes its storage location;
 its `classification` describes a language and, where known, a media type. A filename
 extension is a matching shorthand, not a language identity or a MIME type.
+
+## Declare file formats before decoding
+
+`editorFileFormatsFacet` declares which file paths may be decoded as text.
+This is independent of language classification and selected editor modes:
+
+```ts
+contribute(editorFileFormatsFacet, () => ({
+  id: 'markdown',
+  matches: '.md' as const,
+  type: 'text' as const,
+}))
+```
+
+Use `editors.openFile(src, bytes)` for loaded files. Unknown formats default to a
+binary backing, as do declared text files with invalid UTF-8 or NUL characters.
+Binary backings preserve original bytes, remain read-only, and reject text saves
+and text snapshot adoption. Renaming, changing language, and replacing contributions
+do not change the backing. The Code view matches text backings; binary files have
+a read-only File fallback unless a specialized viewer matches.
+
+Use `createEditor(contents)` for an authored text draft or `openEditor(src, text)`
+when the caller already owns known text. These deliberately create text backings;
+file loading must not decode bytes before calling `openFile`.
 
 ## Classify before installing behavior
 

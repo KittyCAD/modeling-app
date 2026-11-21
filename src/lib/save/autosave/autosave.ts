@@ -20,6 +20,7 @@ export function attachAutosave(
     timer = undefined
   }
   const eligible = () =>
+    editor.backing.type === 'text' &&
     !closed &&
     !editor.signal.aborted &&
     Boolean(editor.src.peek()) &&

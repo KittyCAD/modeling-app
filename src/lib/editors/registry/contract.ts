@@ -14,8 +14,22 @@ import type {
 import { contract, Facet, service } from 'plankton'
 import type { ComponentType } from 'react'
 
+/** Storage identity is fixed at opening; syntax choices never convert binary bytes into editable text. */
+export type EditorBacking =
+  | { readonly type: 'text' }
+  | { readonly type: 'binary'; readonly readBytes: () => Uint8Array }
+
+/** File types opt into text decoding before a CodeMirror document is created. Unknown types remain binary. */
+export interface EditorFileFormat {
+  id: string
+  matches: `.${string}` | ((src: string) => boolean)
+  type: 'text' | 'binary'
+  priority?: number
+}
+
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
+  readonly backing: EditorBacking
   readonly readOnly: ReadonlySignal<boolean>
   readonly id: symbol
   /** Undefined for a new buffer; otherwise a local path or cloud ID plus relative path. */
@@ -45,15 +59,12 @@ export interface EditorViewInstance {
 /** Language identity is distinct from a filename extension; not every language has a media type. */
 export interface EditorClassification {
   readonly languageId: string
-  /** Byte-backed formats always execute from storage, never from decoded Code text. */
-  readonly storage?: 'bytes'
   readonly mediaType?: string
 }
 
 /** Independent language descriptors classify source snapshots, before any editing behavior is installed. */
 export interface EditorLanguage {
   id: string
-  storage?: 'bytes'
   mediaType?: string
   matches: '*' | `.${string}` | ((source: EditorSourceContext) => boolean)
   /** Higher priorities win; ties retain registration order. */
@@ -160,11 +171,10 @@ export interface EditorsService {
   closeView: (id: symbol) => Error | undefined
   /** Create an unsaved buffer, without reading or creating a file. */
   createEditor: (contents?: string) => Editor | Error
-  /** Synchronously create an independent document from contents already loaded by the caller. */
-  openEditor: (
-    src: string | undefined,
-    contents: string | Uint8Array
-  ) => Editor | Error
+  /** Deliberately create a text document from already-known text, independently of file format inference. */
+  openEditor: (src: string | undefined, contents: string) => Editor | Error
+  /** Parse loaded bytes using file format declarations; unknown formats and invalid text remain read-only binary. */
+  openFile: (src: string, bytes: Uint8Array) => Editor | Error
   /** Update an editor's source after a rename or reassociation; performs no file IO. */
   setSource: (id: symbol, src: string) => Error | undefined
   /** Explicitly choose a registered language, or clear the choice to resume source classification. */
@@ -176,6 +186,10 @@ export interface EditorsService {
   closeEditor: (id: symbol) => Error | undefined
 }
 export const editorsContract = contract({
+  editorFileFormatsFacet: new Facet<
+    EditorFileFormat,
+    readonly EditorFileFormat[]
+  >('editors.fileFormats', (values) => values),
   editorReadOnlyPoliciesFacet: new Facet<
     EditorReadOnlyPolicy,
     readonly EditorReadOnlyPolicy[]
@@ -203,6 +217,7 @@ export const editorsContract = contract({
   >('editors.capabilities', (inputs) => inputs),
 })
 export const {
+  editorFileFormatsFacet,
   editorsService,
   editorLanguagesFacet,
   editorReadOnlyPoliciesFacet,
@@ -213,6 +228,7 @@ export const {
 } = editorsContract
 
 export const observations = inputs({
+  editorFileFormatsFacet: observe(editorFileFormatsFacet),
   editorsService: observeService(editorsService),
   editorReadOnlyPoliciesFacet: observe(editorReadOnlyPoliciesFacet),
   editorCapabilityFacet: observe(editorCapabilityFacet),

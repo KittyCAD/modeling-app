@@ -24,7 +24,6 @@ export function createEditorClassification(
       ? {
           languageId: selected.id,
           mediaType: selected.mediaType,
-          ...(selected.storage ? { storage: selected.storage } : {}),
         }
       : undefined
   })

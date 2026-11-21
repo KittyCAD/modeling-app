@@ -92,7 +92,7 @@ it.each([
     try {
       const editors = registry.required(editorsService)
       const model = requireSuccess(
-        editors.openEditor(
+        editors.openFile(
           `/model/parts/body.${extension}`,
           new Uint8Array([0, 255, 128])
         )

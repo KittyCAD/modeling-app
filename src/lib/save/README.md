@@ -35,3 +35,8 @@ save requests can persist edits made after adoption.
 An unnamed buffer needs a source before Save or autosave can persist it. Save As,
 durable draft recovery, and confirmation before closing dirty buffers are
 separate work.
+
+Binary-backed editors cannot be saved as text, even through explicit Save on an
+unchanged file or a required autosave policy. Their restriction comes from the
+editor backing rather than language metadata, and persists across renaming or
+language changes. Text snapshot adoption also rejects binary backings.

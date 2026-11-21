@@ -35,7 +35,7 @@ export async function loadProjectEditor(
     if (!projects.listFiles().some((file) => file.path === src)) {
       return new Error('The selected file is no longer available')
     }
-    return existing() ?? editors.openEditor(src, bytes)
+    return existing() ?? editors.openFile(src, bytes)
   } catch (error) {
     return isErr(error)
       ? error

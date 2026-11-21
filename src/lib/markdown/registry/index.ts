@@ -1,3 +1,4 @@
+import { matchesEditor } from '@src/lib/editors/matching'
 import { createElement } from 'react'
 import { defineEditorView } from '@src/lib/editors/views'
 import { executionContext } from '@src/lib/executors/context'
@@ -6,6 +7,7 @@ import { editorMarkdownHighlight } from '@src/editor/plugins/theme'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
+  editorFileFormatsFacet,
   editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
 import {
@@ -44,12 +46,18 @@ const extension = factory({
     )({
       id: 'markdown.preview',
       label: 'Markdown',
-      matches: '.md',
+      matches: (context) =>
+        context.backing === 'text' && matchesEditor('.md', context),
       Component: ({ context }) =>
         createElement(MarkdownPreview, { executor: context.executor }),
     })
     return {
       items: [
+        contribute(editorFileFormatsFacet, () => ({
+          id: 'md',
+          matches: '.md' as const,
+          type: 'text' as const,
+        })),
         contribute(editorLanguagesFacet, () => language),
         contribute(codeEditorsExtensionFacet, () => editorExtensions),
         contribute(executorCapabilityFacet, () => markdownExecutorCapability),

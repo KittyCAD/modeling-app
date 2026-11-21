@@ -7,6 +7,7 @@ it('refreshes only the requested executor while keeping source and dependency in
   const source = createEditorDocument('answer = 42')
   const editor = {
     ...source.document,
+    backing: { type: 'text' as const },
     id: Symbol('editor'),
     src: signal('/main.kcl'),
     classification: signal({ languageId: 'kcl' }),
