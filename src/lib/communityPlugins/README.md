@@ -77,6 +77,10 @@ still need implementation before these adapters can be delivered.
 
 ## Permissions and isolation
 
+The [contribution and authority decision](../../dev-docs/adr/0002-community-contributions-and-authority.md)
+records the boundary between registering features and receiving permission to
+access data or perform privileged operations.
+
 Each runtime generation has a separate QuickJS Wasm module, an 8 MiB guest heap
 limit, a stack limit, and a 100 ms execution deadline per activation or command.
 The host bounds contribution size/count and notification size/count. Guest code
@@ -106,6 +110,14 @@ the renderer thread; a worker-owned runtime and aggregate resource budgets need
 evaluation before wider distribution.
 
 ## Installation and distribution
+
+Installation records, startup activation preferences, and permission grants are
+separate state. An inactive installation can retain its grants; activating a
+plugin does not approve new permissions. A future installed-plugin setting can
+retain source/release references and startup preferences, while a host-owned
+grant store records approvals keyed to installation identity and scope. Project
+configuration must not confer grants merely by declaring a bundled plugin.
+These persistence mechanisms are not implemented by the development prototype.
 
 This prototype identifies a development installation by its backing editor and
 tracks the exact source text for replacement. It does not implement releases,

@@ -214,3 +214,17 @@ Temporary ownership of geometry picking by an open command dialog. Picks populat
 ## Model target
 
 The particular model view and completed execution bound to a command. A new execution invalidates that target and requires binding and picking again.
+
+## Community plugins
+
+**Community plugin:**
+A user-installed extension that contributes features to Design Studio under authority granted to that installation.
+
+**Plugin installation:**
+A user's retained association with a particular community plugin and its source or release. An installation can exist while the plugin is inactive.
+
+**Plugin activation:**
+A running instance of an installed plugin. A startup activation preference expresses whether that installation should start when Design Studio opens.
+
+**Plugin permission grant:**
+A user's approval for a plugin installation to perform a particular operation within a defined scope and duration. A persistent grant survives application restarts; persistence does not broaden its scope or extend a resource's lifetime.
