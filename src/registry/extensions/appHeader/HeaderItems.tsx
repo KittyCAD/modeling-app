@@ -6,6 +6,27 @@ import { APP_NAME } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { type AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 
+export function AppLogoHeaderItem({
+  context,
+}: Pick<AppHeaderItemProps, 'context'>) {
+  return (
+    <ProjectNavigation
+      onHomeNavigate={
+        context.type === 'legacy-project'
+          ? () => {
+              context.onProjectClose(
+                context.file ?? null,
+                context.project?.path ?? null,
+                false
+              )
+              context.onHomeNavigate()
+            }
+          : undefined
+      }
+    />
+  )
+}
+
 export function ProjectHeaderItem({ app, context }: AppHeaderItemProps) {
   switch (context.type) {
     case 'project':
@@ -18,12 +39,9 @@ export function ProjectHeaderItem({ app, context }: AppHeaderItemProps) {
       )
     case 'home':
       return (
-        <div className="flex items-stretch gap-2">
-          <ProjectNavigation />
-          <span className="hidden self-center px-2 text-sm lg:block">
-            {APP_NAME}
-          </span>
-        </div>
+        <span className="hidden self-center px-2 text-sm lg:block">
+          {APP_NAME}
+        </span>
       )
   }
 }

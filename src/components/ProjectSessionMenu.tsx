@@ -4,11 +4,10 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import {
   HeaderMenuItems,
   headerMenuPanelClassName,
+  headerMenuItemClassName,
 } from '@src/components/HeaderMenu'
-import { ProjectNavigation } from '@src/components/ProjectNavigation'
 import type { App } from '@src/lib/app'
-import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
-import { PATHS } from '@src/lib/paths'
+import { projectMenuItemsFacet } from '@src/lib/projectSession/next/projectMenu'
 import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 
 /** Project actions stay bound to the captured opening, independent of legacy modeling. */
@@ -20,10 +19,10 @@ export function ProjectSessionMenu({
   session: OpenProjectSession
 }) {
   useSignals()
+  const items = app.registry.observe(projectMenuItemsFacet).value
   const project = session.project.value
   return (
     <div className="flex min-w-0 items-stretch gap-2">
-      <ProjectNavigation />
       <Popover className="relative min-w-0 self-center [-webkit-app-region:no-drag]">
         <h1 className="min-w-0 text-sm font-semibold">
           <Popover.Button
@@ -49,29 +48,18 @@ export function ProjectSessionMenu({
             <HeaderMenuItems
               close={close}
               groups={[
-                [
-                  {
-                    id: 'open-editor',
-                    Element: 'button',
-                    children: 'Open editor',
-                    onClick: () =>
-                      app.commands.send({
-                        type: 'Find and select command',
-                        data: {
-                          name: OPEN_EDITOR_COMMAND.name,
-                          groupId: OPEN_EDITOR_COMMAND.groupId,
-                        },
-                      }),
-                  },
-                ],
-                [
-                  {
-                    id: 'go-home',
-                    Element: 'link',
-                    to: PATHS.HOME,
-                    children: 'Go to Home',
-                  },
-                ],
+                items.map(({ id, Component }) => ({
+                  id,
+                  kind: 'custom',
+                  render: (close) => (
+                    <Component
+                      app={app}
+                      session={session}
+                      className={headerMenuItemClassName}
+                      close={close}
+                    />
+                  ),
+                })),
               ]}
             />
           )}

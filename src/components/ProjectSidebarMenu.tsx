@@ -7,7 +7,6 @@ import {
   headerMenuItemClassName,
   headerMenuPanelClassName,
 } from '@src/components/HeaderMenu'
-import { ProjectNavigation } from '@src/components/ProjectNavigation'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
@@ -77,12 +76,6 @@ const ProjectSidebarMenu = (props: ProjectSidebarMenuProps) => {
 
   return (
     <div className="flex min-w-0 items-stretch gap-2">
-      <ProjectNavigation
-        onHomeNavigate={() => {
-          onProjectClose(file ?? null, project?.path ?? null, false)
-          onHomeNavigate()
-        }}
-      />
       {props.enableMenu ? (
         <ProjectMenuPopover
           app={props.app}
