@@ -11,6 +11,11 @@ import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { reportRejection } from '@src/lib/trap'
+import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
+import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
+import type { ProjectPublishSubmission } from '@src/lib/publishing/publication'
+import { getProjectTitleFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 
 const loadPublication = () => import('@src/lib/publishing/publication')
 
@@ -133,6 +138,55 @@ export function createCloudProjectsServices(
       (await loadPublication()).getCloudPublicationStatus(id, config().token),
     getProjectStatuses: async () =>
       (await loadPublication()).getCloudPublicationStatuses(config().token),
+    getPublicationDetails: async (
+      args: Parameters<typeof Publication.getPublicationDetails>[0]
+    ) => (await loadPublication()).getPublicationDetails(args),
+    /** Serialize publication with cloud writes and acknowledge only the uploaded project snapshot. */
+    publishProject: async ({
+      projectId,
+      token,
+      submission,
+      validate,
+    }: {
+      projectId: string
+      token: string
+      submission: ProjectPublishSubmission
+      validate: (files: ProjectArchiveFile[]) => Promise<Error | undefined>
+    }) =>
+      fileSystem.withProject(projectId, (snapshot) =>
+        withFileOperations(snapshot.backing, async (operations) => {
+          const projectPath = fileSystem.pathFor(projectId)
+          const files = await collectProjectFilesForUpload({
+            fileOperations: operations,
+            projectRoot: projectPath,
+          })
+          const invalid = await validate(files)
+          if (invalid) return invalid
+          const configFile = files.find(
+            (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+          )
+          if (
+            !configFile ||
+            getProjectTitleFromProjectTomlContents(
+              new TextDecoder().decode(configFile.data)
+            ) !== submission.title.trim()
+          )
+            return new Error(
+              'The project title changed while preparing publication. Try again.'
+            )
+          const result = await (await loadPublication()).publishProjectFiles({
+            token,
+            projectPath,
+            files,
+            remoteProjectId: projectId,
+            expectedRevision: String(snapshot.remote.revision),
+            deletedPaths: snapshot.deletedPaths,
+            submission,
+          })
+          if (result) await snapshot.acknowledge()
+          return result
+        })
+      ),
     downloadProjectById: async (id: string) =>
       (
         await import('@src/lib/cloudProjects/runtime/project')

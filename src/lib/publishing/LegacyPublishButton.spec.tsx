@@ -36,7 +36,7 @@ vi.mock('@src/components/PublishDialog', () => ({
   },
 }))
 
-import { PublishButton } from '@src/components/PublishButton'
+import { LegacyPublishButton } from '@src/lib/publishing/LegacyPublishButton'
 import type { App } from '@src/lib/app'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import type { Project } from '@src/lib/project'
@@ -191,7 +191,7 @@ function createApp({
 function renderPublishButton(app = createApp()) {
   return render(
     <MemoryRouter>
-      <PublishButton app={app} />
+      <LegacyPublishButton app={app} />
     </MemoryRouter>
   )
 }
@@ -204,7 +204,7 @@ async function openPublishDialog(app: App) {
   }
   return mockState.publishDialogProps
 }
-describe('PublishButton', () => {
+describe('LegacyPublishButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockState.useProjectStatus.mockReturnValue(null)
