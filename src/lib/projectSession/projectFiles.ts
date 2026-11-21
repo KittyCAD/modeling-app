@@ -89,6 +89,29 @@ async function walkProjectFiles(
   )
 }
 
+/** List uploadable project paths without loading model or asset contents. */
+export async function collectProjectFilePathsForUpload({
+  fileOperations,
+  projectRoot,
+}: {
+  fileOperations: FileOperationsRegistryService
+  projectRoot: string
+}) {
+  const paths: string[] = []
+  await walkProjectFiles(
+    fileOperations,
+    projectRoot,
+    (_path, relativePath) => {
+      paths.push(relativePath)
+    },
+    {
+      exclude: isExcludedProjectPath,
+      normalize: normalizeUploadRelativePath,
+    }
+  )
+  return paths.sort((a, b) => a.localeCompare(b))
+}
+
 /**
  * Collects files from `projectRoot` for a cloud upload archive. The walk uses
  * coordinated reads, skips internal metadata and version-control paths,

@@ -1137,21 +1137,30 @@ export function createCloudProjectRuntime(
       id: string,
       run: (snapshot: {
         remote: RemoteProject
+        files: readonly ProjectArchiveFile[]
         backing: IZooDesignStudioFS
         deletedPaths: string[]
         acknowledge: () => Promise<void>
-      }) => Promise<T>
+      }) => Promise<T>,
+      options: { requireSaved?: boolean } = {}
     ) => {
       await openProject(id)
       return enqueue(
         id,
-        async () => {
+        async (previousState) => {
+          if (options.requireSaved && previousState?.state === 'failed')
+            return Promise.reject(
+              new Error(
+                'Save the cloud project before submitting its snapshot.'
+              )
+            )
           const project = opened.get(id)!
           const archive = await collect(pathFor(id))
           const owner = config().accountId
           const currentPaths = new Set(archive.map((file) => file.relativePath))
           return run({
             remote: project.remote,
+            files: archive,
             backing: memory,
             deletedPaths: [...project.acknowledgedPaths].filter(
               (path) => !currentPaths.has(path)
