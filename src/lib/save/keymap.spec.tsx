@@ -246,6 +246,70 @@ it('honors Save remapping and unbinding in Code and does not intercept Save outs
   outside.remove()
 })
 
+it('lets the keymap govern modified Save shortcuts while a tab path input is focused', async () => {
+  const editors = registry.required(editorsService)
+  const editor = requireSuccess(
+    editors.openEditor('/project/existing.txt', 'contents')
+  )
+  editors.createView(editor)
+  pane()
+  act(() => {
+    codeSurface(editors, editor).focus()
+  })
+  fireEvent.doubleClick(screen.getByRole('tab', { name: 'existing.txt' }))
+  const input = screen.getByRole('textbox', {
+    name: 'Project-relative file path',
+  })
+  fireEvent.change(input, { target: { value: 'pending-name.txt' } })
+  const keys = registry.required(keymapService)
+  for (const binding of keys.keymap
+    .peek()
+    .items.filter((item) => item.keystrokes[0] === 'mod+s'))
+    await keys.unbind(binding)
+  const shortcut = (shiftKey = false) =>
+    new KeyboardEvent('keydown', {
+      key: 's',
+      code: 'KeyS',
+      bubbles: true,
+      cancelable: true,
+      shiftKey,
+      ctrlKey: !/Mac/.test(navigator.platform),
+      metaKey: /Mac/.test(navigator.platform),
+    })
+  const original = shortcut()
+  fireEvent(input, original)
+  expect(original.defaultPrevented).toBe(false)
+  expect(writeFile).not.toHaveBeenCalled()
+  expect(unrelatedSave).not.toHaveBeenCalled()
+
+  await keys.addUserBinding({
+    command: SAVE_EDITOR_COMMAND.id,
+    keystrokes: ['mod+shift+s'],
+    when: [EDITABLE_FOCUSED_COMMAND_SCOPE],
+  })
+  const remapped = shortcut(true)
+  fireEvent(input, remapped)
+  expect(remapped.defaultPrevented).toBe(true)
+  await vi.waitFor(() =>
+    expect(writeFile).toHaveBeenCalledWith('/project/existing.txt', 'contents')
+  )
+  expect(input).toHaveValue('pending-name.txt')
+  expect(rename).not.toHaveBeenCalled()
+
+  const binding = keys.keymap
+    .peek()
+    .items.find(
+      (item) =>
+        item.command === SAVE_EDITOR_COMMAND.id &&
+        item.when?.includes(EDITABLE_FOCUSED_COMMAND_SCOPE)
+    )!
+  await keys.unbind(binding)
+  const unbound = shortcut(true)
+  fireEvent(input, unbound)
+  expect(unbound.defaultPrevented).toBe(false)
+  press(input, 'Escape')
+})
+
 it('contributes global F2 and honors its unbinding when a tab has focus', async () => {
   const editors = registry.required(editorsService)
   const first = requireSuccess(

@@ -45,12 +45,7 @@ export function EditorPathInput({
         onKeyDown={(event) => {
           event.stopPropagation()
           if (event.nativeEvent.isComposing) return
-          if (
-            (event.metaKey || event.ctrlKey) &&
-            event.key.toLowerCase() === 's'
-          ) {
-            event.preventDefault()
-          } else if (event.key === 'Escape') {
+          if (event.key === 'Escape') {
             event.preventDefault()
             if (!request.pending) finish()
           } else if (event.key === 'Enter') {
