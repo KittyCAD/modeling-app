@@ -74,6 +74,15 @@ camera pose across idle and transient reconnects, restoring it after the next
 execution instead of framing the model again. Closing the view discards that pose.
 Local rendering is exempt from idle teardown.
 
+## Asynchronous engine responses
+
+Each scene connection forwards engine responses to its own runtime's native
+`Context.sendResponse`. Foreign geometry imports use asynchronous modeling
+commands: their JavaScript pending command can finish while WASM still waits for
+the same response in its response context. Response delivery therefore runs
+outside the serialized execution/export queue. Closing a runtime stops new
+delivery and waits for active responses before freeing native memory.
+
 ## Sharing native execution
 
 The shared executor currently saves source-capture work, including reading imports.

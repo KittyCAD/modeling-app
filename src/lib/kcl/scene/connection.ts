@@ -1,7 +1,9 @@
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type {
+  ConnectionManager,
+  EngineResponseReceiver,
+} from '@src/lib/engineConnection/connectionManager'
 import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
-import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 
 const videoOwners = new WeakMap<HTMLVideoElement, symbol>()
@@ -52,7 +54,7 @@ export async function connectScene({
   presentation: ScenePresentation
   timeoutMs: number
   signal?: AbortSignal
-  rustContext?: RustContext
+  rustContext?: EngineResponseReceiver
   kclVersion?: KclVersion
   prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
   onStreamReady?: (ready: boolean) => void

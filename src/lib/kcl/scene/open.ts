@@ -109,6 +109,12 @@ export async function openKclScene({
   try {
     const connected = await connectScene({
       manager,
+      rustContext: {
+        sendResponse: async (response) => {
+          if (disposed || signal.aborted) return
+          await runtime?.sendResponse(response)
+        },
+      },
       token: token ?? '',
       size: getDimensions(size.width, size.height),
       presentation,

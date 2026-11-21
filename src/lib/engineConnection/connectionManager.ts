@@ -57,7 +57,6 @@ import {
   isModelingBatchResponse,
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
-import type RustContext from '@src/lib/rustContext'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
@@ -83,6 +82,11 @@ import {
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+
+/** A connection returns async command replies to the native context that owns its execution. */
+export interface EngineResponseReceiver {
+  sendResponse: (response: WebSocketResponse) => Promise<void>
+}
 
 const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
 
@@ -421,7 +425,7 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestWebrtc?: boolean
     unitTestGeometryOnly?: boolean
-    rustContext?: RustContext
+    rustContext?: EngineResponseReceiver
     geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
@@ -1201,7 +1205,7 @@ export class ConnectionManager extends EventTarget {
   }
 
   // this.connection.websocket.addEventListener('message') handler
-  createMessageHandler(rustContext?: RustContext) {
+  createMessageHandler(rustContext?: EngineResponseReceiver) {
     return (event: MessageEvent) => {
       let message: WebSocketResponse | null = null
 
@@ -1244,9 +1248,8 @@ export class ConnectionManager extends EventTarget {
         return
       }
 
-      // If the connection is started from WASM it doesn't need
-      // `sendResponse` at all, because the call is coming from
-      // inside the house, as it were, from WASM itself.
+      // Async native commands (including geometry imports) wait for their
+      // responses in the owning WASM context, independently of pendingCommands.
       rustContext?.sendResponse(message).catch((error) => {
         console.warn('Error sending response to rust', error)
         EngineDebugger.addLog({
