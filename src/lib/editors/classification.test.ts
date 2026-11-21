@@ -38,6 +38,7 @@ it('lets an unnamed buffer choose Markdown, retaining that choice until source i
   await registry.configure([editorsExtension, markdownExtension, kclExtension])
   const editors = registry.required(editorsService)
   const editor = requireSuccess(editors.createEditor('# Draft'))
+  requireSuccess(editors.createView(editor, 'editors.code'))
   expect(editor.classification.value).toBeUndefined()
   expect(editors.setLanguage(editor.id, 'markdown')).toBeUndefined()
   expect(editor.src.value).toBeUndefined()

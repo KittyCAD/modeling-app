@@ -35,7 +35,12 @@ export function createEditorNaming(
     operation: () => Promise<undefined | Error>
   ) => Promise<undefined | Error>,
   focusEditor: (editor: Editor) => void,
-  options: { defaultExtension?: `.${string}` } = {}
+  options: {
+    defaultExtension?: (
+      editor: Editor,
+      viewId: symbol | undefined
+    ) => `.${string}` | undefined
+  } = {}
 ) {
   const entries = new WeakMap<Editor, ReturnType<typeof createEntry>>()
   const activeEditors = new Set<Editor>()
@@ -171,7 +176,7 @@ export function createEditorNaming(
         return
       }
       if (!current.source && !fsZds.extname(destination))
-        destination += options.defaultExtension ?? ''
+        destination += options.defaultExtension?.(editor, state.viewId) ?? ''
       const editors = getEditors()
       const files = getFiles()
       if (!editors || !files) {

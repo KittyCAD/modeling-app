@@ -64,7 +64,26 @@ const extension = factory({
       saving.service,
       saving.withSourceLock,
       saving.focus,
-      { defaultExtension: '.kcl' }
+      {
+        defaultExtension: (editor, viewId) => {
+          const editors = editorsInputs.editorsService.current.value
+          const instance = editors?.views
+            .peek()
+            .find((view) => view.id === viewId && view.editor === editor)
+          const selected =
+            instance && editors?.viewState(instance).peek().selected
+          if (selected?.defaultExtension) return selected.defaultExtension
+          if (typeof selected?.matches === 'string' && selected.matches !== '*')
+            return selected.matches
+          const language = editorsInputs.editorLanguagesFacet.value.find(
+            ({ id }) => id === editor.classification.peek()?.languageId
+          )
+          return typeof language?.matches === 'string' &&
+            language.matches !== '*'
+            ? language.matches
+            : '.kcl'
+        },
+      }
     )
     const editorForEvent = (event: Event) =>
       editorViewForTarget(

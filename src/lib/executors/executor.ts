@@ -30,7 +30,8 @@ interface ExecutionInput {
 export function createExecutor(
   editor: Editor,
   contributions: ReadonlySignal<readonly ExecutorCapability[]>,
-  onEditorDestroyed: () => void
+  onEditorDestroyed: () => void,
+  requested?: ReadonlySignal<readonly ExecutorCapability[]>
 ): { executor: Executor; dispose: () => void } {
   const refresh = signal(0)
   let disposed = false
@@ -39,8 +40,11 @@ export function createExecutor(
     return {
       ...context,
       refresh: refresh.value,
-      capabilities: contributions.value.filter((capability) =>
-        matchesEditor(capability.matches, context)
+      capabilities: contributions.value.filter(
+        (capability) =>
+          matchesEditor(capability.matches, context) ||
+          (!editor.src.value &&
+            (requested?.value.includes(capability) ?? false))
       ),
     }
   }
