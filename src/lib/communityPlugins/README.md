@@ -1,8 +1,8 @@
 # Local community plugin prototype
 
 This subsystem is available behind `zds_project_shell_refactor`. It demonstrates
-explicit activation, compilation, isolated command execution, and buffer-driven
-reloads. It is a development prototype, not a published plugin platform.
+explicit activation, persistent local installations, compilation, isolated command
+execution, and buffer-driven reloads. It is a development prototype, not a published plugin platform.
 
 ## Try it
 
@@ -10,19 +10,24 @@ reloads. It is a development prototype, not a published plugin platform.
    `examples/community-plugins/hello.zds.ts` into a disposable project.
 2. Open the file. Its Plugin Builder view inspects the TOML manifest and shows
    the requested permissions. Opening and compiling never activate the plugin.
-3. Approve notifications and select **Start / approve reload**.
+3. Approve notifications. Select **Start / approve reload** for a temporary
+   preview, **Install snapshot** to retain these exact source contents, or
+   **Install for development** to retain the source path and follow open-buffer
+   changes. An installed plugin is enabled on startup by default.
 4. Find **Hello plugin: Say hello** in the command palette and invoke it.
-5. Switch to Code and change the greeting. Successful compilation replaces the
-   command automatically, including when Plugin Builder is not the selected view.
-   A syntax or activation error leaves the previous instance installed.
-6. Stop the plugin or close its backing document to remove its commands. Switching
-   between Code and Plugin Builder, or opening another view of the same document,
-   does not create another installation.
+5. Switch to Code and change the greeting. Successful builds reload a running
+   preview or development installation. Snapshots retain their installed contents.
+   A syntax or activation error leaves the previous working instance available.
+6. Closing the document stops its preview. Installed plugins remain available.
+   Use **Settings > Plugins > Installed community plugins** to disable, re-enable,
+   retry, revoke permissions, or uninstall them, including when their source is
+   missing or invalid.
 
 The watcher is the existing editor/executor pipeline: working-buffer changes and
-backing changes adopted by the editor both compile. There is no independent
-filesystem watcher or persistent installation list yet. Closing ZDS ends these
-development installations. Saving does not install anything in another project.
+backing changes adopted by an open editor both compile. There is no independent
+filesystem watcher for closed development sources. Startup and **Retry / reload
+source** read the file again; an open buffer takes precedence. Unsaved development
+edits are not retained in the installation and therefore do not survive restart.
 
 ## Source and SDK
 
@@ -92,7 +97,10 @@ The sole implemented privileged operation is `ui.notify`. Both declaration and
 explicit installation grant are checked at the host call. Activation cannot show
 notifications. Changed source can inherit the same grants during development;
 new permissions pause reload for approval. Stop revokes access immediately,
-including commands retained by an old caller. Grants are in-memory only.
+including commands retained by an old caller. Preview grants are in-memory only;
+installed-plugin grants persist by installation identity. Disabling retains these
+grants. Revocation stops the instance immediately and removes its persistent grant;
+uninstall removes both the installation and its grants.
 
 The string permission set is deliberately limited to this operation. Before
 adding project or network access, introduce capability-specific parsed requests
@@ -112,16 +120,40 @@ evaluation before wider distribution.
 ## Installation and distribution
 
 Installation records, startup activation preferences, and permission grants are
-separate state. An inactive installation can retain its grants; activating a
-plugin does not approve new permissions. A future installed-plugin setting can
-retain source/release references and startup preferences, while a host-owned
-grant store records approvals keyed to installation identity and scope. Project
-configuration must not confer grants merely by declaring a bundled plugin.
-These persistence mechanisms are not implemented by the development prototype.
+separate state. They are persisted as separate collections in a versioned,
+user-owned `community-plugins.toml` beside `settings.toml`, following the keymap
+sidecar precedent. This keeps the installation and grant mutation in one document.
+Project settings never supply either collection. The storage interface can later
+be backed by the main settings actor without changing installation lifetimes.
 
-This prototype identifies a development installation by its backing editor and
-tracks the exact source text for replacement. It does not implement releases,
-content digests, signatures, publisher identity, or installation from Projects.
+Each explicit installation gets a new host-generated UUID, independently of its
+manifest ID. A snapshot stores its exact source text; a development installation
+stores its selected source path and follows buffer changes. Restart compiles the
+appropriate source and checks the API version, declared plugin ID, supported
+permissions, and retained grants before activation. Development source declaring
+a different plugin ID must be installed separately and receives no old grants.
+Missing, invalid, or incompatible sources remain listed with their error for retry
+or removal. One failed source does not block other installed plugins.
+
+An inactive installation retains its grants; enabling does not approve additional
+permissions. A changed permission declaration pauses reload for explicit approval.
+Permission approval cannot restart an obsolete source if the buffer changed while
+the grant was being saved. Disabled installations remain disabled after restart.
+Closing the application disposes runtimes without changing activation preferences.
+
+The complete persisted document is parsed before use. Unsupported schemas,
+malformed state, duplicate installation IDs, and orphaned or unsupported grants
+fail closed and are never silently replaced with empty preferences. Writes detect
+stale store snapshots; same-origin windows use Web Locks to serialize the
+compare/write pair when available. Same-origin windows receive change notifications
+and revoke their old instances before restoring the updated preferences. External
+tools do not participate in that lock or notification channel; use Reload after
+editing the file externally.
+A failed disable, revocation, or uninstall write leaves the current instance stopped
+and reports the persistence failure. Reload the list before retrying a stale write.
+
+This slice does not implement hosted releases, cryptographic artifact digests,
+signatures, publisher identity, or installation from Projects.
 
 Future distributed installations must pin an immutable artifact/revision and
 digest, separately from the Projects container ID and the author's version label.
@@ -132,7 +164,8 @@ operate on exact artifacts rather than following a mutable project revision.
 ## Verification
 
 `npm run test:unit -- src/lib/communityPlugins` exercises the real QuickJS runtime,
-permission denial, absent host globals, CPU/heap limits, reload failure, and the
-registered editor/executor/command flow. No KCL Wasm build is required by these
+permission denial, absent host globals, CPU/heap limits, reload failure, persisted
+snapshot/development lifetimes, grant revocation, missing sources, stale writes,
+and the registered editor/executor/command flow across simulated app restarts. No KCL Wasm build is required by these
 tests. Smoke testing the steps above still matters for actual project-file
 opening, feature flags, pane switching, and the packaged desktop application.

@@ -2,6 +2,8 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useState } from 'react'
 import type { PluginSource } from '@src/lib/communityPlugins/source'
 import type { PluginSession } from '@src/lib/communityPlugins/session'
+import type { PluginInstallations } from '@src/lib/communityPlugins/installations'
+import { InstalledPlugins } from '@src/lib/communityPlugins/InstalledPlugins'
 import { reportRejection } from '@src/lib/trap'
 
 /** Permission approval belongs to the requested permission set, independently of any running generation. */
@@ -9,10 +11,14 @@ export function PluginBuilder({
   source,
   error,
   session,
+  installations,
+  path,
 }: {
   source: PluginSource | undefined
   error: Error | undefined
   session: PluginSession
+  installations: PluginInstallations
+  path: string | undefined
 }) {
   useSignals()
   const [approvedPermissions, setApprovedPermissions] = useState<string>()
@@ -73,10 +79,76 @@ export function PluginBuilder({
           Stop
         </button>
       </div>
+      <div className="flex flex-col gap-2">
+        <p>
+          Keep this plugin installed after closing its document or restarting
+          ZDS.
+        </p>
+        <button
+          type="button"
+          disabled={
+            !source ||
+            !!error ||
+            !supported ||
+            !approved ||
+            !installations.ready.value ||
+            installations.busy.value
+          }
+          onClick={() => {
+            if (source)
+              void session
+                .stop()
+                .then(() =>
+                  installations.install(
+                    source,
+                    'snapshot',
+                    path,
+                    new Set(permissions)
+                  )
+                )
+                .catch(reportRejection)
+          }}
+        >
+          Install snapshot
+        </button>
+        <button
+          type="button"
+          disabled={
+            !source ||
+            !!error ||
+            !supported ||
+            !approved ||
+            !path ||
+            !installations.ready.value ||
+            installations.busy.value
+          }
+          onClick={() => {
+            if (source)
+              void session
+                .stop()
+                .then(() =>
+                  installations.install(
+                    source,
+                    'development',
+                    path,
+                    new Set(permissions)
+                  )
+                )
+                .catch(reportRejection)
+          }}
+        >
+          Install for development
+        </button>
+        <p>
+          Snapshots keep this exact source. Development installations follow
+          this file's open buffer and reload it on startup.
+        </p>
+      </div>
       <p>
         Edit in Code, then return here to inspect the build. Successful edits
-        reload after starting. Closing the document stops the plugin.
+        reload after starting a preview. Closing the document stops the preview.
       </p>
+      <InstalledPlugins manager={installations} />
     </section>
   )
 }

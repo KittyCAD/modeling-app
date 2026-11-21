@@ -8,7 +8,12 @@ import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import { requireSuccess } from '@src/lib/editors/testViews'
 import executorsExtension from '@src/lib/executors/registry'
-import communityPlugins from '@src/lib/communityPlugins/registry'
+import communityPlugins, {
+  createCommunityPluginsExtension,
+} from '@src/lib/communityPlugins/registry'
+import { communityPluginsService } from '@src/lib/communityPlugins/registry/contract'
+import { InstalledPluginsSection } from '@src/lib/communityPlugins/InstalledPlugins'
+import { pluginStorageFixture } from '@src/lib/communityPlugins/testSupport'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { commandsFacet } from '@src/registry/contracts/commands'
 
@@ -90,5 +95,76 @@ describe('Plugin Builder', () => {
     cleanup()
     editors.closeEditor(editor.id)
     await vi.waitFor(() => expect(commands()).toHaveLength(0))
+  })
+
+  it('installs from Plugin Builder and manages startup activation without reopening its source', async () => {
+    const fixture = pluginStorageFixture()
+    const startApp = async () => {
+      registry = new Registry()
+      await registry.configure([
+        editorsExtension,
+        executorsExtension,
+        createCommunityPluginsExtension(fixture.storage),
+      ])
+      const manager = registry.required(communityPluginsService)
+      await manager.settled()
+      return manager
+    }
+    const commands = () =>
+      registry!
+        .get(commandsFacet)
+        .filter((command) => command.groupId.startsWith('community.installed-'))
+    const manager = await startApp()
+    const editors = registry!.required(editorsService)
+    const editor = requireSuccess(
+      editors.openEditor('/plugins/hello.zds.ts', hello)
+    )
+    const instance = requireSuccess(
+      editors.createView(editor, 'communityPlugins.builder')
+    )
+    const binding = editors.viewState(instance).value.binding
+    if (binding.type !== 'ready') throw new Error('Expected Plugin Builder')
+    const Component = binding.Component
+    render(<Component editor={editor} instance={instance} active />)
+    await screen.findByText('Hello')
+    fireEvent.click(
+      screen.getByLabelText('Allow this plugin to show notifications')
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Install snapshot' }))
+    await vi.waitFor(() => expect(commands()).toHaveLength(1))
+    const identity = manager.entries.value[0].installation.id
+    cleanup()
+    editors.closeEditor(editor.id)
+    await manager.settled()
+    expect(commands()).toHaveLength(1)
+    await registry!.dispose()
+
+    const restarted = await startApp()
+    expect(restarted.entries.value[0].installation.id).toBe(identity)
+    expect(commands()).toHaveLength(1)
+    commands()[0].onSubmit()
+    expect(toast).toHaveBeenLastCalledWith('Hello!')
+    render(<InstalledPluginsSection registry={registry!} />)
+    fireEvent.click(screen.getByLabelText('Enabled, including on startup'))
+    await vi.waitFor(() => expect(commands()).toHaveLength(0))
+    await restarted.settled()
+    cleanup()
+    await registry!.dispose()
+
+    const disabled = await startApp()
+    expect(commands()).toHaveLength(0)
+    render(<InstalledPluginsSection registry={registry!} />)
+    expect(
+      screen.getByLabelText('Enabled, including on startup')
+    ).not.toBeChecked()
+    fireEvent.click(screen.getByLabelText('Enabled, including on startup'))
+    await vi.waitFor(() => expect(commands()).toHaveLength(1))
+    await disabled.settled()
+    fireEvent.click(screen.getByRole('button', { name: 'Uninstall' }))
+    await vi.waitFor(() => expect(commands()).toHaveLength(0))
+    await disabled.settled()
+    expect(
+      requireSuccess(await fixture.storage.load()).preferences.grants
+    ).toEqual([])
   })
 })

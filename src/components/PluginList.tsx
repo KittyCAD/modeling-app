@@ -1,5 +1,6 @@
 import type { Feature } from '@kittycad/lib'
 import { Toggle } from '@src/components/Toggle/Toggle'
+import { InstalledPluginsSection } from '@src/lib/communityPlugins/InstalledPlugins'
 import { useApp } from '@src/lib/boot'
 import type { Setting } from '@src/lib/settings/Setting'
 import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
@@ -62,6 +63,7 @@ export const PluginsList = forwardRef(
     return (
       <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-12">
+          <InstalledPluginsSection registry={props.registry} />
           {visiblePlugins.map((plugin) => (
             <PluginItem
               key={plugin.id}
