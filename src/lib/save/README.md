@@ -53,6 +53,9 @@ the new path and drops the old name without rereading the backing. Unrelated
 entries and metadata are retained, and operations from closed or replaced
 openings are ignored. The editor source and tree membership are published together.
 
+See [ADR 0002](../../dev-docs/adr/0002-in-memory-project-state.md) for the project
+state and persistence boundary.
+
 Double-clicking a tab or pressing F2 on a focused tab opens the same path input for renaming. Renames wait for
 previously requested writes, reject existing destinations, and update every buffer
 for the original source while preserving document text, history, and views.
