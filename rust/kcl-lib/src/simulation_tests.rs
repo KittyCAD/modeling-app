@@ -26,16 +26,16 @@ use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
 use crate::errors::Tag;
-use crate::execution::AbstractSegment;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactGraphMermaidExt;
-use crate::execution::CameraView;
 use crate::execution::EnvironmentRef;
 use crate::execution::KclValue;
 use crate::execution::KclValueView;
 use crate::execution::ModuleArtifactState;
-use crate::execution::NamedViewValue;
-use crate::execution::SketchConstraint;
+use crate::execution::kcl_value_view::display::CameraValueView;
+use crate::execution::kcl_value_view::display::ConstraintView;
+use crate::execution::kcl_value_view::display::NamedValueView;
+use crate::execution::kcl_value_view::display::SegmentValueView;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::test_server::TestGraphicsParams;
@@ -48,7 +48,7 @@ use crate::walk::walk;
 mod kcl_samples;
 mod region_liveness_engine_contract;
 
-/// Preserve the concrete runtime types used by opaque debug-only API values in
+/// Preserve the concrete presentation types used by opaque debug-only API values in
 /// program-memory snapshots. Insta distinguishes structs from maps when sorting
 /// fields; serializing these values through `serde_json::Value` would turn every
 /// nested struct into a map and reorder its fields alphabetically.
@@ -63,16 +63,16 @@ enum ProgramMemoryValueSnapshot {
 #[serde(tag = "type")]
 enum RuntimeProgramMemoryValueSnapshot {
     SketchConstraint {
-        value: Box<SketchConstraint>,
+        value: Box<ConstraintView>,
     },
     CameraView {
-        value: Box<CameraView>,
+        value: Box<CameraValueView>,
     },
     NamedView {
-        value: Box<NamedViewValue>,
+        value: Box<NamedValueView>,
     },
     Segment {
-        value: Box<AbstractSegment>,
+        value: Box<SegmentValueView>,
     },
     Tuple {
         value: Vec<ProgramMemoryValueSnapshot>,
@@ -89,10 +89,18 @@ enum RuntimeProgramMemoryValueSnapshot {
 impl From<KclValue> for ProgramMemoryValueSnapshot {
     fn from(value: KclValue) -> Self {
         let runtime = match value {
-            KclValue::SketchConstraint { value } => RuntimeProgramMemoryValueSnapshot::SketchConstraint { value },
-            KclValue::CameraView { value } => RuntimeProgramMemoryValueSnapshot::CameraView { value },
-            KclValue::NamedView { value } => RuntimeProgramMemoryValueSnapshot::NamedView { value },
-            KclValue::Segment { value } => RuntimeProgramMemoryValueSnapshot::Segment { value },
+            KclValue::SketchConstraint { value } => RuntimeProgramMemoryValueSnapshot::SketchConstraint {
+                value: Box::new((*value).into()),
+            },
+            KclValue::CameraView { value } => RuntimeProgramMemoryValueSnapshot::CameraView {
+                value: Box::new(value.as_ref().into()),
+            },
+            KclValue::NamedView { value } => RuntimeProgramMemoryValueSnapshot::NamedView {
+                value: Box::new(value.as_ref().into()),
+            },
+            KclValue::Segment { value } => RuntimeProgramMemoryValueSnapshot::Segment {
+                value: Box::new((*value).into()),
+            },
             KclValue::Tuple { value, .. } => RuntimeProgramMemoryValueSnapshot::Tuple {
                 value: value.into_iter().map(Self::from).collect(),
             },
