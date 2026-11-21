@@ -63,7 +63,8 @@ const extension = factory({
       () => files.fileOperationsService.current.value,
       saving.service,
       saving.withSourceLock,
-      saving.focus
+      saving.focus,
+      { defaultExtension: '.kcl' }
     )
     const editorForEvent = (event: Event) =>
       editorViewForTarget(

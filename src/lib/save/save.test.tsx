@@ -3,6 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import markdownExtension from '@src/lib/markdown/registry'
+import kclExtension from '@src/lib/kcl/registry'
 import executorsExtension from '@src/lib/executors/registry'
 import {
   NEW_EDITOR_COMMAND,
@@ -254,6 +255,60 @@ describe('contributed editor saving', () => {
     expect(editor.src.peek()).toBe('/project/notes.txt')
     expect(screen.getByRole('tab', { name: 'notes.txt' })).toBeInTheDocument()
     expect(saving().state(editor).peek().dirty).toBe(false)
+  })
+  it.each([
+    { path: 'bracket', source: '/project/bracket.kcl', language: 'kcl' },
+    {
+      path: 'models.v1/bracket',
+      source: '/project/models.v1/bracket.kcl',
+      language: 'kcl',
+    },
+    { path: ' bracket ', source: '/project/bracket.kcl', language: 'kcl' },
+    { path: 'bracket.KCL', source: '/project/bracket.KCL', language: 'kcl' },
+    { path: 'notes.md', source: '/project/notes.md', language: 'markdown' },
+  ])(
+    'applies the ZDS first-save extension policy to "$path"',
+    async ({ path, source, language }) => {
+      const projects = await namingProject()
+      await registry.replace(extra, [
+        kclExtension,
+        markdownExtension,
+        provide(projectSessionService, projects),
+      ])
+      const editor = requireSuccess(
+        registry.required(editorsService).createEditor('// draft')
+      )
+      const saved = saving().save(editor)
+      await naming().submit(editor, path)
+      expect(await saved).toBeUndefined()
+      expect(createFile).toHaveBeenCalledWith(source, '// draft')
+      expect(editor.src.peek()).toBe(source)
+      expect(editor.classification.peek()?.languageId).toBe(language)
+      expect(saving().state(editor).peek().dirty).toBe(false)
+    }
+  )
+  it('does not overwrite an existing KCL file when the first-save path omits its extension', async () => {
+    await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('// draft')
+    )
+    createFile.mockRejectedValueOnce(new Error('File already exists'))
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'bracket')
+    expect(createFile).toHaveBeenCalledWith('/project/bracket.kcl', '// draft')
+    expect(writeFile).not.toHaveBeenCalled()
+    expect(editor.src.peek()).toBeUndefined()
+    expect(naming().state(editor).peek()?.error).toBe('File already exists')
+    naming().cancel(editor)
+    await saved
+  })
+  it('keeps an extensionless destination when renaming an established buffer', async () => {
+    await namingProject()
+    const editor = open()
+    naming().rename(editor)
+    await naming().submit(editor, 'notes')
+    expect(rename).toHaveBeenCalledWith('/project/notes.txt', '/project/notes')
+    expect(editor.src.peek()).toBe('/project/notes')
   })
   it.each([
     '',

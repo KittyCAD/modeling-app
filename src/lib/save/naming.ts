@@ -34,7 +34,8 @@ export function createEditorNaming(
     src: string,
     operation: () => Promise<undefined | Error>
   ) => Promise<undefined | Error>,
-  focusEditor: (editor: Editor) => void
+  focusEditor: (editor: Editor) => void,
+  options: { defaultExtension?: `.${string}` } = {}
 ) {
   const entries = new WeakMap<Editor, ReturnType<typeof createEntry>>()
   const activeEditors = new Set<Editor>()
@@ -159,7 +160,7 @@ export function createEditorNaming(
         fail('Enter a relative file path, including a file name')
         return
       }
-      const destination = fsZds.resolve(root, path)
+      let destination = fsZds.resolve(root, path)
       const relative = fsZds.relative(root, destination)
       if (
         !relative ||
@@ -169,6 +170,8 @@ export function createEditorNaming(
         fail('File path must stay within its project')
         return
       }
+      if (!current.source && !fsZds.extname(destination))
+        destination += options.defaultExtension ?? ''
       const editors = getEditors()
       const files = getFiles()
       if (!editors || !files) {
