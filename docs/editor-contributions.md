@@ -39,6 +39,19 @@ matches: ({ languageId }) => languageId === 'markdown'
 `'.md'` continues to mean the source's case-insensitive filename extension, even if
 the user explicitly selects another language. `'*'` matches every buffer.
 
+## Unnamed buffers and mode selection
+
+Unnamed buffers offer every registered mode independently of filename, content,
+or language matching. Mode priority selects the initial presentation; users can
+select another mode without assigning a language or source. Once the buffer has
+a path, normal matching resumes and an explicit choice remains while it matches.
+
+For a first save without an extension, a mode can declare a `defaultExtension`
+such as `.csv`. An extension matcher such as `.md` supplies the same hint without
+extra metadata. ZDS uses the mode of the view that initiated Save, followed by an
+explicit language's extension and finally `.kcl`. Explicit filename extensions
+and renames of established buffers are preserved.
+
 ## Explicit language choice
 
 ```ts

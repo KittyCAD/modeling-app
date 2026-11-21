@@ -21,7 +21,11 @@ export function createEditorModes(
   const choice = signal<string | undefined>(undefined)
   const options = computed(() => {
     const available = views.value
-      .filter((view) => matchesEditor(view.matches, editorMatchContext(editor)))
+      .filter(
+        (view) =>
+          !editor.src.value ||
+          matchesEditor(view.matches, editorMatchContext(editor))
+      )
       .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
     return {
       available,

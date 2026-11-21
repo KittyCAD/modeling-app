@@ -286,6 +286,82 @@ describe('contributed editor saving', () => {
       expect(saving().state(editor).peek().dirty).toBe(false)
     }
   )
+  it.each([
+    { path: 'notes', expected: '/project/notes.md' },
+    { path: 'main.kcl', expected: '/project/main.kcl' },
+  ])(
+    'uses the saving view for "$path" while explicit filename extensions win',
+    async ({ path, expected }) => {
+      const projects = await namingProject()
+      await registry.replace(extra, [
+        executorsExtension,
+        markdownExtension,
+        provide(projectSessionService, projects),
+        contribute(editorViewsFacet, () =>
+          defineEditorView({
+            id: 'modeling',
+            label: 'Modeling',
+            matches: '.kcl',
+            priority: 1000,
+            Component: () => null,
+          })
+        ),
+      ])
+      const editors = registry.required(editorsService)
+      const editor = requireSuccess(editors.createEditor('# Notes'))
+      const model = requireSuccess(editors.createView(editor))
+      const markdown = requireSuccess(
+        editors.createView(editor, 'markdown.preview')
+      )
+      expect(editors.viewState(model).peek().selected?.id).toBe('modeling')
+      naming().focus(editor, markdown.id)
+      const saved = saving().save(editor)
+      await naming().submit(editor, path)
+      expect(await saved).toBeUndefined()
+      expect(editor.src.peek()).toBe(expected)
+      expect(createFile).toHaveBeenCalledExactlyOnceWith(expected, '# Notes')
+    }
+  )
+  it('uses an explicit extension hint from a mode with predicate matching', async () => {
+    const projects = await namingProject()
+    await registry.replace(extra, [
+      provide(projectSessionService, projects),
+      contribute(editorViewsFacet, () =>
+        defineEditorView({
+          id: 'table',
+          label: 'Table',
+          matches: () => false,
+          defaultExtension: '.csv',
+          priority: 1000,
+          Component: () => null,
+        })
+      ),
+    ])
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('a,b'))
+    const view = requireSuccess(editors.createView(editor))
+    naming().focus(editor, view.id)
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'table')
+    expect(await saved).toBeUndefined()
+    expect(editor.src.peek()).toBe('/project/table.csv')
+  })
+  it('uses an explicitly chosen language when Code has no filename hint', async () => {
+    const projects = await namingProject()
+    await registry.replace(extra, [
+      markdownExtension,
+      provide(projectSessionService, projects),
+    ])
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(editors.createEditor('# Notes'))
+    const view = requireSuccess(editors.createView(editor, 'editors.code'))
+    requireSuccess(editors.setLanguage(editor.id, 'markdown'))
+    naming().focus(editor, view.id)
+    const saved = saving().save(editor)
+    await naming().submit(editor, 'notes')
+    expect(await saved).toBeUndefined()
+    expect(editor.src.peek()).toBe('/project/notes.md')
+  })
   it('does not overwrite an existing KCL file when the first-save path omits its extension', async () => {
     await namingProject()
     const editor = requireSuccess(
@@ -670,12 +746,18 @@ describe('contributed editor saving', () => {
         act(() => {
           change(editor, '# New document')
         })
+        expect(
+          await screen.findByRole('heading', { name: 'New document' })
+        ).toBeVisible()
+        expect(editor.src.peek()).toBeUndefined()
+        expect(createFile).not.toHaveBeenCalled()
         fireEvent.doubleClick(screen.getByRole('tab', { name: 'Untitled' }))
         const input = screen.getByRole('textbox', {
           name: 'Project-relative file path',
         })
         fireEvent.change(input, { target: { value: 'new.md' } })
         fireEvent.keyDown(input, { key: 'Enter' })
+        await screen.findByRole('tab', { name: 'new.md' })
         await screen.findByRole('heading', { name: 'New document' })
         expect(editors.viewState(view).peek().selected?.id).toBe(
           'markdown.preview'

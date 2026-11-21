@@ -12,7 +12,7 @@ export function executionContext<C extends ExecutorCapability>(
   getExecutors: () => ExecutorsService
 ) {
   return ({ editor, onDispose }: EditorViewHost) => {
-    const lease = getExecutors().acquireExecutor(editor)
+    const lease = getExecutors().acquireExecutor(editor, capability)
     if (isErr(lease)) return lease
     onDispose(lease.release)
     const result = computed(() => {

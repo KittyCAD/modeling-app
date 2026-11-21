@@ -513,13 +513,14 @@ describe('editors extension', () => {
     expect(first.undo()).toBe(true)
     expect(view.state.doc.toString()).toBe('')
   })
-  it('names a new buffer without replacing its document, history, or default surface', async () => {
+  it('names a new buffer without replacing its document, history, or explicitly selected Code surface', async () => {
     const service = registry.required(editorsService)
     const command = registry
       .get(commandsFacet)
       .find((command) => command.id === NEW_EDITOR_COMMAND.id)!
     await command.onSubmit?.()
     const editor = service.editors.value[0]
+    service.setView(presentation(service, editor).id, 'editors.code')
     const view = codeSurface(registry.required(editorsService), editor)
     expect(editor.src.value).toBeUndefined()
     expect(editor.classification.value).toBeUndefined()

@@ -39,13 +39,16 @@ save requests can persist edits made after adoption.
 Saving an unnamed buffer prompts for a project-relative file path in its tab.
 Enter submits; Escape or leaving the input cancels without discarding the buffer.
 Empty, absolute, and escaping paths are rejected. The ZDS save extension supplies
-`.kcl` as the default extension for unnamed buffers: `bracket` first saves as
-`bracket.kcl`, while explicit extensions and existing-file renames are preserved.
+an extension for unnamed buffers from the view that initiated Save. Its selected
+mode's `defaultExtension` wins, followed by an extension matcher such as `.md`,
+then an explicitly chosen language's extension matcher. If no concrete hint is
+available, ZDS falls back to `.kcl`. Explicit filename extensions and existing-file
+renames are preserved.
 First saves use strict creation,
 so existing files are never overwritten; failures leave the input available for
-correction. Autosave never opens a naming prompt. New buffers follow the highest
-priority matching mode after naming, so a first save as `.md` opens the registered
-Markdown preview. Explicit mode choices remain in place across later renames.
+correction. Autosave never opens a naming prompt. Unnamed buffers offer every
+registered mode; after naming, normal source matching resumes. Explicit mode
+choices remain in place while they match, including across later renames.
 
 After creation or rename succeeds, the project session amends its current
 in-memory file tree with that confirmed operation. Open Editor immediately offers
