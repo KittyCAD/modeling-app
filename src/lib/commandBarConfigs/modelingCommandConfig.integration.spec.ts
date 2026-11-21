@@ -29,6 +29,7 @@ import type {
   CommandArgumentConfig,
   KclCommandValue,
 } from '@src/lib/commandTypes'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
   KCL_AXIS_Z,
   KCL_DEFAULT_ROTATE_ANGLE,
@@ -45,7 +46,13 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { createActor } from 'xstate'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { Command } from '@src/lib/commandTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 function selectionsForArtifact(artifact?: Artifact): Selections {
   return {
@@ -145,6 +152,144 @@ gdt::datum(face = capEnd001, name = "A")`
     // Should return 'B' since 'A' is already used
     expect(getNextAvailableDatumName(ast)).toBe('B')
   })
+})
+
+describe('GDT text input validation', () => {
+  it.each([
+    ['GDT Note', 'note'],
+    ['GDT Annotation', 'annotation'],
+    ['GDT Datum', 'name'],
+  ] as const)(
+    'rejects unsupported quotes in %s',
+    async (commandName, argName) => {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config))
+        throw new Error('Expected a command config')
+      const arg = Object.entries(config.args ?? {}).find(
+        ([name]) => name === argName
+      )?.[1]
+      if (!arg || !('validation' in arg) || !arg.validation) {
+        throw new Error('Expected GDT text validation')
+      }
+      expect(
+        await arg.validation({
+          data: { [argName]: 'Use "datum A"' },
+          context: {} as CommandBarContext,
+        })
+      ).toEqual(expect.any(String))
+      expect(
+        await arg.validation({
+          data: 'Use "datum A"',
+          context: {} as CommandBarContext,
+        })
+      ).toEqual(expect.any(String))
+      for (const data of ['Use datum A', { [argName]: 'Use datum A' }]) {
+        expect(
+          await arg.validation({ data, context: {} as CommandBarContext })
+        ).toBe(true)
+      }
+    }
+  )
+})
+
+describe('GDT dialog text validation', () => {
+  it.each([
+    ['GDT Note', 'note'],
+    ['GDT Annotation', 'annotation'],
+    ['GDT Datum', 'name'],
+  ] as const)(
+    'keeps invalid %s text editable and submits the corrected draft',
+    async (commandName, argName) => {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config)) throw new Error('Expected GDT config')
+      const arg = Object.entries(config.args ?? {}).find(
+        ([name]) => name === argName
+      )?.[1]
+      if (!arg || (arg.inputType !== 'text' && arg.inputType !== 'string'))
+        throw new Error('Expected GDT text argument')
+      const onSubmit = vi.fn()
+      const command = {
+        name: commandName,
+        groupId: 'modeling',
+        scopes: GLOBAL_COMMAND_SCOPES,
+        useModelingDialog: true,
+        needsReview: false,
+        onSubmit,
+        args: {
+          [argName]: {
+            inputType: arg.inputType,
+            validation: arg.validation,
+            required: true,
+            hidden: false,
+          },
+          framePlane: { inputType: 'string', required: false },
+        },
+      } satisfies Command
+      const actor = createActor(commandBarMachine, {
+        input: {
+          commands: [command],
+          wasmInstancePromise: Promise.resolve({} as ModuleType),
+          machineManager: {} as MachineManager,
+        },
+      }).start()
+      try {
+        // Existing text must be checked even when editing only another field.
+        actor.send({
+          type: 'Find and select command',
+          data: {
+            name: command.name,
+            groupId: command.groupId,
+            argDefaultValues: {
+              [argName]: 'Use "datum A"',
+              nodeToEdit: [1, 2],
+            },
+          },
+        })
+        for (const text of [
+          'Use "datum A"',
+          'C:\\parts',
+          'line\nbreak',
+          'tab\there',
+        ]) {
+          actor.send({
+            type: 'Submit command from dialog',
+            data: { argumentsToSubmit: { [argName]: text, framePlane: 'XZ' } },
+          })
+          await vi.waitFor(() => {
+            expect(actor.getSnapshot().matches('Gathering arguments')).toBe(
+              true
+            )
+            expect(actor.getSnapshot().context.reviewValidationError).toEqual(
+              expect.any(String)
+            )
+          })
+          expect(actor.getSnapshot().context.argumentsToSubmit[argName]).toBe(
+            text
+          )
+          expect(onSubmit).not.toHaveBeenCalled()
+          actor.send({ type: 'Dialog draft changed' })
+        }
+        actor.send({
+          type: 'Submit command from dialog',
+          data: {
+            argumentsToSubmit: {
+              [argName]: "Use the part's datum",
+              framePlane: 'XZ',
+            },
+          },
+        })
+        await vi.waitFor(() =>
+          expect(onSubmit).toHaveBeenCalledExactlyOnceWith({
+            [argName]: "Use the part's datum",
+            framePlane: 'XZ',
+            nodeToEdit: [1, 2],
+          })
+        )
+      } finally {
+        actor.stop()
+      }
+    }
+  )
 })
 
 describe('GDT tolerance defaults', () => {
