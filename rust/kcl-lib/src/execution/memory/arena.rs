@@ -634,6 +634,17 @@ impl Stack {
         Ok(())
     }
 
+    /// Builtins use the prelude as their lexical parent, without preserving a module root.
+    pub fn push_new_env_for_builtin(&mut self) -> Result<(), KclError> {
+        let parent = *self.memory.std.get().ok_or_else(|| {
+            arena_invariant_failed(
+                "pushing a builtin environment",
+                "standard library prelude must be initialized",
+            )
+        })?;
+        self.push_new_env_for_call(parent)
+    }
+
     /// Push a stack frame for an inline scope.
     ///
     /// This should be used for blocks but is currently only used for mock execution.
