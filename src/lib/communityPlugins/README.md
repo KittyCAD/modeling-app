@@ -36,7 +36,9 @@ Directory packages are not implemented by this prototype.
 to get contribution shapes and the activation API; compilation removes those
 imports. External editors can install `packages/zds-plugin` from a local checkout
 until the SDK is published. ZDS currently provides compilation diagnostics, not
-TypeScript semantic checking, autocomplete, or SDK installation UI.
+TypeScript semantic checking, autocomplete, or SDK installation UI. The independent
+`lib/typescript` extension supplies Code-surface parsing and light/dark syntax
+highlighting for JavaScript, TypeScript, JSX, and TSX, including plugin sources.
 
 Sucrase strips TypeScript and emits a CommonJS module evaluated inside QuickJS.
 There is no host `require`: runtime imports fail activation. No npm installation,

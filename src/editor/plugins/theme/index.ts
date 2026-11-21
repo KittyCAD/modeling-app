@@ -36,6 +36,40 @@ const colors = {
   textDefault,
   textFaded,
 }
+
+/** JavaScript and TypeScript share the app syntax palette, including type and JSX names. */
+export const editorTypeScriptHighlight = (['light', 'dark'] as const).map(
+  (themeType) =>
+    syntaxHighlighting(
+      HighlightStyle.define(
+        [
+          {
+            tag: [tags.keyword, tags.modifier, tags.operatorKeyword],
+            color: colors.orange[themeType],
+          },
+          {
+            tag: [tags.string, tags.number, tags.bool, tags.null],
+            color: colors.green[themeType],
+          },
+          {
+            tag: [tags.typeName, tags.className, tags.namespace, tags.tagName],
+            color: colors.primary[themeType],
+          },
+          {
+            tag: [tags.variableName, tags.propertyName, tags.attributeName],
+            color: colors.textDefault[themeType],
+          },
+          {
+            tag: tags.comment,
+            color: colors.textFaded[themeType],
+            fontStyle: 'italic',
+          },
+        ],
+        { themeType }
+      )
+    )
+)
+
 const baseKclHighlights = HighlightStyle.define([
   {
     tag: [tags.keyword, tags.annotation],
