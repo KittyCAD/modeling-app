@@ -112,8 +112,10 @@ export const projectLoader =
         { signal: request.signal }
       )
       request.signal.throwIfAborted()
-      if (!isDesktop() && state.matches('loggedOut'))
-        return redirect(generateSignInUrl(request.url))
+      if (state.matches('loggedOut'))
+        return redirect(
+          isDesktop() ? PATHS.SIGN_IN : generateSignInUrl(request.url)
+        )
     }
     const projectShellEnabled = await canOpenProjectShell(app, request.signal)
     const cloud = app.registry.required(cloudStorageService)
