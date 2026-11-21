@@ -13,7 +13,7 @@ import {
   editorSaveService,
   editorAutosavePoliciesFacet,
 } from '@src/lib/save/registry/contract'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import { appHeaderEndItemsFacet } from '@src/registry/contracts/appHeader'
 import { CloudProjectStatus } from '@src/lib/cloudProjects/next/CloudProjectStatus'
 import { routerService } from '@src/registry/contracts/router'
 import { PATHS } from '@src/lib/paths'
@@ -78,7 +78,7 @@ const extension = factory({
         }
       },
       items: [
-        contribute(appHeaderItemsFacet, () => ({
+        contribute(appHeaderEndItemsFacet, () => ({
           id: 'cloud-projects.status',
           order: 20,
           Component: CloudProjectStatus,

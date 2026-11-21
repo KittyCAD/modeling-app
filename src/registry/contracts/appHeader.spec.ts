@@ -1,4 +1,7 @@
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import {
+  appHeaderStartItemsFacet,
+  appHeaderEndItemsFacet,
+} from '@src/registry/contracts/appHeader'
 import {
   factory as defineFactory,
   contribute,
@@ -10,7 +13,10 @@ import { describe, expect, it } from 'vitest'
 
 const FirstItem = () => null
 const SecondItem = () => null
-describe('app header registry contract', () => {
+describe.each([
+  ['start', appHeaderStartItemsFacet, appHeaderEndItemsFacet],
+  ['end', appHeaderEndItemsFacet, appHeaderStartItemsFacet],
+])('app header %s zone', (_name, facet, otherFacet) => {
   it('allows extensions to contribute ordered header items', async () => {
     const registry = new Registry()
     await registry.configure([
@@ -18,13 +24,13 @@ describe('app header registry contract', () => {
         create: () => ({
           items: [
             contribute(
-              appHeaderItemsFacet,
+              facet,
               () =>
                 ({
                   id: 'second',
                   order: 20,
                   Component: SecondItem,
-                }) satisfies InputOf<typeof appHeaderItemsFacet>
+                }) satisfies InputOf<typeof facet>
             ),
           ],
         }),
@@ -33,21 +39,23 @@ describe('app header registry contract', () => {
         create: () => ({
           items: [
             contribute(
-              appHeaderItemsFacet,
+              facet,
               () =>
                 ({
                   id: 'first',
                   order: 10,
                   Component: FirstItem,
-                }) satisfies InputOf<typeof appHeaderItemsFacet>
+                }) satisfies InputOf<typeof facet>
             ),
           ],
         }),
       }) satisfies Factory,
     ])
-    expect(registry.get(appHeaderItemsFacet).map((item) => item.id)).toEqual([
+    expect(registry.get(facet).map((item) => item.id)).toEqual([
       'first',
       'second',
     ])
+    expect(registry.get(otherFacet)).toEqual([])
+    await registry.dispose()
   })
 })
