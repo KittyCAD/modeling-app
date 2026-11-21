@@ -10,8 +10,8 @@ import {
 } from '@src/lib/kcl/scene/executionSettingsContract'
 
 /**
- * The preferences that require KCL to execute again. Backface color additionally
- * requires clearing the streamed scene; local rendering applies it directly.
+ * The preferences that require KCL to execute again. Backface color refreshes
+ * streamed execution only; local rendering applies it directly.
  */
 export const coreKclExecutionInputDefinitions: readonly KclExecutionInput[] = [
   {
@@ -37,7 +37,7 @@ export const coreKclExecutionInputDefinitions: readonly KclExecutionInput[] = [
   {
     id: 'modeling.backfaceColor',
     read: (s) => s.modeling.backfaceColor.currentSignal.value,
-    refresh: 'rebuild-streamed',
+    refresh: 'execute-streamed',
   },
 ]
 export const coreKclExecutionInputs = coreKclExecutionInputDefinitions.map(

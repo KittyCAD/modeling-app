@@ -129,12 +129,8 @@ export async function openKclScene({
       () => disposed || signal.aborted,
       onDisconnect
     )
-    runtime = await createKclRuntime(
-      wasm,
-      manager,
-      () => nativeSettings.configuration.peek(),
-      () =>
-        presentation === 'local' ? '' : nativeSettings.rebuildRevision.peek()
+    runtime = await createKclRuntime(wasm, manager, () =>
+      nativeSettings.configuration.peek()
     )
     if (signal.aborted) {
       await dispose()

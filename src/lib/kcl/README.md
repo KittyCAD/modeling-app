@@ -122,13 +122,13 @@ consumed by the legacy file route. The registry resolves it when execution input
 are observed or a scene session is created, after registry setup.
 [`scene/presentationPreferences.ts`](scene/presentationPreferences.ts) groups the camera,
 appearance, local-renderer, and unit inputs by consumer. Renderer-only updates
-leave camera controls and the streamed connection unchanged. Execution, native
-export, and scene rebuilds share a queue so disposal can wait for borrowed native
-memory.
+leave camera controls and the streamed connection unchanged. Native execution and
+export share a queue so disposal can wait for borrowed native memory. Rust decides when execution requires cache invalidation or graphics
+settings to be reapplied.
 The renderer choice is captured when the scene opens; reopen the Modeling view
 after changing it. Each view's settings revision uses that captured choice,
-so an already-open streamed view still receives streamed rebuilds even if the
-preference now selects local rendering for new views.
+so an already-open streamed view still receives streamed-only execution refreshes
+even if the preference now selects local rendering for new views.
 
 The [scene boundary](scene/README.md) describes the shared host and legacy
 adapters. Zoo-web-view remains the intended presentation integration; the

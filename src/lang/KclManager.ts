@@ -3231,8 +3231,6 @@ export class KclManager extends File {
               this.path === path &&
               this.systemDeps.projectPath.peek() === projectPath,
             execute: () => this.executeCode(),
-            rebuild: (configuration) =>
-              this.rustContext.clearSceneAndBustCache(configuration, path),
           }
         },
       })
