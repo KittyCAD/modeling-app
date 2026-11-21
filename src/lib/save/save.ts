@@ -73,6 +73,11 @@ export function createEditorSave(
         if (!disposed && attached.has(editor)) entry.error.value = error
         return error
       }
+      if (
+        editor.readOnly.peek() ||
+        editor.classification.peek()?.storage === 'bytes'
+      )
+        return Promise.resolve(fail(new Error('This editor is read-only')))
       const src = editor.src.peek()
       if (!src)
         return Promise.resolve(
@@ -98,6 +103,11 @@ export function createEditorSave(
           return fail(new Error('The editor changed before saving started'))
         }
         if (queue.adoption !== adoption) return undefined
+        if (
+          editor.readOnly.peek() ||
+          editor.classification.peek()?.storage === 'bytes'
+        )
+          return fail(new Error('This editor is read-only'))
         try {
           const handlers = getSaveHandlers()
             .filter((handler) => matchesEditor(handler.matches, saved))

@@ -11,7 +11,6 @@ import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSetting
 import type { KclSceneResource } from '@src/lib/kcl/scene/open'
 import { openKclScene } from '@src/lib/kcl/scene/open'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import type * as WasmUtils from '@src/lang/wasmUtils'
 import {
   readKclFileExtensions,
   readKclVersion,
@@ -26,7 +25,7 @@ import {
   createTestSettings,
 } from '@src/lib/kcl/testFixtures'
 
-vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
+vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUSceneView', () => ({
   LocalWebGPUSceneView: () => null,
 }))
 vi.mock('@src/lib/kcl/scene/open', () => ({ openKclScene: vi.fn() }))
@@ -34,8 +33,7 @@ vi.mock('@src/lib/kcl/execution/nativeInputs', () => ({
   readKclVersion: vi.fn(async () => '3.0'),
   readKclFileExtensions: vi.fn(async () => ['kcl']),
 }))
-vi.mock('@src/lang/wasmUtils', async (importOriginal) => ({
-  ...(await importOriginal<typeof WasmUtils>()),
+vi.mock('@src/lang/wasmUtils', () => ({
   initialiseWasm: vi.fn(() => new Promise<ModuleType>(() => {})),
 }))
 beforeAll(async () => {

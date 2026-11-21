@@ -55,6 +55,7 @@ export function createTestKclRuntime() {
     state: signal(emptyExecState()),
     executing: signal(false),
     failed: signal(false),
+    sendResponse: vi.fn<KclRuntime['sendResponse']>(async () => {}),
     execute: vi.fn<KclRuntime['execute']>(async () => emptyExecState()),
     exportModel: vi
       .fn<KclRuntime['exportModel']>()

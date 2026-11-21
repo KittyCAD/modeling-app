@@ -40,7 +40,9 @@ async function runtime(
   hooks: Partial<
     Pick<
       Parameters<typeof createKclRuntime>[1],
-      'trackExecution' | 'waitForAllModelingCommands'
+      | 'trackExecution'
+      | 'waitForAllModelingCommands'
+      | 'fireModelingCommandFromWasm'
     >
   > = {}
 ) {
@@ -371,4 +373,83 @@ it('waits for native execution and command draining before closing, without publ
     execution.resolve(undefined)
     commands.resolve(undefined)
   }
+})
+
+it.each(['stl', 'ply', 'step', 'obj'])(
+  'completes a native %s import when its asynchronous engine reply arrives',
+  async (extension) => {
+    const imported = Promise.withResolvers<{
+      id: string
+      request: EngineCommand
+    }>()
+    const model = await runtime(wasm, createSettings(), [], {
+      fireModelingCommandFromWasm: (id, _range, command) => {
+        imported.resolve({ id, request: JSON.parse(command) })
+        return undefined
+      },
+    })
+    const run = model.execute(
+      snapshot(
+        `@settings(kclVersion = 3.0)\nimport "body.${extension}" as previewModel`,
+        { [`/model/body.${extension}`]: 'model bytes' }
+      )
+    )
+    const { id, request } = await imported.promise
+    expect(request).toMatchObject({
+      type: 'modeling_cmd_req',
+      cmd: { type: 'import_files', files: [{ path: `body.${extension}` }] },
+    })
+    expect(model.executing.peek()).toBe(true)
+    // This must reach WASM while execute is waiting, rather than queueing behind it.
+    await model.sendResponse({
+      success: true,
+      request_id: id,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: { type: 'import_files', data: { object_id: id } },
+        },
+      },
+    })
+    const result = await run
+    expect([...result.artifactGraph.values()]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'importedGeometry' }),
+      ])
+    )
+    expect(model.executing.peek()).toBe(false)
+    expect(model.failed.peek()).toBe(false)
+  }
+)
+
+it('finishes pending response delivery before freeing native memory and ignores later replies', async () => {
+  const delivery = Promise.withResolvers<undefined>()
+  const calls: string[] = []
+  class Context extends wasm.Context {
+    async sendResponse() {
+      calls.push('response')
+      await delivery.promise
+    }
+    free() {
+      calls.push('free')
+      super.free()
+    }
+  }
+  const model = await runtime({ ...wasm, Context })
+  const response = {
+    success: true,
+    request_id: 'response-id',
+    resp: { type: 'modeling', data: { modeling_response: { type: 'empty' } } },
+  } as const
+  const sending = model.sendResponse(response)
+  const closing = model.dispose()
+  try {
+    await Promise.resolve()
+    expect(calls).toEqual(['response'])
+  } finally {
+    delivery.resolve(undefined)
+  }
+  await Promise.all([sending, closing])
+  await model.sendResponse(response)
+  expect(calls).toEqual(['response', 'free'])
 })

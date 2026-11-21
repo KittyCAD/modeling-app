@@ -1,5 +1,8 @@
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { ExecutorRunContext } from '@src/lib/executors/registry/contract'
+import type {
+  ExecutorCapability,
+  ExecutorRunContext,
+} from '@src/lib/executors/registry/contract'
 import { defineExecutorCapability } from '@src/lib/executors/registry/contract'
 import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
 import { isErr } from '@src/lib/trap'
@@ -27,6 +30,7 @@ export function createKclExecution(
   return { capability }
 }
 
-export type KclExecutionCapability = ReturnType<
-  typeof createKclExecution
->['capability']
+/** Any computation supplying captured KCL sources can drive an engine-backed scene. */
+export type KclExecutionCapability = ExecutorCapability<{
+  sources: KclSourceSnapshot
+}>

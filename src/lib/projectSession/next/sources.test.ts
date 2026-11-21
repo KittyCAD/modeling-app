@@ -139,3 +139,23 @@ it('invalidates readers for source changes while ignoring metadata-only updates'
   projects.openProject(project('/other'))
   expect(sources.revision.value).not.toBe(renamed)
 })
+
+it('reads an open byte-backed model from storage when capturing a KCL import', async () => {
+  const { storage, documents, sources, request } = setup()
+  storage.readFile.mockResolvedValue(new Uint8Array([0, 255, 128]))
+  documents.value = [
+    {
+      src: signal('/model/body.glb'),
+      contents: signal('lossy text'),
+      classification: signal({
+        languageId: 'geometry',
+        storage: 'bytes' as const,
+      }),
+    } as Pick<Editor, 'src' | 'contents' | 'classification'>,
+  ]
+  const result = await sources.capture(request)
+  if (result instanceof Error) return expect.fail(result.message)
+  expect(result.files.get('/model/body.glb')).toEqual(
+    new Uint8Array([0, 255, 128])
+  )
+})

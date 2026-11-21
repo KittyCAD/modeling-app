@@ -1,3 +1,5 @@
+import type { WebSocketResponse } from '@kittycad/lib'
+import { encode } from '@msgpack/msgpack'
 import * as Cause from 'effect/Cause'
 import * as Effect from 'effect/Effect'
 import * as Exit from 'effect/Exit'
@@ -55,6 +57,7 @@ export async function createKclRuntime(
   const executing = signal(false)
   const failed = signal(false)
   const events = new EventTarget()
+  const responses = new Set<Promise<void>>()
   const native = new wasm.Context(engine, {
     async readFile(path: string) {
       const contents = files.get(fsZds.join(path))
@@ -176,6 +179,17 @@ export async function createKclRuntime(
     failed,
     events,
     execute,
+    async sendResponse(response: WebSocketResponse) {
+      if (disposed) return
+      // Import execution waits on these replies, so delivery must bypass the execution queue.
+      const delivery = native.sendResponse(encode(response))
+      responses.add(delivery)
+      try {
+        await delivery
+      } finally {
+        responses.delete(delivery)
+      }
+    },
 
     exportModel: (
       format: Parameters<LocalRendererHost['exportModel']>[0]
@@ -185,6 +199,7 @@ export async function createKclRuntime(
       if (disposed) return
       disposed = true
       await queue
+      await Promise.allSettled([...responses])
       native.free()
     },
   }

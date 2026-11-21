@@ -45,12 +45,15 @@ export interface EditorViewInstance {
 /** Language identity is distinct from a filename extension; not every language has a media type. */
 export interface EditorClassification {
   readonly languageId: string
+  /** Byte-backed formats always execute from storage, never from decoded Code text. */
+  readonly storage?: 'bytes'
   readonly mediaType?: string
 }
 
 /** Independent language descriptors classify source snapshots, before any editing behavior is installed. */
 export interface EditorLanguage {
   id: string
+  storage?: 'bytes'
   mediaType?: string
   matches: '*' | `.${string}` | ((source: EditorSourceContext) => boolean)
   /** Higher priorities win; ties retain registration order. */
@@ -158,7 +161,10 @@ export interface EditorsService {
   /** Create an unsaved buffer, without reading or creating a file. */
   createEditor: (contents?: string) => Editor | Error
   /** Synchronously create an independent document from contents already loaded by the caller. */
-  openEditor: (src: string | undefined, contents: string) => Editor | Error
+  openEditor: (
+    src: string | undefined,
+    contents: string | Uint8Array
+  ) => Editor | Error
   /** Update an editor's source after a rename or reassociation; performs no file IO. */
   setSource: (id: symbol, src: string) => Error | undefined
   /** Explicitly choose a registered language, or clear the choice to resume source classification. */

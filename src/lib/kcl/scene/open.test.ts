@@ -371,3 +371,39 @@ it('does not fit a newly loaded local model over a restored camera', async () =>
     preferences.dispose()
   }
 })
+it.each(['local', 'streamed'] as const)(
+  'delivers asynchronous engine responses only to their owning %s runtime',
+  async (presentation) => {
+    const first = setup()
+    const firstResponse = first.model.sendResponse
+    const firstScene = await openKclScene({ ...first.options, presentation })
+    if (firstScene instanceof Error) return expect.fail(firstScene.message)
+    const receiver = vi.mocked(connectScene).mock.calls.at(-1)?.[0].rustContext
+    const second = setup()
+    const secondResponse = second.model.sendResponse
+    const secondScene = await openKclScene({ ...second.options, presentation })
+    if (secondScene instanceof Error) return expect.fail(secondScene.message)
+    try {
+      expect(receiver).toBeDefined()
+      const response = {
+        success: true,
+        request_id: 'response-id',
+        resp: {
+          type: 'modeling',
+          data: { modeling_response: { type: 'empty' } },
+        },
+      } as const
+      await receiver?.sendResponse(response)
+      expect(firstResponse).toHaveBeenCalledExactlyOnceWith(response)
+      expect(secondResponse).not.toHaveBeenCalled()
+      await firstScene.dispose()
+      await receiver?.sendResponse(response)
+      expect(firstResponse).toHaveBeenCalledTimes(1)
+    } finally {
+      await firstScene.dispose()
+      await secondScene.dispose()
+      first.preferences.dispose()
+      second.preferences.dispose()
+    }
+  }
+)
