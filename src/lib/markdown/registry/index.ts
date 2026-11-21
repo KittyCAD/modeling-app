@@ -38,8 +38,10 @@ const extension = factory({
   dependencies: { executors: executorObservations },
   create: ({ executors }) => {
     const preview = defineEditorView(
-      executionContext(markdownExecutorCapability, () =>
-        executors.executorsService.required()
+      executionContext(
+        markdownExecutorCapability,
+        () => executors.executorsService.required(),
+        () => true
       )
     )({
       id: 'markdown.preview',

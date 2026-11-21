@@ -1,3 +1,6 @@
+import { renderCommands } from '@src/lib/kcl/registry/renderCommands'
+import { acquireKclExecutionPolicy } from '@src/lib/kcl/modeling/executionPolicy'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import {
   kclExecutionSettingsExtension,
   kclExecutionSettingsFactory,
@@ -48,6 +51,7 @@ import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 const extension = factory({
   key: 'kcl',
   dependencies: {
+    render: renderCommands,
     nativeSettings: kclExecutionSettingsFactory,
     sources: projectSourcesExtension,
     settingsInput: settingsInputs,
@@ -56,6 +60,7 @@ const extension = factory({
     executorsInput: executorInputs,
   },
   create: ({
+    render,
     nativeSettings,
     sources,
     settingsInput,
@@ -66,17 +71,18 @@ const extension = factory({
     const getWasm = () =>
       wasmInput.wasmPromiseFacet.value ??
       Promise.reject(new Error('Missing WASM promise registry value.'))
-    const execution = createKclExecution(async (contents, context) => {
-      const extensions = await readKclFileExtensions(getWasm())
-      return sources.capture({
+    const execution = createKclExecution((contents, context) => {
+      const extensions = readKclFileExtensions(getWasm())
+      const captured = sources.capture({
         document: { src: context.src || undefined, contents },
         unnamedPath: 'main.kcl',
         signal: context.signal,
-        include: (path) =>
-          extensions.some((extension) =>
+        include: async (path) =>
+          (await extensions).some((extension) =>
             path.toLowerCase().endsWith(extension)
           ),
       })
+      return Promise.all([captured, extensions]).then(([snapshot]) => snapshot)
     }, sources.revision)
     const modelingView = defineEditorView(({ editor, onDispose }) => {
       const executors = executorsInput.executorsService.required()
@@ -104,7 +110,8 @@ const extension = factory({
           const wasm = getWasm()
           const renderer = presentation.peek()
           const version = await readKclVersion(
-            executor.editor.contents.peek(),
+            executor.result(execution.capability).peek().requested?.contents ??
+              executor.editor.contents.peek(),
             wasm
           )
           if (signal.aborted)
@@ -145,7 +152,10 @@ const extension = factory({
             },
           })
         },
-        () => viewExecution?.refresh(),
+        () =>
+          viewExecution?.refresh(
+            getAutomaticallyRenderEnabledFromSettings(settings.current.peek())
+          ),
         () =>
           viewExecution?.state.peek().running ?? executor.output.peek().running
       )
@@ -154,9 +164,22 @@ const extension = factory({
         executor,
         execution.capability,
         session,
-        () => settingsRevision.value
+        () => settingsRevision.value,
+        () => nativeSettings.configuration.peek()
       )
       onDispose(viewExecution.dispose)
+      onDispose(
+        acquireKclExecutionPolicy(
+          executor,
+          execution.capability,
+          viewExecution,
+          () =>
+            getAutomaticallyRenderEnabledFromSettings(settings.current.value, {
+              reactive: true,
+            }),
+          () => settingsRevision.value
+        )
+      )
       onDispose(
         effect(() => {
           const renderer = choosePresentation()
@@ -171,7 +194,9 @@ const extension = factory({
           })
         })
       )
-      return { executor, session, viewExecution }
+      const requestRender = () => executor.run(execution.capability)
+      onDispose(render.attach(editor, requestRender))
+      return { executor, session, viewExecution, render: requestRender }
     })({
       id: 'kcl.modeling',
       label: 'Modeling',
