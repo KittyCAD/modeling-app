@@ -1,3 +1,7 @@
+import {
+  cameraViewDefinitions,
+  type CameraViewAction,
+} from '@src/lib/cameraViewCommands'
 import { signal } from '@preact/signals-core'
 import { ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import type { KclSceneResource } from '@src/lib/kcl/scene/open'
@@ -73,11 +77,17 @@ export function createCameraCommands(preserveFocus: () => boolean) {
         (!selectionRequired || scene.selection.displayed.value.length > 0)
       )
     },
-    run: (action: 'fit' | 'reset' | 'center') => {
+    run: (action: CameraViewAction) => {
       const scene = readReadyScene()
       const host = scene?.viewControls
       if (!scene || !host) return false
-      switch (action) {
+      const definition = cameraViewDefinitions.find(
+        (candidate) => candidate.id === action
+      )
+      if (!definition) return false
+      if ('axis' in definition)
+        return host.sceneInfra.camControls.updateCameraToAxis(definition.axis)
+      switch (definition.id) {
         case 'fit':
           return host.sceneInfra.camControls.zoomToFit({
             padding: ZOOM_TO_FIT_PADDING,

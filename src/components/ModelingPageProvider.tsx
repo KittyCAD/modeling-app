@@ -90,27 +90,11 @@ export const ModelingPageProvider = ({
       settingsActor
     )
 
-    const {
-      topViewCommand,
-      frontViewCommand,
-      rightViewCommand,
-      backViewCommand,
-      bottomViewCommand,
-      leftViewCommand,
-      zoomToFitCommand,
-    } = createStandardViewsCommands(kclManager)
-
     const namedViewCommands = [
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-      topViewCommand,
-      frontViewCommand,
-      rightViewCommand,
-      backViewCommand,
-      bottomViewCommand,
-      leftViewCommand,
-      zoomToFitCommand,
+      ...createStandardViewsCommands(kclManager.sceneInfra.camControls),
     ]
     commands.send({
       type: 'Add commands',

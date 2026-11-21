@@ -179,6 +179,7 @@ const extension = factory({
         session,
         viewExecution,
         attachCameraViewport: camera.attach,
+        cameraShortcuts: camera.shortcuts,
       }
     })({
       id: 'kcl.modeling',

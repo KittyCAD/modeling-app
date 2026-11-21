@@ -1,3 +1,5 @@
+import type { CameraShortcutHints } from '@src/lib/cameraViewCommands'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { AttachCameraViewport } from '@src/lib/kcl/modeling/cameraCommands'
 import type { KclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
 import { KclViewControls } from '@src/lib/kcl/modeling/KclViewControls'
@@ -19,6 +21,7 @@ export function KclScene({
   context,
 }: {
   context: {
+    cameraShortcuts: ReadonlySignal<CameraShortcutHints>
     attachCameraViewport: AttachCameraViewport
     executor: Executor
     session: KclSession
@@ -60,7 +63,13 @@ export function KclScene({
           defaultPlaneVisibility={hiddenPlanes}
         />
       )}
-      {resource && <KclViewControls resource={resource} target={viewport} />}
+      {resource && (
+        <KclViewControls
+          resource={resource}
+          target={viewport}
+          shortcuts={context.cameraShortcuts.value}
+        />
+      )}
       <KclConnectionStatus session={session} />
       {state.type === 'ready' && error ? (
         <p

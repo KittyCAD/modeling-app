@@ -76,11 +76,16 @@ Local rendering is exempt from idle teardown.
 
 ## Camera commands
 
-The [camera contribution](registry/cameraCommands.ts) registers Zoom to fit,
-Reset view, and Center view on selection as commands with keymap bindings.
-Their defaults are `mod+alt+f`, `mod+alt+x`, and `mod+alt+c`; users can remap them
-through the keymap settings. The focused Modeling viewport supplies the target,
-so the commands use its current scene after a reconnect or renderer switch.
+The [camera contribution](registry/cameraCommands.ts) registers standard views,
+Zoom to fit, Reset view, and Center view on selection as commands with keymap
+bindings.
+Standard views use `v` followed by `1` through `6` (for example, `v` then `3`
+is Front view). Fit and Reset also accept `v f` and `v r`, alongside
+`mod+alt+f`, `mod+alt+x`, and `mod+alt+c` for Fit, Reset, and Center. Users can
+remap these through the keymap settings. The
+[shared camera definitions](../cameraViewCommands.ts) bundle the actions and defaults used by both shells; their camera menus display
+the effective registered bindings, including remapping and unbinding.
+The focused Modeling viewport supplies the target, so the commands use its current scene after a reconnect or renderer switch.
 Text fields and other editor views do not activate that camera scope. The
 command palette retains the viewport that launched it until submission or
 dismissal. Closing the viewport removes its target registration.

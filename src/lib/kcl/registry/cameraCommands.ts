@@ -1,3 +1,9 @@
+import {
+  cameraViewDefinitions,
+  createCameraKeymapItems,
+  cameraShortcutHints,
+} from '@src/lib/cameraViewCommands'
+import { observeService } from '@src/registry/inputs'
 import { computed, effect, untracked } from '@preact/signals-core'
 import { factory } from 'plankton'
 import { createCameraCommands } from '@src/lib/kcl/modeling/cameraCommands'
@@ -7,21 +13,21 @@ import {
   provideCommand,
   provideCommandScope,
 } from '@src/registry/contracts/commands'
-import { provideKeymapItem } from '@src/registry/contracts/keymap'
+import {
+  provideKeymapItem,
+  keymapService,
+} from '@src/registry/contracts/keymap'
 
 export const MODELING_VIEW_FOCUSED_SCOPE = 'kcl.modeling-view-focused'
-
-const actions = [
-  { action: 'fit', title: 'Zoom to fit', key: 'f' },
-  { action: 'reset', title: 'Reset view', key: 'x' },
-  { action: 'center', title: 'Center view on selection', key: 'c' },
-] as const
 
 /** Registers camera actions once; mounted Modeling viewports supply their targets. */
 export const cameraCommands = factory({
   key: 'kcl-camera-commands',
-  dependencies: { commands: observations },
-  create: ({ commands }) => {
+  dependencies: {
+    commands: observations,
+    keymap: observeService(keymapService),
+  },
+  create: ({ commands, keymap }) => {
     const paletteOpen = computed(
       () =>
         commands.commandScopeService.current.value?.activeScopes.value.includes(
@@ -30,7 +36,20 @@ export const cameraCommands = factory({
     )
     const camera = createCameraCommands(() => paletteOpen.peek())
     return {
-      exports: { attach: camera.attach },
+      exports: {
+        attach: camera.attach,
+        shortcuts: computed(() => {
+          const service = keymap.current.value
+          return service
+            ? cameraShortcutHints(
+                service.keymap.value,
+                { type: 'modeling', scope: MODELING_VIEW_FOCUSED_SCOPE },
+                [MODELING_VIEW_FOCUSED_SCOPE],
+                commands.commandScopesFacet.value
+              )
+            : {}
+        }),
+      },
       items: [
         provideCommandScope({
           id: MODELING_VIEW_FOCUSED_SCOPE,
@@ -38,32 +57,26 @@ export const cameraCommands = factory({
           priority: 1200,
           userEditable: false,
         }),
-        ...actions.flatMap(({ action, title, key }) => {
+        ...cameraViewDefinitions.map(({ id: action, title }) => {
           const id = `kcl.camera.${action}`
-          return [
-            provideCommand({
-              id,
-              name: id,
-              groupId: 'kcl.camera',
-              displayName: title,
-              description: 'Move the camera in the focused Modeling view.',
-              needsReview: false,
-              scopes: [MODELING_VIEW_FOCUSED_SCOPE],
-              get disabled() {
-                return !camera.available(action === 'center')
-              },
-              onSubmit: () => camera.run(action),
-            }),
-            provideKeymapItem({
-              id,
-              command: id,
-              title,
-              source: 'KCL Modeling camera',
-              keystrokes: [`mod+alt+${key}`],
-              when: [MODELING_VIEW_FOCUSED_SCOPE],
-            }),
-          ]
+          return provideCommand({
+            id,
+            name: id,
+            groupId: 'kcl.camera',
+            displayName: title,
+            description: 'Move the camera in the focused Modeling view.',
+            needsReview: false,
+            scopes: [MODELING_VIEW_FOCUSED_SCOPE],
+            get disabled() {
+              return !camera.available(action === 'center')
+            },
+            onSubmit: () => camera.run(action),
+          })
         }),
+        ...createCameraKeymapItems({
+          type: 'modeling',
+          scope: MODELING_VIEW_FOCUSED_SCOPE,
+        }).map(provideKeymapItem),
       ],
       start: () => {
         const stopScope = effect(() => {

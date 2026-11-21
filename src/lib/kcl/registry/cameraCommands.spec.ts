@@ -1,7 +1,8 @@
+import type { CameraShortcutHints } from '@src/lib/cameraViewCommands'
 import { createSceneSelection } from '@src/lib/scene/selection'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import { signal } from '@preact/signals-core'
+import { signal, type ReadonlySignal } from '@preact/signals-core'
 import { factory, provide, Registry, service } from 'plankton'
 import { beforeEach, expect, it, onTestFinished, vi } from 'vitest'
 import { CameraControls } from '@src/clientSideScene/CameraControls'
@@ -46,9 +47,10 @@ beforeEach(() => {
 })
 
 async function setup() {
-  const targets = service<{ attach: AttachCameraViewport }>(
-    'test.camera-targets'
-  )
+  const targets = service<{
+    attach: AttachCameraViewport
+    shortcuts: ReadonlySignal<CameraShortcutHints>
+  }>('test.camera-targets')
   const registry = new Registry()
   await registry.configure([
     provide(fileOperationsService, testFileOperations),
@@ -66,6 +68,7 @@ async function setup() {
     registry,
     keymap: registry.required(keymapService),
     attach: registry.required(targets).attach,
+    shortcuts: registry.required(targets).shortcuts,
   }
 }
 
@@ -77,6 +80,7 @@ function scene(presentation: ScenePresentation) {
     () => settings.current.peek()
   )
   onTestFinished(() => camera.dispose())
+  const axis = vi.spyOn(camera, 'updateCameraToAxis').mockResolvedValue()
   const fit = vi.spyOn(camera, 'zoomToFit').mockResolvedValue()
   const center = vi.spyOn(camera, 'centerOnSelection').mockResolvedValue()
   const reset = vi.fn(async () => {})
@@ -100,7 +104,7 @@ function scene(presentation: ScenePresentation) {
       toggleGizmo: () => {},
     },
   })
-  return { resource, fit, center, reset }
+  return { resource, axis, fit, center, reset }
 }
 
 function viewport() {
@@ -179,7 +183,7 @@ it.each(['streamed', 'local'] as const)(
 )
 
 it('honors user remapping and leaves Code views and text fields alone', async () => {
-  const { attach, keymap } = await setup()
+  const { attach, keymap, shortcuts } = await setup()
   const view = scene('local')
   const element = viewport()
   const detach = attach(element, () => view.resource)
@@ -190,6 +194,7 @@ it('honors user remapping and leaves Code views and text fields alone', async ()
     when: [MODELING_VIEW_FOCUSED_SCOPE],
   })
   element.focus()
+  expect(shortcuts.value.fit).toEqual(['mod+alt+q'])
   press(element, 'f')
   expect(view.fit).not.toHaveBeenCalled()
   press(element, 'q')
@@ -245,3 +250,46 @@ it('drops a closed viewport even while the command palette is open', async () =>
   })
   expect(view.reset).not.toHaveBeenCalled()
 })
+
+it.each(['streamed', 'local'] as const)(
+  'applies standard-view sequences only to the focused %s camera',
+  async (presentation) => {
+    const { attach } = await setup()
+    const first = scene(presentation),
+      second = scene(presentation)
+    const firstElement = viewport(),
+      secondElement = viewport()
+    onTestFinished(attach(firstElement, () => first.resource))
+    onTestFinished(attach(secondElement, () => second.resource))
+    secondElement.focus()
+    const sequence = (element: HTMLElement, key: string) => {
+      for (const character of ['v', key])
+        element.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: character,
+            bubbles: true,
+            cancelable: true,
+          })
+        )
+    }
+    for (const [key, axis] of [
+      ['1', 'z'],
+      ['2', 'x'],
+      ['3', '-y'],
+      ['4', 'y'],
+      ['5', '-z'],
+      ['6', '-x'],
+    ]) {
+      sequence(secondElement, key)
+      expect(second.axis).toHaveBeenLastCalledWith(axis)
+    }
+    expect(first.axis).not.toHaveBeenCalled()
+    firstElement.focus()
+    sequence(firstElement, '3')
+    expect(first.axis).toHaveBeenCalledWith('-y')
+    sequence(firstElement, 'f')
+    expect(first.fit).toHaveBeenCalledOnce()
+    sequence(firstElement, 'r')
+    expect(first.reset).toHaveBeenCalledOnce()
+  }
+)
