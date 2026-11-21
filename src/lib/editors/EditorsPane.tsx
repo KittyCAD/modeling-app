@@ -146,7 +146,7 @@ export function EditorsPane({
               </span>
             ),
             onFocus: () => naming?.focus(editor, instance.id),
-            onRename: naming
+            onDoubleClick: naming
               ? () => {
                   trap(naming.rename(editor, instance.id))
                 }

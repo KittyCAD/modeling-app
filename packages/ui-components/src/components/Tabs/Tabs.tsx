@@ -9,8 +9,7 @@ export interface TabItem<Id> {
   title?: string
   /** An inline control beside the hidden tab button, never nested inside it. */
   labelEditor?: ReactNode
-  /** Rename via double-click. Keyboard bindings belong to the host. */
-  onRename?: () => void
+  onDoubleClick?: () => void
   onFocus?: () => void
   /** A control beside the tab button, within the same tab outline. */
   accessory?: ReactNode
@@ -94,7 +93,7 @@ export function Tabs<Id extends string | number | symbol>({
                 <Tab
                   title={item.title}
                   className={item.labelEditor ? 'sr-only' : styles.tab}
-                  onDoubleClick={item.onRename}
+                  onDoubleClick={item.onDoubleClick}
                   onFocus={item.onFocus}
                   onKeyDown={(event) => {
                     if (event.key === 'Delete' && item.close) {
