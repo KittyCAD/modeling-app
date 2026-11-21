@@ -1,6 +1,8 @@
+import { ShareProjectButton } from '@src/components/ShareProjectButton'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { createCloudProjectsServices } from '@src/lib/cloudProjects/service'
 import fsZds from '@src/lib/fs-zds'
+import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
 import { observations as authObservations } from '@src/registry/contracts/auth'
 import { fileOperationsMountsFacet } from '@src/registry/contracts/fileOperations'
 import {
@@ -23,6 +25,11 @@ export const cloudProjectsExtension: Factory = defineFactory({
       items: [
         contribute(fileOperationsMountsFacet, () => services.mount),
         provide(cloudStorageService, services.cloud),
+        contribute(appHeaderItemsFacet, () => ({
+          id: 'project.share',
+          order: 110,
+          Component: ShareProjectButton,
+        })),
       ],
       dispose: services.dispose,
     }
