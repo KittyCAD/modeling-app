@@ -169,7 +169,17 @@ const extension: Factory = defineFactory({
             ?.signal
         const resources = createEditorCleanup()
         const source = signal(src)
-        const backing = createEditorDocument(contents, () => !readOnly.peek())
+        const input =
+          typeof contents === 'string'
+            ? contents
+            : createEditorClassification(
+                  source,
+                  signal(''),
+                  languages
+                ).classification.peek()?.storage === 'bytes'
+              ? ''
+              : new TextDecoder().decode(contents)
+        const backing = createEditorDocument(input, () => !readOnly.peek())
         resources.onDispose(backing.dispose)
         const text = backing.document.contents
         const language = createEditorClassification(source, text, languages)

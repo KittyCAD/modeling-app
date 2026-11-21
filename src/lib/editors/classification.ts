@@ -21,7 +21,11 @@ export function createEditorClassification(
         .filter((language) => matchesEditor(language.matches, source))
         .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0]
     return selected
-      ? { languageId: selected.id, mediaType: selected.mediaType }
+      ? {
+          languageId: selected.id,
+          mediaType: selected.mediaType,
+          ...(selected.storage ? { storage: selected.storage } : {}),
+        }
       : undefined
   })
   return {
