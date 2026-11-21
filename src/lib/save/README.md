@@ -2,9 +2,13 @@
 
 The wildcard editor capability tracks each document against the text last loaded
 or successfully saved. It contributes the tab's unsaved dot independently of the
-selected mode. Code surfaces install Cmd/Ctrl+S; the host also handles the shortcut
-when another editor mode has focus. The Save editor command uses that focused
-document.
+selected mode. The save extension contributes Cmd/Ctrl+S through the registry keymap with the
+`editor-focused` context. That context applies to any mounted editor view while
+preserving independent Code and editable-control contexts. The Save editor
+command uses the focused document, or the most recently focused editor when
+invoked from the command palette. F2 is a global contributed Rename editor
+binding. Both shortcuts honor user remapping and unbinding; double-click rename
+remains a tab interaction.
 
 `editorOnSaveFacet` supplies ordered save handlers. The default
 `persistToFiles` contribution writes the captured source and contents through

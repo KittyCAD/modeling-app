@@ -1,14 +1,12 @@
-import { Text, type Extension } from '@codemirror/state'
-import { ViewPlugin, keymap } from '@codemirror/view'
+import { Text } from '@codemirror/state'
 import { batch, computed, signal } from '@preact/signals-core'
 import type {
   Editor,
   EditorResourceHost,
-  CodeEditorHost,
 } from '@src/lib/editors/registry/contract'
 import type { EditorSave, EditorOnSave } from '@src/lib/save/registry/contract'
 import { matchesEditor } from '@src/lib/editors/matching'
-import { isErr, trap, reportRejection } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 
 /** In-flight writes share a source's adoption revision, including across buffers. */
 interface SourceSaveQueue {
@@ -206,28 +204,6 @@ export function createEditorSave(
       })
       return undefined
     },
-    codeExtensions: ({ editor }: CodeEditorHost): Extension => [
-      ViewPlugin.define(() => ({
-        update: (update) => {
-          if (update.view.hasFocus) focus(editor)
-        },
-      })),
-      keymap.of([
-        {
-          key: 'Mod-s',
-          run: () => {
-            if (!attached.has(editor)) return false
-            void service
-              .save(editor)
-              .then((result) => {
-                if (isErr(result)) trap(result)
-              })
-              .catch(reportRejection)
-            return true
-          },
-        },
-      ]),
-    ],
     dispose: () => {
       disposed = true
       attached.clear()

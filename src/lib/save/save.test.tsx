@@ -106,7 +106,7 @@ describe('contributed editor saving', () => {
       },
     })
   const saving = () => registry.required(editorSaveService)
-  it('saves the Modeling document after clicking its background without focusing Code first', async () => {
+  it('targets the Modeling document after clicking its background without focusing Code first', async () => {
     await registry.replace(extra, [
       [
         contribute(editorViewsFacet, () =>
@@ -139,11 +139,10 @@ describe('contributed editor saving', () => {
     fireEvent.pointerDown(backgrounds[1])
     expect(document.activeElement).not.toBe(document.body)
     expect(document.activeElement).toContainElement(backgrounds[1])
-    fireEvent.keyDown(document.activeElement!, {
-      key: 's',
-      code: 'KeyS',
-      ctrlKey: true,
-    })
+    const command = registry
+      .get(commandsFacet)
+      .find(({ id }) => id === SAVE_EDITOR_COMMAND.id)
+    await command?.onSubmit()
     await vi.waitFor(() =>
       expect(writeFile).toHaveBeenCalledExactlyOnceWith(
         second.src.peek(),
@@ -307,39 +306,35 @@ describe('contributed editor saving', () => {
     expect(await saved).toBeUndefined()
     expect(editor.src.peek()).toBe('/project/different.txt')
   })
-  it.each(['double-click', 'F2'])(
-    'renames with %s without discarding unsaved text or replacing views',
-    async (gesture) => {
-      await namingProject()
-      const editor = open()
-      change(editor, 'dirty contents')
-      const editors = registry.required(editorsService)
-      const view = editors.views.peek()[0]
-      renderNamingPane()
-      const tab = screen.getByRole('tab', { name: 'notes.txt' })
-      if (gesture === 'F2') fireEvent.keyDown(tab, { key: 'F2' })
-      else fireEvent.doubleClick(tab)
-      const input = screen.getByRole('textbox', {
-        name: 'Project-relative file path',
-      })
-      expect(input).toHaveValue('notes.txt')
-      fireEvent.change(input, { target: { value: 'renamed.txt' } })
-      fireEvent.keyDown(input, { key: 'Enter' })
-      await screen.findByRole('tab', { name: 'renamed.txt' })
-      expect(rename).toHaveBeenCalledWith(
-        '/project/notes.txt',
-        '/project/renamed.txt'
-      )
-      expect(editor.contents.peek()).toBe('dirty contents')
-      expect(editors.views.peek()[0]).toBe(view)
-      expect(saving().state(editor).peek().dirty).toBe(true)
-      await saving().save(editor)
-      expect(writeFile).toHaveBeenCalledWith(
-        '/project/renamed.txt',
-        'dirty contents'
-      )
-    }
-  )
+  it('renames on double-click without discarding unsaved text or replacing views', async () => {
+    await namingProject()
+    const editor = open()
+    change(editor, 'dirty contents')
+    const editors = registry.required(editorsService)
+    const view = editors.views.peek()[0]
+    renderNamingPane()
+    const tab = screen.getByRole('tab', { name: 'notes.txt' })
+    fireEvent.doubleClick(tab)
+    const input = screen.getByRole('textbox', {
+      name: 'Project-relative file path',
+    })
+    expect(input).toHaveValue('notes.txt')
+    fireEvent.change(input, { target: { value: 'renamed.txt' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    await screen.findByRole('tab', { name: 'renamed.txt' })
+    expect(rename).toHaveBeenCalledWith(
+      '/project/notes.txt',
+      '/project/renamed.txt'
+    )
+    expect(editor.contents.peek()).toBe('dirty contents')
+    expect(editors.views.peek()[0]).toBe(view)
+    expect(saving().state(editor).peek().dirty).toBe(true)
+    await saving().save(editor)
+    expect(writeFile).toHaveBeenCalledWith(
+      '/project/renamed.txt',
+      'dirty contents'
+    )
+  })
   it('shows a single path input when multiple views share a document', async () => {
     await namingProject()
     const editor = open()
@@ -379,7 +374,7 @@ describe('contributed editor saving', () => {
     expect(editor.contents.peek()).toBe('newer edits')
     expect(saving().state(editor).peek().dirty).toBe(false)
   })
-  it('opens the first-save input from the editor keyboard shortcut and cancels on blur', async () => {
+  it('cancels the first-save input on blur', async () => {
     await namingProject()
     const editors = registry.required(editorsService)
     const editor = requireSuccess(editors.createEditor('draft'))
@@ -389,10 +384,9 @@ describe('contributed editor saving', () => {
     act(() => {
       view.focus()
     })
-    fireEvent.keyDown(view.contentDOM, {
-      key: 's',
-      code: 'KeyS',
-      ctrlKey: true,
+    let saved!: Promise<undefined | Error>
+    act(() => {
+      saved = saving().save(editor)
     })
     const input = screen.getByRole('textbox', {
       name: 'Project-relative file path',
@@ -404,6 +398,7 @@ describe('contributed editor saving', () => {
     expect(
       screen.queryByRole('textbox', { name: 'Project-relative file path' })
     ).toBeNull()
+    await saved
     expect(editor.contents.peek()).toBe('draft')
     expect(createFile).not.toHaveBeenCalled()
   })
@@ -784,7 +779,7 @@ describe('contributed editor saving', () => {
     registry.required(editorsService).closeEditor(editor.id)
     expect(await saving().save(editor)).toBeInstanceOf(Error)
   })
-  it('shows contributed indicators independently and saves the focused buffer with the shortcut and command', async () => {
+  it('shows contributed indicators independently and saves the focused buffer with the command', async () => {
     const first = open(),
       second = open('/project/other.md')
     const indicators = registry.observe(editorTabIndicatorsFacet)
@@ -825,16 +820,7 @@ describe('contributed editor saving', () => {
         })
       )
       codeSurface(registry.required(editorsService), first).focus()
-      fireEvent.keyDown(
-        codeSurface(registry.required(editorsService), first).contentDOM,
-        {
-          key: 's',
-          code: 'KeyS',
-          keyCode: 83,
-          ctrlKey: !/Mac/.test(navigator.platform),
-          metaKey: /Mac/.test(navigator.platform),
-        }
-      )
+      await saving().save(first)
     })
     expect(writeFile).toHaveBeenCalledWith(first.src.peek(), 'save first')
     expect(

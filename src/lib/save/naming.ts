@@ -29,10 +29,12 @@ export function createEditorNaming(
   withSourceLock: (
     src: string,
     operation: () => Promise<undefined | Error>
-  ) => Promise<undefined | Error>
+  ) => Promise<undefined | Error>,
+  focusEditor: (editor: Editor) => void
 ) {
   const entries = new WeakMap<Editor, ReturnType<typeof createEntry>>()
   const activeEditors = new Set<Editor>()
+  const focusedViews = new WeakMap<Editor, symbol>()
   function createEntry(): {
     state: Signal<EditorPathRequest | undefined>
     request: PathRequest | undefined
@@ -104,6 +106,7 @@ export function createEditorNaming(
         views.find((view) =>
           view.element.peek()?.contains(document.activeElement)
         )?.id ??
+        focusedViews.get(editor) ??
         views[0]?.id,
       initialPath: source
         ? fsZds.relative(session.project.peek().contents.path, source)
@@ -113,6 +116,10 @@ export function createEditorNaming(
     return result
   }
   const service: EditorNaming = {
+    focus: (editor, viewId) => {
+      focusEditor(editor)
+      if (viewId) focusedViews.set(editor, viewId)
+    },
     state: (editor) => entryFor(editor).state,
     rename: (editor, viewId) => {
       void request(editor, viewId)

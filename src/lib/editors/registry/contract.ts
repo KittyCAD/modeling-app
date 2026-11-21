@@ -159,6 +159,7 @@ export interface EditorPathRequest {
 
 /** Optional naming behavior supplied by a persistence extension. */
 export interface EditorNaming {
+  focus: (editor: Editor, viewId?: symbol) => void
   state: (editor: Editor) => ReadonlySignal<EditorPathRequest | undefined>
   rename: (editor: Editor, viewId?: symbol) => Error | undefined
   submit: (editor: Editor, path: string) => Promise<void>
