@@ -1135,7 +1135,8 @@ export function getSourceSegmentArtifact(
 
 export function getSketchBlockForArtifact(
   artifact: Artifact | undefined,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  followBodyInputs = false
 ): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
   if (!artifact) {
     return undefined
@@ -1146,8 +1147,34 @@ export function getSketchBlockForArtifact(
   }
 
   if (artifact.type === 'path') {
-    return getSketchBlockForPathArtifact(artifact, artifactGraph)
+    return (
+      getSketchBlockForPathArtifact(artifact, artifactGraph) ??
+      (followBodyInputs
+        ? getSketchBlockForArtifact(
+            artifactGraph.get(artifact.originPathId ?? ''),
+            artifactGraph,
+            true
+          )
+        : undefined)
+    )
   }
+
+  const parent =
+    artifact.type === 'sweep'
+      ? artifact.pathId
+      : artifact.type === 'wall' ||
+          artifact.type === 'cap' ||
+          artifact.type === 'sweepEdge'
+        ? artifact.sweepId
+        : artifact.type === 'primitiveFace' || artifact.type === 'primitiveEdge'
+          ? artifact.solidId
+          : undefined
+  if (followBodyInputs && parent)
+    return getSketchBlockForArtifact(
+      artifactGraph.get(parent),
+      artifactGraph,
+      true
+    )
 
   if (artifact.type === 'segment' || artifact.type === 'solid2d') {
     const path = getArtifactOfTypes(
@@ -1157,7 +1184,9 @@ export function getSketchBlockForArtifact(
     if (err(path)) {
       return undefined
     }
-    return getSketchBlockForPathArtifact(path, artifactGraph)
+    return followBodyInputs
+      ? getSketchBlockForArtifact(path, artifactGraph, true)
+      : getSketchBlockForPathArtifact(path, artifactGraph)
   }
 
   return undefined
