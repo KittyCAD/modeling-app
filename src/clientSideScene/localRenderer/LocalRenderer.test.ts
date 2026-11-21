@@ -279,12 +279,12 @@ describe('local GLB loading', () => {
         f.manager.rustContext.defaultPlanes
       )
       f.renderer.setDefaultPlaneVisibility({ xy: true, yz: false, xz: false })
-      const target = f.gpu.planeRenderer.planes.get('plane-xy')?.mesh
-      expect(target).toBeDefined()
+      const targets = f.gpu.planeRenderer.planes.get('plane-xy')?.meshes
+      expect(targets?.length).toBeGreaterThan(0)
       await vi.waitFor(() =>
         expect(
           f.gpu.selectionHighlightRenderer.setSelection
-        ).toHaveBeenLastCalledWith([target])
+        ).toHaveBeenLastCalledWith(targets)
       )
     } finally {
       f.renderer.dispose()
