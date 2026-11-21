@@ -3951,6 +3951,23 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
   })
 })
 
+test('counts a raw region reference in the selection summary', async () => {
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const ast = assertParse('', instance)
+  const selection: Selections = {
+    graphSelections: [
+      {
+        entityRef: { type: 'region', region_id: 'region-1' },
+        codeRef: { range: [0, 0, 0], pathToNode: [] },
+      },
+    ],
+    otherSelections: [],
+  }
+  expect(getSelectionTypeDisplayText(ast, selection, new Map())).toBe(
+    '1 region'
+  )
+})
+
 describe('canSubmitSelectionArg', () => {
   const bodyArgument = {
     inputType: 'selection' as const,
