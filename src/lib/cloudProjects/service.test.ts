@@ -8,9 +8,21 @@ import { createCloudProjectsServices } from '@src/lib/cloudProjects/service'
 import { createFileOperationsServices } from '@src/registry/extensions/fileOperations'
 import * as api from '@src/lib/cloudProjects/runtime/api'
 import nodefs from '@src/lib/fs-zds/nodefs'
-import { publishCurrentProject } from '@src/lib/publishing/publication'
+import {
+  publishCurrentProject,
+  publishProjectFiles,
+} from '@src/lib/publishing/publication'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
 vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
   CloudApiError: (await original<typeof api>()).CloudApiError,
@@ -25,6 +37,7 @@ vi.mock('@src/lib/cloudProjects/runtime/api', async (original) => ({
 }))
 vi.mock('@src/lib/publishing/publication', () => ({
   publishCurrentProject: vi.fn(),
+  publishProjectFiles: vi.fn(),
 }))
 vi.mock('@src/lib/cloudProjects/runtime/archive', async (original) => ({
   ...(await original<typeof ArchiveModule>()),
@@ -48,6 +61,9 @@ const remote = {
   ],
 }
 const schedulers: { dispose: () => Promise<void> }[] = []
+beforeAll(() =>
+  moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+)
 beforeEach(() => {
   vi.mocked(parseProjectArchive).mockResolvedValue([
     { relativePath: 'main.kcl', data: new TextEncoder().encode('original') },
@@ -721,4 +737,91 @@ it('watches only the captured subtree and stops delivering changes after disposa
   stop()
   await storage.operations.writeFile(`${root}/parts/main.kcl`, 'later')
   expect(changes).toEqual([`${root}/parts/main.kcl`])
+})
+
+it('publishes a new-shell snapshot with its revision and preserves a queued later edit', async () => {
+  const { storage } = setup()
+  const root = await storage.openProject('one')
+  await storage.renameProject('one', 'Published')
+  const started = Promise.withResolvers<undefined>()
+  const gate = Promise.withResolvers<undefined>()
+  vi.mocked(publishProjectFiles).mockImplementationOnce(async (args) => {
+    expect(args.expectedRevision).toBe('2')
+    expect(args.remoteProjectId).toBe('one')
+    expect(args.deletedPaths).toEqual([])
+    started.resolve(undefined)
+    await gate.promise
+    expect(
+      new TextDecoder().decode(
+        args.files.find((file) => file.relativePath === 'main.kcl')?.data
+      )
+    ).toBe('original')
+    return { remoteProjectId: 'one' }
+  })
+  const publication = storage.publishProject({
+    projectId: 'one',
+    token: 'token',
+    submission: {
+      title: 'Published',
+      description: '',
+      categoryIds: ['hardware'],
+    },
+    validate: async () => undefined,
+  })
+  await started.promise
+  let written = false
+  const write = storage.operations
+    .writeFile(posix.join(root, 'main.kcl'), 'later edit')
+    .then(() => {
+      written = true
+    })
+  vi.useFakeTimers()
+  await vi.advanceTimersByTimeAsync(7_000)
+  expect(written).toBe(false)
+  vi.mocked(api.getRemoteProject).mockResolvedValueOnce({
+    ...remote,
+    revision: '3',
+  })
+  gate.resolve(undefined)
+  await expect(publication).resolves.toEqual({ remoteProjectId: 'one' })
+  await write
+  expect(
+    await readTextFile(storage.operations, posix.join(root, 'main.kcl'))
+  ).toBe('later edit')
+  expect(api.updateRemoteProject).toHaveBeenLastCalledWith(
+    expect.objectContaining({ expectedRevision: '3' })
+  )
+})
+
+it('does not publish an invalid or retitled snapshot', async () => {
+  const { storage } = setup()
+  await storage.openProject('one')
+  await storage.renameProject('one', 'Published')
+  const failure = new Error('Invalid KCL')
+  const args = {
+    projectId: 'one',
+    token: 'token',
+    submission: { title: 'Published', description: '', categoryIds: [] },
+    validate: async () => failure,
+  }
+  await expect(storage.publishProject(args)).resolves.toBe(failure)
+  await expect(
+    storage.publishProject({
+      ...args,
+      submission: { ...args.submission, title: 'Other title' },
+      validate: async () => undefined,
+    })
+  ).resolves.toBeInstanceOf(Error)
+  expect(publishProjectFiles).not.toHaveBeenCalled()
+})
+
+it('does not create a publication copy under an account selected during initialization', async () => {
+  let account = 'original'
+  const { storage } = setup(() => account)
+  const pending = storage.createProject('Published', [
+    { relativePath: 'main.kcl', data: new TextEncoder().encode('width = 2') },
+  ])
+  account = 'replacement'
+  await expect(pending).rejects.toThrow('Cloud account changed during creation')
+  expect(api.createRemoteProject).not.toHaveBeenCalled()
 })

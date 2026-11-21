@@ -805,13 +805,15 @@ export function createCloudProjectRuntime(
     archive: readonly ProjectArchiveFile[]
   ) => {
     if (isOffline()) return Promise.reject(offlineError())
+    const requestConfig = { ...config() }
     await ready
+    if (config().accountId !== requestConfig.accountId)
+      return Promise.reject(new Error('Cloud account changed during creation.'))
     const filesWithTitle = withUpdatedProjectTomlInArchiveFiles(
       [...archive],
       (contents) => prepareProjectTomlForDuplication(contents, title, v4())
     )
     if (filesWithTitle instanceof Error) return Promise.reject(filesWithTitle)
-    const requestConfig = config()
     if (isOffline()) return Promise.reject(offlineError())
     const remote = await api.createRemoteProject(
       requestConfig,

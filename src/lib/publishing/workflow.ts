@@ -7,7 +7,7 @@ import { isErr } from '@src/lib/trap'
 
 /** A prepared publication owns its target even if the user navigates elsewhere. */
 export interface PublicationTarget {
-  publish: () => Promise<PublishedProject | false>
+  publish: () => Promise<PublishedProject | false | Error>
   loadDetails: (
     remoteProjectId: string
   ) => Promise<CurrentProjectPublicationDetails | null | Error>
@@ -49,7 +49,7 @@ export function createPublicationWorkflow({
         const target = await prepare(submission)
         if (!target || isErr(target)) return target
         const published = await target.publish()
-        if (!published) return false
+        if (!published || isErr(published)) return published
         const details = await target
           .loadDetails(published.remoteProjectId)
           .catch(publicationError)

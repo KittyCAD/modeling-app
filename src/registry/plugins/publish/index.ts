@@ -1,19 +1,25 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { LegacyPublishButton } from '@src/lib/publishing/LegacyPublishButton'
+import { ProjectSessionPublishButton } from '@src/lib/publishing/ProjectSessionPublishButton'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderEndItemsFacet } from '@src/registry/contracts/appHeader'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { contribute, type InputOf } from 'plankton'
 import { createElement } from 'react'
 
-function PublishHeaderItem({ app }: AppHeaderItemProps) {
+function PublishHeaderItem({ app, context }: AppHeaderItemProps) {
   useSignals()
-  if (!app.projectSignal.value) {
-    return null
+  switch (context.type) {
+    case 'project':
+      return createElement(ProjectSessionPublishButton, {
+        app,
+        session: context.session,
+      })
+    case 'legacy-project':
+      return createElement(LegacyPublishButton, { app })
+    case 'home':
+      return null
   }
-  return createElement(LegacyPublishButton, {
-    app,
-  })
 }
 const publishHeaderItem = [
   contribute(
