@@ -65,7 +65,6 @@ beforeEach(async () => {
   rename.mockReset().mockResolvedValue(undefined)
   unrelatedSave.mockReset()
   const projects = createProjectSessionService(testFileOperations)
-  vi.spyOn(projects, 'refreshContents').mockResolvedValue(undefined)
   projects.openProject({
     contents: { name: 'project', path: '/project', children: [] },
     metadata: { title: 'Project', readWriteAccess: true },

@@ -1,4 +1,4 @@
-import { signal, type Signal } from '@preact/signals-core'
+import { batch, signal, type Signal } from '@preact/signals-core'
 import type {
   Editor,
   EditorNaming,
@@ -214,30 +214,47 @@ export function createEditorNaming(
           )
             return new Error('This editor is read-only')
           if (current.source) {
+            const source = current.source
             const affected = editors.editors
               .peek()
               .filter((candidate) => candidate.src.peek() === current.source)
             await files.rename(current.source, destination)
-            if (current.session.signal.aborted)
-              return new Error('The project closed while renaming')
-            // Closing the initiating buffer must not strand other buffers at the old path.
-            for (const candidate of affected) {
-              if (
-                !candidate.signal.aborted &&
-                candidate.src.peek() === current.source
-              ) {
-                const result = editors.setSource(candidate.id, destination)
-                if (isErr(result)) return result
+            return batch(() => {
+              trap(
+                current.projects.applyFileMutation(current.session, {
+                  type: 'renamed',
+                  source,
+                  destination,
+                })
+              )
+              if (current.session.signal.aborted)
+                return new Error('The project closed while renaming')
+              // Closing the initiating buffer must not strand other buffers at the old path.
+              for (const candidate of affected) {
+                if (
+                  !candidate.signal.aborted &&
+                  candidate.src.peek() === current.source
+                ) {
+                  const result = editors.setSource(candidate.id, destination)
+                  if (isErr(result)) return result
+                }
               }
-            }
+            })
           } else {
             const contents = editor.state.doc.toString()
             await files.createFile(destination, contents)
-            if (!active()) return new Error('The editor changed while saving')
-            const result = editors.setSource(editor.id, destination)
-            if (isErr(result)) return result
-            const adopted = saving.adopt(editor, contents)
-            if (isErr(adopted)) return adopted
+            return batch(() => {
+              trap(
+                current.projects.applyFileMutation(current.session, {
+                  type: 'created',
+                  path: destination,
+                })
+              )
+              if (!active()) return new Error('The editor changed while saving')
+              const result = editors.setSource(editor.id, destination)
+              if (isErr(result)) return result
+              return saving.adopt(editor, contents)
+            })
           }
         }
         const result = current.source
@@ -247,10 +264,6 @@ export function createEditorNaming(
           fail(result.message)
           return
         }
-        const refreshed = await current.projects.refreshContents(
-          current.session
-        )
-        if (isErr(refreshed)) trap(refreshed)
         complete(editor)
       } catch (cause) {
         fail(isErr(cause) ? cause.message : 'Unable to name this buffer')
