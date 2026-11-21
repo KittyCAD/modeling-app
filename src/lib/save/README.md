@@ -32,6 +32,18 @@ Queued snapshots are discarded before writing; an in-flight handler may finish,
 but its result cannot run later handlers or overwrite an adopted baseline. New
 save requests can persist edits made after adoption.
 
-An unnamed buffer needs a source before Save or autosave can persist it. Save As,
-durable draft recovery, and confirmation before closing dirty buffers are
-separate work.
+Saving an unnamed buffer prompts for a project-relative file path in its tab.
+Enter submits; Escape or leaving the input cancels without discarding the buffer.
+Empty, absolute, and escaping paths are rejected. First saves use strict creation,
+so existing files are never overwritten; failures leave the input available for
+correction. Autosave never opens a naming prompt.
+
+Double-clicking a tab or pressing F2 on a focused tab opens the same path input for renaming. Renames wait for
+previously requested writes, reject existing destinations, and update every buffer
+for the original source while preserving document text, history, and views.
+Requests capture their project opening and stop adopting results when that opening
+or the editor closes. Storage operations already started may still finish against
+their captured path.
+
+Save As, durable draft recovery, and confirmation before closing dirty buffers
+are separate work.

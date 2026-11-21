@@ -149,6 +149,22 @@ export interface EditorTabIndicator {
   }>
 }
 
+/** One project-relative path prompt shared by every view of a buffer. */
+export interface EditorPathRequest {
+  readonly viewId?: symbol
+  readonly initialPath: string
+  readonly pending: boolean
+  readonly error?: string
+}
+
+/** Optional naming behavior supplied by a persistence extension. */
+export interface EditorNaming {
+  state: (editor: Editor) => ReadonlySignal<EditorPathRequest | undefined>
+  rename: (editor: Editor, viewId?: symbol) => Error | undefined
+  submit: (editor: Editor, path: string) => Promise<void>
+  cancel: (editor: Editor) => void
+}
+
 /** Owns open editors independently of executors and mounted editor panes. */
 export interface EditorsService {
   editors: ReadonlySignal<readonly Editor[]>
@@ -170,6 +186,7 @@ export interface EditorsService {
   closeEditor: (id: symbol) => Error | undefined
 }
 export const editorsContract = contract({
+  editorNamingService: service<EditorNaming>('editors.naming'),
   editorReadOnlyPoliciesFacet: new Facet<
     EditorReadOnlyPolicy,
     readonly EditorReadOnlyPolicy[]
@@ -197,6 +214,7 @@ export const editorsContract = contract({
   >('editors.capabilities', (inputs) => inputs),
 })
 export const {
+  editorNamingService,
   editorsService,
   editorLanguagesFacet,
   editorReadOnlyPoliciesFacet,

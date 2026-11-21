@@ -8,6 +8,7 @@ import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   EditorTabIndicator,
   EditorsService,
+  EditorNaming,
 } from '@src/lib/editors/registry/contract'
 import { EditorView } from '@src/lib/editors/EditorView'
 import { TabViewPicker } from '@src/components/TabViewPicker'
@@ -17,6 +18,8 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { useEffect, useRef, useState } from 'react'
 import styles from './EditorsPane.module.css'
 
+import { EditorPathInput } from '@src/lib/editors/EditorPathInput'
+
 /**
  * The registry owns the views; each tab owns a view instance, while its backing document can be shared.
  * TODO: Consolidate this pane with `LayoutType.Panes` once it supports labeled tabs
@@ -25,10 +28,12 @@ import styles from './EditorsPane.module.css'
 export function EditorsPane({
   editors: service,
   indicators,
+  naming,
   layout,
   onClose,
   onOpenEditor,
 }: Pick<AreaTypeComponentProps, 'layout' | 'onClose'> & {
+  naming?: EditorNaming
   editors: EditorsService
   indicators?: ReadonlySignal<readonly EditorTabIndicator[]>
   onOpenEditor?: () => void
@@ -123,6 +128,9 @@ export function EditorsPane({
         onChange={setActiveId}
         items={views.map((instance) => {
           const editor = instance.editor
+          const request = naming?.state(editor).value
+          const namingViewId =
+            request?.viewId ?? views.find((view) => view.editor === editor)?.id
           return {
             id: instance.id,
             label: (
@@ -137,6 +145,23 @@ export function EditorsPane({
                 ))}
               </span>
             ),
+            onRename: naming
+              ? () => {
+                  trap(naming.rename(editor, instance.id))
+                }
+              : undefined,
+            labelEditor:
+              naming && request && namingViewId === instance.id ? (
+                <EditorPathInput
+                  editor={editor}
+                  naming={naming}
+                  onFinish={() => {
+                    const codeView = instance.codeView.peek()
+                    if (codeView) codeView.focus()
+                    else instance.element.peek()?.focus()
+                  }}
+                />
+              ) : undefined,
             title: editor.src.value ?? 'Untitled',
             accessory: (
               <TabViewPicker

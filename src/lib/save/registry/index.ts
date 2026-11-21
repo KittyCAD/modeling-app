@@ -8,6 +8,7 @@ import { createEditorSave } from '@src/lib/save/save'
 import { editorSaveService } from '@src/lib/save/registry/contract'
 import {
   editorCapabilityFacet,
+  editorNamingService,
   codeEditorsExtensionFacet,
   editorTabIndicatorsFacet,
   type Editor,
@@ -22,6 +23,10 @@ import {
 import { isErr, trap, reportRejection } from '@src/lib/trap'
 import { keymapEventOwnersFacet } from '@src/registry/contracts/keymap'
 
+import { createEditorNaming } from '@src/lib/save/naming'
+import { observations as projectObservations } from '@src/lib/projectSession/next/contract'
+import { observations as fileObservations } from '@src/registry/contracts/fileOperations'
+
 export const SAVE_EDITOR_COMMAND = {
   id: 'zds.editors.save',
   name: 'save-editor',
@@ -31,9 +36,29 @@ export const SAVE_EDITOR_COMMAND = {
 /** Assemble saving, focused keyboard behavior, and its optional tab decoration. */
 const extension = factory({
   key: 'save',
-  dependencies: { saving: savingObservations, editors: editorsObservations },
-  create: ({ saving: savingInputs, editors: editorsInputs }) => {
-    const saving = createEditorSave(() => savingInputs.editorOnSaveFacet.value)
+  dependencies: {
+    saving: savingObservations,
+    editors: editorsObservations,
+    project: projectObservations,
+    files: fileObservations,
+  },
+  create: ({
+    saving: savingInputs,
+    editors: editorsInputs,
+    project,
+    files,
+  }) => {
+    const saving = createEditorSave(
+      () => savingInputs.editorOnSaveFacet.value,
+      (editor) => naming.request(editor)
+    )
+    const naming = createEditorNaming(
+      () => project.projectSessionService.current.value?.currentSession.peek(),
+      () => editorsInputs.editorsService.current.value,
+      () => files.fileOperationsService.current.value,
+      saving.service,
+      saving.withSourceLock
+    )
     const editorForEvent = (event: Event) =>
       editorViewForTarget(
         editorsInputs.editorsService.current.value?.views.peek() ?? [],
@@ -83,6 +108,7 @@ const extension = factory({
       },
       items: [
         provide(editorSaveService, saving.service),
+        provide(editorNamingService, naming.service),
         contribute(editorCapabilityFacet, () => ({
           id: 'editors.save',
           matches: '*' as const,
@@ -118,6 +144,7 @@ const extension = factory({
         }),
       ],
       dispose: () => {
+        naming.dispose()
         saving.dispose()
       },
     }
