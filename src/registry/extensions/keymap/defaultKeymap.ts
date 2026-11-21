@@ -1,3 +1,4 @@
+import { createCameraKeymapItems } from '@src/lib/cameraViewCommands'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
@@ -202,13 +203,6 @@ export const defaultKeymap: KeymapDocument = {
       command: APP_COMMAND_IDS.modeling.deleteSelection,
     })),
     {
-      id: 'modeling.center-camera-on-selection',
-      title: 'Center camera on selection',
-      when: FILE_KEYMAP_SCOPES,
-      keystrokes: ['mod+alt+c'],
-      command: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
-    },
-    {
       id: 'modeling.select-all-in-current-sketch',
       title: 'Select all in current sketch',
       when: [
@@ -289,76 +283,7 @@ export const defaultKeymap: KeymapDocument = {
       keystrokes: ['mod+v'],
       command: PROJECT_EXPLORER_COMMAND_IDS.paste,
     },
-    {
-      id: 'view.top',
-      title: 'Top view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '1'],
-      command: 'standardViews:Top view',
-    },
-    {
-      id: 'view.right',
-      title: 'Right view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '2'],
-      command: 'standardViews:Right view',
-    },
-    {
-      id: 'view.front',
-      title: 'Front view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '3'],
-      command: 'standardViews:Front view',
-    },
-    {
-      id: 'view.back',
-      title: 'Back view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '4'],
-      command: 'standardViews:Back view',
-    },
-    {
-      id: 'view.bottom',
-      title: 'Bottom view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '5'],
-      command: 'standardViews:Bottom view',
-    },
-    {
-      id: 'view.left',
-      title: 'Left view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '6'],
-      command: 'standardViews:Left view',
-    },
-    {
-      id: 'view.zoom-to-fit',
-      title: 'Zoom to fit',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', 'f'],
-      command: 'standardViews:Zoom to fit',
-    },
-    {
-      id: 'view.zoom-to-fit-with-modifier',
-      title: 'Zoom to fit',
-      when: FILE_KEYMAP_SCOPES,
-      keystrokes: ['mod+alt+f'],
-      command: 'standardViews:Zoom to fit',
-    },
-    {
-      id: 'view.reset',
-      title: 'Reset view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', 'r'],
-      command: APP_COMMAND_IDS.view.reset,
-    },
-    {
-      id: 'view.reset-with-modifier',
-      title: 'Reset view',
-      when: FILE_KEYMAP_SCOPES,
-      keystrokes: ['mod+alt+x'],
-      command: APP_COMMAND_IDS.view.reset,
-    },
+    ...createCameraKeymapItems({ type: 'legacy' }),
     {
       id: 'toolbar.modeling.sketch',
       title: 'Start or edit sketch',

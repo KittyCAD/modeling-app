@@ -74,6 +74,22 @@ camera pose across idle and transient reconnects, restoring it after the next
 execution instead of framing the model again. Closing the view discards that pose.
 Local rendering is exempt from idle teardown.
 
+## Camera commands
+
+The [camera contribution](registry/cameraCommands.ts) registers standard views,
+Zoom to fit, Reset view, and Center view on selection as commands with keymap
+bindings.
+Standard views use `v` followed by `1` through `6` (for example, `v` then `3`
+is Front view). Fit and Reset also accept `v f` and `v r`, alongside
+`mod+alt+f`, `mod+alt+x`, and `mod+alt+c` for Fit, Reset, and Center. Users can
+remap these through the keymap settings. The
+[shared camera definitions](../cameraViewCommands.ts) bundle the actions and defaults used by both shells; their camera menus display
+the effective registered bindings, including remapping and unbinding.
+The focused Modeling viewport supplies the target, so the commands use its current scene after a reconnect or renderer switch.
+Text fields and other editor views do not activate that camera scope. The
+command palette retains the viewport that launched it until submission or
+dismissal. Closing the viewport removes its target registration.
+
 ## Sharing native execution
 
 The shared executor currently saves source-capture work, including reading imports.
@@ -142,6 +158,14 @@ The [scene boundary](scene/README.md) describes the shared host and legacy
 adapters. Zoo-web-view remains the intended presentation integration; the
 [scene-host ADR](../../dev-docs/adr/0001-app-owned-scene-host.md) records that
 boundary and its ownership decisions.
+
+## Selection
+
+Each view owns geometry selection through `resource.selection`, scoped to its
+current execution. Both renderers use the existing picking adapters. Opening a
+command dialog gives its arguments a separate picking session; cancelling leaves
+the underlying view selection intact. Re-execution invalidates old geometry picks.
+See [the selection contract](scene/README.md#view-selection-and-dialog-picking).
 
 ## Code map
 

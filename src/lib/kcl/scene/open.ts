@@ -1,4 +1,9 @@
-import { effect } from '@preact/signals-core'
+import type { KclViewControlHost } from '@src/lib/kcl/modeling/KclViewControls'
+import { uuidv4 } from '@src/lib/utils'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { createKclSceneSelection } from '@src/lib/kcl/scene/sceneSelection'
+import type { SceneSelectionController } from '@src/lib/scene/selection'
+import { computed, effect } from '@preact/signals-core'
 import type { CameraViewState } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
@@ -41,6 +46,8 @@ export interface KclSceneResource {
   readonly runtime: KclRuntime
   readonly presentation: ScenePresentation
   readonly localHost: LocalRendererHost | undefined
+  readonly viewControls?: KclViewControlHost
+  readonly selection: SceneSelectionController
   readonly preferences: ScenePresentationPreferences
   snapshotCamera: () => CameraViewState
   restoreCamera: (view: CameraViewState) => Promise<void>
@@ -86,6 +93,7 @@ export async function openKclScene({
   let infra: SceneInfra | undefined
   let viewport: SceneViewport | undefined
   let connectionWatch: ReturnType<typeof watchConnection> | undefined
+  let picking: ReturnType<typeof createKclSceneSelection> | undefined
   let stopUnits: (() => void) | undefined
   let disposed = false
   const element = createSceneElement()
@@ -96,6 +104,7 @@ export async function openKclScene({
     disposed = true
     connectionWatch?.dispose()
     stopUnits?.()
+    picking?.dispose()
     viewport?.dispose()
     infra?.localRenderer?.dispose()
     if (infra) infra.localRenderer = null
@@ -144,8 +153,18 @@ export async function openKclScene({
     stopUnits = effect(() => {
       sceneInfra.baseUnit = preferences.defaultUnit.value
     })
+    const selectionBinding = createKclSceneSelection(manager, sceneInfra, model)
+    picking = selectionBinding
     const view = createSceneViewport(
-      { element, connection: connected, manager, sceneInfra, model, settings },
+      {
+        element,
+        connection: connected,
+        manager,
+        sceneInfra,
+        model,
+        settings,
+        selection: selectionBinding.selection,
+      },
       presentation,
       preferences,
       () => disposed || signal.aborted
@@ -161,7 +180,29 @@ export async function openKclScene({
       runtime,
       presentation,
       localHost: view.localHost,
+      selection: selectionBinding.selection,
       preferences,
+      viewControls: {
+        id: uuidv4(),
+        sceneInfra,
+        theme: computed(() => preferences.appearance.value.theme),
+        gizmoType: computed(
+          () => settings.current.value.modeling.gizmoType.currentSignal.value
+        ),
+        toggleGizmo: () =>
+          settings.send({
+            type: 'set.modeling.gizmoType',
+            data: {
+              level: 'user',
+              value:
+                settings.current.peek().modeling.gizmoType.current === 'axis'
+                  ? 'cube'
+                  : 'axis',
+            },
+          }),
+        reset: () =>
+          resetCameraPosition({ sceneInfra, settingsActor: settings.actor }),
+      },
       snapshotCamera: () => sceneInfra.camControls.snapshotCameraView(),
       restoreCamera: (cameraView) => {
         // A restored camera replaces initial framing, even if the local GLB
