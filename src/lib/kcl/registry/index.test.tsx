@@ -509,3 +509,115 @@ it.each([false, true])(
     }
   }
 )
+
+it('honors Automatically Render Off and exposes explicit rendering and freshness in the Modeling view', async () => {
+  const { createSettings } = await import('@src/lib/settings/initialSettings')
+  const { defineBooleanExtensionSetting } = await import(
+    '@src/lib/settings/extensionSettings'
+  )
+  const { fireEvent } = await import('@testing-library/react')
+  const settingsProvider = createTestSettings()
+  const automatic = defineBooleanExtensionSetting({
+    defaultValue: false,
+    description: 'Automatically render changes',
+  }).createSetting()
+  const settings = {
+    ...createSettings(),
+    textEditor: {
+      ...settingsProvider.current.peek().textEditor,
+      automaticallyRender: automatic,
+    },
+  }
+  settingsProvider.current.value = settings
+  const resource = createTestKclScene('streamed')
+  vi.mocked(openKclScene).mockResolvedValue(resource)
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
+  const registry = new Registry()
+  await registry.configure([
+    editorsExtension,
+    executorsExtension,
+    kclExtension,
+    provide(settingsService, settingsProvider),
+    contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {})),
+  ])
+  let mounted: ReturnType<typeof render> | undefined
+  try {
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(
+      editors.createEditor('@settings(kclVersion = 3.0)\nanswer = 42')
+    )
+    requireSuccess(editors.setLanguage(editor.id, 'kcl'))
+    const instance = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+    await vi.waitFor(() =>
+      expect(editors.viewState(instance).peek().binding.type).toBe('ready')
+    )
+    const binding = editors.viewState(instance).peek().binding
+    if (binding.type !== 'ready') return expect.fail('Modeling did not bind')
+    mounted = render(
+      <binding.Component editor={editor} instance={instance} active />
+    )
+    await vi.waitFor(() =>
+      expect(resource.runtime.execute).toHaveBeenCalledOnce()
+    )
+    await act(async () => {
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: '@settings(kclVersion = 3.0)\nanswer = 84',
+        },
+      })
+      settings.modeling.defaultUnit.user = 'in'
+    })
+    expect(resource.runtime.execute).toHaveBeenCalledOnce()
+    expect(screen.getByLabelText('Model freshness')).toHaveTextContent(
+      'out of date'
+    )
+    fireEvent.click(screen.getByRole('button', { name: /^Render$/ }))
+    await vi.waitFor(() => {
+      expect(resource.runtime.execute).toHaveBeenCalledTimes(2)
+      expect(screen.getByLabelText('Model freshness')).toHaveTextContent(
+        'up to date'
+      )
+    })
+    const [snapshot, configuration] = vi.mocked(resource.runtime.execute).mock
+      .calls[1]
+    expect(new TextDecoder().decode(snapshot.files.get('main.kcl'))).toContain(
+      'answer = 84'
+    )
+    expect(configuration).toEqual(
+      registry.required(kclExecutionSettingsService).configuration.peek()
+    )
+    await act(async () => {
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: '@settings(kclVersion = 3.0)\nanswer = 126',
+        },
+      })
+      automatic.user = true
+    })
+    await vi.waitFor(() =>
+      expect(resource.runtime.execute).toHaveBeenCalledTimes(3)
+    )
+    await act(async () => {
+      automatic.user = false
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: '@settings(kclVersion = 3.0)\nanswer = 168',
+        },
+      })
+    })
+    expect(resource.runtime.execute).toHaveBeenCalledTimes(3)
+    expect(screen.getByLabelText('Model freshness')).toHaveTextContent(
+      'out of date'
+    )
+  } finally {
+    mounted?.unmount()
+    await registry.dispose()
+  }
+})

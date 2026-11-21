@@ -399,7 +399,8 @@ export function createKclSession(
     /** Run against the captured connection attempt; a reconnect cannot redirect queued old source into its replacement. */
     execute: (
       sources: KclSourceSnapshot,
-      signal: AbortSignal
+      signal: AbortSignal,
+      configuration?: object
     ): Promise<{ result: ExecState } | Error> => {
       const owner = attempt
       lastInput = Date.now()
@@ -420,7 +421,7 @@ export function createKclSession(
         )
         try {
           const work = async () => {
-            const result = await scene.runtime.execute(sources)
+            const result = await scene.runtime.execute(sources, configuration)
             if (!current(owner) || signal.aborted)
               return new Error('KCL execution was cancelled')
             await scene.applySettings()

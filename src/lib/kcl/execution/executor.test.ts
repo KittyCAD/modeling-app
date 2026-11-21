@@ -1,3 +1,5 @@
+import { acquireKclExecutionPolicy } from '@src/lib/kcl/modeling/executionPolicy'
+import { acquireAutomaticExecution } from '@src/lib/executors/automatic'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { createEditorDocument } from '@src/lib/editors/document'
@@ -5,11 +7,39 @@ import type { Editor } from '@src/lib/editors/registry/contract'
 import { createExecutor } from '@src/lib/executors/executor'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createKclExecution } from '@src/lib/kcl/execution/executor'
-import { createKclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
+import { createKclViewExecution as createManualKclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
 import type { KclSession } from '@src/lib/kcl/modeling/session'
 import { createKclSession } from '@src/lib/kcl/modeling/session'
 import { afterEach, beforeAll, expect, it, onTestFinished, vi } from 'vitest'
 import { createTestKclScene } from '@src/lib/kcl/testFixtures'
+
+const createKclViewExecution: typeof createManualKclViewExecution = (
+  executor,
+  capability,
+  session,
+  revision = () => undefined
+) => {
+  const view = createManualKclViewExecution(
+    executor,
+    capability,
+    session,
+    revision
+  )
+  const release = acquireKclExecutionPolicy(
+    executor,
+    capability,
+    view,
+    () => true,
+    revision
+  )
+  return {
+    ...view,
+    dispose: () => {
+      release()
+      view.dispose()
+    },
+  }
+}
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
@@ -51,6 +81,10 @@ function sharedExecution() {
     signal([execution.capability]),
     () => {}
   )
+  const release = acquireAutomaticExecution(
+    owned.executor,
+    execution.capability
+  )
   return {
     source,
     dependency,
@@ -58,6 +92,7 @@ function sharedExecution() {
     execution,
     executor: owned.executor,
     dispose: () => {
+      release()
       owned.dispose()
       source.dispose()
     },
@@ -255,6 +290,7 @@ it('still permits explicitly independent executors of the same editor', async ()
     signal([f.execution.capability]),
     () => {}
   )
+  await fork.executor.run(f.execution.capability)
   onTestFinished(() => {
     fork.dispose()
     f.dispose()
@@ -266,7 +302,7 @@ it('still permits explicitly independent executors of the same editor', async ()
     ).toBeDefined()
   })
   const original = f.executor.output.peek()
-  fork.executor.refresh()
+  await fork.executor.run(f.execution.capability)
   await vi.waitFor(() => expect(f.capture).toHaveBeenCalledTimes(3))
   expect(f.executor.output.peek()).toBe(original)
 })
@@ -339,7 +375,10 @@ it.each(['focus', 'manual'] as const)(
     })
     if (trigger === 'manual') session.reconnect()
     else window.dispatchEvent(new Event('focus'))
-    await vi.waitFor(() => expect(one.state.peek().result).toBeDefined())
+    await vi.waitFor(() => {
+      expect(one.state.peek().error).toBeUndefined()
+      expect(fresh.runtime.execute).toHaveBeenCalledOnce()
+    })
     expect(
       new TextDecoder().decode(
         vi
