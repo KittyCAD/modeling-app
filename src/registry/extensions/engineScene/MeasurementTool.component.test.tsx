@@ -1,7 +1,14 @@
 import type { ModelingCmd } from '@kittycad/lib'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
@@ -9,8 +16,17 @@ vi.mock('@kittycad/ui-components', () => ({
   CopyTextButton: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  Draggable: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
+  Draggable: ({
+    children,
+    Handle,
+  }: {
+    children: React.ReactNode
+    Handle: React.ReactNode
+  }) => (
+    <div>
+      {Handle}
+      {children}
+    </div>
   ),
 }))
 
@@ -129,3 +145,31 @@ describe('Face API measurement wiring', () => {
     expect(screen.queryByText('No selection.')).not.toBeInTheDocument()
   })
 })
+
+it.each(['mounted', 'replaced'])(
+  'opens Measure in the stream %s after the status control rendered',
+  async (lifecycle) => {
+    setup(0)
+    const original = document.createElement('div')
+    original.id = 'stream'
+    if (lifecycle === 'replaced') document.body.append(original)
+    onTestFinished(() => original.remove())
+    await act(async () => {
+      render(<MeasurementStatusBarItem />)
+    })
+
+    original.remove()
+    const stream = document.createElement('div')
+    stream.id = 'stream'
+    document.body.append(stream)
+    onTestFinished(() => stream.remove())
+    fireEvent.click(screen.getByRole('button', { name: 'Measure' }))
+
+    const close = await within(stream).findByRole('button', { name: /Close/ })
+    expect(await within(stream).findByText('No selection.')).toBeVisible()
+    fireEvent.click(close)
+    expect(
+      within(stream).queryByRole('button', { name: /Close/ })
+    ).not.toBeInTheDocument()
+  }
+)
