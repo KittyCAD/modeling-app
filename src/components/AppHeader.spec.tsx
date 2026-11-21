@@ -73,7 +73,7 @@ it('opens the legacy header with the installed services and navigates Home witho
     fireEvent.click(screen.getByRole('link', { name: 'Projects' }))
     expect(await screen.findByText('Project library')).toBeVisible()
   } finally {
-    await app.closeProject()
+    app.closeProject()
     await fsZds.rm(path, { recursive: true, force: true })
   }
 })
