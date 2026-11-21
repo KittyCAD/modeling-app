@@ -1,13 +1,17 @@
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { ActionButtonProps } from '@src/components/ActionButton'
-import { ActionButton } from '@src/components/ActionButton'
+import {
+  HeaderMenuItems,
+  type HeaderMenuItem,
+  type HeaderMenuAction,
+  headerMenuItemClassName,
+  headerMenuPanelClassName,
+} from '@src/components/HeaderMenu'
+import { ProjectNavigation } from '@src/components/ProjectNavigation'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
-import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { selectCommand } from '@src/lib/commandUtils'
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
@@ -26,71 +30,33 @@ import {
 import {
   type ProjectExplorerProjectBreadcrumbBadge,
   type ProjectExplorerProjectBreadcrumbBadgeContext,
-  type ProjectExplorerProjectMenuItem,
-  type ProjectExplorerProjectMenuItemContext,
   projectExplorerProjectBreadcrumbBadgesFacet,
   projectExplorerProjectMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project-menu navigation (useNavigate).
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
-interface ProjectSidebarMenuProps extends React.PropsWithChildren {
-  enableMenu?: boolean
-  project?: Project
-  file?: FileEntry
-  app?: App
-  absoluteFilePath?: string
-  onProjectClose?: ProjectCloseHandler
-  onHomeNavigate?: () => void
-}
+type ProjectSidebarMenuProps = React.PropsWithChildren<
+  {
+    project?: Project
+    file?: FileEntry
+    absoluteFilePath?: string
+    onProjectClose?: ProjectCloseHandler
+    onHomeNavigate?: () => void
+  } & ({ enableMenu: true; app: App } | { enableMenu?: false; app?: never })
+>
 
 type ProjectCloseHandler = (
   file: FileEntry | null,
   projectPath: string | null,
   redirect: boolean
 ) => void
-type ProjectMenuItem =
-  | ActionButtonProps
-  | {
-      kind: 'contributed'
-      item: ProjectExplorerProjectMenuItem
-      context: ProjectExplorerProjectMenuItemContext
-    }
-  | {
-      kind: 'break'
-      id: string
-    }
-  | null
 type ProjectBreadcrumbBadgeItem = {
   item: ProjectExplorerProjectBreadcrumbBadge
   context: ProjectExplorerProjectBreadcrumbBadgeContext
-}
-
-function isContributedProjectMenuItem(
-  item: Exclude<ProjectMenuItem, null>
-): item is Extract<
-  Exclude<ProjectMenuItem, null>,
-  {
-    kind: 'contributed'
-  }
-> {
-  return (
-    typeof item === 'object' && 'kind' in item && item.kind === 'contributed'
-  )
-}
-
-function isProjectMenuBreak(
-  item: Exclude<ProjectMenuItem, null>
-): item is Extract<
-  Exclude<ProjectMenuItem, null>,
-  {
-    kind: 'break'
-  }
-> {
-  return typeof item === 'object' && 'kind' in item && item.kind === 'break'
 }
 
 const noopProjectClose: ProjectCloseHandler = () => undefined
@@ -98,46 +64,37 @@ const noopHomeNavigate = () => undefined
 const projectMenuItemLabelClassName = 'min-w-0 flex-1 truncate'
 const projectMenuItemHotkeyClassName = 'hotkey shrink-0'
 
-const ProjectSidebarMenu = ({
-  project,
-  file,
-  enableMenu = false,
-  app,
-  absoluteFilePath,
-  onProjectClose = noopProjectClose,
-  onHomeNavigate = noopHomeNavigate,
-  children,
-}: ProjectSidebarMenuProps) => {
-  // Make room for traffic lights on desktop left side.
-  // TODO: make sure this doesn't look like shit on Linux or Windows
-  const trafficLightsOffset = window.electron?.os.isMac ? 'ml-20' : ''
+const ProjectSidebarMenu = (props: ProjectSidebarMenuProps) => {
+  const {
+    project,
+    file,
+    absoluteFilePath,
+    onProjectClose = noopProjectClose,
+    onHomeNavigate = noopHomeNavigate,
+    children,
+  } = props
   const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
-    <div className={`!no-underline flex min-w-0 gap-2 ${trafficLightsOffset}`}>
-      <div className="relative group/home">
-        <AppLogoLink
+    <div className="flex min-w-0 items-stretch gap-2">
+      <ProjectNavigation
+        onHomeNavigate={() => {
+          onProjectClose(file ?? null, project?.path ?? null, false)
+          onHomeNavigate()
+        }}
+      />
+      {props.enableMenu ? (
+        <ProjectMenuPopover
+          app={props.app}
           project={project}
           file={file}
+          filePath={absoluteFilePath}
           onProjectClose={onProjectClose}
           onHomeNavigate={onHomeNavigate}
         />
-        <Tooltip position="bottom-left">Go home</Tooltip>
-      </div>
-      {enableMenu ? (
-        app ? (
-          <ProjectMenuPopover
-            app={app}
-            project={project}
-            file={file}
-            filePath={absoluteFilePath}
-            onProjectClose={onProjectClose}
-            onHomeNavigate={onHomeNavigate}
-          />
-        ) : null
       ) : (
         <span
-          className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+          className="hidden self-center px-2 select-none cursor-default text-sm text-default whitespace-nowrap lg:block"
           data-testid="project-name"
         >
           {projectDisplayName}
@@ -145,36 +102,6 @@ const ProjectSidebarMenu = ({
       )}
       {children}
     </div>
-  )
-}
-
-function AppLogoLink({
-  project,
-  file,
-  onProjectClose,
-  onHomeNavigate,
-}: {
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
-  onProjectClose: ProjectCloseHandler
-  onHomeNavigate: () => void
-}) {
-  return (
-    <Link
-      data-testid="app-logo"
-      onClick={() => {
-        onProjectClose(file || null, project?.path || null, false)
-        onHomeNavigate()
-      }}
-      to={PATHS.HOME}
-      className="cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm"
-    >
-      <Logo
-        data-onboarding-id="app-logo"
-        className="w-auto h-4 text-chalkboard-10"
-      />
-      <span className="sr-only">{APP_NAME}</span>
-    </Link>
   )
 }
 
@@ -221,316 +148,214 @@ function ProjectMenuPopover({
     projectExplorerProjectBreadcrumbBadgesFacet
   ).value
 
-  const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
-  const exportProjectZipCommandInfo = {
-    name: 'export-project-zip',
-    groupId: 'application',
-  }
-  const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
-  const findCommand = useCallback(
-    (obj: { name: string; groupId: string }) =>
-      Boolean(
-        commandList.find(
-          (c) => c.name === obj.name && c.groupId === obj.groupId
-        )
+  const exportCommand = { name: 'Export', groupId: 'modeling' }
+  const zipCommand = { name: 'export-project-zip', groupId: 'application' }
+  const makeCommand = { name: 'Make', groupId: 'modeling' }
+  const hasCommand = ({ name, groupId }: { name: string; groupId: string }) =>
+    commandList.some(
+      (command) => command.name === name && command.groupId === groupId
+    )
+  const commandItem = (
+    id: string,
+    label: string,
+    command: { name: string; groupId: string },
+    shortcut?: string,
+    unavailable = 'Awaiting engine connection'
+  ): HeaderMenuAction & { Element: 'button' } => ({
+    id,
+    Element: 'button',
+    disabled: !hasCommand(command),
+    onClick: () => selectCommand(commands, command),
+    children: (
+      <>
+        <span className={projectMenuItemLabelClassName}>{label}</span>
+        {shortcut && (
+          <kbd className={projectMenuItemHotkeyClassName}>
+            {hotkeyDisplay(shortcut, platform)}
+          </kbd>
+        )}
+        {!hasCommand(command) && (
+          <Tooltip position="right" wrapperClassName="!max-w-none min-w-fit">
+            {unavailable}
+          </Tooltip>
+        )}
+      </>
+    ),
+  })
+  const projectActions: HeaderMenuItem[] = []
+  const footer: HeaderMenuItem[] = []
+  if (project) {
+    projectActions.push({
+      id: 'duplicate-project',
+      Element: 'button',
+      children: (
+        <span
+          className={projectMenuItemLabelClassName}
+          data-testid="project-sidebar-duplicate-project"
+        >
+          Duplicate project
+        </span>
       ),
-    [commandList]
-  )
-  const machineCount = machineManager.machines.length
-  const getCurrentFileForDuplicate = useCallback(
-    () => ({
-      currentFilePath: app?.project?.executingPath,
-      currentFileContents: app?.project?.executingEditor.value?.code,
-    }),
-    [app]
-  )
-
-  // We filter this memoized list so that no orphan "break" elements are rendered.
-  const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
-    () => {
-      const items: ProjectMenuItem[] = [
-        {
-          id: 'settings',
-          Element: 'button' as const,
-          children: (
-            <>
-              <span
-                className={projectMenuItemLabelClassName}
-                data-testid="project-settings"
-              >
-                Project settings
-              </span>
-              {projectSettingsKeybinding && (
-                <kbd className={projectMenuItemHotkeyClassName}>
-                  {projectSettingsKeybinding}
-                </kbd>
-              )}
-            </>
-          ),
-          onClick: () => {
-            const targetPath =
-              filePath !== undefined
-                ? filePath + PATHS.SETTINGS_PROJECT
-                : PATHS.HOME + PATHS.SETTINGS_PROJECT
-            void navigate(targetPath)
-          },
-        },
-        { kind: 'break', id: 'after-settings' },
-        project
-          ? {
-              id: 'duplicate-project',
-              Element: 'button' as const,
-              children: (
-                <span
-                  className={projectMenuItemLabelClassName}
-                  data-testid="project-sidebar-duplicate-project"
-                >
-                  Duplicate project
-                </span>
-              ),
-              onClick: () => {
-                const editor = getCurrentFileForDuplicate()
-                app.projectOperations
-                  .duplicateProject(
-                    project,
-                    getProjectDisplayName(project),
-                    editor.currentFilePath
-                      ? {
-                          path: editor.currentFilePath,
-                          contents: editor.currentFileContents ?? '',
-                        }
-                      : undefined
-                  )
-                  .then((created) =>
-                    app.projectSession.openFile(created.path, {
-                      projectPath: created.path,
-                    })
-                  )
-                  .catch(reportRejection)
-              },
-            }
-          : null,
-        ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
-          if (!projectPath || !project) {
-            return []
-          }
-
-          const context = { projectPath, project }
-          if (item.isVisible && !item.isVisible(context)) {
-            return []
-          }
-
-          if (item.Component) {
-            return [{ kind: 'contributed' as const, item, context }]
-          }
-
-          const disabled =
-            typeof item.disabled === 'function'
-              ? item.disabled(context)
-              : item.disabled
-          const label =
-            typeof item.label === 'function' ? item.label(context) : item.label
-          const dataTestId =
-            typeof item.dataTestId === 'function'
-              ? item.dataTestId(context)
-              : item.dataTestId
-          const className =
-            typeof item.className === 'function'
-              ? item.className(context)
-              : item.className
-
-          return [
-            {
-              id: item.id,
-              Element: 'button' as const,
-              className,
-              children: (
-                <span
-                  className={projectMenuItemLabelClassName}
-                  data-testid={dataTestId}
-                >
-                  {label}
-                </span>
-              ),
-              disabled,
-              onClick: () => item.onSelect?.(context),
-            },
-          ]
-        }),
-        {
-          id: 'importFile',
-          Element: 'button' as const,
-          children: (
-            <>
-              <span className={projectMenuItemLabelClassName}>
-                Add file to project
-              </span>
-              <kbd className={projectMenuItemHotkeyClassName}>
-                {hotkeyDisplay('mod+alt+l', platform)}
-              </kbd>
-            </>
-          ),
-          onClick: () =>
-            sendAddFileToProjectCommandForCurrentProject(
-              settings.actor,
-              commands.actor
-            ),
-        },
-        {
-          id: 'export',
-          Element: 'button' as const,
-          children: (
-            <>
-              <span className={projectMenuItemLabelClassName}>Export</span>
-              <kbd className={projectMenuItemHotkeyClassName}>
-                {hotkeyDisplay('ctrl+shift+e', platform)}
-              </kbd>
-              {!findCommand(exportCommandInfo) && (
-                <Tooltip
-                  position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
-                >
-                  Awaiting engine connection
-                </Tooltip>
-              )}
-            </>
-          ),
-          disabled: !findCommand(exportCommandInfo),
-          onClick: () => selectCommand(commands, exportCommandInfo),
-        },
-        {
-          id: 'download-project-zip',
-          Element: 'button' as const,
-          className: isDesktop() ? 'hidden' : '',
-          children: (
-            <>
-              <span className={projectMenuItemLabelClassName}>
-                Download project files
-              </span>
-              {!findCommand(exportProjectZipCommandInfo) && (
-                <Tooltip
-                  position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
-                >
-                  Project export unavailable
-                </Tooltip>
-              )}
-            </>
-          ),
-          disabled: !findCommand(exportProjectZipCommandInfo),
-          onClick: () => selectCommand(commands, exportProjectZipCommandInfo),
-        },
-        {
-          id: 'make',
-          Element: 'button' as const,
-          className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
-          children: (
-            <>
-              <span className={projectMenuItemLabelClassName}>
-                Make current part
-              </span>
-              {!findCommand(makeCommandInfo) && (
-                <Tooltip
-                  position="right"
-                  wrapperClassName="!max-w-none min-w-fit"
-                >
-                  Awaiting engine connection
-                </Tooltip>
-              )}
-            </>
-          ),
-          disabled: !findCommand(makeCommandInfo) || machineCount === 0,
-          onClick: () => {
-            selectCommand(commands, makeCommandInfo)
-          },
-        },
-        { kind: 'break', id: 'before-go-home' },
-        {
-          id: 'go-home',
-          Element: 'button' as const,
-          children: (
-            <span className={projectMenuItemLabelClassName}>Go to Home</span>
-          ),
-          onClick: () => {
-            onProjectClose(file || null, project?.path || null, true)
-            onHomeNavigate()
-          },
-        },
-      ]
-      const visibleItems = items.filter(
-        (props): props is Exclude<ProjectMenuItem, null> => {
-          if (!props) {
-            return false
-          }
-          if (isProjectMenuBreak(props)) {
-            return true
-          }
-          if (isContributedProjectMenuItem(props)) {
-            return true
-          }
-          return !props.className?.includes('hidden')
-        }
-      )
-      const footerItems = visibleItems.filter(
-        (props) =>
-          isContributedProjectMenuItem(props) &&
-          props.item.placement === 'footer'
-      )
-
-      return visibleItems
-        .filter((props) => !footerItems.includes(props))
-        .flatMap((props) => {
-          if (isProjectMenuBreak(props) && props.id === 'before-go-home') {
-            return [props, ...footerItems]
-          }
-          return [props]
-        })
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [
-      platform,
-      findCommand,
-      machineApiEnabled,
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      commands.send,
-      onHomeNavigate,
-      onProjectClose,
-      projectPath,
-      project,
-      getCurrentFileForDuplicate,
-      contributedProjectMenuItems,
-      commands.actor,
-      app.projectOperations,
-      app.projectSession,
-      file,
-      filePath,
-      machineCount,
-      navigate,
-      projectSettingsKeybinding,
-      settings.actor,
-    ]
-  )
-
-  const projectBreadcrumbBadges = useMemo<ProjectBreadcrumbBadgeItem[]>(() => {
-    if (!projectPath || !project) {
-      return []
-    }
-
-    const context = { projectPath, project }
-    return contributedProjectBreadcrumbBadges.flatMap((item) => {
-      if (item.isVisible && !item.isVisible(context)) {
-        return []
-      }
-
-      return [{ item, context }]
+      onClick: () => {
+        const editor = app.project?.executingEditor.value
+        const path = app.project?.executingPath
+        void app.projectOperations
+          .duplicateProject(
+            project,
+            getProjectDisplayName(project),
+            path ? { path, contents: editor?.code ?? '' } : undefined
+          )
+          .then((created) =>
+            app.projectSession.openFile(created.path, {
+              projectPath: created.path,
+            })
+          )
+          .catch(reportRejection)
+      },
     })
-  }, [contributedProjectBreadcrumbBadges, project, projectPath])
-
-  const menuItemClassName =
-    'relative !font-sans flex min-h-8 w-full items-center justify-start gap-2 rounded-sm px-2 py-1 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left text-sm leading-5 text-chalkboard-100 dark:text-chalkboard-10 '
-
+    const context = { project, projectPath: project.path }
+    for (const item of contributedProjectMenuItems) {
+      if (item.isVisible && !item.isVisible(context)) continue
+      const target = item.placement === 'footer' ? footer : projectActions
+      if (item.Component) {
+        const Component = item.Component
+        target.push({
+          id: item.id,
+          kind: 'custom',
+          render: (close) => (
+            <Component
+              context={context}
+              className={headerMenuItemClassName}
+              close={close}
+            />
+          ),
+        })
+      } else {
+        const label =
+          typeof item.label === 'function' ? item.label(context) : item.label
+        const dataTestId =
+          typeof item.dataTestId === 'function'
+            ? item.dataTestId(context)
+            : item.dataTestId
+        const className =
+          typeof item.className === 'function'
+            ? item.className(context)
+            : item.className
+        const disabled =
+          typeof item.disabled === 'function'
+            ? item.disabled(context)
+            : item.disabled
+        target.push({
+          id: item.id,
+          Element: 'button',
+          className,
+          disabled,
+          children: (
+            <span
+              className={projectMenuItemLabelClassName}
+              data-testid={dataTestId}
+            >
+              {label}
+            </span>
+          ),
+          onClick: () => item.onSelect(context),
+        })
+      }
+    }
+  }
+  const fileActions: HeaderMenuItem[] = [
+    {
+      id: 'importFile',
+      Element: 'button',
+      children: (
+        <>
+          <span className={projectMenuItemLabelClassName}>
+            Add file to project
+          </span>
+          <kbd className={projectMenuItemHotkeyClassName}>
+            {hotkeyDisplay('mod+alt+l', platform)}
+          </kbd>
+        </>
+      ),
+      onClick: () =>
+        selectCommand(commands, {
+          name: 'add-kcl-file-to-project',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: project?.name,
+          },
+        }),
+    },
+    commandItem('export', 'Export', exportCommand, 'ctrl+shift+e'),
+  ]
+  if (!isDesktop())
+    fileActions.push(
+      commandItem(
+        'download-project-zip',
+        'Download project files',
+        zipCommand,
+        undefined,
+        'Project export unavailable'
+      )
+    )
+  if (isDesktop() && machineApiEnabled)
+    fileActions.push({
+      ...commandItem('make', 'Make current part', makeCommand),
+      disabled:
+        !hasCommand(makeCommand) || machineManager.machines.length === 0,
+    })
+  const groups: HeaderMenuItem[][] = [
+    [
+      {
+        id: 'settings',
+        Element: 'button',
+        children: (
+          <>
+            <span
+              className={projectMenuItemLabelClassName}
+              data-testid="project-settings"
+            >
+              Project settings
+            </span>
+            {projectSettingsKeybinding && (
+              <kbd className={projectMenuItemHotkeyClassName}>
+                {projectSettingsKeybinding}
+              </kbd>
+            )}
+          </>
+        ),
+        onClick: () => {
+          void navigate((filePath ?? PATHS.HOME) + PATHS.SETTINGS_PROJECT)
+        },
+      },
+    ],
+    projectActions,
+    fileActions,
+    [
+      ...footer,
+      {
+        id: 'go-home',
+        Element: 'button',
+        children: 'Go to Home',
+        onClick: () => {
+          onProjectClose(file ?? null, project?.path ?? null, true)
+          onHomeNavigate()
+        },
+      },
+    ],
+  ]
+  const projectBreadcrumbBadges: ProjectBreadcrumbBadgeItem[] =
+    project && projectPath
+      ? contributedProjectBreadcrumbBadges
+          .filter(
+            (item) =>
+              !item.isVisible || item.isVisible({ project, projectPath })
+          )
+          .map((item) => ({ item, context: { project, projectPath } }))
+      : []
   return (
-    <Popover className="relative min-w-0">
+    <Popover className="relative min-w-0 self-center [-webkit-app-region:no-drag]">
       <ProjectBreadcrumbButton
         project={project}
         file={file}
@@ -538,48 +363,9 @@ function ProjectMenuPopover({
       />
       <Popover.Panel
         data-testid="project-sidebar-menu"
-        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
-          border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
-          shadow-lg`}
+        className={`${headerMenuPanelClassName} left-0`}
       >
-        {({ close }) => (
-          <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-            {projectMenuItems.map((props, index) => {
-              if (isProjectMenuBreak(props)) {
-                return index !== projectMenuItems.length - 1 ? (
-                  <li key={props.id} className="contents">
-                    <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
-                  </li>
-                ) : null
-              }
-
-              if (isContributedProjectMenuItem(props)) {
-                const Component = props.item.Component
-                return Component ? (
-                  <Component
-                    key={props.item.id}
-                    context={props.context}
-                    className={menuItemClassName}
-                    close={close}
-                  />
-                ) : null
-              }
-
-              const { id, className, children, ...rest } = props
-              // Let the action's click run before unmounting its menu.
-              return (
-                <li key={id} className="contents" onClick={() => close()}>
-                  <ActionButton
-                    {...rest}
-                    className={menuItemClassName + (className ?? '')}
-                  >
-                    {children}
-                  </ActionButton>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+        {({ close }) => <HeaderMenuItems groups={groups} close={close} />}
       </Popover.Panel>
     </Popover>
   )
@@ -642,11 +428,11 @@ export function ProjectBreadcrumbButton({
       resizeObserver?.disconnect()
       window.removeEventListener('resize', updateTruncatedState)
     }
-  })
+  }, [projectDisplayName, formattedRelativeFilePath])
 
   return (
     <Popover.Button
-      className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+      className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground hover:bg-3"
       data-testid="project-sidebar-toggle"
     >
       <div className="flex min-w-0 items-baseline py-0.5 text-sm">
@@ -666,7 +452,7 @@ export function ProjectBreadcrumbButton({
         )}
         <span
           ref={filePathRef}
-          className="min-w-0 truncate text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
+          className="min-w-0 truncate text-sm text-default whitespace-nowrap"
           data-testid="app-header-file-name"
         >
           {breadCrumb.filePath}
@@ -707,7 +493,7 @@ export function ProjectBreadcrumbButton({
       })}
       <CustomIcon
         name="caretDown"
-        className="w-4 h-4 shrink-0 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+        className="w-4 h-4 shrink-0 text-2 ui-open:rotate-180"
       />
       {isBreadCrumbTruncated && (
         <Tooltip

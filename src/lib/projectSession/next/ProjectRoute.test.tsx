@@ -1,5 +1,6 @@
 import '@src/lib/projectSession/next/testFeature'
 import { codeSurface } from '@src/lib/editors/testViews'
+import appHeaderExtension from '@src/registry/extensions/appHeader'
 import { signal } from '@preact/signals-core'
 import { factory, Registry, provide } from 'plankton'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
@@ -15,7 +16,14 @@ import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { ProjectRoute } from '@src/lib/projectSession/next/ProjectRoute'
 import { ProjectView } from '@src/lib/projectSession/next/ProjectView'
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import {
   afterEach,
@@ -41,6 +49,7 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     registry,
     commands,
+    auth: { useUser: () => undefined },
   }),
 }))
 function createSession(
@@ -82,6 +91,7 @@ describe('project screen', () => {
     services = new Registry()
     await services.configure([
       editorsExtension,
+      appHeaderExtension,
       markdownExtension,
       createProjectSessionExtension(
         factory({
@@ -107,6 +117,35 @@ describe('project screen', () => {
   afterEach(async () => {
     cleanup()
     await services.dispose()
+  })
+  it('opens the project and account menus without a legacy modeling context', () => {
+    render(
+      <MemoryRouter>
+        <ProjectView session={createSession('Bracket')} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Bracket' }))
+    const menu = within(screen.getByTestId('project-sidebar-menu'))
+    expect(menu.getByRole('link', { name: 'Go to Home' })).toHaveAttribute(
+      'href',
+      '/home'
+    )
+    fireEvent.click(menu.getByRole('button', { name: 'Open editor' }))
+    expect(commands.send).toHaveBeenCalledWith({
+      type: 'Find and select command',
+      data: {
+        name: OPEN_EDITOR_COMMAND.name,
+        groupId: OPEN_EDITOR_COMMAND.groupId,
+      },
+    })
+    expect(screen.queryByTestId('project-sidebar-menu')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'User menu' }))
+    expect(
+      screen.getByRole('button', { name: /User settings/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /Manage Zoo account/ })
+    ).toBeInTheDocument()
   })
   it('installs editor-owned native history when the new project shell opens', async () => {
     const original = window.electron

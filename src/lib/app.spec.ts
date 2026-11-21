@@ -22,7 +22,10 @@ import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import {
+  appHeaderStartItemsFacet,
+  appHeaderEndItemsFacet,
+} from '@src/registry/contracts/appHeader'
 import { billingService } from '@src/registry/contracts/billing'
 import { commandsFacet } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
@@ -972,14 +975,18 @@ describe('project system', () => {
         .find((plugin) => plugin.id === 'code-editor')
       expect(codeEditorPlugin).toBeDefined()
       expect(
-        app.registry.get(appHeaderItemsFacet).map((item) => item.id)
+        app.registry.get(appHeaderEndItemsFacet).map((item) => item.id)
       ).toEqual(
         expect.arrayContaining([
           'command-bar.open',
           'code-editor.render',
           'publish.open',
+          'account.menu',
         ])
       )
+      expect(
+        app.registry.get(appHeaderStartItemsFacet).map((item) => item.id)
+      ).toContain('project.menu')
       expect(
         app.registry.required(projectSession).executingEditor.value
       ).toBeUndefined()

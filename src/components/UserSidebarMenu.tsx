@@ -1,264 +1,215 @@
 import { Popover } from '@headlessui/react'
 import type { UserResponse } from '@kittycad/lib'
-import type { ActionButtonProps } from '@src/components/ActionButton'
-import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
+import {
+  HeaderMenuItems,
+  type HeaderMenuItem,
+  headerMenuPanelClassName,
+} from '@src/components/HeaderMenu'
 import Tooltip from '@src/components/Tooltip'
 import env from '@src/env'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
-import { useApp } from '@src/lib/boot'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { useEffect, useMemo, useState } from 'react'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: user-menu navigation and route-derived context (useLocation, useNavigate).
-import { useLocation, useNavigate } from 'react-router-dom'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { useEffect, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- Account settings use the route supplied by the header host.
+import { useNavigate } from 'react-router-dom'
 
-let didListEnvironments = false
+function externalItem(id: string, label: string, to: string): HeaderMenuItem {
+  return {
+    id,
+    Element: 'externalLink',
+    to,
+    children: (
+      <>
+        <span className="flex-1">{label}</span>
+        <CustomIcon name="link" className="h-3 w-3 text-2" />
+      </>
+    ),
+  }
+}
 
-const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
-  const { auth, fileOperations } = useApp()
-  const platform = usePlatform()
-  const location = useLocation()
-  const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
-  const displayedName = getDisplayName(user)
-  const [imageLoadFailed, setImageLoadFailed] = useState(false)
-  const navigate = useNavigate()
-  const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
-  const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
-
-  useEffect(() => {
-    if (!didListEnvironments) {
-      didListEnvironments = true
-      listAllEnvironmentsWithTokens(fileOperations)
-        .then((environmentsWithTokens) => {
-          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-        })
-        .catch(reportRejection)
-    }
-  }, [fileOperations])
-
-  // Do not show the environment items on web
-  const hideEnvironmentItems = !isDesktop()
-
-  // We filter this memoized list so that no orphan "break" elements are rendered.
-  const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
-    () =>
-      [
-        {
-          id: 'account',
-          Element: 'externalLink',
-          to: withSiteBaseURL('/account'),
-          children: (
-            <>
-              <span className="flex-1">Manage Zoo account</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
-        },
-        {
-          id: 'settings',
-          Element: 'button',
-          children: (
-            <>
-              <span className="flex-1">User settings</span>
-              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isDesktop() ? '' : '⬆'
-              },`}</kbd>
-            </>
-          ),
-          'data-testid': 'user-settings',
-          onClick: () => {
-            const targetPath =
-              filePath !== undefined
-                ? filePath + PATHS.SETTINGS_USER
-                : PATHS.HOME + PATHS.SETTINGS_USER
-            void navigate(targetPath)
-          },
-        },
-        {
-          id: 'keybindings',
-          Element: 'button',
-          children: 'Keyboard shortcuts',
-          onClick: () => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_KEYBINDINGS
-              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-            void navigate(targetPath)
-          },
-        },
-        'break',
-        {
-          id: 'request-feature',
-          Element: 'externalLink',
-          to: 'https://github.com/KittyCAD/modeling-app/discussions',
-          children: (
-            <>
-              <span className="flex-1">Request a feature</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
-        },
-        {
-          id: 'report-bug',
-          Element: 'externalLink',
-          to: 'https://github.com/KittyCAD/modeling-app/issues/new/choose',
-          children: (
-            <>
-              <span className="flex-1">Report a bug</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
-        },
-        {
-          id: 'community',
-          Element: 'externalLink',
-          to: 'https://discord.gg/JQEpHR7Nt2',
-          children: (
-            <>
-              <span className="flex-1">Ask the community</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
-        },
-        {
-          id: 'release-notes',
-          Element: 'externalLink',
-          to: 'https://github.com/KittyCAD/modeling-app/releases',
-          children: (
-            <>
-              <span className="flex-1">Release notes</span>
-              <CustomIcon
-                name="link"
-                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-            </>
-          ),
-        },
-        {
-          id: 'check-for-updates',
-          Element: 'button',
-          hide: !isDesktop(),
-          onClick: () => {
-            window.electron?.appCheckForUpdates().catch(reportRejection)
-          },
-          children: <span className="flex-1">Check for updates</span>,
-        },
-        'break',
-        {
-          id: 'sign-out',
-          Element: 'button',
-          'data-testid': 'user-sidebar-sign-out',
-          children: (
-            <span>
-              Sign out{hideEnvironmentItems ? '' : ` of ${fullEnvironmentName}`}
-            </span>
-          ),
-          onClick: () => auth.send({ type: 'Log out' }),
-          className: '', // Just making TS's filter type coercion happy 😠
-        },
-        {
-          id: 'sign-out-all',
-          Element: 'button',
-          'data-testid': 'user-sidebar-sign-out',
-          children: <span>Sign out of all environments</span>,
-          onClick: () => auth.send({ type: 'Log out all' }),
-          className:
-            hideEnvironmentItems || !hasMultipleEnvironments ? 'hidden' : '',
-        },
-      ].filter(
-        (props) =>
-          props === 'break' ||
-          (typeof props !== 'string' && !props.className?.includes('hidden'))
-      ) as (ActionButtonProps | 'break')[],
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [platform, location, filePath, navigate, auth.send, hasMultipleEnvironments]
+function displayName(user: UserResponse) {
+  return (
+    user.name ||
+    [user.first_name, user.last_name].filter(Boolean).join(' ') ||
+    user.email
   )
+}
 
-  // This image host goes down sometimes. We will instead rewrite the
-  // resource to be a local one.
-  if (user?.image === 'https://placekitten.com/200/200') {
-    user.image = '/cat.jpg'
-  }
+function UserAvatar({ image }: { image?: string | null }) {
+  const [failed, setFailed] = useState(false)
+  return image && !failed ? (
+    <img
+      src={image}
+      alt=""
+      className="h-6 w-6"
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+    />
+  ) : (
+    <CustomIcon name="person" className="h-6 w-6 bg-3 text-2" />
+  )
+}
 
-  // Fallback logic for displaying user's "name":
-  // 1. user.name
-  // 2. user.first_name + ' ' + user.last_name
-  // 3. user.first_name
-  // 4. user.email
-  function getDisplayName(user?: UserResponse) {
-    if (!user) return null
-    if (user.name) return user.name
-    if (user.first_name) {
-      if (user.last_name) return user.first_name + ' ' + user.last_name
-      return user.first_name
+/** Account actions use an explicit settings route, independent of the active modeling file. */
+export default function UserSidebarMenu({
+  user,
+  settingsBasePath = PATHS.HOME,
+  fileOperations,
+  onSignOut,
+  onSignOutAll,
+}: {
+  user?: UserResponse
+  settingsBasePath?: string
+  fileOperations: FileOperationsRegistryService
+  onSignOut: () => void
+  onSignOutAll: () => void
+}) {
+  const navigate = useNavigate()
+  const platform = usePlatform()
+  const desktop = isDesktop()
+  const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
+  useEffect(() => {
+    if (!desktop) return
+    let active = true
+    void listAllEnvironmentsWithTokens(fileOperations)
+      .then((environments) => {
+        if (active) setHasMultipleEnvironments(environments.length > 1)
+      })
+      .catch(reportRejection)
+    return () => {
+      active = false
     }
-    return user.email
-  }
+  }, [desktop, fileOperations])
 
+  const name = user ? displayName(user) : undefined
+  const image =
+    user?.image === 'https://placekitten.com/200/200' ? '/cat.jpg' : user?.image
+  const groups: HeaderMenuItem[][] = [
+    [
+      externalItem(
+        'account',
+        'Manage Zoo account',
+        withSiteBaseURL('/account')
+      ),
+      {
+        id: 'settings',
+        Element: 'button',
+        'data-testid': 'user-settings',
+        children: (
+          <>
+            <span className="flex-1">User settings</span>
+            <kbd className="hotkey">
+              {hotkeyDisplay(desktop ? 'mod+,' : 'mod+shift+,', platform)}
+            </kbd>
+          </>
+        ),
+        onClick: () => {
+          void navigate(settingsBasePath + PATHS.SETTINGS_USER)
+        },
+      },
+      {
+        id: 'keybindings',
+        Element: 'button',
+        children: 'Keyboard shortcuts',
+        onClick: () => {
+          void navigate(settingsBasePath + PATHS.SETTINGS_KEYBINDINGS)
+        },
+      },
+    ],
+    [
+      externalItem(
+        'request-feature',
+        'Request a feature',
+        'https://github.com/KittyCAD/modeling-app/discussions'
+      ),
+      externalItem(
+        'report-bug',
+        'Report a bug',
+        'https://github.com/KittyCAD/modeling-app/issues/new/choose'
+      ),
+      externalItem(
+        'community',
+        'Ask the community',
+        'https://discord.gg/JQEpHR7Nt2'
+      ),
+      externalItem(
+        'release-notes',
+        'Release notes',
+        'https://github.com/KittyCAD/modeling-app/releases'
+      ),
+      ...(desktop
+        ? [
+            {
+              id: 'check-for-updates',
+              Element: 'button',
+              children: 'Check for updates',
+              onClick: () => {
+                window.electron?.appCheckForUpdates().catch(reportRejection)
+              },
+            } satisfies HeaderMenuItem,
+          ]
+        : []),
+    ],
+    [
+      {
+        id: 'sign-out',
+        Element: 'button',
+        'data-testid': 'user-sidebar-sign-out',
+        children: desktop
+          ? `Sign out of ${env().VITE_ZOO_BASE_DOMAIN}`
+          : 'Sign out',
+        onClick: onSignOut,
+      },
+      ...(desktop && hasMultipleEnvironments
+        ? [
+            {
+              id: 'sign-out-all',
+              Element: 'button',
+              'data-testid': 'user-sidebar-sign-out',
+              children: 'Sign out of all environments',
+              onClick: onSignOutAll,
+            } satisfies HeaderMenuItem,
+          ]
+        : []),
+    ],
+  ]
   return (
     <Popover className="relative grid">
       <Popover.Button
-        className="m-0 relative group/avatar border-0 w-fit min-w-max p-0 rounded-sm focus-visible:outline-2 hover:bg-transparent"
+        aria-label="User menu"
         data-testid="user-sidebar-toggle"
+        className="relative m-0 flex w-fit min-w-max items-center rounded-sm border-0 p-0 hover:bg-transparent focus-visible:outline-appForeground"
       >
-        <div className="flex items-center">
-          <div className="avatar">
-            {user?.image && !imageLoadFailed ? (
-              <img
-                src={user?.image || ''}
-                alt={user?.name || ''}
-                className="h-6 w-6"
-                referrerPolicy="no-referrer"
-                onError={() => setImageLoadFailed(true)}
-              />
-            ) : (
-              <CustomIcon
-                name="person"
-                className="w-6 h-6 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
-              />
-            )}
-          </div>
-          <CustomIcon
-            name="caretDown"
-            className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
-          />
-        </div>
+        <UserAvatar key={image} image={image} />
+        <CustomIcon
+          name="caretDown"
+          className="h-4 w-4 text-2 ui-open:rotate-180"
+        />
         <Tooltip position="bottom-right" hoverOnly>
           User menu
         </Tooltip>
       </Popover.Button>
       <Popover.Panel
         data-testid="user-dropdown"
-        className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
-          border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
-          shadow-lg`}
+        className={`${headerMenuPanelClassName} right-0`}
       >
         {({ close }) => (
           <>
             {user && (
-              <div className="flex flex-col gap-1 px-2.5 py-3 bg-chalkboard-20 dark:bg-chalkboard-80/50">
+              <div className="flex flex-col gap-1 bg-3 px-2.5 py-3">
                 <p className="m-0 text-mono text-xs" data-testid="username">
-                  {displayedName || ''}
+                  {name}
                 </p>
-                {displayedName !== user.email && (
+                {name !== user.email && (
                   <p
-                    className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                    className="m-0 truncate text-xs text-2"
                     data-testid="email"
                   >
                     {user.email}
@@ -266,35 +217,10 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
                 )}
               </div>
             )}
-            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-              {userMenuItems.map((props, index) => {
-                if (props === 'break') {
-                  return index !== userMenuItems.length - 1 ? (
-                    <li key={`break-${index}`} className="contents">
-                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-                    </li>
-                  ) : null
-                }
-
-                const { id, children, ...rest } = props
-                // Let the action's click run before unmounting its menu.
-                return (
-                  <li key={id} className="contents" onClick={() => close()}>
-                    <ActionButton
-                      {...rest}
-                      className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 !border-none text-left focus-visible:outline-appForeground"
-                    >
-                      {children}
-                    </ActionButton>
-                  </li>
-                )
-              })}
-            </ul>
+            <HeaderMenuItems groups={groups} close={close} />
           </>
         )}
       </Popover.Panel>
     </Popover>
   )
 }
-
-export default UserSidebarMenu

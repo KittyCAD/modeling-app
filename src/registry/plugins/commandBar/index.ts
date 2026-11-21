@@ -1,6 +1,6 @@
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import { appHeaderEndItemsFacet } from '@src/registry/contracts/appHeader'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { contribute, type InputOf } from 'plankton'
 import { createElement } from 'react'
@@ -12,13 +12,13 @@ function CommandBarHeaderItem({ app }: AppHeaderItemProps) {
 }
 const commandBarHeaderItem = [
   contribute(
-    appHeaderItemsFacet,
+    appHeaderEndItemsFacet,
     () =>
       ({
         id: 'command-bar.open',
         order: 10,
         Component: CommandBarHeaderItem,
-      }) satisfies InputOf<typeof appHeaderItemsFacet>
+      }) satisfies InputOf<typeof appHeaderEndItemsFacet>
   ),
 ]
 const commandBar = createZdsPlugin({
