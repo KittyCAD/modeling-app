@@ -323,7 +323,10 @@ impl Context {
             .await
             .map_err(|error| error.error.to_string())?;
 
-        match ctx.export(format).await {
+        match ctx
+            .export_with_compression(format, Some(kittycad_modeling_cmds::shared::CompressionType::Zstd))
+            .await
+        {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.
             // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
             Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),

@@ -718,10 +718,12 @@ describe('ConnectionManager', () => {
     addConnectedState(manager).send = vi.fn()
     const currentBatch = { ...sceneCameraBatch(), batch_id: 'new-scene-batch' }
     const current = manager.sendSceneCommand(currentBatch)
+    const receiveCurrent = manager.createMessageHandler()
     receive(message(sceneCameraBatchResponse))
+    receiveCurrent(message(sceneCameraBatchResponse))
     expect(callback).not.toHaveBeenCalled()
     expect(Object.keys(manager.pendingCommands)).toEqual(['new-scene-batch'])
-    receive(
+    receiveCurrent(
       message({
         ...sceneCameraBatchResponse,
         request_id: currentBatch.batch_id,
@@ -730,6 +732,37 @@ describe('ConnectionManager', () => {
     await current
     expect(callback).toHaveBeenCalledOnce()
     expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('rejects pending commands when a compressed response cannot be decoded', async () => {
+    vi.stubGlobal(
+      'Worker',
+      class {
+        onmessage: ((event: MessageEvent) => void) | null = null
+        terminate = vi.fn()
+        postMessage() {
+          queueMicrotask(() =>
+            this.onmessage?.({
+              data: { error: 'Invalid Zstd frame' },
+            } as MessageEvent)
+          )
+        }
+      }
+    )
+    const manager = createConnectionManager()
+    addConnectedState(manager).send = vi.fn()
+    const pending = manager.sendSceneCommand(sceneCameraBatch())
+    const rejected = expect(pending).rejects.toMatchObject([
+      { errors: [{ error_code: 'connection_problem' }] },
+    ])
+    manager.createMessageHandler()(
+      new MessageEvent('message', {
+        data: new Uint8Array([0x28, 0xb5, 0x2f, 0xfd, 0xff]).buffer,
+      })
+    )
+    await rejected
+    expect(manager.pendingCommands).toEqual({})
+    expect(manager.connection).toBeUndefined()
   })
 
   it('settles modeling responses before the WebRTC readiness handoff', async () => {

@@ -23,6 +23,7 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
+import { ModelingResponseDecoder } from '@src/lib/engineConnection/compression'
 import {
   createOnDarkThemeMediaQueryChange,
   createOnEngineConnectionClosed,
@@ -132,6 +133,7 @@ export type ConnectionSystemDeps = {
 }
 
 export class ConnectionManager extends EventTarget {
+  private responseDecoder: ModelingResponseDecoder | undefined
   started: boolean
   inSequence = 1
   _camControlsCameraChange = () => {}
@@ -1202,7 +1204,8 @@ export class ConnectionManager extends EventTarget {
 
   // this.connection.websocket.addEventListener('message') handler
   createMessageHandler(rustContext?: RustContext) {
-    return (event: MessageEvent) => {
+    this.responseDecoder?.dispose()
+    const handleMessage = (event: MessageEvent) => {
       let message: WebSocketResponse | null = null
 
       if (event.data instanceof ArrayBuffer) {
@@ -1340,6 +1343,18 @@ export class ConnectionManager extends EventTarget {
         })
       }
     }
+    this.responseDecoder = new ModelingResponseDecoder(
+      handleMessage,
+      (error) => {
+        console.error('Failed to decompress modeling response', error)
+        this.tearDown({
+          route: 'backend-shutdown',
+          initiatedBy: 'api',
+          reason: 'Invalid compressed modeling response',
+        })
+      }
+    )
+    return this.responseDecoder.handleMessage
   }
 
   subscribeTo<T extends ModelTypes>({
@@ -1518,6 +1533,8 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options: ManagerTearDown) {
+    this.responseDecoder?.dispose()
+    this.responseDecoder = undefined
     const connection = this.connection
     const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
 
