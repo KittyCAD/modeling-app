@@ -1,4 +1,4 @@
 export default interface ModelingAppFile {
   name: string
-  contents: number[]
+  contents: number[] | Uint8Array<ArrayBuffer>
 }
