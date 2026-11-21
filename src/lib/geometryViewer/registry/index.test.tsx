@@ -25,7 +25,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 
-vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUScene', () => ({
+vi.mock('@src/clientSideScene/localRenderer/LocalWebGPUSceneView', () => ({
   LocalWebGPUSceneView: () => null,
 }))
 vi.mock('@src/lib/kcl/scene/open', () => ({ openKclScene: vi.fn() }))

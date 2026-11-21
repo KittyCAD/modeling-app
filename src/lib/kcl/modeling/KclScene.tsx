@@ -1,6 +1,6 @@
 import type { KclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
 import { useSignals } from '@preact/signals-react/runtime'
-import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
+import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUSceneView'
 import type { Executor } from '@src/lib/executors/registry/contract'
 import type { KclSession } from '@src/lib/kcl/modeling/session'
 import { KclConnectionStatus } from '@src/lib/kcl/modeling/KclConnectionStatus'
