@@ -266,6 +266,8 @@ export function createOnConnectionStateChange({
   // Event type: generic Event type...
   const onConnectionStateChange = (event: Event) => {
     const peerConnection = event.target as RTCPeerConnection
+    // The WebSocket Close acknowledgement follows backend session cleanup.
+    if (connection.isAwaitingReconnectClose) return
     EngineDebugger.addLog({
       label: 'onConnectionStateChange',
       message: 'connectionstatechange',
@@ -628,6 +630,7 @@ export const createOnDataChannelClose = ({
     unreliableDataChannel.removeEventListener('open', onDataChannelOpen)
     unreliableDataChannel.removeEventListener('error', onDataChannelError)
     unreliableDataChannel.removeEventListener('message', onDataChannelMessage)
+    if (connection.isAwaitingReconnectClose) return
     const options: ManagerTearDown = {
       route: 'data-channel-closed',
       initiatedBy: 'unknown',

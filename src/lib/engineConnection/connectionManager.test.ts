@@ -20,6 +20,10 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
+  createOnConnectionStateChange,
+  createOnDataChannelClose,
+} from '@src/lib/engineConnection/peerConnection'
+import {
   EngineConnectionManagerEvents,
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
@@ -31,13 +35,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
   static OPEN = 1
+  static CLOSING = 2
   static CLOSED = 3
   static instances: ReconnectTestWebSocket[] = []
   readyState = ReconnectTestWebSocket.OPEN
   binaryType: BinaryType = 'blob'
   send = vi.fn()
   close = vi.fn(() => {
-    this.readyState = 2
+    this.readyState = ReconnectTestWebSocket.CLOSING
   })
 
   constructor() {
@@ -1138,6 +1143,37 @@ describe('ConnectionManager', () => {
           }),
         })
       )
+
+      // The backend can close WebRTC while it is still cleaning up the session.
+      // Only its WebSocket Close acknowledgement permits the next connection.
+      const peer = { connectionState: 'closed' } as RTCPeerConnection
+      const dispatchEvent = vi.fn(() => true)
+      const onPeerStateChange = createOnConnectionStateChange({
+        connection,
+        dispatchEvent,
+        tearDownManager: manager.tearDown.bind(manager),
+      })
+      createOnDataChannelClose({
+        connection,
+        peerConnection: peer,
+        unreliableDataChannel: {
+          removeEventListener: vi.fn(),
+        } as unknown as RTCDataChannel,
+        onDataChannelOpen: vi.fn(),
+        onDataChannelError: vi.fn(),
+        onDataChannelMessage: vi.fn(),
+        tearDownManager: manager.tearDown.bind(manager),
+      })()
+      for (const connectionState of ['disconnected', 'failed', 'closed']) {
+        onPeerStateChange({
+          target: { ...peer, connectionState },
+        } as unknown as Event)
+      }
+      expect(manager.connection).toBe(connection)
+      expect(manager.started).toBe(true)
+      expect(dispatchEvent).not.toHaveBeenCalled()
+      expect(closeDetails).toEqual([])
+      expect(rejectPending).not.toHaveBeenCalled()
 
       socket.finishClose(code)
       expect(closeDetails).toEqual([

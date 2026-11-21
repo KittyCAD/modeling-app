@@ -679,6 +679,13 @@ export class Connection extends EventTarget {
     this.onReconnectRequested(this)
   }
 
+  get isAwaitingReconnectClose() {
+    return (
+      this.reconnectRequested &&
+      this.websocket?.readyState === WebSocket.CLOSING
+    )
+  }
+
   closeForReconnect() {
     if (
       !this.reconnectRequested ||
@@ -979,7 +986,7 @@ export class Connection extends EventTarget {
       return
     }
 
-    if (this.peerConnection.connectionState === 'closed') {
+    if (this.peerConnection.connectionState !== 'closed') {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectPeerConnection',

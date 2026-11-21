@@ -1,11 +1,12 @@
-import type { Page } from '@playwright/test'
 import {
+  cacheSceneVolume,
   cacheModelCode as modelCode,
   cacheSceneReceipt as modelReceipt,
-  cacheSceneVolume,
   waitForExecutedModel as waitForValidModel,
 } from '@e2e/playwright/lib/cache-model'
+import { mockClientErrorReports } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.use({ mockApiRoutes: false })
@@ -44,6 +45,13 @@ async function expectCylinderVolume(page: Page, radius: number) {
 }
 
 test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
+  test.beforeEach(async ({ context, page }) => {
+    // Parser and connection failures are intentional; keep their reports local.
+    // Installing the WebKit report mock reloads the page.
+    await page.waitForLoadState('networkidle')
+    await mockClientErrorReports(context)
+  })
+
   test('same-file lexical and syntax errors retain the model, another invalid file clears it', async ({
     page,
     fs,
@@ -153,8 +161,9 @@ test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
                 (pending) => !pending.isSceneCommand
               ) ||
               socket?.readyState !== WebSocket.OPEN
-            )
+            ) {
               return false
+            }
             const session = manager?.engineSessionId
             socket.close(1000, 'cache lifecycle in-flight reconnect regression')
             return session
@@ -170,8 +179,9 @@ test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
             const socket =
               window.app.project?.executingEditor.value?.engineCommandManager
                 .connection?.websocket
-            if (socket?.readyState !== WebSocket.OPEN)
+            if (socket?.readyState !== WebSocket.OPEN) {
               throw new Error('The real engine socket is not open')
+            }
             socket.close(1000, 'cache lifecycle reconnect regression')
           })
         }
