@@ -76,6 +76,30 @@ describe('executors extension', () => {
     })
   }
 
+  it('reruns unchanged text when additional inputs change', async () => {
+    const revision = signal(1)
+    const execute = vi.fn(() => ({ imported: revision.peek() }))
+    await installCapabilities({
+      id: 'imports',
+      matches: '*',
+      revision,
+      execute,
+    })
+    const editor = openEditor()
+    const executor = requireSuccess(
+      registry.required(executorsService).createExecutor(editor)
+    )
+    await settled(executor)
+    expect(executor.output.peek().data.imports).toEqual({ imported: 1 })
+    revision.value = 2
+    await settled(executor)
+    expect(executor.output.peek().contents).toBe('original')
+    expect(executor.output.peek().data.imports).toEqual({ imported: 2 })
+    revision.value = 2
+    await Promise.resolve()
+    expect(execute).toHaveBeenCalledTimes(2)
+  })
+
   it.each(['createExecutor', 'acquireExecutor'] as const)(
     'returns an error from %s for a closed editor without retaining an executor',
     (method) => {
@@ -303,7 +327,8 @@ describe('executors extension', () => {
     const latest = executor.output.value
     old.resolve({ contents: 'stale' })
     await old.promise
-    // Allow all continuations of the obsolete run to finish.
+    // Let `old.promise` continuations run before checking that they cannot
+    // overwrite the already-published `latest` output.
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(executor.output.value).toBe(latest)
   })

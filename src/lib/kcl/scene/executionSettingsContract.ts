@@ -5,13 +5,13 @@ import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSetting
 
 /**
  * A preference consumed by KCL execution. Extensions contribute these separately
- * from `Setting` definitions so KCL owns the decision to execute or clear its
- * streamed scene. `read` supplies the effective value compared between changes.
+ * from `Setting` definitions so KCL owns which renderers need another execution.
+ * `read` supplies the effective value compared between changes.
  */
 export interface KclExecutionInput {
   id: string
   read: (settings: SettingsType) => unknown
-  refresh: 'execute' | 'rebuild-streamed'
+  refresh: 'execute' | 'execute-streamed'
 }
 
 export const executionSettingsContract = contract({
