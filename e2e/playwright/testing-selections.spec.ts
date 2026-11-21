@@ -297,7 +297,7 @@ part001 = startSketchOn(XZ)
         const [clickBracket] = (await page.evaluate(
           () => window.engineCommandManager.geometryOnly
         ))
-          ? await scene.findPickableModelFace()
+          ? await scene.findEntity('bodyFace', 0)
           : scene.makeMouseHelpers(0.45, 0.45, { format: 'ratio' })
         await clickBracket()
         await expect(page.getByText('1 face')).toBeVisible()

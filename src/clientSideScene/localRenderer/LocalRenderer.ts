@@ -121,6 +121,14 @@ function addToGroup<K>(groups: Map<K, Mesh[]>, key: K, mesh: Mesh) {
 // A frame size in device pixels.
 export type FrameSize = { width: number; height: number }
 
+export type ProjectedEntity = {
+  id: string
+  kind: 'edge' | 'bodyFace' | 'sketchFace'
+  x: number
+  y: number
+  visible: boolean
+}
+
 // Changes the camera to the aspect ratio, still showing all it shows now.
 function widenCameraToAspect(
   camera: PerspectiveCamera | OrthographicCamera,
@@ -1098,16 +1106,22 @@ export class LocalRenderer {
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
-    const entities = []
+    const entities: ProjectedEntity[] = []
     for (const [id, meshes] of this.targetsByEntityId) {
+      const { edgeUuid, isSketchRegion } = meshes[0].userData
       const kind =
-        typeof meshes[0].userData.edgeUuid === 'string' ? 'edge' : 'face'
+        typeof edgeUuid === 'string'
+          ? 'edge'
+          : isSketchRegion === true
+            ? 'sketchFace'
+            : 'bodyFace'
+      const geometryKind = kind === 'edge' ? 'edge' : 'face'
       let projected: { x: number; y: number } | undefined
       let visible = false
       const tried = new Set<string>()
       search: for (const mesh of meshes) {
         mesh.updateWorldMatrix(true, false)
-        for (const point of getEntityPoints(mesh.geometry, kind)) {
+        for (const point of getEntityPoints(mesh.geometry, geometryKind)) {
           const screen = projectEntityPoint(
             point.applyMatrix4(mesh.matrixWorld),
             camera,
@@ -1140,15 +1154,7 @@ export class LocalRenderer {
           }
         }
       }
-      if (projected)
-        entities.push({
-          id,
-          kind,
-          ...projected,
-          visible,
-          modelFace:
-            meshes[0].userData.bodyMeshIndex !== undefined && kind === 'face',
-        })
+      if (projected) entities.push({ id, kind, ...projected, visible })
     }
     return entities
   }

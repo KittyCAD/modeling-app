@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import type { ProjectedEntity } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import {
@@ -11,6 +12,8 @@ import {
   sendSceneCommand,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
+
+type EntityQueryKind = ProjectedEntity['kind'] | 'face'
 
 type MouseParams = {
   pixelDiff?: number
@@ -145,9 +148,6 @@ export class SceneFixture {
       return view.getProjectedEntities()
     })
 
-  findPickableModelFace = () =>
-    this.findEntity('face', 0, { modelFaceOnly: true })
-
   /**
    * Both modes share the same mouse actions; only the selection point differs.
    * Keep the legacy stream coordinate beside its equivalent local entity index
@@ -161,7 +161,7 @@ export class SceneFixture {
     timeout,
     visible,
   }: {
-    kind: 'edge' | 'face'
+    kind: EntityQueryKind
     index?: number
     id?: string
     stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
@@ -187,13 +187,12 @@ export class SceneFixture {
 
   /** Index is zero-based within entities filtered by kind and visibility. */
   findEntity = async (
-    kind: 'edge' | 'face',
+    kind: EntityQueryKind,
     indexOrId: number | string,
     {
       timeout = 30_000,
       visible = true,
-      modelFaceOnly = false,
-    }: { timeout?: number; visible?: boolean; modelFaceOnly?: boolean } = {}
+    }: { timeout?: number; visible?: boolean } = {}
   ) => {
     if (
       typeof indexOrId === 'number' &&
@@ -204,9 +203,9 @@ export class SceneFixture {
     const lookup = async () => {
       const entities = (await this.getProjectedEntities()).filter(
         (entity) =>
-          entity.kind === kind &&
-          entity.visible === visible &&
-          (!modelFaceOnly || entity.modelFace)
+          (kind === 'face'
+            ? entity.kind === 'bodyFace' || entity.kind === 'sketchFace'
+            : entity.kind === kind) && entity.visible === visible
       )
       return typeof indexOrId === 'number'
         ? entities[indexOrId]
