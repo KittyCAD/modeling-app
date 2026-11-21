@@ -1,3 +1,5 @@
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import {
   computed,
   type ReadonlySignal,
@@ -46,6 +48,7 @@ export interface ProjectSystemDeps {
   >
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
+  kclExecutionSettings: SceneExecutionSettings
   commandBar: CommandBarActorType
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
@@ -187,6 +190,9 @@ export class ZDSProject {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
+      kclExecutionSettings: this.app.registry.required(
+        kclExecutionSettingsService
+      ),
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
@@ -461,7 +467,12 @@ export class ZDSProject {
       this.app.fileOperations,
       this.path,
       await this.app.wasmPromise,
-      { createMissingEntrypoint: false }
+      {
+        createMissingEntrypoint: false,
+        readOnly: !this.app.projectSession
+          .storageFor(this.path)
+          .writeAvailability.peek().writable,
+      }
     )
     if (!isCurrent()) return
     const existing = new Map(this.files.map((file) => [file.path, file]))

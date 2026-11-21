@@ -18,8 +18,6 @@ dhat-heap = ["kcl-lib/dhat-heap"]
 console_error_panic_hook = { workspace = true }
 data-encoding = "2.11.0"
 futures = "0.3.32"
-# Enable the feature in a transitive dependency.
-getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
 # Enable wasm_js feature for all transitive dependencies using getrandom 0.3
 getrandom = { version = "0.3", features = ["wasm_js"] }
 gloo-utils = "0.3.0"

@@ -22,6 +22,7 @@ import {
 } from '@src/lib/cloudProjects/runtime/archiveContents'
 
 type PrepareProjectFilesForCloudUploadOptions = {
+  fallbackTitle?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
@@ -41,6 +42,7 @@ export function prepareProjectFilesForCloudUpload(
   const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
+    options.fallbackTitle ||
     archivePaths.basename(
       projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
     )

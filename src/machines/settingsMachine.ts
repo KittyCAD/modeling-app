@@ -98,7 +98,7 @@ type SettingsLoadInput = Omit<
   'currentProject' | 'commandBarActor'
 >
 
-async function loadSettings(input: SettingsLoadInput, projectPath?: string) {
+async function loadSettings(input: SettingsLoadInput, project?: Project) {
   const { settings } = await loadAndValidateSettings(
     input.fileOperations,
     input.wasmInstancePromise,
@@ -107,7 +107,8 @@ async function loadSettings(input: SettingsLoadInput, projectPath?: string) {
       projectLibrarySettingDefaultPolicies:
         input.projectLibrarySettingDefaultPolicies,
       extensionSettings: input.extensionSettings,
-      projectPath,
+      projectPath: project?.path,
+      projectReadOnly: project?.readWriteAccess === false,
     }
   )
   return settings
@@ -161,11 +162,11 @@ export const settingsMachine = setup({
     loadProjectSettings: fromPromise<
       SettingsType,
       SettingsLoadInput & { project: Project; settings: SettingsType }
-    >(({ input }) => loadSettings(input, input.project.path)),
+    >(({ input }) => loadSettings(input, input.project)),
     reloadSettings: fromPromise<
       SettingsType,
       SettingsLoadInput & { currentProject?: Project }
-    >(({ input }) => loadSettings(input, input.currentProject?.path)),
+    >(({ input }) => loadSettings(input, input.currentProject)),
     watchSystemTheme: fromCallback<{
       type: 'update.themeWatcher'
       theme: Themes

@@ -75,7 +75,7 @@ describeWithEngine('edges sketch block face api regression', () => {
     kclManagerInThisFile = kclManager
     engineCommandManagerInThisFile = engineCommandManager
     rustContextInThisFile = rustContext
-  }, 60_000)
+  })
 
   afterAll(() => {
     engineCommandManagerInThisFile?.tearDown({
@@ -159,5 +159,5 @@ describeWithEngine('edges sketch block face api regression', () => {
       'edges = [ { sideFaces = [ baseRegion.tags.yoyo, baseRegion.tags.hi ] } ]'
     )
     await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-  }, 30_000)
+  })
 })

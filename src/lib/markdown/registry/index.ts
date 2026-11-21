@@ -1,11 +1,21 @@
+import { createElement } from 'react'
+import { defineEditorView } from '@src/lib/editors/views'
+import { executionContext } from '@src/lib/executors/context'
 import { markdown } from '@codemirror/lang-markdown'
 import { editorMarkdownHighlight } from '@src/editor/plugins/theme'
 import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
+  editorViewsFacet,
 } from '@src/lib/editors/registry/contract'
+import {
+  observations as executorObservations,
+  executorCapabilityFacet,
+} from '@src/lib/executors/registry/contract'
+import { markdownExecutorCapability } from '@src/lib/markdown/executor'
+import { MarkdownPreview } from '@src/lib/markdown/MarkdownPreview'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { contribute, type Extension, type InputOf } from 'plankton'
+import { factory, contribute, type InputOf } from 'plankton'
 
 const language = {
   id: 'markdown',
@@ -23,10 +33,30 @@ const editorExtensions = {
   ],
 } satisfies InputOf<typeof codeEditorsExtensionFacet>
 
-/** Markdown editing behavior, independent of execution or preview services. */
-const extension = [
-  contribute(editorLanguagesFacet, () => language),
-  contribute(codeEditorsExtensionFacet, () => editorExtensions),
-] satisfies readonly Extension[]
+/** Markdown syntax and parsing stay usable without an installed executor service. */
+const extension = factory({
+  dependencies: { executors: executorObservations },
+  create: ({ executors }) => {
+    const preview = defineEditorView(
+      executionContext(markdownExecutorCapability, () =>
+        executors.executorsService.required()
+      )
+    )({
+      id: 'markdown.preview',
+      label: 'Markdown',
+      matches: '.md',
+      Component: ({ context }) =>
+        createElement(MarkdownPreview, { executor: context.executor }),
+    })
+    return {
+      items: [
+        contribute(editorLanguagesFacet, () => language),
+        contribute(codeEditorsExtensionFacet, () => editorExtensions),
+        contribute(executorCapabilityFacet, () => markdownExecutorCapability),
+        contribute(editorViewsFacet, () => preview),
+      ],
+    }
+  },
+})
 
 export default withProjectShellFeature(extension, 'markdown')
