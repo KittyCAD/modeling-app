@@ -269,7 +269,7 @@ test.describe(
           const [clickBracketInScene] = test
             .info()
             .tags.includes('@localRenderer')
-            ? await scene.findPickableModelFace()
+            ? await scene.findEntity('bodyFace', 0)
             : scene.makeMouseHelpers(0.75, 0.92, { format: 'ratio' })
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
