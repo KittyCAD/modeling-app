@@ -1,3 +1,4 @@
+import type { AttachCameraViewport } from '@src/lib/kcl/modeling/cameraCommands'
 import type { KclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
 import { KclViewControls } from '@src/lib/kcl/modeling/KclViewControls'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -18,6 +19,7 @@ export function KclScene({
   context,
 }: {
   context: {
+    attachCameraViewport: AttachCameraViewport
     executor: Executor
     session: KclSession
     viewExecution: KclViewExecution
@@ -26,7 +28,7 @@ export function KclScene({
   useSignals()
   const viewport = useRef<HTMLDivElement>(null)
   const container = useRef<HTMLDivElement>(null)
-  const { session, viewExecution } = context
+  const { session, viewExecution, attachCameraViewport } = context
   const state = session.state.value
   const resource = session.resource.value
   const preferences = resource?.preferences.localRenderer.value
@@ -37,6 +39,13 @@ export function KclScene({
   useEffect(() => {
     if (container.current) return session.attach(container.current)
   }, [session])
+  useEffect(() => {
+    if (viewport.current)
+      return attachCameraViewport(
+        viewport.current,
+        () => session.resource.value
+      )
+  }, [attachCameraViewport, session])
   return (
     <div ref={viewport} className="relative h-full w-full overflow-hidden">
       <div ref={container} className="absolute inset-0" />

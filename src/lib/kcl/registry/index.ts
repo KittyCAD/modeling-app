@@ -1,3 +1,4 @@
+import { cameraCommands } from '@src/lib/kcl/registry/cameraCommands'
 import {
   kclExecutionSettingsExtension,
   kclExecutionSettingsFactory,
@@ -48,6 +49,7 @@ import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 const extension = factory({
   key: 'kcl',
   dependencies: {
+    camera: cameraCommands,
     nativeSettings: kclExecutionSettingsFactory,
     sources: projectSourcesExtension,
     settingsInput: settingsInputs,
@@ -56,6 +58,7 @@ const extension = factory({
     executorsInput: executorInputs,
   },
   create: ({
+    camera,
     nativeSettings,
     sources,
     settingsInput,
@@ -171,7 +174,12 @@ const extension = factory({
           })
         })
       )
-      return { executor, session, viewExecution }
+      return {
+        executor,
+        session,
+        viewExecution,
+        attachCameraViewport: camera.attach,
+      }
     })({
       id: 'kcl.modeling',
       label: 'Modeling',

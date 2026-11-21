@@ -92,24 +92,3 @@ it('opens the shared camera menu on a right click, but not after an orbit drag',
   )
   expect(center).toHaveBeenCalledOnce()
 })
-
-it('routes camera shortcuts to their own view and removes them on unmount', () => {
-  const first = setup('one'),
-    second = setup('two')
-  const view = render(
-    <>
-      <View resource={first.resource} id="one" />
-      <View resource={second.resource} id="two" />
-    </>
-  )
-  const target = screen.getByTestId('two')
-  fireEvent.keyDown(target, { key: 'f', ctrlKey: true, altKey: true })
-  expect(second.zoom).toHaveBeenCalledWith({ padding: 0.1 })
-  expect(first.zoom).not.toHaveBeenCalled()
-  fireEvent.keyDown(target, { key: 'x', ctrlKey: true, altKey: true })
-  expect(second.reset).toHaveBeenCalledOnce()
-  expect(first.reset).not.toHaveBeenCalled()
-  view.unmount()
-  fireEvent.keyDown(target, { key: 'x', ctrlKey: true, altKey: true })
-  expect(second.reset).toHaveBeenCalledOnce()
-})

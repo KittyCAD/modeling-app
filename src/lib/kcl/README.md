@@ -74,6 +74,17 @@ camera pose across idle and transient reconnects, restoring it after the next
 execution instead of framing the model again. Closing the view discards that pose.
 Local rendering is exempt from idle teardown.
 
+## Camera commands
+
+The [camera contribution](registry/cameraCommands.ts) registers Zoom to fit,
+Reset view, and Center view on selection as commands with keymap bindings.
+Their defaults are `mod+alt+f`, `mod+alt+x`, and `mod+alt+c`; users can remap them
+through the keymap settings. The focused Modeling viewport supplies the target,
+so the commands use its current scene after a reconnect or renderer switch.
+Text fields and other editor views do not activate that camera scope. The
+command palette retains the viewport that launched it until submission or
+dismissal. Closing the viewport removes its target registration.
+
 ## Sharing native execution
 
 The shared executor currently saves source-capture work, including reading imports.

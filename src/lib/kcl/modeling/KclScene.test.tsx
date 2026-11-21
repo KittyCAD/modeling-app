@@ -48,7 +48,14 @@ it('keeps the visible selection count across remounts and lets the user clear it
   }
   try {
     const first = render(
-      <KclScene context={{ executor, session, viewExecution }} />
+      <KclScene
+        context={{
+          executor,
+          session,
+          viewExecution,
+          attachCameraViewport: () => () => {},
+        }}
+      />
     )
     expect(screen.getByLabelText('Scene selection')).toHaveTextContent(
       '0 selected'
@@ -61,7 +68,16 @@ it('keeps the visible selection count across remounts and lets the user clear it
       '1 selected'
     )
     first.unmount()
-    render(<KclScene context={{ executor, session, viewExecution }} />)
+    render(
+      <KclScene
+        context={{
+          executor,
+          session,
+          viewExecution,
+          attachCameraViewport: () => () => {},
+        }}
+      />
+    )
     expect(screen.getByLabelText('Scene selection')).toHaveTextContent(
       '1 selected'
     )

@@ -1,7 +1,6 @@
-import { ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import type { RefObject } from 'react'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { createCameraViewMenuItems } from '@src/components/CameraViewMenu'
@@ -12,7 +11,6 @@ import {
 } from '@src/components/ContextMenu'
 import type { KclSceneResource } from '@src/lib/kcl/scene/open'
 import type { ResolvedTheme } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
 
 const GizmoView = lazy(async () => ({
   default: (await import('@src/components/gizmo/GizmoView')).GizmoView,
@@ -40,37 +38,6 @@ export function KclViewControls({
   const disabled = resource.runtime.executing.value
   const selected = resource.selection.displayed.value.length > 0
   const camera = host?.sceneInfra.camControls
-  useEffect(() => {
-    const element = target.current
-    if (!element || !host) return
-    const key = (event: KeyboardEvent) => {
-      if (
-        event.defaultPrevented ||
-        !event.altKey ||
-        !(event.metaKey || event.ctrlKey) ||
-        resource.runtime.executing.peek()
-      )
-        return
-      const actions: Record<string, () => Promise<void>> = {
-        f: () =>
-          host.sceneInfra.camControls.zoomToFit({
-            padding: ZOOM_TO_FIT_PADDING,
-          }),
-        x: host.reset,
-        c: () =>
-          resource.selection.displayed.peek().length
-            ? host.sceneInfra.camControls.centerOnSelection()
-            : Promise.resolve(),
-      }
-      const action = actions[event.key.toLowerCase()]
-      if (!action) return
-      event.preventDefault()
-      event.stopPropagation()
-      action().catch(reportRejection)
-    }
-    element.addEventListener('keydown', key)
-    return () => element.removeEventListener('keydown', key)
-  }, [host, resource, target])
   if (!host || !camera) return null
   const items = [
     ...createCameraViewMenuItems({
