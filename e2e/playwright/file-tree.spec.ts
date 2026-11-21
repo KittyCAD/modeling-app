@@ -177,6 +177,45 @@ test(
   }
 )
 
+test(
+  'updates the file tree when Show all files changes',
+  { tag: ['@web', '@browsers', '@localRenderer'] },
+  async ({ page, folderSetupFn, fs, homePage, toolbar }) => {
+    const projectName = 'show-all-files'
+    const hiddenFileName = '.hidden.txt'
+    await folderSetupFn(async (dir) => {
+      const projectPath = await fs.join(dir, projectName)
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectPath, 'main.kcl'),
+        new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
+      )
+      await fs.writeFile(
+        await fs.join(projectPath, hiddenFileName),
+        new TextEncoder().encode('Hidden file')
+      )
+    })
+    await homePage.openProject(projectName)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    const hiddenFile = page.getByRole('treeitem', {
+      name: hiddenFileName,
+      exact: true,
+    })
+    await expect(hiddenFile).toHaveCount(0)
+
+    for (const show of [true, false]) {
+      await page.getByRole('link', { name: 'settings Settings' }).click()
+      await page.getByRole('radio', { name: 'User' }).click()
+      const setting = page.getByTestId('showAllFiles')
+      await setting.locator('label').click()
+      await expect(setting.getByRole('checkbox')).toBeChecked({ checked: show })
+      await page.getByTestId('settings-close-button').click()
+      await expect(page.getByTestId('settings-dialog-panel')).toBeHidden()
+      await expect(hiddenFile).toHaveCount(show ? 1 : 0)
+    }
+  }
+)
+
 test.describe(
   'desktop fixture isolation',
   { tag: ['@desktop', '@localRenderer'] },
