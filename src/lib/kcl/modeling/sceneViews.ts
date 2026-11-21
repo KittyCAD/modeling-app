@@ -45,7 +45,7 @@ export const sceneViews = factory({
     const bind =
       (
         capability: KclExecutionCapability,
-        options: { local?: boolean; version?: KclVersion } = {}
+        options: { presentation?: ScenePresentation; version?: KclVersion } = {}
       ) =>
       ({ editor, onDispose }: EditorViewHost) => {
         const executors = executorsInput.executorsService.required()
@@ -59,10 +59,10 @@ export const sceneViews = factory({
         )
         onDispose(preferences.dispose)
         const choosePresentation = (): ScenePresentation =>
-          options.local ||
-          settings.current.value.modeling.useLocalRenderer.currentSignal.value
+          options.presentation ??
+          (settings.current.value.modeling.useLocalRenderer.currentSignal.value
             ? 'local'
-            : 'streamed'
+            : 'streamed')
         const presentation = signal(untracked(choosePresentation))
         const settingsRevision = nativeSettings.revision(
           () => presentation.value === 'local'

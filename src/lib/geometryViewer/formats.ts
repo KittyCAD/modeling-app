@@ -1,32 +1,40 @@
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import fsZds from '@src/lib/fs-zds'
 
 /** Formats accepted by native KCL foreign imports, including filename aliases. */
-const extensions = new Set([
-  '.sat',
-  '.sab',
-  '.catpart',
-  '.prt',
-  '.fbx',
-  '.fbxb',
-  '.gltf',
-  '.glb',
-  '.ipt',
-  '.obj',
-  '.x_t',
-  '.x_b',
-  '.ply',
-  '.sldprt',
-  '.step',
-  '.stp',
-  '.stl',
-  '.3dm',
-])
+const presentations: Readonly<Record<string, ScenePresentation>> = {
+  '.sat': 'local',
+  '.sab': 'local',
+  '.catpart': 'local',
+  '.prt': 'local',
+  '.ipt': 'local',
+  '.x_t': 'local',
+  '.x_b': 'local',
+  '.sldprt': 'local',
+  '.step': 'local',
+  '.stp': 'local',
+  '.fbx': 'streamed',
+  '.fbxb': 'streamed',
+  '.gltf': 'streamed',
+  '.glb': 'streamed',
+  '.obj': 'streamed',
+  '.ply': 'streamed',
+  '.stl': 'streamed',
+  '.3dm': 'streamed',
+}
+const versionedCreo = /.+\.prt\.[1-9]\d*$/i
 
 export function isGeometryFile(src: string): boolean {
   return (
-    extensions.has(fsZds.extname(src).toLowerCase()) ||
-    /.+\.prt\.[1-9]\d*$/i.test(fsZds.basename(src))
+    Object.hasOwn(presentations, fsZds.extname(src).toLowerCase()) ||
+    versionedCreo.test(fsZds.basename(src))
   )
+}
+
+/** Mesh imports have no BRep for the geometry-only GLB exporter; show them in the engine's graphics scene. */
+export function geometryPresentation(src: string): ScenePresentation {
+  if (versionedCreo.test(fsZds.basename(src))) return 'local'
+  return presentations[fsZds.extname(src).toLowerCase()] ?? 'streamed'
 }
 
 /** Explicit aliases avoid invalid KCL names derived from CAD filenames. */

@@ -11,7 +11,10 @@ import { defineEditorView } from '@src/lib/editors/views'
 import { executorCapabilityFacet } from '@src/lib/executors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { createGeometryExecution } from '@src/lib/geometryViewer/executor'
-import { isGeometryFile } from '@src/lib/geometryViewer/formats'
+import {
+  isGeometryFile,
+  geometryPresentation,
+} from '@src/lib/geometryViewer/formats'
 import { GeometryViewer } from '@src/lib/geometryViewer/GeometryViewer'
 import { insertGeometryImport } from '@src/lib/geometryViewer/insert'
 import { sceneViews } from '@src/lib/kcl/modeling/sceneViews'
@@ -35,9 +38,11 @@ const extension = factory({
       () => getProjects()?.currentSession.value?.project.value.contents
     )
     const capability = createGeometryExecution(getProjects, revision)
-    const bindScene = scenes.bind(capability, { local: true, version: '3.0' })
     const view = defineEditorView((host) => {
-      const scene = bindScene(host)
+      const scene = scenes.bind(capability, {
+        presentation: geometryPresentation(host.editor.src.peek() ?? ''),
+        version: '3.0',
+      })(host)
       if (isErr(scene)) return scene
       const owner = getProjects()?.currentSession.peek()
       const targets = computed(() => {

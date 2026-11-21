@@ -1,10 +1,16 @@
 # 3D file viewer
 
 With `zds_project_shell_refactor` enabled, opening a supported foreign geometry
-file selects the **3D Viewer** mode. It uses the existing local renderer, camera
-controls, appearance settings, and engine connection recovery. Import and
-tessellation still require an authenticated engine connection and WebGPU support.
+file selects the **3D Viewer** mode. CAD formats use the existing local renderer;
+mesh formats and Rhino use streamed scenes. Both share camera controls,
+appearance settings, and engine connection recovery. Viewing requires an
+authenticated engine connection; local rendering also needs WebGPU support.
 This is not an offline file parser.
+
+Mesh-only engine imports do not provide BRep objects for geometry-only GLB
+export. OBJ, STL, PLY, glTF/GLB, FBX, and Rhino therefore use the engine's graphics
+scene instead of attempting a local GLB export. STEP and other CAD formats keep
+local rendering.
 
 The viewer accepts the formats declared by native KCL imports: STEP/STP, STL,
 OBJ, glTF/GLB, PLY, FBX/FBXB, Rhino 3DM, ACIS SAT/SAB, CATIA CATPart,
@@ -23,6 +29,10 @@ the action does not write either file to storage. Existing unsaved edits remain.
   for glTF. Its virtual KCL entrypoint imports the model without writing a file.
 - Each view leases that executor and separately owns its scene, camera, native
   runtime, and connection through `kcl/modeling/sceneViews.ts`.
+- Each connection delivers asynchronous replies to that runtime's native context.
+  Geometry imports wait for this delivery even after their JavaScript pending
+  command has settled. Replies bypass the execution/export queue to avoid waiting
+  behind the import they complete; disposal drains in-flight deliveries.
 - Model editors are read-only and declare `storage: 'bytes'`. Opening raw bytes
   creates an empty text document; project source capture reads byte-backed imports
   from storage, preserving binary data even while their viewers are open.
