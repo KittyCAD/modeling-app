@@ -681,6 +681,67 @@ mod tests {
         SourceRange::new(start, end, ModuleId::default())
     }
 
+    // Simulation tests cannot call these Rust lookup and traversal functions.
+    // Check that they find the same source locations after a JSON round trip,
+    // even if the AST and path representation change.
+    #[test]
+    fn sketch_source_lookup_agrees_with_traversal_after_transport() {
+        let code = r#"@settings(kclVersion = "3.0", experimentalFeatures = allow)
+planeArg = XY
+fn makeProfile() {
+  return sketch(on = planeArg) {
+    arc1 = arc(start = [var 1mm, 0mm], end = [0mm, var 2mm], center = [0mm, 0mm])
+    guess = var
+  }
+}
+// First statements in different sketches must have different paths.
+sketch(on = YZ) {
+  marker = point(at = [var 7mm, var 8mm])
+}
+"#;
+        let parsed = crate::Program::parse_no_errs(code).unwrap();
+        let serialized = serde_json::to_value(&parsed.ast).unwrap();
+        let mut restored: Node<Program> = serde_json::from_value(serialized).unwrap();
+        // JSON omits node paths. Rebuild them for the walker, then compare them
+        // with the paths computed from source ranges.
+        fill_node_paths(&mut restored);
+        let programs = ProgramLookup::new(restored.clone(), Default::default());
+
+        let needles = [
+            "planeArg",
+            "arc(start = [var 1mm, 0mm], end = [0mm, var 2mm], center = [0mm, 0mm])",
+            "var 1mm",
+            "var 2mm",
+            "var\n",
+            "point(at = [var 7mm, var 8mm])",
+            "var 7mm",
+            "var 8mm",
+        ];
+        let mut paths = Vec::new();
+        for needle in needles {
+            let start = code.rfind(needle).unwrap();
+            let text = needle.trim_end();
+            let source_range = range(start, start + text.len());
+            let resolved = NodePath::from_range(&programs, 0, source_range).unwrap();
+            let visited = std::cell::RefCell::new(Vec::new());
+            crate::walk::walk(&restored, |node: crate::walk::Node<'_>| {
+                if SourceRange::try_from(&node).ok() == Some(source_range)
+                    && let Some(path) = Option::<NodePath>::try_from(&node).unwrap()
+                {
+                    visited.borrow_mut().push(path);
+                }
+                Ok::<_, anyhow::Error>(true)
+            })
+            .unwrap();
+            assert!(visited.borrow().contains(&resolved), "source lookup for `{text}`");
+            assert!(
+                !paths.contains(&resolved),
+                "distinct sketch locations share a path: `{text}`"
+            );
+            paths.push(resolved);
+        }
+    }
+
     #[test]
     fn test_node_path_from_range() {
         // Read the contents of the file.

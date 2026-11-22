@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_compatibility_invalid_on.kcl
+---
+// Reject an invalid surface before executing the sketch body.
+
+before = 17
+profile = sketch(on = 123) {
+  assert(false, error = "The sketch body ran with an invalid on argument")
+}

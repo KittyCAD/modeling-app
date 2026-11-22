@@ -8,7 +8,7 @@ import type {
 class APIReporter implements Reporter {
   private pendingRequests: Promise<void>[] = []
   private allResults: Record<string, any>[] = []
-  private blockingResults: Record<string, any>[] = []
+  private blockByTest = new Map<string, { retry: number; block: boolean }>()
 
   async onEnd(result: FullResult): Promise<void> {
     await Promise.all(this.pendingRequests)
@@ -17,10 +17,18 @@ class APIReporter implements Reporter {
       return
     }
 
-    if (this.blockingResults.length === 0) {
+    const hasBlocking = [...this.blockByTest.values()].some(
+      (entry) => entry.block
+    )
+    if (!hasBlocking) {
       result.status = 'passed'
       if (!process.env.CI) {
         console.log('TAB API - Marked failures as non-blocking')
+      }
+    } else if (result.status === 'passed') {
+      result.status = 'failed'
+      if (!process.env.CI) {
+        console.log('TAB API - Marked flaky rerun as blocking')
       }
     }
 
@@ -130,10 +138,13 @@ class APIReporter implements Reporter {
         })
 
         if (response.ok) {
-          const result = await response.json()
-          this.allResults.push(result)
-          if (result.block) {
-            this.blockingResults.push(result)
+          const apiResult = await response.json()
+          this.allResults.push(apiResult)
+          const key = payload.id || payload.test
+          const retry = payload.retry ?? 0
+          const prev = this.blockByTest.get(key)
+          if (!prev || retry >= prev.retry) {
+            this.blockByTest.set(key, { retry, block: !!apiResult.block })
           }
         } else {
           const error = await response.json()

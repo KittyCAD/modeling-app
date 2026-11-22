@@ -1,0 +1,21 @@
+// In KCL 3, the sketch's return makes the function return 42. KCL 1/2 return 0.
+// After unwinding, another call must succeed, equality must produce a boolean,
+// and a new sketch and offsetPlane must execute.
+
+fn fromSketch() {
+  sketch(on = XY) {
+    local = 17
+    edge = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+
+result = fromSketch()
+secondCall = fromSketch()
+outside = 6 == 6
+after = sketch(on = XZ) {
+  marker = 7
+  edge = line(start = [0mm, 0mm], end = [10mm, 0mm])
+}
+planeAfter = offsetPlane(XY, offset = 2mm)

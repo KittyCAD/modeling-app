@@ -1,5 +1,9 @@
 import type { PostEffectType } from '@kittycad/lib'
-import { getThemeColorForEngine, Themes } from '@src/lib/theme'
+import {
+  getOppositeTheme,
+  getThemeColorForEngine,
+  Themes,
+} from '@src/lib/theme'
 
 export type ViewportRendering =
   | 'default'
@@ -39,6 +43,20 @@ export function getViewportTheme(
   mode: ViewportRendering | PostEffectType
 ): Themes {
   return mode === 'retrocad' || mode === 'phosphor' ? Themes.Dark : theme
+}
+
+/**
+ * Choose the foreground theme used by `SceneInfra` for sketch graphics. Its
+ * drawing helpers use that theme's color directly, so a light background needs
+ * dark foregrounds. Streamed Retrocad/Phosphor use a dark background regardless
+ * of the app theme; local rendering uses the app theme's background.
+ */
+export function getSceneOverlayTheme(
+  theme: Themes,
+  mode: ViewportRendering | PostEffectType,
+  geometryOnly: boolean
+) {
+  return getOppositeTheme(geometryOnly ? theme : getViewportTheme(theme, mode))
 }
 
 export function getViewportBackgroundColor(

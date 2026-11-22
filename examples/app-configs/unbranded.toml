@@ -1,0 +1,6 @@
+# Keep the default app composition with client-supplied branding.
+schema-version = 1
+base = "zoo:default"
+
+[extensions]
+exclude = ["zoo:appLogo"]

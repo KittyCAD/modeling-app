@@ -85,6 +85,7 @@ impl ModuleLoader {
 pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
     match mod_name {
         "prelude" => Some(include_str!("../std/prelude.kcl")),
+        "drawing" => Some(include_str!("../std/drawing.kcl")),
         "gdt" => Some(include_str!("../std/gdt.kcl")),
         "math" => Some(include_str!("../std/math.kcl")),
         "runtime" => Some(include_str!("../std/runtime.kcl")),
@@ -103,7 +104,6 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
-        "operation" => Some(include_str!("../std/operation.kcl")),
         _ => None,
     }
 }

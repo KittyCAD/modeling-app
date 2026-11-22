@@ -262,7 +262,7 @@ export const ModelingPageProvider = ({
           DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
-      project: projectIORef?.value,
+      getProject: () => project?.projectIORefSignal.peek(),
       wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

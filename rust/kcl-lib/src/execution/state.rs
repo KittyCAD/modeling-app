@@ -1551,14 +1551,9 @@ impl ExecState {
         self.mod_local.settings.kcl_version
     }
 
-    /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
-    /// module of this execution declares KCL 3.0 or later. This never looks at
-    /// [`Self::legacy_caller_kcl_version()`] so that behavior never varies
-    /// within a single execution.
-    pub(crate) fn entry_point_version_is_v3_or_higher(&self) -> bool {
-        self.global
-            .entry_point_kcl_version
-            .is_some_and(|v| v >= KclVersion::V3Preview)
+    /// Return whether the entry point declares a version at or above `minimum`.
+    pub(crate) fn entry_point_version_at_least(&self, minimum: KclVersion) -> bool {
+        self.global.entry_point_kcl_version.is_some_and(|v| v >= minimum)
     }
 
     /// Record the entry-point program's declared kclVersion for this
@@ -1608,7 +1603,7 @@ impl ExecState {
             return Ok(());
         };
         let entry_point_version = self.global.entry_point_kcl_version;
-        let allowed = if self.entry_point_version_is_v3_or_higher() {
+        let allowed = if self.entry_point_version_at_least(KclVersion::V3Preview) {
             Some(declared) == entry_point_version
         } else {
             declared < KclVersion::V3Preview
@@ -1681,7 +1676,7 @@ impl ExecState {
             Some(range) => error.add_import_location(&path.import_name(), range),
             None => error,
         })?;
-        if !self.entry_point_version_is_v3_or_higher() {
+        if !self.entry_point_version_at_least(KclVersion::V3Preview) {
             return Ok(());
         }
 

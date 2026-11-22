@@ -1,11 +1,11 @@
-import { defineContract, firstWinsValueSpec } from '@kittycad/registry'
+import { contract, Facet } from 'plankton'
 
 /** Active publishing contributions own publication UI and its status requests. */
-export const publishingContract = defineContract({
-  projectPublicationEnabledValueSpec: firstWinsValueSpec(
+export const publishingContract = contract({
+  projectPublicationEnabledFacet: new Facet<boolean, boolean>(
     'project-publication-enabled',
-    false
+    (inputs) => inputs[0] ?? false
   ),
 })
 
-export const { projectPublicationEnabledValueSpec } = publishingContract
+export const { projectPublicationEnabledFacet } = publishingContract

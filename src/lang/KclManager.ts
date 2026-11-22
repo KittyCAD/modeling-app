@@ -1,3 +1,13 @@
+import { observeLegacySceneExecutionSettings } from '@src/lib/kcl/scene/legacyExecutionSettings'
+import {
+  SceneExecutionEvents as KclManagerEvents,
+  type SceneExecutionDoneDetail as KclExecutionDoneDetail,
+} from '@src/lib/kcl/scene/execution'
+export {
+  SceneExecutionEvents as KclManagerEvents,
+  type SceneExecutionDoneDetail as KclExecutionDoneDetail,
+} from '@src/lib/kcl/scene/execution'
+import { buildMinimalDocumentChange } from '@src/lib/minimalDocumentChange'
 import type { EntityType } from '@kittycad/lib'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -179,10 +189,10 @@ import { setKclVersion } from '@src/lib/kclVersion'
 import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
 import { createProjectThumbnail } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import { type Themes, getResolvedTheme } from '@src/lib/theme'
 import {
   getViewportPostEffect,
-  getViewportTheme,
+  getSceneOverlayTheme,
 } from '@src/lib/settings/viewportRendering'
 import type {
   ModelingMachineEvent,
@@ -277,61 +287,6 @@ type DirectSketchHistoryMarker = {
   entryId: number
 }
 
-type MinimalDocumentChange = {
-  from: number
-  to: number
-  insert: string
-}
-
-/**
- * Computes the smallest single replacement that turns `currentCode` into
- * `nextCode` by preserving the longest shared prefix and suffix.
- *
- * We use this when dispatching CodeMirror updates so history, selection
- * mapping, and plugin updates operate on the narrowest possible text change
- * instead of a full-document replace on every sketch/code sync.
- *
- * If there are multiple disjoint edits, this still collapses them into a single
- * replacement range, so the text between those edits is included in the change.
- * That is less minimal than a true diff, but keeps the update logic simple and
- * avoids tracking multiple document changes for one editor transaction.
- */
-function buildMinimalDocumentChange(
-  currentCode: string,
-  nextCode: string
-): MinimalDocumentChange | null {
-  if (currentCode === nextCode) {
-    return null
-  }
-
-  let prefixLength = 0
-  const maxPrefixLength = Math.min(currentCode.length, nextCode.length)
-  while (
-    prefixLength < maxPrefixLength &&
-    currentCode.charCodeAt(prefixLength) === nextCode.charCodeAt(prefixLength)
-  ) {
-    prefixLength++
-  }
-
-  let currentSuffixStart = currentCode.length
-  let nextSuffixStart = nextCode.length
-  while (
-    currentSuffixStart > prefixLength &&
-    nextSuffixStart > prefixLength &&
-    currentCode.charCodeAt(currentSuffixStart - 1) ===
-      nextCode.charCodeAt(nextSuffixStart - 1)
-  ) {
-    currentSuffixStart--
-    nextSuffixStart--
-  }
-
-  return {
-    from: prefixLength,
-    to: currentSuffixStart,
-    insert: nextCode.slice(prefixLength, nextSuffixStart),
-  }
-}
-
 const syntheticHistoryCommitEffect =
   StateEffect.define<SyntheticHistoryCommit>()
 const directSketchHistoryMarkerEffect =
@@ -342,17 +297,6 @@ type ExecutionCompletionStatus = 'completed' | 'cancelled' | 'cleanup'
 type ExecutionCompletionResult = {
   generation: number
   status: ExecutionCompletionStatus
-}
-
-export enum KclManagerEvents {
-  LongExecution = 'long-execution',
-  ExecutionDone = 'execution-done',
-}
-
-export interface KclExecutionDoneDetail {
-  successful: boolean
-  isInterrupted: boolean
-  hasErrors: boolean
 }
 
 declare global {
@@ -3072,13 +3016,10 @@ export class KclManager extends File {
     const useLocalRenderer =
       this.engineCommandManager.connection?.geometryOnly ??
       settings.modeling.useLocalRenderer.current
-    const opposingTheme = getOppositeTheme(
+    const opposingTheme = getSceneOverlayTheme(
+      newTheme,
+      settings.modeling.viewportRendering.current,
       useLocalRenderer
-        ? newTheme
-        : getViewportTheme(
-            newTheme,
-            settings.modeling.viewportRendering.current
-          )
     )
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
@@ -3275,89 +3216,27 @@ export class KclManager extends File {
       })
     )
 
-    const showScaleGrid = computed(
-      () => settings.value.modeling.showScaleGrid.currentSignal.value
-    )
-    // Inactive editors keep their render baseline current without issuing
-    // engine commands. Opening an editor alone does not request a rerender.
-    let previous = {
-      showScaleGrid: showScaleGrid.peek(),
-      fixedSizeGrid: fixedSizeGrid.peek(),
-      highlightEdges: highlightEdges.peek(),
-      backfaceColor: backfaceColor.peek(),
-    }
-    let pendingCacheClear: Promise<boolean> | undefined
     disposers.push(
-      effect(() => {
-        const active = this.sceneSettingsActive.value
-        const current = {
-          showScaleGrid: showScaleGrid.value,
-          fixedSizeGrid: fixedSizeGrid.value,
-          highlightEdges: highlightEdges.value,
-          backfaceColor: backfaceColor.value,
-        }
-        // The local renderer draws back faces itself, so the engine scene can stay.
-        const backfaceChanged =
-          current.backfaceColor !== previous.backfaceColor &&
-          !this.engineCommandManager.geometryOnly
-        const engineSettingsChanged =
-          current.showScaleGrid !== previous.showScaleGrid ||
-          current.fixedSizeGrid !== previous.fixedSizeGrid ||
-          current.highlightEdges !== previous.highlightEdges
-        previous = current
-        let cancelled = false
-        untracked(() => {
-          if (!active || !this.engineCommandManager.connection) return
+      observeLegacySceneExecutionSettings({
+        settings: this.systemDeps.kclExecutionSettings,
+        active: () => this.sceneSettingsActive.value,
+        connected: () => !!this.engineCommandManager.connection,
+        geometryOnly: () => this.engineCommandManager.geometryOnly,
+        capture: () => {
+          const connection = this.engineCommandManager.connection
           const path = this.path
           const projectPath = this.systemDeps.projectPath.peek()
-          const isCurrent = () =>
-            !cancelled &&
-            this.sceneSettingsActive.peek() &&
-            this.path === path &&
-            this.systemDeps.projectPath.peek() === projectPath
-          const executeIfCurrent = () => {
-            if (isCurrent()) return this.executeCode()
+          return {
+            isCurrent: () =>
+              this.sceneSettingsActive.peek() &&
+              this.engineCommandManager.connection === connection &&
+              this.path === path &&
+              this.systemDeps.projectPath.peek() === projectPath,
+            execute: () => this.executeCode(),
+            rebuild: (configuration) =>
+              this.rustContext.clearSceneAndBustCache(configuration, path),
           }
-          if (backfaceChanged) {
-            const clearCache = () => {
-              if (!isCurrent()) return Promise.resolve(false)
-              return this.rustContext
-                .clearSceneAndBustCache(jsAppSettings(settings.peek()), path)
-                .then(() => true)
-                .catch((error) => {
-                  reportRejection(error)
-                  return false
-                })
-            }
-            // Serialize cache clears, and let later engine-setting updates
-            // wait for the pending clear before rendering the latest values.
-            const pending = pendingCacheClear
-              ? pendingCacheClear.then(clearCache)
-              : clearCache()
-            pendingCacheClear = pending
-            pending
-              .then((success) => {
-                if (pendingCacheClear === pending) pendingCacheClear = undefined
-                // Closing, switching editors/projects, or a newer settings
-                // update invalidates the continuation's ownership of the scene.
-                if (success) return executeIfCurrent()
-              })
-              .catch(reportRejection)
-          } else if (engineSettingsChanged) {
-            if (pendingCacheClear) {
-              pendingCacheClear
-                .then((success) => {
-                  if (success) return executeIfCurrent()
-                })
-                .catch(reportRejection)
-            } else {
-              this.executeCode().catch(reportRejection)
-            }
-          }
-        })
-        return () => {
-          cancelled = true
-        }
+        },
       })
     )
     return () => {

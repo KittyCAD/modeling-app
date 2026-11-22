@@ -28,6 +28,9 @@ layout: manual
   * [`push`](/docs/kcl-std/functions/std-array-push)
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
   * [`slice`](/docs/kcl-std/functions/std-array-slice)
+* [**std::drawing**](/docs/kcl-std/modules/std-drawing)
+  * [`drawing::customSheet`](/docs/kcl-std/functions/std-drawing-customSheet)
+  * [`drawing::standardSheet`](/docs/kcl-std/functions/std-drawing-standardSheet)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
   * [`gdt::angularity`](/docs/kcl-std/functions/std-gdt-angularity)
   * [`gdt::annotation`](/docs/kcl-std/functions/std-gdt-annotation)
@@ -88,8 +91,6 @@ layout: manual
   * [`sin`](/docs/kcl-std/functions/std-math-sin)
   * [`sqrt`](/docs/kcl-std/functions/std-math-sqrt)
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
-* [**std::operation**](/docs/kcl-std/modules/std-operation)
-  * [`operation::facing`](/docs/kcl-std/functions/std-operation-facing) Experimental
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
   * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
@@ -275,6 +276,10 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)
+* [**std::drawing**](/docs/kcl-std/modules/std-drawing)
+  * [`drawing::Sheet`](/docs/kcl-std/types/std-drawing-Sheet)
+  * [`drawing::SheetOrientation`](/docs/kcl-std/types/std-drawing-SheetOrientation)
+  * [`drawing::SheetSize`](/docs/kcl-std/types/std-drawing-SheetSize)
 * [**std::types**](/docs/kcl-std/modules/std-types)
   * [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d)
   * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)

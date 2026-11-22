@@ -52,7 +52,7 @@ interface KclCommandConfig {
   settings: {
     defaultUnit: UnitLength
   }
-  project?: Project
+  getProject: () => Project | undefined
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
@@ -209,14 +209,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: () => {
             const providedOptions: { name: string; value: string }[] = []
-            const projectName = commandProps.project?.name
+            const project = commandProps.getProject()
             const sep = fsZds.sep
             const relevantFiles = relevantFileExtensions(
               commandProps.wasmInstance
             )
-            if (projectName && sep) {
+            if (project?.name && sep) {
               const importableFiles = listImportableProjectFiles(
-                commandProps.project,
+                project,
                 relevantFiles
               )
               importableFiles.forEach((file) => {

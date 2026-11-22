@@ -1,10 +1,14 @@
+import appLogoItem from '@src/registry/extensions/appLogo'
+import appHeaderItem from '@src/registry/extensions/appHeader'
+import saveItem from '@src/lib/save/registry'
+import executorsItem from '@src/lib/executors/registry'
 import debugItem from '@src/registry/extensions/debug'
 import projectSessionNextItem from '@src/lib/projectSession/registry'
 import markdownItem from '@src/lib/markdown/registry'
 import kclItem from '@src/lib/kcl/registry'
 import editorsItem from '@src/lib/editors/registry'
 import cloudProjectsItem from '@src/lib/cloudProjects/registry'
-import type { RegistryItem } from '@kittycad/registry'
+import type { Extension } from 'plankton'
 import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
 import lspItem from '@src/lang/lsp/registry'
 import billingItem from '@src/lib/billing/registry'
@@ -44,12 +48,16 @@ export const bundledRegistryItemCatalog = {
   'zoo:cursorBlinking': cursorBlinkingItem,
   'zoo:editors': editorsItem,
   'zoo:engineConnection': engineConnectionItem,
+  'zoo:executors': executorsItem,
   'zoo:kcl': kclItem,
   'zoo:markdown': markdownItem,
   'zoo:projectLibraries': projectLibrariesItem,
   'zoo:projectSessionNext': projectSessionNextItem,
   'zoo:rustContext': rustContextItem,
+  'zoo:save': saveItem,
   'zoo:zookeeper': zookeeperItem,
+  'zoo:appHeader': appHeaderItem,
+  'zoo:appLogo': appLogoItem,
   'zoo:auth': authItem,
   'zoo:commands': commandsItem,
   'zoo:debug': debugItem,
@@ -73,6 +81,6 @@ export const bundledRegistryItemCatalog = {
   'zoo:commandBar': commandBarItem,
   'zoo:publish': publishItem,
   'zoo:slicer': slicerItem,
-} satisfies Record<BundledRegistryItemId, RegistryItem | undefined>
+} satisfies Record<BundledRegistryItemId, Extension | undefined>
 
 export type { BundledRegistryItemId } from '@src/registry/catalogMetadata'

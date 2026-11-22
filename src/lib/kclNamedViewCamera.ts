@@ -6,7 +6,7 @@ import type {
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
-import { AxisNames } from '@src/lib/constants'
+import { AxisNames, ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import { PerspectiveCamera, Vector3 } from 'three'
 
@@ -19,12 +19,6 @@ const ORIENTATION_AXES = {
   bottom: AxisNames.NEG_Z,
   isometric: null, // viewIsometric() positions this
 } satisfies Record<ArtifactOrientation, AxisNames | null>
-
-/**
- * Matches the padding the Zoom to fit command passes. Other `zoom_to_fit` call
- * sites use 0.2.
- */
-const FIT_PADDING = 0.1
 
 /** Read the client camera in the form `view::directed` stores in KCL. */
 export async function captureNamedViewCamera(
@@ -142,7 +136,9 @@ export async function applyNamedViewCamera({
 
     if (axis === null) {
       // viewIsometric() frames the model itself.
-      await sceneInfra.camControls.viewIsometric({ padding: FIT_PADDING })
+      await sceneInfra.camControls.viewIsometric({
+        padding: ZOOM_TO_FIT_PADDING,
+      })
 
       if (target === undefined && distance === undefined) {
         return
@@ -173,7 +169,7 @@ export async function applyNamedViewCamera({
   }
 
   if (target === undefined || distance === undefined) {
-    await sceneInfra.camControls.zoomToFit({ padding: FIT_PADDING })
+    await sceneInfra.camControls.zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
   }
 }
 

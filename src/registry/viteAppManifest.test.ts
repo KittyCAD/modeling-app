@@ -53,6 +53,19 @@ describe('Vite app manifest definition', () => {
     expect(JSON.stringify(define)).not.toContain('private-file-comment')
   })
 
+  it('embeds a composition without the optional logo while keeping header menus', async () => {
+    const root = fixture()
+    fs.writeFileSync(
+      path.join(root, 'unbranded.toml'),
+      'schema-version = 1\nbase = "zoo:default"\n[extensions]\nexclude = ["zoo:appLogo"]'
+    )
+    vi.stubEnv('ZOO_APP_CONFIG', 'unbranded.toml')
+    const define = await getAppCompositionDefine('development', root)
+    const composition = JSON.parse(define.__APP_STARTUP_COMPOSITION__)
+    expect(composition.registryItemIds).not.toContain('zoo:appLogo')
+    expect(composition.registryItemIds).toContain('zoo:appHeader')
+  })
+
   it('reads the path from the selected mode env file', async () => {
     const root = fixture()
     fs.writeFileSync(path.join(root, 'compact.toml'), compact)

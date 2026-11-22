@@ -1,16 +1,19 @@
 import type { ElectronPluginContext } from '@src/registry/pluginIpc'
 import { bundledElectronPluginRegistrations } from '@src/registry/electronPlugins'
-import type { RegistryItem } from '@kittycad/registry'
+import type { Extension } from 'plankton'
 import { coreRegistryItems } from '@src/registry/registry'
 import { describe, expect, it } from 'vitest'
 
-// Frozen migration baseline: the previous glob matches on main. Explicit paths
-// let future catalog entries remain opt-in without changing this default.
+// Explicit entrypoints verify the default composition and registration order.
 const legacyModules = import.meta.glob<{
-  default?: RegistryItem
+  default?: Extension
   order?: number
 }>(
   [
+    './extensions/appLogo/index.ts',
+    './extensions/appHeader/index.ts',
+    '../lib/save/registry/index.ts',
+    '../lib/executors/registry/index.ts',
     '../lang/lsp/registry/index.ts',
     '../lib/billing/registry/index.ts',
     '../lib/cloudProjects/registry/index.ts',

@@ -56,6 +56,20 @@ describe('disk app configuration', () => {
     expect(selectElectronPlugins(result.registryItemIds)).toEqual([])
   })
 
+  it('allows clients to exclude the default logo without changing other extensions', () => {
+    const result = load(
+      fs.readFileSync(
+        path.resolve('examples/app-configs/unbranded.toml'),
+        'utf8'
+      )
+    )
+    expect(result).toEqual({
+      registryItemIds: defaultRegistryItemIds.filter(
+        (id) => id !== 'zoo:appLogo'
+      ),
+    })
+  })
+
   it('keeps both native slicer entrypoints in the default composition', () => {
     expect(
       selectElectronPlugins(defaultRegistryItemIds).map(
