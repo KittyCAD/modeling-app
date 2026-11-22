@@ -30,6 +30,8 @@ import {
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
 import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { DEFAULT_LOCAL_VIEWPORT_OPTIONS } from '@src/clientSideScene/localRenderer/viewportOptions'
+import { signal } from '@preact/signals-core'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Coords2d } from '@src/lang/util'
@@ -107,6 +109,7 @@ export class SceneInfra {
   readonly camControls: CameraControls
   /** Set while the local renderer draws the scene instead of the video stream. */
   localRenderer: LocalRenderer | null = null
+  readonly localViewportOptions = signal({ ...DEFAULT_LOCAL_VIEWPORT_OPTIONS })
   private readonly wasmInstancePromise: Promise<ModuleType>
   isFovAnimationInProgress = false
   private _baseUnitMultiplier = 1

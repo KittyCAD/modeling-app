@@ -14,6 +14,7 @@ import { PROJECT_THUMBNAIL_SIZE } from '@src/lib/screenshot'
 import { reportRejection } from '@src/lib/trap'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { waitFor } from 'xstate'
+import { useSignals } from '@preact/signals-react/runtime'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
@@ -69,6 +70,8 @@ export const LocalWebGPUSceneView = ({
   /** Offered when the renderer fails; the button is hidden when omitted. */
   onSwitchToStreaming?: () => void
 }) => {
+  useSignals()
+  const viewportOptions = host.sceneInfra.localViewportOptions.value
   const {
     theme,
     enableSSAO,
@@ -168,6 +171,10 @@ export const LocalWebGPUSceneView = ({
   useEffect(() => {
     rendererRef.current?.setBackfaceColor(backfaceColor)
   }, [backfaceColor])
+
+  useEffect(() => {
+    rendererRef.current?.setViewportOptions(viewportOptions)
+  }, [viewportOptions, host])
 
   return (
     <>

@@ -60,6 +60,8 @@ export class SelectionHighlightRenderer {
   private readonly savedClearColor = new Color()
   private savedClearAlpha = 1
   private readonly backgroundColorNode = uniform(new Color())
+  private readonly brightnessNode = uniform(1)
+  private readonly contrastNode = uniform(1)
   private readonly maskTarget = new RenderTarget(1, 1, {
     type: UnsignedByteType,
     colorSpace: NoColorSpace,
@@ -130,9 +132,22 @@ export class SelectionHighlightRenderer {
       mix(this.backgroundColorNode, toneMappedBase.rgb, coverage),
       1
     )
+    const displayBase = renderOutput(
+      compositedBase,
+      NoToneMapping,
+      renderer.outputColorSpace
+    )
+    const adjustedColor = displayBase.rgb
+      .sub(0.5)
+      .mul(this.contrastNode)
+      .add(0.5)
+      .mul(this.brightnessNode)
+      .clamp(0, 1)
+    // Adjust covered scene pixels before adding selection overlays. Empty background
+    // pixels and the selection palette keep their theme colors.
     this.cacheBasePipeline = new RenderPipeline(
       renderer,
-      renderOutput(compositedBase, NoToneMapping, renderer.outputColorSpace)
+      vec4(mix(displayBase.rgb, adjustedColor, coverage), 1)
     )
     this.cacheBasePipeline.outputColorTransform = false
 
@@ -198,6 +213,11 @@ export class SelectionHighlightRenderer {
 
   setBackgroundColor(backgroundColor: string) {
     this.backgroundColorNode.value.set(backgroundColor)
+  }
+
+  setColorAdjustments(brightness: number, contrast: number) {
+    this.brightnessNode.value = brightness / 100
+    this.contrastNode.value = contrast / 100
   }
 
   setHover(targets: Mesh[]) {

@@ -28,6 +28,13 @@ import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import {
+  DEFAULT_LOCAL_VIEWPORT_OPTIONS,
+  type LocalViewportOptions,
+  ViewportAppearance,
+  getViewportPixelRatio,
+  isVisibleInViewport,
+} from '@src/clientSideScene/localRenderer/viewportOptions'
+import {
   SceneExecutionEvents,
   type SceneExecutionDoneDetail,
 } from '@src/lib/kcl/scene/execution'
@@ -181,6 +188,7 @@ type DisposableGpuDevice = {
 /** Created together by initialize(), once the renderer is ready. */
 type GpuResources = {
   renderer: WebGPURenderer
+  maxTextureDimension: number
   device: DisposableGpuDevice | null
   scene: Scene
   envMapLoader: EnvMapLoader
@@ -227,6 +235,9 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private viewportOptions = { ...DEFAULT_LOCAL_VIEWPORT_OPTIONS }
+  private readonly viewportAppearance = new ViewportAppearance()
+  private viewportVersion = 0
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -311,6 +322,34 @@ export class LocalRenderer {
     this.syncPlaneScale()
   }
 
+  setViewportOptions(options: LocalViewportOptions) {
+    const visibilityChanged =
+      options.showBreps !== this.viewportOptions.showBreps ||
+      options.showSketches !== this.viewportOptions.showSketches
+    this.viewportOptions = { ...options }
+    this.applyViewportOptions()
+    if (visibilityChanged) {
+      this.viewportVersion++
+      this.rebuildSelectionTargets()
+    }
+    this.invalidateBaseRender()
+  }
+
+  private applyViewportOptions() {
+    if (this.currentModel) {
+      this.viewportAppearance.apply(this.currentModel, this.viewportOptions)
+    }
+    const edgesVisible =
+      this.settings.shouldHighlightEdges && this.viewportOptions.showBreps
+    this.gpu?.edgeRenderer.setVisible(edgesVisible)
+    this.gpu?.integerIdPicker.setEdgesVisible(edgesVisible)
+    this.gpu?.sketchLineRenderer.setVisible(this.viewportOptions.showSketches)
+    this.gpu?.selectionHighlightRenderer.setColorAdjustments(
+      this.viewportOptions.brightness,
+      this.viewportOptions.contrast
+    )
+  }
+
   setPickingEnabled(enabled: boolean) {
     this.settings.pickingEnabled = enabled
     this.gpu?.integerIdPicker.invalidate()
@@ -345,6 +384,7 @@ export class LocalRenderer {
           this.targetsByEntityId.get(id)
       )
       .filter(isNonNullable)
+      .filter(isVisibleInViewport)
   }
 
   // All the meshes of the target's body, or just the target if it isn't on a body.
@@ -376,9 +416,11 @@ export class LocalRenderer {
       return planeTargets
     }
     if (getBodySelectionType(filter)) {
-      return this.getBodyFaces(target)
+      return this.getBodyFaces(target).filter(isVisibleInViewport)
     }
-    return this.targetsByEntityId.get(target.userData.faceUuid) ?? [target]
+    return (
+      this.targetsByEntityId.get(target.userData.faceUuid) ?? [target]
+    ).filter(isVisibleInViewport)
   }
 
   // Refresh everything that depends on what's pickable when the model or filter changes.
@@ -417,23 +459,31 @@ export class LocalRenderer {
     // Pass filtered targets to picker
     const filter = this.host.selectionFilter.peek()
     gpu.integerIdPicker.setTargets(
-      targets.filter((target) => this.isSelectable(target, filter)),
+      targets.filter(
+        (target) =>
+          isVisibleInViewport(target) && this.isSelectable(target, filter)
+      ),
       this.currentModel,
-      filter.includes('edge')
+      filter.includes('edge') &&
+        this.viewportOptions.showBreps &&
+        this.settings.shouldHighlightEdges
         ? { source: edgeRenderer.lines, targets: edgeTargets }
         : undefined,
       // Object-selection commands accept paths and helices, not just solids.
-      filter.includes('curve') || getBodySelectionType(filter) === 'object'
+      this.viewportOptions.showSketches &&
+        (filter.includes('curve') || getBodySelectionType(filter) === 'object')
         ? { source: sketchLineRenderer.lines, targets: sketchLineTargets }
         : undefined
     )
 
     // All targets, so what's already selected stays highlighted when the filter changes
-    gpu.selectionHighlightRenderer.setTargets([
-      ...targets,
-      ...edgeTargets.map(({ object }) => object),
-      ...sketchLineTargets.map(({ object }) => object),
-    ])
+    gpu.selectionHighlightRenderer.setTargets(
+      [
+        ...targets,
+        ...edgeTargets.map(({ object }) => object),
+        ...sketchLineTargets.map(({ object }) => object),
+      ].filter(isVisibleInViewport)
+    )
     this.clearHover()
     this.updateSelection()
   }
@@ -565,6 +615,7 @@ export class LocalRenderer {
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
       const executionVersion = this.executionVersion
+      const viewportVersion = this.viewportVersion
       const filter = this.host.selectionFilter.peek()
       const result = await this.gpu?.integerIdPicker.pick({
         ...cmd.selected_at_window,
@@ -578,6 +629,7 @@ export class LocalRenderer {
         !this.settings.pickingEnabled ||
         this.host.executing.peek() ||
         executionVersion !== this.executionVersion ||
+        viewportVersion !== this.viewportVersion ||
         result?.stale ||
         (isHover && requestVersion !== this.hoverRequestVersion)
       )
@@ -612,6 +664,7 @@ export class LocalRenderer {
         : undefined
       if (
         executionVersion !== this.executionVersion ||
+        viewportVersion !== this.viewportVersion ||
         filter !== this.host.selectionFilter.peek()
       ) {
         return {}
@@ -692,8 +745,9 @@ export class LocalRenderer {
     }
 
     this.settings.shouldHighlightEdges = shouldHighlightEdges
-    this.gpu?.edgeRenderer.setVisible(shouldHighlightEdges)
-    this.gpu?.integerIdPicker.setEdgesVisible(shouldHighlightEdges)
+    this.viewportVersion++
+    this.applyViewportOptions()
+    this.rebuildSelectionTargets()
     this.invalidateBaseRender()
   }
 
@@ -913,7 +967,15 @@ export class LocalRenderer {
     if (width === 0 || height === 0) {
       return
     }
-    const pixelRatio = size ? 1 : window.devicePixelRatio
+    const pixelRatio = size
+      ? 1
+      : getViewportPixelRatio(
+          width,
+          height,
+          window.devicePixelRatio,
+          this.viewportOptions.resolutionScale,
+          gpu.maxTextureDimension
+        )
     if (
       renderer.domElement.width !== Math.floor(width * pixelRatio) ||
       renderer.domElement.height !== Math.floor(height * pixelRatio) ||
@@ -939,7 +1001,12 @@ export class LocalRenderer {
       // private renderer._nodes which felt wrong to call.
       // Simplest solution: draw thumbnails without SSAO. If this becomes a problem
       // revisit the above options.
-      if (!this.settings.enableSSAO || size) {
+      if (
+        !this.settings.enableSSAO ||
+        size ||
+        this.viewportOptions.opacity < 100 ||
+        this.viewportOptions.style === 'wireframe'
+      ) {
         renderer.render(scene, camera)
       } else {
         if (this.ambientOcclusionPipeline?.camera !== camera) {
@@ -1146,9 +1213,20 @@ export class LocalRenderer {
   getFitBounds(): Box3 | undefined {
     const bounds = this.gpu?.planeRenderer.getVisibleBounds() ?? new Box3()
     if (this.currentModel) {
-      bounds.union(
-        gltfToEngineBounds(new Box3().setFromObject(this.currentModel))
-      )
+      this.currentModel.updateWorldMatrix(true, true)
+      this.currentModel.traverseVisible((object) => {
+        if (!(object instanceof Mesh)) return
+        object.geometry.computeBoundingBox()
+        if (object.geometry.boundingBox) {
+          bounds.union(
+            gltfToEngineBounds(
+              object.geometry.boundingBox
+                .clone()
+                .applyMatrix4(object.matrixWorld)
+            )
+          )
+        }
+      })
     }
     return bounds.isEmpty() ? undefined : bounds
   }
@@ -1234,7 +1312,15 @@ export class LocalRenderer {
     }
     renderer.toneMapping = NeutralToneMapping
     renderer.toneMappingExposure = 1
-    renderer.setPixelRatio(window.devicePixelRatio)
+    const context = renderer.getContext()
+    const maxTextureDimension =
+      typeof WebGL2RenderingContext !== 'undefined' &&
+      context instanceof WebGL2RenderingContext
+        ? Math.min(
+            Number(context.getParameter(context.MAX_TEXTURE_SIZE)),
+            Number(context.getParameter(context.MAX_RENDERBUFFER_SIZE))
+          )
+        : (device?.limits.maxTextureDimension2D ?? 8192)
     renderer.domElement.className =
       'absolute inset-0 h-full w-full pointer-events-none'
     container.appendChild(renderer.domElement)
@@ -1268,6 +1354,7 @@ export class LocalRenderer {
     integerIdPicker.setEdgesVisible(shouldHighlightEdges)
     this.gpu = {
       renderer,
+      maxTextureDimension,
       device: device ?? null,
       scene,
       envMapLoader,
@@ -1285,6 +1372,7 @@ export class LocalRenderer {
       ),
     }
 
+    this.applyViewportOptions()
     // updateLocalCamera() below matches this to the shared camera.
     this.camera = new PerspectiveCamera()
     this.disposers.push(
@@ -1451,6 +1539,7 @@ export class LocalRenderer {
         gltf.scene.add(mesh)
       }
 
+      this.applyViewportOptions()
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
@@ -1587,6 +1676,7 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     return
   }
   const faceIdsBySolidMesh = new Map<number, number[]>()
+  const bodyMeshIndices = new Set(brep.solids.map((solid) => solid.mesh))
 
   for (const solid of brep.solids) {
     const faceIds = solid.shells.flatMap(
@@ -1618,6 +1708,7 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
 
     // Each solid has its own glTF mesh, so this groups the faces by body.
     object.userData.bodyMeshIndex = meshIndex
+    object.userData.isBrep = bodyMeshIndices.has(meshIndex)
     const faceIndex = faceIdsBySolidMesh.get(meshIndex)?.[primitiveIndex]
     const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
     const uuid = face?.extras?.KITTYCAD?.uuid

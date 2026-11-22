@@ -18,7 +18,10 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     settings: {
       useSettings: () => ({
-        modeling: { gizmoType: { current: mocks.style } },
+        modeling: {
+          gizmoType: { current: mocks.style },
+          useLocalRenderer: { current: false },
+        },
         app: { allowOrbitInSketchMode: { current: false } },
       }),
     },

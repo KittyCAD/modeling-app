@@ -2,6 +2,7 @@ import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
+import { DEFAULT_LOCAL_VIEWPORT_OPTIONS } from '@src/clientSideScene/localRenderer/viewportOptions'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
@@ -53,6 +54,7 @@ type RendererInternals = {
   handleLocalSelectionCommand: LocalSelectionCommandHandler
   syncSelectionFromEngine(): Promise<void>
   baseRenderDirty: boolean
+  selectedEntityIds: string[]
   pointerOverCanvas: boolean
   ambientOcclusionPipeline: {
     pipeline: { dispose(): void }
@@ -80,6 +82,7 @@ function fakeGpu() {
       dispose: vi.fn(() => Promise.resolve()),
       domElement: document.createElement('canvas'),
     },
+    maxTextureDimension: 8192,
     device: null,
     scene: new Scene(),
     envMapLoader: { dispose: vi.fn() },
@@ -99,6 +102,7 @@ function fakeGpu() {
       setHover: vi.fn(),
       setSelection: vi.fn(),
       setBackgroundColor: vi.fn(),
+      setColorAdjustments: vi.fn(),
       clearModel: vi.fn(),
       dispose: vi.fn(),
     },
@@ -438,6 +442,50 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
+  it('hides B-reps from rendering, picking, highlights and fit bounds across exports', async () => {
+    const f = fixture()
+    f.manager.rustContext.export.mockResolvedValue([triangleGlb(true)])
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    const mesh = f.state.currentModel?.children[0]
+    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+    expect(mesh.userData.isBrep).toBe(true)
+    f.state.selectedEntityIds = ['triangle-face']
+    f.state.rebuildSelectionTargets()
+    expect(
+      f.gpu.selectionHighlightRenderer.setSelection
+    ).toHaveBeenLastCalledWith([mesh])
+    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: false, yz: false })
+    f.renderer.setViewportOptions({
+      ...DEFAULT_LOCAL_VIEWPORT_OPTIONS,
+      showBreps: false,
+    })
+    expect(mesh.visible).toBe(false)
+    expect(f.gpu.edgeRenderer.setVisible).toHaveBeenLastCalledWith(false)
+    expect(f.gpu.sketchLineRenderer.setVisible).toHaveBeenLastCalledWith(true)
+    expect(f.gpu.integerIdPicker.setTargets.mock.lastCall?.[0]).toEqual([])
+    expect(
+      f.gpu.selectionHighlightRenderer.setSelection
+    ).toHaveBeenLastCalledWith([])
+    expect(f.renderer.getFitBounds()).toBeUndefined()
+
+    f.manager.isExecutingSignal.value = true
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    const refreshed = f.state.currentModel?.children[0]
+    expect(refreshed).not.toBe(mesh)
+    expect(refreshed?.visible).toBe(false)
+    f.renderer.setViewportOptions(DEFAULT_LOCAL_VIEWPORT_OPTIONS)
+    expect(refreshed?.visible).toBe(true)
+    expect(f.gpu.integerIdPicker.setTargets.mock.lastCall?.[0]).toContain(
+      refreshed
+    )
+    expect(f.renderer.getFitBounds()).toBeDefined()
+    // Changing viewport options never executes or exports geometry.
+    expect(f.manager.rustContext.export).toHaveBeenCalledTimes(2)
+    f.renderer.dispose()
+  })
+
   it('keeps the loaded model when an execution leaves the scene unchanged', async () => {
     const f = fixture()
     f.done()
@@ -510,7 +558,7 @@ describe('local GLB loading', () => {
       expect(f.picker.setTargets).toHaveBeenLastCalledWith(
         f.defaultTargets,
         null,
-        { source: f.gpu.edgeRenderer.lines, targets: [] },
+        undefined,
         { source: f.gpu.sketchLineRenderer.lines, targets: [] }
       )
       expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
@@ -551,6 +599,31 @@ describe('local GLB loading', () => {
     f.renderer.setEnableSSAO(false)
     expect(dispose).toHaveBeenCalledTimes(3)
     expect(f.state.ambientOcclusionPipeline).toBeNull()
+    f.renderer.dispose()
+  })
+
+  it('updates display adjustments without exporting geometry or rebuilding pick targets', async () => {
+    const f = fixture()
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    f.gpu.integerIdPicker.setTargets.mockClear()
+    f.state.baseRenderDirty = false
+    f.renderer.setViewportOptions({
+      ...DEFAULT_LOCAL_VIEWPORT_OPTIONS,
+      brightness: 140,
+      contrast: 80,
+      resolutionScale: 2,
+    })
+    expect(
+      f.gpu.selectionHighlightRenderer.setColorAdjustments
+    ).toHaveBeenLastCalledWith(140, 80)
+    expect(f.state.baseRenderDirty).toBe(true)
+    expect(f.gpu.integerIdPicker.setTargets).not.toHaveBeenCalled()
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    f.renderer.setViewportOptions(DEFAULT_LOCAL_VIEWPORT_OPTIONS)
+    expect(
+      f.gpu.selectionHighlightRenderer.setColorAdjustments
+    ).toHaveBeenLastCalledWith(100, 100)
     f.renderer.dispose()
   })
 })
@@ -644,7 +717,7 @@ function offsetPlane(): Extract<Artifact, { type: 'plane' }> {
   }
 }
 
-function triangleGlb(): ModelingAppFile {
+function triangleGlb(withBrep = false): ModelingAppFile {
   const vertices = new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])
   const json = JSON.stringify({
     asset: { version: '2.0' },
@@ -652,7 +725,16 @@ function triangleGlb(): ModelingAppFile {
     // engine, it omits every empty array except curves3D.
     extensionsUsed: ['KITTYCAD_boundary_representation'],
     extensions: {
-      KITTYCAD_boundary_representation: { curves3D: [] },
+      KITTYCAD_boundary_representation: withBrep
+        ? {
+            curves3D: [],
+            solids: [{ mesh: 0, shells: [[0, 1]] }],
+            shells: [{ faces: [[0, 1]] }],
+            faces: [
+              { loops: [], extras: { KITTYCAD: { uuid: 'triangle-face' } } },
+            ],
+          }
+        : { curves3D: [] },
     },
     scene: 0,
     scenes: [{ nodes: [0] }],
