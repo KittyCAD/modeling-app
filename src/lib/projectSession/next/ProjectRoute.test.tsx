@@ -1,6 +1,7 @@
 import '@src/lib/projectSession/next/testFeature'
 import { codeSurface } from '@src/lib/editors/testViews'
 import appHeaderExtension from '@src/registry/extensions/appHeader'
+import appLogoExtension from '@src/registry/extensions/appLogo'
 import { signal } from '@preact/signals-core'
 import { factory, Registry, provide } from 'plankton'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
@@ -92,6 +93,7 @@ describe('project screen', () => {
     await services.configure([
       editorsExtension,
       appHeaderExtension,
+      appLogoExtension,
       markdownExtension,
       createProjectSessionExtension(
         factory({
