@@ -11,6 +11,10 @@ export type LocalViewportOptions = {
   resolutionScale: 1 | 1.5 | 2
   brightness: number
   contrast: number
+  sectionEnabled: boolean
+  sectionPlane: 'XY' | 'XZ' | 'YZ'
+  sectionPosition: number
+  sectionReversed: boolean
 }
 
 export const DEFAULT_LOCAL_VIEWPORT_OPTIONS: LocalViewportOptions = {
@@ -21,6 +25,10 @@ export const DEFAULT_LOCAL_VIEWPORT_OPTIONS: LocalViewportOptions = {
   resolutionScale: 1.5,
   brightness: 100,
   contrast: 100,
+  sectionEnabled: false,
+  sectionPlane: 'XY',
+  sectionPosition: 50,
+  sectionReversed: false,
 }
 
 // Bound the combined scene, picking and post-processing buffers on large displays.

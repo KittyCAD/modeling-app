@@ -14,7 +14,8 @@ import {
   NoColorSpace,
   NormalBlending,
   NoToneMapping,
-  Scene,
+  type Plane,
+  type Scene,
   UnsignedByteType,
   Vector2,
 } from 'three'
@@ -39,6 +40,7 @@ import {
   RenderTarget,
   type WebGPURenderer,
 } from 'three/webgpu'
+import { SectionViewScene } from '@src/clientSideScene/localRenderer/sectionView'
 
 const HIGHLIGHT_INTERIOR_OPACITY = 0.2
 const HIGHLIGHT_LINE_WIDTH_PX = 2
@@ -51,10 +53,10 @@ export class SelectionHighlightRenderer {
   private readonly cacheBasePipeline: RenderPipeline
   private readonly copyBasePipeline: RenderPipeline
   private readonly presentPipeline: RenderPipeline
-  private readonly hoverMaskScene = new Scene()
-  private readonly selectionMaskScene = new Scene()
-  private readonly hoverLineScene = new Scene()
-  private readonly selectionLineScene = new Scene()
+  private readonly hoverMaskScene = new SectionViewScene()
+  private readonly selectionMaskScene = new SectionViewScene()
+  private readonly hoverLineScene = new SectionViewScene()
+  private readonly selectionLineScene = new SectionViewScene()
   private readonly drawingBufferSize = new Vector2()
   private readonly texelSize = new Vector2(1, 1)
   private readonly savedClearColor = new Color()
@@ -220,6 +222,13 @@ export class SelectionHighlightRenderer {
     this.contrastNode.value = contrast / 100
   }
 
+  setSectionPlane(plane: Plane | null) {
+    this.hoverMaskScene.setSectionPlane(plane)
+    this.selectionMaskScene.setSectionPlane(plane)
+    this.hoverLineScene.setSectionPlane(plane)
+    this.selectionLineScene.setSectionPlane(plane)
+  }
+
   setHover(targets: Mesh[]) {
     this.hoveredKeys = new Set(targets.map((target) => target.uuid))
     this.updateSceneMembership()
@@ -328,12 +337,13 @@ export class SelectionHighlightRenderer {
 
     for (const key of this.selectedKeys) {
       const object = this.overlayByKey.get(key)
-      if (object) {
+      const source = object && this.sourceByOverlay.get(object)
+      if (object && source) {
         if (this.lineKeys.has(key) && object instanceof LineSegments2) {
           object.material = this.selectionLineMaterial
-          this.selectionLineScene.add(object)
+          this.selectionLineScene.addProxy(source, object)
         } else {
-          this.selectionMaskScene.add(object)
+          this.selectionMaskScene.addProxy(source, object)
         }
       }
     }
@@ -341,12 +351,13 @@ export class SelectionHighlightRenderer {
     for (const key of this.hoveredKeys) {
       if (this.selectedKeys.has(key)) continue
       const object = this.overlayByKey.get(key)
-      if (object) {
+      const source = object && this.sourceByOverlay.get(object)
+      if (object && source) {
         if (this.lineKeys.has(key) && object instanceof LineSegments2) {
           object.material = this.hoverLineMaterial
-          this.hoverLineScene.add(object)
+          this.hoverLineScene.addProxy(source, object)
         } else {
-          this.hoverMaskScene.add(object)
+          this.hoverMaskScene.addProxy(source, object)
         }
       }
     }

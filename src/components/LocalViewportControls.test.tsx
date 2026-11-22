@@ -25,6 +25,27 @@ function Controls() {
 it('keeps the panel open while changing visibility and restores the complete viewport', () => {
   render(<Controls />)
   fireEvent.click(screen.getByRole('button', { name: 'Viewport' }))
+  expect(screen.getByRole('combobox', { name: 'Section Plane' })).toBeDisabled()
+  expect(
+    screen.getByRole('slider', { name: 'Section Position' })
+  ).toBeDisabled()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Section View' }))
+  fireEvent.change(screen.getByRole('combobox', { name: 'Section Plane' }), {
+    target: { value: 'XZ' },
+  })
+  fireEvent.change(screen.getByRole('slider', { name: 'Section Position' }), {
+    target: { value: '75' },
+  })
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Reverse Section' }))
+  expect(screen.getByRole('combobox', { name: 'Section Plane' })).toHaveValue(
+    'XZ'
+  )
+  expect(screen.getByRole('slider', { name: 'Section Position' })).toHaveValue(
+    '75'
+  )
+  expect(
+    screen.getByRole('checkbox', { name: 'Reverse Section' })
+  ).toBeChecked()
   expect(
     screen.getByRole('combobox', { name: 'Render Resolution' })
   ).toHaveValue('1.5')
@@ -50,6 +71,19 @@ it('keeps the panel open while changing visibility and restores the complete vie
     screen.getByRole('checkbox', { name: 'Ambient Occlusion' })
   ).toBeDisabled()
   fireEvent.click(screen.getByRole('button', { name: 'Reset Viewport' }))
+  expect(
+    screen.getByRole('checkbox', { name: 'Section View' })
+  ).not.toBeChecked()
+  expect(
+    screen.getByRole('checkbox', { name: 'Reverse Section' })
+  ).not.toBeChecked()
+  expect(screen.getByRole('combobox', { name: 'Section Plane' })).toHaveValue(
+    'XY'
+  )
+  expect(screen.getByRole('combobox', { name: 'Section Plane' })).toBeDisabled()
+  expect(screen.getByRole('slider', { name: 'Section Position' })).toHaveValue(
+    '50'
+  )
   expect(screen.getByRole('checkbox', { name: 'B-rep Bodies' })).toBeChecked()
   expect(screen.getByRole('checkbox', { name: 'Body Edges' })).toBeEnabled()
   expect(

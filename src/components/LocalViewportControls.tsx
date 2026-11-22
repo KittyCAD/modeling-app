@@ -161,6 +161,76 @@ export function LocalViewportControls({
             />
           </label>
         </fieldset>
+        <fieldset className="mt-4 space-y-3 border-t b-4 pt-3">
+          <legend className="px-1 text-xs text-2">Section</legend>
+          <label className="flex items-center justify-between gap-3">
+            Section View
+            <input
+              type="checkbox"
+              checked={options.sectionEnabled}
+              onChange={(event) =>
+                onChange({ ...options, sectionEnabled: event.target.checked })
+              }
+            />
+          </label>
+          <label className="flex items-center justify-between gap-3">
+            Section Plane
+            <select
+              className="rounded border b-4 bg-1 px-2 py-1 text-1"
+              disabled={!options.sectionEnabled}
+              value={options.sectionPlane}
+              onChange={(event) => {
+                const sectionPlane = event.target.value
+                if (
+                  sectionPlane === 'XY' ||
+                  sectionPlane === 'XZ' ||
+                  sectionPlane === 'YZ'
+                ) {
+                  onChange({ ...options, sectionPlane })
+                }
+              }}
+            >
+              <option value="XY">XY</option>
+              <option value="XZ">XZ</option>
+              <option value="YZ">YZ</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className="flex justify-between">
+              Section Position <span>{options.sectionPosition}%</span>
+            </span>
+            <input
+              aria-label="Section Position"
+              className="mt-2 w-full"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              disabled={!options.sectionEnabled}
+              value={options.sectionPosition}
+              onChange={(event) =>
+                onChange({
+                  ...options,
+                  sectionPosition: event.target.valueAsNumber,
+                })
+              }
+            />
+          </label>
+          <label className="flex items-center justify-between gap-3">
+            Reverse Section
+            <input
+              type="checkbox"
+              disabled={!options.sectionEnabled}
+              checked={options.sectionReversed}
+              onChange={(event) =>
+                onChange({ ...options, sectionReversed: event.target.checked })
+              }
+            />
+          </label>
+          <p className="text-xs text-2">
+            Position is relative to the model bounds. Cut surfaces are open.
+          </p>
+        </fieldset>
         <button
           type="button"
           className="mt-4 w-full rounded border b-4 px-2 py-1.5 hover:bg-3"

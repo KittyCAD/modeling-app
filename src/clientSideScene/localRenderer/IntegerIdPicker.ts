@@ -7,8 +7,8 @@ import {
   NearestFilter,
   NoBlending,
   type Object3D,
+  type Plane,
   RedIntegerFormat,
-  Scene,
   UnsignedIntType,
   Vector2,
 } from 'three'
@@ -35,6 +35,7 @@ import {
   type Node,
   type WebGPURenderer,
 } from 'three/webgpu'
+import { SectionViewScene } from '@src/clientSideScene/localRenderer/sectionView'
 
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
@@ -52,7 +53,7 @@ export type IntegerIdPickResult = {
 
 export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
-  private readonly scene = new Scene()
+  private readonly scene = new SectionViewScene()
   private readonly drawingBufferSize = new Vector2()
   private readonly materials = new Set<Material>()
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
@@ -126,7 +127,7 @@ export class IntegerIdPicker {
       proxy.userData.pickId = id
       proxy.matrixAutoUpdate = false
       this.sourceByProxy.set(proxy, source)
-      this.scene.add(proxy)
+      this.scene.addProxy(source, proxy)
     }
     const targetSet = new Set(targets)
     // Add "hit blockers" which have NO_TARGET_ID, they cannot be selected but
@@ -205,7 +206,7 @@ export class IntegerIdPicker {
     object.renderOrder = 2
     this.sourceByProxy.set(object, source)
     this.materials.add(material)
-    this.scene.add(object)
+    this.scene.addProxy(source, object)
     return object
   }
 
@@ -214,6 +215,11 @@ export class IntegerIdPicker {
     if (this.edgeObject) {
       this.edgeObject.visible = visible
     }
+    this.invalidate()
+  }
+
+  setSectionPlane(plane: Plane | null) {
+    this.scene.setSectionPlane(plane)
     this.invalidate()
   }
 

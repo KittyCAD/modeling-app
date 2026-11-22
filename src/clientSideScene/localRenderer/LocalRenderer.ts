@@ -26,6 +26,10 @@ import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
+import {
+  getSectionPlane,
+  setSectionPlane,
+} from '@src/clientSideScene/localRenderer/sectionView'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import {
   DEFAULT_LOCAL_VIEWPORT_OPTIONS,
@@ -89,6 +93,7 @@ import {
   vec4,
 } from 'three/tsl'
 import {
+  ClippingGroup,
   MeshStandardNodeMaterial,
   type Node,
   type PassNode,
@@ -235,6 +240,8 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private readonly modelSectionGroup = new ClippingGroup()
+  private readonly sectionBounds = new Box3()
   private viewportOptions = { ...DEFAULT_LOCAL_VIEWPORT_OPTIONS }
   private readonly viewportAppearance = new ViewportAppearance()
   private viewportVersion = 0
@@ -326,10 +333,18 @@ export class LocalRenderer {
     const visibilityChanged =
       options.showBreps !== this.viewportOptions.showBreps ||
       options.showSketches !== this.viewportOptions.showSketches
+    const sectionChanged =
+      options.sectionEnabled !== this.viewportOptions.sectionEnabled ||
+      options.sectionPlane !== this.viewportOptions.sectionPlane ||
+      options.sectionPosition !== this.viewportOptions.sectionPosition ||
+      options.sectionReversed !== this.viewportOptions.sectionReversed
     this.viewportOptions = { ...options }
     this.applyViewportOptions()
-    if (visibilityChanged) {
+    if (visibilityChanged || sectionChanged) {
       this.viewportVersion++
+      this.clearHover()
+    }
+    if (visibilityChanged) {
       this.rebuildSelectionTargets()
     }
     this.invalidateBaseRender()
@@ -348,6 +363,10 @@ export class LocalRenderer {
       this.viewportOptions.brightness,
       this.viewportOptions.contrast
     )
+    const plane = getSectionPlane(this.sectionBounds, this.viewportOptions)
+    setSectionPlane(this.modelSectionGroup, plane)
+    this.gpu?.integerIdPicker.setSectionPlane(plane)
+    this.gpu?.selectionHighlightRenderer.setSectionPlane(plane)
   }
 
   setPickingEnabled(enabled: boolean) {
@@ -1250,8 +1269,10 @@ export class LocalRenderer {
     this.bodyFacesById.clear()
     gpu?.integerIdPicker.clearModel()
     gpu?.selectionHighlightRenderer.clearModel()
+    this.modelSectionGroup.removeFromParent()
+    this.sectionBounds.makeEmpty()
     if (this.currentModel) {
-      gpu?.scene.remove(this.currentModel)
+      this.currentModel.removeFromParent()
       gpu?.edgeRenderer.removeFromParent()
       gpu?.sketchLineRenderer.removeFromParent()
       disposeObject3D(this.currentModel)
@@ -1529,7 +1550,8 @@ export class LocalRenderer {
       assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
-      gpu?.scene.add(gltf.scene)
+      this.modelSectionGroup.add(gltf.scene)
+      gpu?.scene.add(this.modelSectionGroup)
 
       gpu?.edgeRenderer.buildEdges(gltf, getBodyEdges(gltf))
       gpu?.edgeRenderer.addTo(gltf.scene)
@@ -1539,6 +1561,7 @@ export class LocalRenderer {
         gltf.scene.add(mesh)
       }
 
+      this.sectionBounds.setFromObject(gltf.scene)
       this.applyViewportOptions()
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)

@@ -17,7 +17,11 @@ import {
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshStandardNodeMaterial, WebGPURenderer } from 'three/webgpu'
+import {
+  ClippingGroup,
+  MeshStandardNodeMaterial,
+  WebGPURenderer,
+} from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
@@ -94,6 +98,7 @@ function fakeGpu() {
       invalidate: vi.fn(),
       setTargets: vi.fn(),
       setEdgesVisible: vi.fn(),
+      setSectionPlane: vi.fn(),
       clearModel: vi.fn(),
       dispose: vi.fn(),
     },
@@ -103,6 +108,7 @@ function fakeGpu() {
       setSelection: vi.fn(),
       setBackgroundColor: vi.fn(),
       setColorAdjustments: vi.fn(),
+      setSectionPlane: vi.fn(),
       clearModel: vi.fn(),
       dispose: vi.fn(),
     },
@@ -320,6 +326,26 @@ describe('local GLB loading', () => {
       type: 'query_entity_type_with_point',
       data: { reference: undefined },
     })
+    f.renderer.dispose()
+  })
+
+  it('discards a pick if the section moves before the engine identifies its face', async () => {
+    const f = planeFixture()
+    const pending = Promise.withResolvers<unknown>()
+    f.manager.engineCommandManager.sendSceneCommand.mockReturnValueOnce(
+      pending.promise
+    )
+    const pick = f.pick(true)
+    await vi.waitFor(() =>
+      expect(f.manager.engineCommandManager.sendSceneCommand).toHaveBeenCalled()
+    )
+    f.renderer.setViewportOptions({
+      ...DEFAULT_LOCAL_VIEWPORT_OPTIONS,
+      sectionEnabled: true,
+      sectionPosition: 70,
+    })
+    pending.resolve(undefined)
+    expect(await pick).toEqual({})
     f.renderer.dispose()
   })
 
@@ -625,6 +651,53 @@ describe('local GLB loading', () => {
       f.gpu.selectionHighlightRenderer.setColorAdjustments
     ).toHaveBeenLastCalledWith(100, 100)
     f.renderer.dispose()
+  })
+
+  it('shares a section across render passes and restores it after re-execution without exporting on slider changes', async () => {
+    const f = fixture()
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    const group = f.state.currentModel?.parent
+    if (!(group instanceof ClippingGroup))
+      throw new Error('Missing model clipping group')
+    f.gpu.integerIdPicker.setTargets.mockClear()
+    const options = {
+      ...DEFAULT_LOCAL_VIEWPORT_OPTIONS,
+      sectionEnabled: true,
+      sectionPosition: 25,
+    }
+    f.renderer.setViewportOptions(options)
+    expect(group.enabled).toBe(true)
+    const plane = group.clippingPlanes[0]
+    expect(plane.constant).toBeCloseTo(-0.25)
+    expect(f.gpu.integerIdPicker.setSectionPlane).toHaveBeenLastCalledWith(
+      plane
+    )
+    expect(
+      f.gpu.selectionHighlightRenderer.setSectionPlane
+    ).toHaveBeenLastCalledWith(plane)
+    f.renderer.setViewportOptions({ ...options, sectionPosition: 75 })
+    expect(group.clippingPlanes[0].constant).toBeCloseTo(-0.75)
+    expect(f.gpu.integerIdPicker.setTargets).not.toHaveBeenCalled()
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+
+    const previousModel = f.state.currentModel
+    f.manager.isExecutingSignal.value = true
+    f.done()
+    await vi.waitFor(() => expect(f.renderer.isLoadedSceneCurrent()).toBe(true))
+    expect(f.state.currentModel).not.toBe(previousModel)
+    expect(f.state.currentModel?.parent).toBe(group)
+    expect(group.children).toHaveLength(1)
+    expect(group.clippingPlanes[0].constant).toBeCloseTo(-0.75)
+    f.renderer.setViewportOptions(DEFAULT_LOCAL_VIEWPORT_OPTIONS)
+    expect(group.enabled).toBe(false)
+    expect(f.gpu.integerIdPicker.setSectionPlane).toHaveBeenLastCalledWith(null)
+    expect(
+      f.gpu.selectionHighlightRenderer.setSectionPlane
+    ).toHaveBeenLastCalledWith(null)
+    f.renderer.dispose()
+    expect(group.parent).toBeNull()
+    expect(group.children).toHaveLength(0)
   })
 })
 
