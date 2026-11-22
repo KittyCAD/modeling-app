@@ -34,6 +34,28 @@ filesystem watcher for closed development sources. Startup and **Retry / reload
 source** read the file again; an open buffer takes precedence. Unsaved development
 edits are not retained in the installation and therefore do not survive restart.
 
+## Authored header logo example
+
+Copy `examples/community-plugins/personal-logo.zds.ts` into a project and open it
+in Plugin Builder. Choose **Start preview** to try it temporarily, or **Install
+snapshot** / **Install for development** to keep it available after the document
+closes. It requests no data or network permissions.
+
+The `app.logoLink` contribution supplies an accessible label, an optional wordmark,
+and a monochrome SVG mark. Change `text`, `label`, `logo.viewBox`, and the SVG path
+`d` strings in `logo.paths` to use your own artwork. The host renders the mark in
+the current text color and owns the Home navigation, including project cleanup.
+Raw SVG markup, external image URLs, custom event handlers, and arbitrary link
+destinations are not part of this contribution.
+
+To replace the Zoo logo, keep `exclude = ["zoo:appLogo"]` in the account
+configuration Project's `app.toml` and install the example locally. Reload after
+updating the account configuration. Previewing without that exclusion shows both
+logos. For a snapshot, later source edits require **Update snapshot**; development
+installations follow edits. Hosted authored-source loading through the configuration
+Project is still separate work; keeping this file in that Project alone does not
+install it.
+
 ## Source and SDK
 
 Both `.zds.js` and `.zds.ts` use a leading `/* @zds-plugin` TOML block. Metadata is
@@ -71,7 +93,8 @@ extensions. Command IDs are namespaced by installation, independently of the
 self-declared manifest ID. Adapters must not perform effects while preparing
 contributions; acquisition failures must retain the previous installation.
 
-The `command` and `settings` adapters are implemented. The intended additional adapters are:
+The `command`, `settings`, and `app.logoLink` adapters are implemented. App Header
+owns the logo adapter; its declarations never receive native app or project objects. The intended additional adapters are:
 
 | Contribution point | Trusted host responsibility |
 | --- | --- |

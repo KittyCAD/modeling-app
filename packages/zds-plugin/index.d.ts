@@ -21,10 +21,22 @@ export interface SettingsContribution {
   fields: Readonly<Record<string, SettingDefinition>>
 }
 
+/** A host-rendered SVG mark and optional wordmark linking to the ZDS Home page. */
+export interface LogoLinkContribution {
+  id: string
+  label: string
+  text?: string
+  logo: {
+    viewBox: readonly [number, number, number, number]
+    paths: readonly string[]
+  }
+}
+
 /** Each supported contribution point has a host adapter. Future SDK entry points extend this map. */
 export interface Contributions {
   command: CommandContribution
   settings: SettingsContribution
+  'app.logoLink': LogoLinkContribution
 }
 
 /** API version 1. Register during activation; command handlers run only on host invocation. */
