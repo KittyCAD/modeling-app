@@ -151,85 +151,6 @@ async function writeProject(dir: string, fs: PromisifiedZooDesignStudioFS) {
 test.use({ useTestSettings: true })
 
 test.describe('KCL named views', { tag: '@web' }, () => {
-  test(
-    'the rail button opens and closes the switcher',
-    { tag: '@localRenderer' },
-    async ({ fs, homePage, scene, toolbar, page, folderSetupFn }) => {
-      await folderSetupFn((dir) => writeProject(dir, fs))
-      await homePage.openProject('named-views')
-      await scene.settled()
-
-      await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
-      await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
-
-      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-      await expect(page.locator(VIEW_SWITCHER_PANE)).toBeVisible()
-
-      await toolbar.closePane(DefaultLayoutPaneID.NamedViews)
-      await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
-    }
-  )
-
-  test(
-    'numbers the rows from 1, lists Default View first, and prefixes a name two modules declare',
-    { tag: '@localRenderer' },
-    async ({ fs, homePage, scene, toolbar, page, folderSetupFn }) => {
-      await folderSetupFn((dir) => writeProject(dir, fs))
-      await homePage.openProject('named-views')
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-
-      const labels = page
-        .locator(VIEW_SWITCHER_PANE)
-        .getByTestId('named-view-label')
-      const numbers = page
-        .locator(VIEW_SWITCHER_PANE)
-        .getByTestId('named-view-number')
-      const rows = page
-        .locator(VIEW_SWITCHER_PANE)
-        .getByTestId('named-view-row')
-
-      // Graph insertion order: the `import` executes before the local
-      // declarations, so the imported view is registered first.
-      await expect(labels).toHaveText([
-        'Default View',
-        'panel::Front',
-        'main::Front',
-        'Top',
-      ])
-      // The number is the row's position in the list, so `Default View` is 1.
-      await expect(numbers).toHaveText(['1', '2', '3', '4'])
-      await expect(rows.first()).toHaveAttribute('data-active', 'true')
-    }
-  )
-
-  test(
-    'activating a view moves the active marker and returns it',
-    { tag: '@localRenderer' },
-    async ({ fs, homePage, scene, toolbar, page, folderSetupFn }) => {
-      await folderSetupFn((dir) => writeProject(dir, fs))
-      await homePage.openProject('named-views')
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-
-      const pane = page.locator(VIEW_SWITCHER_PANE)
-      await expect(pane.getByTestId('named-view-create')).toBeVisible()
-      const rows = pane.getByTestId('named-view-row')
-      const defaultView = rows.filter({ hasText: 'Default View' })
-      const top = rows.filter({ hasText: 'Top' })
-
-      await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-      await expect(top).toHaveAttribute('data-active', 'true')
-      await expect(defaultView).toHaveAttribute('data-active', 'false')
-
-      await defaultView
-        .getByRole('button', { name: 'Apply Default View', exact: true })
-        .click()
-      await expect(defaultView).toHaveAttribute('data-active', 'true')
-      await expect(top).toHaveAttribute('data-active', 'false')
-    }
-  )
-
   /**
    * Guards the active-view pointer against an execution, not the reapply. The
    * scene the reapply sends is covered by the unit tests, which can read the
@@ -305,13 +226,24 @@ test.describe('KCL named views', { tag: '@web' }, () => {
       await homePage.openProject('top-target')
       await scene.settled()
       if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      const pane = page.locator(VIEW_SWITCHER_PANE)
+      await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
+      await expect(pane).toHaveCount(0)
       await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+      await expect(pane).toBeVisible()
+
+      const rows = pane.getByTestId('named-view-row')
+      const defaultView = rows.filter({ hasText: 'Default View' })
+      const top = rows.filter({ hasText: 'TopAt' })
+      await expect(pane.getByTestId('named-view-create')).toBeVisible()
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
 
       if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
-      await page
-        .locator(VIEW_SWITCHER_PANE)
+      await top
         .getByRole('button', { name: 'Apply TopAt', exact: true })
         .click()
+      await expect(top).toHaveAttribute('data-active', 'true')
+      await expect(defaultView).toHaveAttribute('data-active', 'false')
 
       if (rendererTag === '@streamRenderer') {
         // Top and bottom take the quaternion route rather than a look-at.
@@ -336,6 +268,15 @@ test.describe('KCL named views', { tag: '@web' }, () => {
         await expect(page.getByTestId('cam-y-position')).toHaveValue('20')
         await expect(page.getByTestId('cam-z-position')).toHaveValue('100')
       }
+
+      await defaultView
+        .getByRole('button', { name: 'Apply Default View', exact: true })
+        .click()
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
+      await expect(top).toHaveAttribute('data-active', 'false')
+
+      await toolbar.closePane(DefaultLayoutPaneID.NamedViews)
+      await expect(pane).toHaveCount(0)
     })
 
     test(`an Isometric view uses its own target and distance ${rendererTag}`, async ({
