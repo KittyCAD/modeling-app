@@ -1,4 +1,5 @@
 import { getEmbeddedAppComposition } from '@src/registry/embeddedComposition'
+import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 import { App } from '@src/lib/app'
 import {
   StorageName,
@@ -49,6 +50,20 @@ export const app = App.fromDefaults({
 })
 export const AppContext = React.createContext(app)
 window.app = app
+
+if (
+  import.meta.env.DEV &&
+  import.meta.env.VITE_DEV_ACCOUNT_APP_CONFIG === '1'
+) {
+  const { watchDevAccountConfig } = await import(
+    '@src/lib/appConfiguration/watch'
+  )
+  const stop = watchDevAccountConfig(
+    app,
+    startupComposition?.registryItemIds ?? defaultRegistryItemIds
+  )
+  import.meta.hot?.dispose(stop)
+}
 
 /**
  * Hook to gain access to the global app instance's singletons
