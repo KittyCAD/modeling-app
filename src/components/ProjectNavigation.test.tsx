@@ -1,4 +1,4 @@
-import { AppLogoHeaderItem } from '@src/registry/extensions/appHeader/HeaderItems'
+import { AppLogoHeaderItem } from '@src/registry/extensions/appLogo/AppLogoHeaderItem'
 import { PATHS } from '@src/lib/paths'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'

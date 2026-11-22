@@ -3,18 +3,9 @@ import {
   appHeaderStartItemsFacet,
   appHeaderEndItemsFacet,
 } from '@src/registry/contracts/appHeader'
-import {
-  AppLogoHeaderItem,
-  ProjectHeaderItem,
-  AccountHeaderItem,
-} from './HeaderItems'
+import { ProjectHeaderItem, AccountHeaderItem } from './HeaderItems'
 
 export default [
-  contribute(appHeaderStartItemsFacet, () => ({
-    id: 'app.home',
-    order: -100,
-    Component: AppLogoHeaderItem,
-  })),
   contribute(appHeaderStartItemsFacet, () => ({
     id: 'project.menu',
     order: 0,
