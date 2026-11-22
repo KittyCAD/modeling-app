@@ -91,6 +91,35 @@ export async function publishCurrentProject(
     return false
   }
 
+  return publishUploadedProject(uploadedProject)
+}
+
+/** Publish an already-captured archive without a legacy Project or active editor. */
+export async function publishProjectFiles(args: {
+  token: string
+  projectPath: string
+  files: ProjectArchiveFile[]
+  remoteProjectId: string
+  expectedRevision: string
+  deletedPaths: string[]
+  submission: ProjectPublishSubmission
+}): Promise<PublishedProject | false> {
+  if (!args.token) return false
+  const uploadedProject = await uploadProjectFiles({
+    ...args,
+    uploadFiles: args.files,
+  })
+  if (err(uploadedProject)) {
+    toast.error(getPublishErrorMessage(uploadedProject), { duration: 5000 })
+    return false
+  }
+  return publishUploadedProject(uploadedProject)
+}
+
+async function publishUploadedProject(uploadedProject: {
+  client: ReturnType<typeof createKCClient>
+  projectId: string
+}): Promise<PublishedProject | false> {
   const publishedProject = await kcCall(() =>
     projects.publish_project({
       client: uploadedProject.client,
@@ -168,6 +197,23 @@ export async function getCurrentProjectPublicationDetails({
     return null
   }
 
+  return getPublicationDetails({
+    token,
+    projectId,
+    fallbackTitle: getDefaultProjectTitle(project),
+  })
+}
+
+/** Publication metadata is addressed by remote identity, independently of either shell. */
+export async function getPublicationDetails({
+  token,
+  projectId,
+  fallbackTitle,
+}: {
+  token: string
+  projectId: string
+  fallbackTitle: string
+}): Promise<CurrentProjectPublicationDetails | Error> {
   const client = createKCClient(token)
   const remoteProject = await getRemoteProject({
     client,
@@ -180,7 +226,7 @@ export async function getCurrentProjectPublicationDetails({
   return {
     projectId,
     publicationStatus: remoteProject.publication_status,
-    title: remoteProject.title || getDefaultProjectTitle(project),
+    title: remoteProject.title || fallbackTitle,
     description: remoteProject.description || '',
     categoryIds: remoteProject.category_ids || [],
     publishedAt: remoteProject.publication.last_published_at,
@@ -215,7 +261,6 @@ async function ensureCurrentProjectUploaded(
     return uploadFiles
   }
 
-  const client = createKCClient(args.token)
   const existingProjectId =
     args.remoteProjectId ??
     (await getCloudProjectIdForEnvironment(
@@ -228,29 +273,54 @@ async function ensureCurrentProjectUploaded(
     return existingProjectId
   }
 
+  return uploadProjectFiles({
+    token: args.token,
+    projectPath: project.path,
+    uploadFiles,
+    remoteProjectId: existingProjectId,
+    expectedRevision: args.expectedRevision,
+    deletedPaths: args.deletedPaths,
+    submission: args.submission,
+  })
+}
+
+async function uploadProjectFiles(args: {
+  token: string
+  projectPath: string
+  uploadFiles: ProjectArchiveFile[]
+  remoteProjectId?: string
+  expectedRevision?: string
+  deletedPaths?: string[]
+  submission: ProjectPublishSubmission
+}): Promise<
+  { client: ReturnType<typeof createKCClient>; projectId: string } | Error
+> {
+  const client = createKCClient(args.token)
+  const remoteProjectId = args.remoteProjectId
+  const uploadFiles = args.uploadFiles
   try {
     const config = { enabled: true, token: args.token }
     const publicationMetadata = getProjectUploadPublicationMetadata(
       args.submission
     )
-    if (existingProjectId) {
-      const remote = await getCloudProject(config, existingProjectId)
+    if (remoteProjectId) {
+      const remote = await getCloudProject(config, remoteProjectId)
       if (remote.revision === undefined || remote.revision === null)
         return new Error('Cloud project is missing its revision.')
       await updateRemoteProject({
         config,
-        projectPath: project.path,
+        projectPath: args.projectPath,
         project: remote,
         files: uploadFiles,
         expectedRevision: args.expectedRevision ?? String(remote.revision),
         deletedPaths: args.deletedPaths,
         publicationMetadata,
       })
-      return { client, projectId: existingProjectId }
+      return { client, projectId: remoteProjectId }
     }
     const remote = await createRemoteProject(
       config,
-      project.path,
+      args.projectPath,
       uploadFiles,
       publicationMetadata
     )
