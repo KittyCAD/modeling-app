@@ -1,0 +1,12 @@
+# Save as app.toml in your account configuration Project, alongside personal-logo.zds.ts.
+# This is an authenticated Project configuration, not a ZOO_APP_CONFIG startup file.
+schema-version = 1
+base = "zoo:default"
+
+[extensions]
+exclude = ["zoo:appLogo"]
+add = ["personal:logo"]
+
+[sources."personal:logo"]
+kind = "project"
+entrypoint = "personal-logo.zds.ts"

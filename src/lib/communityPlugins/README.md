@@ -49,12 +49,14 @@ Raw SVG markup, external image URLs, custom event handlers, and arbitrary link
 destinations are not part of this contribution.
 
 To replace the Zoo logo, keep `exclude = ["zoo:appLogo"]` in the account
-configuration Project's `app.toml` and install the example locally. Reload after
-updating the account configuration. Previewing without that exclusion shows both
-logos. For a snapshot, later source edits require **Update snapshot**; development
-installations follow edits. Hosted authored-source loading through the configuration
-Project is still separate work; keeping this file in that Project alone does not
-install it.
+configuration Project's `app.toml` and install the example locally, or load it
+through the configuration's `sources` table (see
+[the account configuration guide](../appConfiguration/README.md#load-the-logo-directly-from-the-configuration-project)).
+Reload after updating the account configuration. Previewing without that exclusion
+shows both logos. For a snapshot, later source edits require **Update snapshot**;
+development installations follow edits. Keeping a file in a Project does not
+execute it: the account manifest must both declare its source and select its
+logical ID in `extensions.add` or `extensions.include`.
 
 ## Source and SDK
 

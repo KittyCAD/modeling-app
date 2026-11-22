@@ -5,6 +5,8 @@ import {
   readDevAccountConfigProject,
 } from '@src/lib/appConfiguration/devAccount'
 import { loadDevAccountConfig } from '@src/lib/appConfiguration/project'
+import { prepareAccountExtensions } from '@src/lib/appConfiguration/extensions'
+import { communityContributionAdaptersFacet } from '@src/lib/communityPlugins/contributions'
 import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { isErr, trap } from '@src/lib/trap'
@@ -16,9 +18,17 @@ export function watchDevAccountConfig(
 ) {
   const controller = createDevAccountConfigController({
     baseline,
-    load: loadDevAccountConfig,
-    apply: (ids, assertCurrent) =>
-      app.configureAppComposition(ids, assertCurrent),
+    load: (request, signal) => loadDevAccountConfig(request, signal, baseline),
+    prepare: (loaded, ids, request, assertCurrent) =>
+      prepareAccountExtensions(
+        loaded,
+        ids,
+        request,
+        app.registry.get(communityContributionAdaptersFacet),
+        assertCurrent
+      ),
+    apply: (ids, assertCurrent, authored) =>
+      app.configureAppComposition(ids, assertCurrent, authored),
     reportError: (error) => trap(error),
   })
   const runtime = app.registry.required(runtimeService)

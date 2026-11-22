@@ -151,8 +151,9 @@ export interface AppSubsystems {
   layout: AppLayoutSystem
   registry: AppRegistrySystem
   registryReady?: Promise<void>
-  configureAppComposition?: (
-    ids: readonly BundledRegistryItemId[]
+  applyAppComposition?: (
+    ids: readonly BundledRegistryItemId[],
+    authored?: readonly Extension[]
   ) => Promise<void>
 }
 export class App implements AppSubsystems {
@@ -212,7 +213,7 @@ export class App implements AppSubsystems {
   }
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
-  private applyComposition?: AppSubsystems['configureAppComposition']
+  private applyComposition?: AppSubsystems['applyAppComposition']
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
     this.auth = subsystems.auth
@@ -225,7 +226,7 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
     this.registry = subsystems.registry
     this.registryWork = subsystems.registryReady ?? Promise.resolve()
-    this.applyComposition = subsystems.configureAppComposition
+    this.applyComposition = subsystems.applyAppComposition
     if (import.meta.env.VITE_INTERACTION_PERFORMANCE === '1') {
       this.interactionPerformance = this.registry.required(
         interactionPerformanceService
@@ -278,9 +279,16 @@ export class App implements AppSubsystems {
       }),
       createSlot([], engineSceneRuntimeExtensionsSlot.key),
     ]
-    const configureAppComposition = (ids: readonly BundledRegistryItemId[]) =>
-      appRegistry.configure([...retainedRoots, ...getRegistryItems(ids)])
-    const registryReady = configureAppComposition(registryItemIds)
+    const applyAppComposition = (
+      ids: readonly BundledRegistryItemId[],
+      authored: readonly Extension[] = []
+    ) =>
+      appRegistry.configure([
+        ...retainedRoots,
+        ...getRegistryItems(ids),
+        ...authored,
+      ])
+    const registryReady = applyAppComposition(registryItemIds)
     void registryReady.catch(reportRejection)
     const wasmPromise =
       appRegistry.get(wasmPromiseFacet) ??
@@ -310,7 +318,7 @@ export class App implements AppSubsystems {
       layout,
       registry: appRegistry,
       registryReady,
-      configureAppComposition,
+      applyAppComposition,
     }
   }
 
@@ -693,13 +701,14 @@ export class App implements AppSubsystems {
   /** Preserve app-owned slots and serialize composition changes with app graph producers. */
   configureAppComposition(
     ids: readonly BundledRegistryItemId[],
-    assertCurrent: () => void = () => {}
+    assertCurrent: () => void = () => {},
+    authored: readonly Extension[] = []
   ): Promise<void> {
     const next = this.registryWork.then(async () => {
       assertCurrent()
       if (this.hasStoppedSubsystems || !this.applyComposition)
         return Promise.reject(new Error('App composition cannot be changed.'))
-      await this.applyComposition(ids)
+      await this.applyComposition(ids, authored)
       this.syncPluginSettingsFromCurrent()
     })
     this.registryWork = next.catch(reportRejection)

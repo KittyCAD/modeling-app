@@ -3,8 +3,9 @@
 Branch `codex/personal-app-config` combines the local authored-plugin prototype,
 app-manifest stack, and optional `zoo:appLogo` header contribution. This experiment
 reads a configuration Project pointer after authentication and applies its bundled
-renderer-extension selection. It does not yet load authored extensions from that
-Project, grant permissions, or change native Electron plugin registration.
+renderer-extension selection. Its `sources` table can also load permissionless
+authored extensions from pinned Project versions. It never grants permissions or
+changes native Electron plugin registration.
 
 ## Smoke test
 
@@ -20,7 +21,8 @@ Project, grant permissions, or change native Electron plugin registration.
    ```
 
    The Project can retain its ordinary `project.toml` and design files. Only
-   `app.toml` is downloaded. Copy the Project ID, not its library or version ID.
+   `app.toml` and explicitly selected source entrypoints are downloaded. Copy the
+   Project ID, not its library or version ID.
 
 2. Record the dev user's original Company value. On that **user record**, set:
 
@@ -73,10 +75,63 @@ Project, grant permissions, or change native Electron plugin registration.
    support. This configuration does not uninstall existing personal plugins.
 
 5. Check the Network panel: the app reads Project metadata, resolves one exact
-   version, and requests a ZIP containing only the `app.toml` file ID. If supplied
-   by the API, the file SHA-256 is verified before parsing. The current Project
-   version is resolved anew on each fresh auth initialization; there is no persistent
-   configuration-release lock yet.
+   version, and requests `app.toml` by file ID. Selected authored entrypoints are
+   downloaded by file ID from that same version, or from an explicitly pinned
+   external Project version. API-provided and manifest-provided SHA-256 digests
+   are verified. The account configuration's current version is resolved anew on
+   fresh auth initialization; there is no persistent configuration-release lock.
+
+## Load the logo directly from the configuration Project
+
+1. Upload `examples/community-plugins/personal-logo.zds.ts` to the root of the same
+   cloud Project containing your account configuration. Customize its SVG and text.
+2. Replace `app.toml` with `examples/app-configs/cloud-logo.toml`:
+
+   ```toml
+   schema-version = 1
+   base = "zoo:default"
+
+   [extensions]
+   exclude = ["zoo:appLogo"]
+   add = ["personal:logo"]
+
+   [sources."personal:logo"]
+   kind = "project"
+   entrypoint = "personal-logo.zds.ts"
+   ```
+
+3. Wait for both files to save to the cloud, then reload ZDS. The logo is loaded
+   with the configuration; Plugin Builder installation is unnecessary. Disable or
+   uninstall the earlier manual test copy to avoid rendering both copies.
+4. Remove `personal:logo` from `extensions.add` and reload to remove the authored
+   logo. Logging out also removes configured extensions and restores startup branding.
+
+Omitting `project_id` and `version_id` uses the configuration Project's exact
+resolved version, so the source matches the manifest even if the Project changes
+while loading. Another Project requires both fields:
+
+```toml
+[sources."company:logo"]
+kind = "project"
+project_id = "<project-uuid>"
+version_id = "<immutable-version-id>"
+entrypoint = "extensions/logo.zds.ts"
+# Optional additional content pin:
+# sha256 = "<64 hexadecimal characters>"
+```
+
+Source IDs are host aliases, not publisher verification or permission grants.
+Only selected sources are fetched or evaluated. Source code is compiled and run in
+QuickJS through the same checked contribution adapters as local plugins. This first
+slice accepts `permissions = []`; requested permissions fail with an actionable
+error instead of inheriting a manually installed plugin's grants. Configuration
+extensions follow the composition lifetime and have no independent activation
+toggle or persisted Plugin Builder installation. Configuration-owned settings pages
+are not supported yet and are rejected explicitly.
+
+A malformed source, digest mismatch, unsupported contribution, or compilation/
+activation failure prevents applying the new composition. Source runtimes are
+released on failed preparation, replacement, logout, and canceled auth generations.
 
 ## Failure and rollback checks
 
@@ -92,15 +147,17 @@ Project, grant permissions, or change native Electron plugin registration.
 
 The pointer is a temporary use of the Company field, not a new account API contract.
 The manifest cannot remove mandatory host services, approve plugin permissions,
-or import arbitrary JavaScript. Project source resolution for authored extensions
-and the safe header contribution adapter are subsequent work.
+or import arbitrary JavaScript into the host realm. Authored code stays in QuickJS
+and contributes only through registered host adapters.
 
 ## Verification in this branch
 
 The targeted configuration/plugin/editor tests and formatting/type/lint checks
 pass. An isolated real-app browser check with mocked auth and Projects endpoints
 verified reading the Company pointer at auth initialization, applying the fetched
-manifest, and restoring the logo on logout without page errors.
+manifest and authored logo from one exact Project version without a manual plugin
+installation, restoring the authored logo on reload, and restoring startup
+branding on logout without page errors.
 
 The broader `src/lib/app.spec.ts` integration suite still encounters the singleton
 `boot.ts` import cycle also reproduced on the original community-plugin branch.

@@ -12,6 +12,10 @@ export const settingsContributionAdapter: CommunityContributionAdapter = {
     if (isErr(definition)) return definition
     if (!definition) return new Error('Missing settings declaration.')
     if (owner.kind === 'preview') return []
+    if (owner.kind === 'configuration')
+      return new Error(
+        'Settings pages for configuration extensions are not supported yet.'
+      )
     return contribute(settingsPagesFacet, () => ({
       id: `${namespace}.settings`,
       title: manifest.name,

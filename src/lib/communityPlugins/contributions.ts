@@ -9,6 +9,7 @@ import { Facet, type Extension } from 'plankton'
 export type CommunityContributionOwner =
   | { kind: 'preview' }
   | { kind: 'community'; installationId: string }
+  | { kind: 'configuration'; configurationId: string; extensionId: string }
 
 /** Trusted core features own parsing and adaptation of each public contribution point. */
 export interface CommunityContributionAdapter {

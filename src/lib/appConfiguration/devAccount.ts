@@ -8,6 +8,20 @@ import {
 } from '@src/registry/catalogMetadata'
 import { parseAppManifest, resolveAppManifest } from '@src/registry/appManifest'
 import { isErr } from '@src/lib/trap'
+import type { Extension } from 'plankton'
+
+export interface LoadedAccountExtension {
+  id: string
+  projectId: string
+  versionId: string
+  sha256: string
+  contents: string
+}
+
+export interface PreparedAccountExtensions {
+  extensions: readonly Extension[]
+  dispose: () => void
+}
 
 export const DEV_ACCOUNT_CONFIG_PREFIX = 'zds-dev-app-config:'
 
@@ -37,19 +51,28 @@ export interface DevAccountConfigRequest {
 export interface LoadedAccountConfig {
   contents: string
   revision: string
+  sources?: readonly LoadedAccountExtension[]
 }
 
 /** A dev configuration only changes renderer selection; native handlers remain process-owned. */
 export function resolveDevAccountConfig(
   contents: string,
   baseline: readonly BundledRegistryItemId[]
-): readonly BundledRegistryItemId[] | Error {
+):
+  | {
+      bundledIds: readonly BundledRegistryItemId[]
+      sourceIds: readonly string[]
+    }
+  | Error {
   if (contents.length > 128_000)
     return new Error('App manifest exceeds 128 KB.')
   const manifest = parseAppManifest(contents)
   if (isErr(manifest)) return manifest
   const resolved = resolveAppManifest(manifest, {
-    availableIds: Object.keys(bundledRegistryItemMetadata),
+    availableIds: [
+      ...Object.keys(bundledRegistryItemMetadata),
+      ...Object.keys(manifest.sources ?? {}),
+    ],
     defaultIds: baseline,
     requiredIds: getRequiredRegistryItemIds(
       import.meta.env.VITE_INTERACTION_PERFORMANCE === '1'
@@ -63,7 +86,20 @@ export function resolveDevAccountConfig(
     return new Error(
       'Changing native slicer registration requires a startup app manifest.'
     )
-  return resolved.extensionIds.filter(isBundledRegistryItemId)
+  const sourceIds = resolved.extensionIds.filter(
+    (id) => !isBundledRegistryItemId(id)
+  )
+  if (
+    sourceIds.length &&
+    !resolved.extensionIds.includes('zoo:communityPlugins')
+  )
+    return new Error(
+      'Authored configuration sources require zoo:communityPlugins.'
+    )
+  return {
+    bundledIds: resolved.extensionIds.filter(isBundledRegistryItemId),
+    sourceIds,
+  }
 }
 
 /** Async reads belong to one account, API environment, and pointer generation; late results never apply. */
@@ -71,6 +107,7 @@ export function createDevAccountConfigController({
   baseline,
   load,
   apply,
+  prepare,
   reportError,
 }: {
   baseline: readonly BundledRegistryItemId[]
@@ -80,8 +117,15 @@ export function createDevAccountConfigController({
   ) => Promise<LoadedAccountConfig>
   apply: (
     ids: readonly BundledRegistryItemId[],
-    assertCurrent: () => void
+    assertCurrent: () => void,
+    authored: readonly Extension[]
   ) => Promise<void>
+  prepare: (
+    loaded: LoadedAccountConfig,
+    sourceIds: readonly string[],
+    request: DevAccountConfigRequest,
+    assertCurrent: () => void
+  ) => Promise<PreparedAccountExtensions>
   reportError: (error: Error) => void
 }) {
   const status = signal('Using startup app composition')
@@ -91,6 +135,8 @@ export function createDevAccountConfigController({
   let controller: AbortController | undefined
   let changedComposition = false
   let disposed = false
+  let active: PreparedAccountExtensions | undefined
+  const staged = new Set<PreparedAccountExtensions>()
   const work = new Set<Promise<void>>()
   return {
     status,
@@ -113,7 +159,12 @@ export function createDevAccountConfigController({
       ])
       if (lastRequest === key) return
       lastRequest = key
+      for (const plan of staged) plan.dispose()
       const restore = changedComposition && context !== nextContext
+      if (context !== nextContext) {
+        active?.dispose()
+        active = undefined
+      }
       context = nextContext
       const current = ++generation
       controller?.abort()
@@ -124,7 +175,7 @@ export function createDevAccountConfigController({
       }
       const run = async () => {
         if (restore) {
-          await apply(baseline, assertCurrent)
+          await apply(baseline, assertCurrent, [])
           assertCurrent()
           changedComposition = false
         }
@@ -136,13 +187,29 @@ export function createDevAccountConfigController({
         status.value = `Loading app configuration from Project ${request.projectId}`
         const loaded = await load(request, signal)
         assertCurrent()
-        const ids = resolveDevAccountConfig(loaded.contents, baseline)
-        if (isErr(ids)) return Promise.reject(ids)
-        // An auth change during registry cleanup must still schedule restoration.
-        changedComposition = true
-        await apply(ids, assertCurrent)
-        assertCurrent()
-        status.value = `Applied app configuration from Project ${request.projectId} at version ${loaded.revision}`
+        const selection = resolveDevAccountConfig(loaded.contents, baseline)
+        if (isErr(selection)) return Promise.reject(selection)
+        const prepared = await prepare(
+          loaded,
+          selection.sourceIds,
+          request,
+          assertCurrent
+        )
+        staged.add(prepared)
+        try {
+          assertCurrent()
+          // An auth change during registry cleanup must still schedule restoration.
+          changedComposition = true
+          await apply(selection.bundledIds, assertCurrent, prepared.extensions)
+          assertCurrent()
+          active = prepared
+          status.value = `Applied app configuration from Project ${request.projectId} at version ${loaded.revision}`
+        } catch (cause) {
+          prepared.dispose()
+          return Promise.reject(cause)
+        } finally {
+          staged.delete(prepared)
+        }
       }
       const pending = run().catch((cause) => {
         if (signal.aborted || disposed || generation !== current) return
@@ -160,6 +227,8 @@ export function createDevAccountConfigController({
       disposed = true
       generation++
       controller?.abort()
+      active?.dispose()
+      for (const plan of staged) plan.dispose()
     },
   }
 }

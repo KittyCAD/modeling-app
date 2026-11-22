@@ -6,8 +6,10 @@ import {
   resolveDevAccountConfig,
   type DevAccountConfigRequest,
   type LoadedAccountConfig,
+  type PreparedAccountExtensions,
 } from '@src/lib/appConfiguration/devAccount'
 import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
+import { prepareAccountExtensions } from '@src/lib/appConfiguration/extensions'
 
 const projectId = '019a1111-2222-7333-8444-555555555555'
 const request: DevAccountConfigRequest = {
@@ -38,10 +40,10 @@ describe('dev account configuration pointer', () => {
   })
   it('allows the optional logo to be omitted while preserving required and native entrypoints', () => {
     const ids = resolveDevAccountConfig(unbranded, defaultRegistryItemIds)
-    expect(ids).not.toBeInstanceOf(Error)
-    expect(ids).not.toContain('zoo:appLogo')
-    expect(ids).toContain('zoo:auth')
-    expect(ids).toContain('zoo:communityPlugins')
+    if (ids instanceof Error) throw ids
+    expect(ids.bundledIds).not.toContain('zoo:appLogo')
+    expect(ids.bundledIds).toContain('zoo:auth')
+    expect(ids.bundledIds).toContain('zoo:communityPlugins')
     expect(
       resolveDevAccountConfig(
         unbranded.replace('zoo:appLogo', 'zoo:auth'),
@@ -66,7 +68,18 @@ describe('authenticated configuration lifecycle', () => {
     load: (
       input: DevAccountConfigRequest,
       signal: AbortSignal
-    ) => Promise<LoadedAccountConfig>
+    ) => Promise<LoadedAccountConfig>,
+    prepare: (
+      loaded: LoadedAccountConfig,
+      ids: readonly string[],
+      request: DevAccountConfigRequest,
+      assertCurrent: () => void
+    ) => Promise<PreparedAccountExtensions> = (
+      loaded,
+      ids,
+      request,
+      assertCurrent
+    ) => prepareAccountExtensions(loaded, ids, request, [], assertCurrent)
   ) => {
     const registry = new Registry()
     const logos = new Facet<string, readonly string[]>(
@@ -76,11 +89,16 @@ describe('authenticated configuration lifecycle', () => {
     const acquireAuth = vi.fn(() => ({ exports: { account: 'stable' } }))
     const auth = factory({ create: acquireAuth })
     const branding = contribute(logos, () => 'Zoo')
-    const apply = async (ids: readonly string[], assertCurrent: () => void) => {
+    const apply = async (
+      ids: readonly string[],
+      assertCurrent: () => void,
+      authored: PreparedAccountExtensions['extensions'] = []
+    ) => {
       assertCurrent()
       await registry.configure([
         auth,
         ...(ids.includes('zoo:appLogo') ? [branding] : []),
+        ...authored,
       ])
     }
     await apply(defaultRegistryItemIds, () => {})
@@ -89,6 +107,7 @@ describe('authenticated configuration lifecycle', () => {
       baseline: defaultRegistryItemIds,
       load,
       apply,
+      prepare,
       reportError: (error) => errors.push(error),
     })
     cleanups.push(async () => {
@@ -163,5 +182,58 @@ describe('authenticated configuration lifecycle', () => {
     await h.controller.settled()
     expect(h.registry.get(h.logos)).toEqual(['Zoo'])
     expect(h.errors[0].message).toBe('Invalid configuration pointer')
+  })
+  it('disposes prepared guests when logout supersedes preparation before publication', async () => {
+    const pending = Promise.withResolvers<PreparedAccountExtensions>()
+    const dispose = vi.fn()
+    let preparing = false
+    const h = await open(
+      async () => ({ contents: normal, revision: 'version-1' }),
+      async () => {
+        preparing = true
+        return pending.promise
+      }
+    )
+    h.controller.update(request)
+    await vi.waitFor(() => expect(preparing).toBe(true))
+    h.controller.update(undefined)
+    pending.resolve({ extensions: [], dispose })
+    await h.controller.settled()
+    expect(dispose).toHaveBeenCalledOnce()
+    expect(h.registry.get(h.logos)).toEqual(['Zoo'])
+    expect(h.errors).toEqual([])
+  })
+
+  it('revokes a guest immediately when logout interrupts composition cleanup', async () => {
+    const cleanup = Promise.withResolvers<undefined>()
+    const enteredApply = Promise.withResolvers<undefined>()
+    const dispose = vi.fn()
+    const errors: Error[] = []
+    let publishing = true
+    const controller = createDevAccountConfigController({
+      baseline: defaultRegistryItemIds,
+      load: async () => ({ contents: normal, revision: 'version-1' }),
+      prepare: async () => ({ extensions: [], dispose }),
+      apply: async () => {
+        if (!publishing) return
+        publishing = false
+        enteredApply.resolve(undefined)
+        await cleanup.promise
+      },
+      reportError: (error) => errors.push(error),
+    })
+    cleanups.push(async () => {
+      cleanup.resolve(undefined)
+      controller.dispose()
+      await controller.settled()
+    })
+    controller.update(request)
+    await enteredApply.promise
+    controller.update(undefined)
+    expect(dispose).toHaveBeenCalled()
+    cleanup.resolve(undefined)
+    await controller.settled()
+    expect(controller.status.value).toBe('Using startup app composition')
+    expect(errors).toEqual([])
   })
 })
