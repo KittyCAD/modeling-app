@@ -25,7 +25,11 @@ import {
   screen,
   within,
 } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import {
+  createMemoryRouter,
+  MemoryRouter,
+  RouterProvider,
+} from 'react-router-dom'
 import {
   afterEach,
   beforeAll,
@@ -208,6 +212,52 @@ describe('project screen', () => {
     expect(session.files.read).not.toHaveBeenCalled()
     expect(session.files.write).not.toHaveBeenCalled()
     expect(readFile).not.toHaveBeenCalled()
+  })
+  it('keeps the header visible while Home navigation closes a cloud session', async () => {
+    const projects = services.required(projectSessionService)
+    const project = createSession('Cloud project').project.value
+    projects.openProject({
+      ...project,
+      storage: { type: 'cloud', projectId: 'cloud-id' },
+    })
+    let finishHome!: () => void
+    const homeReady = new Promise<void>((resolve) => {
+      finishHome = resolve
+    })
+    const router = createMemoryRouter(
+      [
+        { path: '/project/:id', element: <ProjectRoute /> },
+        {
+          path: '/home',
+          loader: () => {
+            projects.closeProject()
+            return homeReady
+          },
+          element: <h1>Project library</h1>,
+        },
+      ],
+      { initialEntries: ['/project/cloud-id'] }
+    )
+    render(<RouterProvider router={router} />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('link', { name: 'Projects' }))
+    })
+    expect(projects.currentSession.value).toBeUndefined()
+    expect(router.state.navigation.state).toBe('loading')
+    expect(screen.getByTestId('app-header')).toBeVisible()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loading Design Studio...'
+    )
+    expect(
+      screen.queryByRole('main', { name: 'Editor views' })
+    ).not.toBeInTheDocument()
+    await act(async () => {
+      finishHome()
+    })
+    expect(
+      screen.getByRole('heading', { name: 'Project library' })
+    ).toBeVisible()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
   it('shows the workspace and follows the project session selection', () => {
     const first = createSession('First')
