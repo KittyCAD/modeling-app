@@ -10,6 +10,8 @@ import {
 import { requireSuccess } from '@src/lib/editors/testViews'
 import type { PluginRuntime } from '@src/lib/communityPlugins/runtime'
 import { createFilePluginStorage } from '@src/lib/communityPlugins/persistence'
+import { serializePluginPreferences } from '@src/lib/communityPlugins/persistence'
+import { compilePlugin } from '@src/lib/communityPlugins/source'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('retained plugin installations', () => {
@@ -160,12 +162,107 @@ describe('retained plugin installations', () => {
     expect(h.manager.entries.value).toEqual([])
   })
 
+  it('replaces the same plugin across installation modes and stops the previous runtime', async () => {
+    const h = harness()
+    const id = await install(h)
+    for (const mode of ['development', 'snapshot', 'snapshot'] as const) {
+      const previous = h.runtimes.get(id)!
+      requireSuccess(
+        await h.manager.install(
+          requireSuccess(await compiledHello(mode)),
+          mode,
+          '/plugins/hello.zds.ts',
+          new Set(['ui.notify'])
+        )
+      )
+      expect(h.manager.entries.value).toHaveLength(1)
+      expect(h.manager.entries.value[0].installation.id).toBe(id)
+      expect(h.manager.entries.value[0].installation.source.kind).toBe(mode)
+      expect(previous.invoke(0)).toBeInstanceOf(Error)
+      expect(h.runtimes.size).toBe(1)
+      h.runtimes.get(id)!.invoke(0)
+    }
+    expect(h.messages).toEqual(['development', 'snapshot', 'snapshot'])
+    const next = harness(h.fixture)
+    requireSuccess(await next.manager.restore())
+    expect(next.manager.entries.value).toHaveLength(1)
+    expect(next.manager.entries.value[0].installation.id).toBe(id)
+  })
+
+  it('keeps the working installation when a replacement cannot be saved', async () => {
+    const h = harness()
+    const id = await install(h)
+    const previous = h.runtimes.get(id)!
+    h.fixture.failWrites(new Error('Disk full'))
+    expect(
+      await h.manager.install(
+        requireSuccess(await compiledHello('Replacement')),
+        'development',
+        '/plugins/hello.zds.ts',
+        new Set(['ui.notify'])
+      )
+    ).toBeInstanceOf(Error)
+    expect(h.manager.entries.value).toHaveLength(1)
+    expect(h.manager.entries.value[0].installation.source.kind).toBe('snapshot')
+    expect(h.runtimes.get(id)).toBe(previous)
+    previous.invoke(0)
+    expect(h.messages).toEqual(['Hello!'])
+  })
+
+  it('consolidates previously duplicated installations without merging their grants or settings', async () => {
+    const original = harness()
+    const id = await install(original)
+    const saved = requireSuccess(
+      await original.fixture.storage.load()
+    ).preferences
+    await original.manager.dispose()
+    const duplicate = crypto.randomUUID()
+    original.fixture.contents = serializePluginPreferences({
+      ...saved,
+      installations: [
+        saved.installations[0],
+        { ...saved.installations[0], id: duplicate },
+      ],
+      grants: [
+        ...saved.grants,
+        { installationId: duplicate, permissions: ['ui.notify'] },
+      ],
+      settings: [
+        { installationId: id, values: { greeting: 'Keep' } },
+        { installationId: duplicate, values: { greeting: 'Duplicate' } },
+      ],
+    })
+    const h = harness(original.fixture)
+    requireSuccess(await h.manager.restore())
+    const previous = [...h.runtimes.values()]
+    requireSuccess(
+      await h.manager.install(
+        requireSuccess(await compiledHello('No grant', [])),
+        'snapshot',
+        undefined,
+        new Set()
+      )
+    )
+    expect(h.manager.entries.value).toHaveLength(1)
+    expect(h.runtimes.size).toBe(1)
+    for (const runtime of previous)
+      expect(runtime.invoke(0)).toBeInstanceOf(Error)
+    const updated = requireSuccess(await h.fixture.storage.load()).preferences
+    expect(updated.installations.map((item) => item.id)).toEqual([id])
+    expect(updated.grants).toEqual([{ installationId: id, permissions: [] }])
+    expect(updated.settings).toEqual([
+      { installationId: id, values: { greeting: 'Keep' } },
+    ])
+  })
+
   it('follows open development buffers, preserves the last good instance, and leaves snapshots unchanged', async () => {
     const h = harness()
     const development = await install(h, 'development')
     requireSuccess(
       await h.manager.install(
-        requireSuccess(await compiledHello('Snapshot')),
+        requireSuccess(
+          await compilePlugin(helloPlugin('Snapshot', ['ui.notify'], 'other'))
+        ),
         'snapshot',
         undefined,
         new Set(['ui.notify'])

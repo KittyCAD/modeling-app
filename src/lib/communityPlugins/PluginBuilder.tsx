@@ -4,7 +4,6 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import type { PluginSource } from '@src/lib/communityPlugins/source'
 import type { PluginSession } from '@src/lib/communityPlugins/session'
 import type { PluginInstallations } from '@src/lib/communityPlugins/installations'
-import { InstalledPlugins } from '@src/lib/communityPlugins/InstalledPlugins'
 import {
   pluginButton,
   pluginPrimaryButton,
@@ -39,6 +38,10 @@ export function PluginBuilder({
   const canInstall =
     canPreview && installations.ready.value && !installations.busy.value
   const running = session.status.value === 'Running'
+  const installed = installations.entries.value.find(
+    (entry) => entry.installation.pluginId === source?.manifest.id
+  )
+  const installedMode = installed?.installation.source.kind
   const install = (mode: 'snapshot' | 'development') => {
     if (source)
       void session
@@ -272,6 +275,41 @@ export function PluginBuilder({
               <p className="mt-1 text-sm leading-6 text-2">
                 Keep your plugin available across ZDS sessions.
               </p>
+              <div role="status" className="mt-3 rounded-lg bg-2 p-3 text-sm">
+                <p className="font-medium">
+                  {!installations.ready.value
+                    ? 'Loading installation...'
+                    : !installed
+                      ? 'Not installed'
+                      : installedMode === 'snapshot'
+                        ? 'Installed snapshot'
+                        : 'Installed for development'}
+                </p>
+                {installed && (
+                  <p className="mt-1 break-words text-xs leading-5 text-2">
+                    {installed.installation.enabled ? 'Enabled' : 'Disabled'}
+                    {' - '}
+                    {installed.status.value}
+                  </p>
+                )}
+              </div>
+              {installed && (
+                <p className="mt-2 text-xs leading-5 text-2">
+                  Updating or switching modes replaces this installation and
+                  keeps its settings. Manage activation and settings in the
+                  Plugins tab of Settings.
+                </p>
+              )}
+              {installations.busy.value && (
+                <p role="status" className="mt-2 text-xs text-2">
+                  Updating installation...
+                </p>
+              )}
+              {installations.error.value && (
+                <p role="alert" className="mt-2 break-words text-sm">
+                  {installations.error.value.message}
+                </p>
+              )}
             </div>
             <div className="px-5 py-4">
               <div className="flex items-center gap-2">
@@ -295,7 +333,11 @@ export function PluginBuilder({
                 disabled={!canInstall}
                 onClick={() => install('snapshot')}
               >
-                Install snapshot
+                {installedMode === 'snapshot'
+                  ? 'Update snapshot'
+                  : installed
+                    ? 'Switch to snapshot'
+                    : 'Install snapshot'}
               </button>
             </div>
             <div className="border-t b-4 px-5 py-4">
@@ -316,7 +358,11 @@ export function PluginBuilder({
                 disabled={!canInstall || !path}
                 onClick={() => install('development')}
               >
-                Install for development
+                {installedMode === 'development'
+                  ? 'Update development source'
+                  : installed
+                    ? 'Switch to development'
+                    : 'Install for development'}
               </button>
               {!path && (
                 <p className="mt-2 text-xs text-2">
@@ -325,10 +371,6 @@ export function PluginBuilder({
               )}
             </div>
           </section>
-        </div>
-
-        <div className="border-t b-4 pt-6">
-          <InstalledPlugins manager={installations} />
         </div>
       </div>
     </section>

@@ -10,7 +10,9 @@ execution, and buffer-driven reloads. It is a development prototype, not a publi
    `examples/community-plugins/hello.zds.ts` into a disposable project.
 2. Open the file. Its Plugin Builder view inspects the TOML manifest and shows
    the requested permissions. Opening and compiling never activate the plugin.
-3. Approve notifications. Select **Start preview** for a temporary
+3. The Builder shows installation status for the current plugin; the full installed
+   list lives in **Settings > Plugins**. Approve notifications. Select
+   **Start preview** for a temporary
    preview, **Install snapshot** to retain these exact source contents, or
    **Install for development** to retain the source path and follow open-buffer
    changes. An installed plugin is enabled on startup by default.
@@ -119,10 +121,9 @@ User overrides persist in a separate `settings` collection in
 `community-plugins.toml`, keyed by host installation UUID. Defaults are not saved
 as overrides. Incompatible saved values fall back to the current default with a UI
 notice, and remain retained for a future compatible definition. Resetting clears
-overrides; uninstall removes the installation's settings and grants. Two
-installations with the same manifest ID have independent values. Snapshots remain
-pinned: installing an updated example creates a new installation rather than
-silently changing an older snapshot's schema.
+overrides; uninstall removes the installation's settings and grants. Reinstalling
+the same manifest ID updates its existing installation and retains its values.
+Snapshots remain pinned until explicitly updated or switched to development.
 
 All access is confined to that installation's declared keys. Reading ordinary
 settings needs no additional permission and confers no access to application
@@ -176,9 +177,15 @@ sidecar precedent. This keeps the installation and grant mutation in one documen
 Project settings never supply either collection. The storage interface can later
 be backed by the main settings actor without changing installation lifetimes.
 
-Each explicit installation gets a new host-generated UUID, independently of its
-manifest ID. A snapshot stores its exact source text; a development installation
-stores its selected source path and follows buffer changes. Restart compiles the
+A first installation gets a host-generated UUID, independently of its manifest
+ID. Explicitly reinstalling that manifest ID replaces the installation in place,
+keeps its settings, enables it, and replaces grants with the permissions just
+approved. Snapshot and development are mutually exclusive installation modes.
+Reinstallation also consolidates copies created by earlier builds: the first
+installation keeps its identity and settings; other copies and their settings
+and grants are removed without merging. Existing copies are not changed merely
+by opening the application. A snapshot stores its exact source text; a
+development installation stores its selected source path and follows buffer changes. Restart compiles the
 appropriate source and checks the API version, declared plugin ID, supported
 permissions, and retained grants before activation. Development source declaring
 a different plugin ID must be installed separately and receives no old grants.

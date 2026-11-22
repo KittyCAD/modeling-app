@@ -92,10 +92,13 @@ describe('community plugin settings', () => {
     expect(toast).toHaveBeenLastCalledWith('Hello from a local plugin!')
   })
 
-  it('isolates identical plugin IDs by installation and rejects undeclared writes', async () => {
+  it('isolates different plugins and rejects undeclared writes', async () => {
     const h = await open()
     const first = await install(h)
-    const second = await install(h)
+    const second = await install(
+      h,
+      helloSource.replace('id = "hello"', 'id = "other"')
+    )
     requireSuccess(await h.manager.setSetting(first, 'greeting', 'First'))
     requireSuccess(await h.manager.setSetting(second, 'greeting', 'Second'))
     expect(
@@ -116,6 +119,19 @@ describe('community plugin settings', () => {
         (item) => item.installationId
       )
     ).toEqual([second])
+  })
+
+  it('preserves the greeting when replacing a snapshot with a development installation', async () => {
+    const h = await open()
+    const id = await install(h)
+    requireSuccess(
+      await h.manager.setSetting(id, 'greeting', 'Personal greeting')
+    )
+    const replacement = await install(h, helloSource, 'development')
+    expect(replacement).toBe(id)
+    expect(h.manager.entries.value).toHaveLength(1)
+    command(h.registry, id).onSubmit()
+    expect(toast).toHaveBeenLastCalledWith('Personal greeting')
   })
 
   it('renders a host-owned greeting editor with explicit save and reset', async () => {

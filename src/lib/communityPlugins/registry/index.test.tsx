@@ -125,11 +125,31 @@ describe('Plugin Builder', () => {
     const Component = binding.Component
     render(<Component editor={editor} instance={instance} active />)
     await screen.findByText('Hello')
+    expect(
+      screen.queryByRole('region', { name: 'Installed community plugins' })
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Not installed')).toBeVisible()
     fireEvent.click(
       screen.getByLabelText('Allow this plugin to show notifications')
     )
     fireEvent.click(screen.getByRole('button', { name: 'Install snapshot' }))
     await vi.waitFor(() => expect(commands()).toHaveLength(1))
+    expect(screen.getByText('Installed snapshot')).toBeVisible()
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Switch to development' })
+    )
+    await vi.waitFor(() =>
+      expect(manager.entries.value[0].installation.source.kind).toBe(
+        'development'
+      )
+    )
+    expect(manager.entries.value).toHaveLength(1)
+    expect(screen.getByText('Installed for development')).toBeVisible()
+    await manager.settled()
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to snapshot' }))
+    await manager.settled()
+    expect(screen.getByText('Installed snapshot')).toBeVisible()
+    expect(commands()).toHaveLength(1)
     const identity = manager.entries.value[0].installation.id
     cleanup()
     editors.closeEditor(editor.id)

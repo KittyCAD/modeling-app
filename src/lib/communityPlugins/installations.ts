@@ -281,8 +281,17 @@ export function createPluginInstallations({
           return new Error(
             'Development installations require a saved source path.'
           )
+        // Explicit reinstallation replaces one declared plugin, preserving its host-owned settings identity.
+        // Older duplicate copies are retired together; their grants and settings are never merged.
+        const previous = snapshot.preferences.installations.filter(
+          (item) => item.pluginId === source.manifest.id
+        )
+        const replacedIds = new Set(previous.map((item) => item.id))
+        const replacedEntries = entries
+          .peek()
+          .filter((entry) => replacedIds.has(entry.installation.id))
         const installation: PluginInstallation = {
-          id: crypto.randomUUID(),
+          id: previous[0]?.id ?? crypto.randomUUID(),
           pluginId: source.manifest.id,
           name: source.manifest.name,
           ...(source.manifest.description
@@ -298,15 +307,40 @@ export function createPluginInstallations({
           source.manifest.permissions.filter(isPluginPermission)
         const failed = await save({
           ...snapshot.preferences,
-          installations: [...snapshot.preferences.installations, installation],
+          installations: previous.length
+            ? snapshot.preferences.installations.flatMap((item) =>
+                item.id === installation.id
+                  ? [installation]
+                  : replacedIds.has(item.id)
+                    ? []
+                    : [item]
+              )
+            : [...snapshot.preferences.installations, installation],
           grants: [
-            ...snapshot.preferences.grants,
+            ...snapshot.preferences.grants.filter(
+              (grant) => !replacedIds.has(grant.installationId)
+            ),
             { installationId: installation.id, permissions },
           ],
+          settings: snapshot.preferences.settings.filter(
+            (item) =>
+              !replacedIds.has(item.installationId) ||
+              item.installationId === installation.id
+          ),
         })
         if (failed || disposed) return failed
+        for (const entry of replacedEntries) {
+          entry.suspended = true
+          entry.epoch++
+        }
+        await Promise.all(
+          replacedEntries.map((entry) => entry.session.dispose())
+        )
+        if (disposed) return undefined
         const entry = makeEntry(installation)
-        entries.value = [...entries.peek(), entry]
+        entries.value = snapshot.preferences.installations.map((item) =>
+          item.id === installation.id ? entry : find(item.id)!
+        )
         await reconcile(
           entry,
           mode === 'development' ? (currentBuffer(path) ?? source) : source
