@@ -1,5 +1,7 @@
 import type { Feature } from '@kittycad/lib'
 import { Toggle } from '@src/components/Toggle/Toggle'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useSignals } from '@preact/signals-react/runtime'
 import { InstalledPluginsSection } from '@src/lib/communityPlugins/InstalledPlugins'
 import { useApp } from '@src/lib/boot'
 import type { Setting } from '@src/lib/settings/Setting'
@@ -56,24 +58,59 @@ export const PluginsList = forwardRef(
       )
     })
 
-    // This is how we will get the interaction map from the context
-    // in the future whene franknoirot/editable-hotkeys is merged.
-    // const { state } = useInteractionMapContext()
-
     return (
-      <div className="relative overflow-y-auto pb-16">
-        <div ref={scrollRef} className="flex flex-col gap-12">
+      <div
+        ref={scrollRef}
+        className="min-w-0 overflow-y-auto pb-12 text-default"
+      >
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-1 py-5 sm:px-4">
+          <header className="flex gap-4 border-b b-4 pb-6">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+              <CustomIcon
+                name="function"
+                aria-hidden="true"
+                className="h-7 w-7"
+              />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-semibold tracking-tight">Plugins</h1>
+              <p className="mt-2 text-sm leading-6 text-2">
+                Manage built-in features and the community plugins you have
+                installed.
+              </p>
+            </div>
+          </header>
           <InstalledPluginsSection registry={props.registry} />
-          {visiblePlugins.map((plugin) => (
-            <PluginItem
-              key={plugin.id}
-              plugin={plugin}
-              resolvedService={props.registry.required(plugin.service)}
-              activationSetting={props.registry
-                .get(zdsPluginActivationSettingsFacet)
-                .find((setting) => setting.pluginId === plugin.id)}
-            />
-          ))}
+          <section
+            aria-label="Built-in plugins"
+            className="flex flex-col gap-4 border-t b-4 pt-6"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-semibold">Built-in plugins</h2>
+                <span className="rounded-full bg-3/50 px-2 py-0.5 text-xs text-2">
+                  {visiblePlugins.length}
+                </span>
+              </div>
+              <p className="mt-1 text-sm leading-6 text-2">
+                Optional features included with ZDS. Changes are saved to your
+                user settings.
+              </p>
+            </div>
+            {visiblePlugins.map((plugin) => (
+              <PluginItem
+                key={plugin.id}
+                plugin={plugin}
+                resolvedService={props.registry.required(plugin.service)}
+                activationSetting={activationSettings.find(
+                  (setting) => setting.pluginId === plugin.id
+                )}
+              />
+            ))}
+            {visiblePlugins.length === 0 && (
+              <p className="text-sm text-2">No built-in plugins available.</p>
+            )}
+          </section>
         </div>
       </div>
     )
@@ -89,6 +126,7 @@ function PluginItem({
   resolvedService: PluginController
   activationSetting?: ZdsPluginActivationSetting
 }) {
+  useSignals()
   const app = useApp()
   const setting = activationSetting ?? {
     category: 'plugins',
@@ -96,9 +134,21 @@ function PluginItem({
   }
 
   return (
-    <div className="my-2">
-      <div className="flex gap-2 mb-2">
-        <h2 className="text-lg bold flex-1">{plugin.title}</h2>
+    <article
+      aria-label={plugin.title}
+      className="flex min-w-0 flex-wrap items-start justify-between gap-4 rounded-xl border b-4 bg-default p-5"
+    >
+      <div className="min-w-0 flex-1 basis-56">
+        <h3 className="break-words text-base font-semibold">{plugin.title}</h3>
+        <p className="mt-2 break-words text-sm leading-6 text-2">
+          {plugin.description}
+        </p>
+      </div>
+      <div
+        role="group"
+        aria-label={`${plugin.title} activation`}
+        className="flex shrink-0 flex-col items-end gap-2"
+      >
         <Toggle
           name={`plugin-toggle-${plugin.id}`}
           checked={resolvedService.active.value || false}
@@ -117,7 +167,6 @@ function PluginItem({
           className="flex-none"
         />
       </div>
-      <p className="text-2 text-sm">{plugin.description}</p>
-    </div>
+    </article>
   )
 }

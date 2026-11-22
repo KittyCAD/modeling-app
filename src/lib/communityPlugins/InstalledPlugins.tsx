@@ -2,6 +2,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
   pluginButton,
+  pluginPrimaryButton,
   pluginQuietButton,
 } from '@src/lib/communityPlugins/presentation'
 import { communityPluginsService } from '@src/lib/communityPlugins/registry/contract'
@@ -33,13 +34,18 @@ export function InstalledPlugins({
       className="flex flex-col gap-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <h2 className="text-base font-semibold">
-            Installed community plugins
-          </h2>
-          <span className="rounded-full bg-3/50 px-2 py-0.5 text-xs text-2">
-            {manager.entries.value.length}
-          </span>
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold">
+              Installed community plugins
+            </h2>
+            <span className="rounded-full bg-3/50 px-2 py-0.5 text-xs text-2">
+              {manager.entries.value.length}
+            </span>
+          </div>
+          <p className="mt-1 text-sm leading-6 text-2">
+            Your local plugins, saved settings, and approved access.
+          </p>
         </div>
         <button
           type="button"
@@ -94,56 +100,166 @@ export function InstalledPlugins({
           <article
             key={installation.id}
             aria-label={installation.name}
-            className="flex min-w-0 flex-col gap-3 rounded-xl border b-4 bg-default p-5"
+            className="min-w-0 overflow-hidden rounded-xl border b-4 bg-default"
           >
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-base font-semibold">{installation.name}</h3>
-              <span className="rounded bg-2 px-2 py-0.5 text-xs text-2">
-                {installation.source.kind === 'snapshot'
-                  ? 'Snapshot'
-                  : 'Development'}
-              </span>
+            <div className="flex flex-col gap-4 p-5">
+              <header className="flex min-w-0 items-start gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                  <CustomIcon
+                    name="function"
+                    aria-hidden="true"
+                    className="h-6 w-6"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="break-words text-base font-semibold">
+                      {installation.name}
+                    </h3>
+                    <span className="rounded bg-2 px-2 py-0.5 text-xs text-2">
+                      {installation.source.kind === 'snapshot'
+                        ? 'Snapshot'
+                        : 'Development'}
+                    </span>
+                  </div>
+                  {installation.description && (
+                    <p className="mt-2 whitespace-pre-line break-words text-sm leading-6 text-2">
+                      {installation.description}
+                    </p>
+                  )}
+                </div>
+              </header>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-2">
+                <code className="break-all rounded border b-4 px-2 py-1">
+                  {installation.pluginId}
+                </code>
+                <p className="min-w-0 break-all">
+                  {installation.source.kind === 'snapshot'
+                    ? 'Installed snapshot'
+                    : `Development source: ${installation.source.path}`}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-2/70 p-3">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    aria-label="Enabled, including on startup"
+                    className="h-4 w-4 accent-primary"
+                    checked={installation.enabled}
+                    disabled={busy}
+                    onChange={(event) => {
+                      void manager
+                        .setEnabled(installation.id, event.target.checked)
+                        .catch(reportRejection)
+                    }}
+                  />
+                  <span>
+                    <span className="block font-medium">
+                      Enabled, including on startup
+                    </span>
+                    <span className="mt-0.5 block text-xs text-2">
+                      {installation.enabled
+                        ? 'Available across ZDS sessions.'
+                        : 'Settings are kept while this plugin is disabled.'}
+                    </span>
+                  </span>
+                </label>
+                <p
+                  role="status"
+                  className={`flex max-w-full items-center gap-1.5 break-words text-xs ${entry.status.value === 'Running' ? 'text-primary' : 'text-2'}`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${entry.status.value === 'Running' ? 'bg-primary' : 'bg-4'}`}
+                  />
+                  {entry.status.value}
+                </p>
+              </div>
+              <div className="border-t b-4 pt-4">
+                <h4 className="flex items-center gap-2 text-sm font-semibold">
+                  <CustomIcon
+                    name="lockClosed"
+                    aria-hidden="true"
+                    className="h-4 w-4 text-2"
+                  />
+                  Permissions
+                </h4>
+                <p className="mt-2 text-sm text-2">
+                  {entry.granted.value.includes('ui.notify')
+                    ? 'Can show notifications in ZDS.'
+                    : 'No permissions approved.'}
+                </p>
+                {review &&
+                  review.manifest.permissions.some(
+                    (permission) =>
+                      !entry.granted.value.some((grant) => grant === permission)
+                  ) && (
+                    <p className="mt-2 break-words text-xs leading-5 text-2">
+                      Requested access awaiting approval:{' '}
+                      <code className="break-all">
+                        {review.manifest.permissions
+                          .filter(
+                            (permission) =>
+                              !entry.granted.value.some(
+                                (grant) => grant === permission
+                              )
+                          )
+                          .join(', ')}
+                      </code>
+                    </p>
+                  )}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {review &&
+                    review.manifest.permissions.some(
+                      (permission) =>
+                        !entry.granted.value.some(
+                          (grant) => grant === permission
+                        )
+                    ) && (
+                      <button
+                        className={pluginPrimaryButton}
+                        type="button"
+                        disabled={
+                          busy ||
+                          !installation.enabled ||
+                          !review.manifest.permissions.every(isPluginPermission)
+                        }
+                        onClick={() => {
+                          void manager
+                            .approve(installation.id, review)
+                            .catch(reportRejection)
+                        }}
+                      >
+                        Approve requested permissions
+                      </button>
+                    )}
+                  {entry.granted.value.length > 0 && (
+                    <button
+                      className={pluginButton}
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        void manager
+                          .revokePermissions(installation.id)
+                          .catch(reportRejection)
+                      }}
+                    >
+                      Revoke permissions
+                    </button>
+                  )}
+                </div>
+              </div>
+              <PluginSettings entry={entry} manager={manager} busy={busy} />
+              {entry.status.value === 'Running' &&
+                !entry.settingsPage.value && (
+                  <p className="border-t b-4 pt-3 text-xs leading-5 text-2">
+                    This version does not declare settings.
+                    {installation.source.kind === 'snapshot' &&
+                      ' Snapshots keep the source from installation; install an updated copy to pick up new settings.'}
+                  </p>
+                )}
             </div>
-            {installation.description && (
-              <p className="whitespace-pre-line break-words text-sm leading-6 text-2">
-                {installation.description}
-              </p>
-            )}
-            <p className="break-all font-mono text-xs text-2">
-              {installation.source.kind === 'snapshot'
-                ? 'Installed snapshot'
-                : `Development source: ${installation.source.path}`}
-            </p>
-            <p
-              role="status"
-              className="w-fit max-w-full break-words rounded-md bg-2 px-2 py-1 text-xs text-2"
-            >
-              {entry.status.value}
-            </p>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-primary"
-                checked={installation.enabled}
-                disabled={busy}
-                onChange={(event) => {
-                  void manager
-                    .setEnabled(installation.id, event.target.checked)
-                    .catch(reportRejection)
-                }}
-              />{' '}
-              Enabled, including on startup
-            </label>
-            <p className="text-xs text-2">
-              Approved permissions: {entry.granted.value.join(', ') || 'None'}
-            </p>
-            {review && (
-              <p className="text-xs text-2">
-                Requested permissions:{' '}
-                {review.manifest.permissions.join(', ') || 'None'}
-              </p>
-            )}
-            <div className="flex flex-wrap gap-3">
+            <footer className="flex flex-wrap items-center justify-between gap-2 border-t b-4 bg-2/50 px-5 py-3">
               <button
                 className={pluginButton}
                 type="button"
@@ -152,46 +268,15 @@ export function InstalledPlugins({
                   void manager.retry(installation.id).catch(reportRejection)
                 }}
               >
+                <CustomIcon
+                  name="refresh"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                />
                 Retry / reload source
               </button>
-              {review &&
-                review.manifest.permissions.some(
-                  (permission) =>
-                    !entry.granted.value.some((grant) => grant === permission)
-                ) && (
-                  <button
-                    className={pluginButton}
-                    type="button"
-                    disabled={
-                      busy ||
-                      !installation.enabled ||
-                      !review.manifest.permissions.every(isPluginPermission)
-                    }
-                    onClick={() => {
-                      void manager
-                        .approve(installation.id, review)
-                        .catch(reportRejection)
-                    }}
-                  >
-                    Approve requested permissions
-                  </button>
-                )}
-              {entry.granted.value.length > 0 && (
-                <button
-                  className={pluginButton}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    void manager
-                      .revokePermissions(installation.id)
-                      .catch(reportRejection)
-                  }}
-                >
-                  Revoke permissions
-                </button>
-              )}
               <button
-                className={pluginButton}
+                className={pluginQuietButton}
                 type="button"
                 disabled={busy}
                 onClick={() => {
@@ -200,15 +285,7 @@ export function InstalledPlugins({
               >
                 Uninstall
               </button>
-            </div>
-            <PluginSettings entry={entry} manager={manager} busy={busy} />
-            {entry.status.value === 'Running' && !entry.settingsPage.value && (
-              <p className="border-t b-4 pt-3 text-xs leading-5 text-2">
-                This version does not declare settings.
-                {installation.source.kind === 'snapshot' &&
-                  ' Snapshots keep the source from installation; install an updated copy to pick up new settings.'}
-              </p>
-            )}
+            </footer>
           </article>
         )
       })}
