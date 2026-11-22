@@ -1,0 +1,16 @@
+.root {
+  container-type: inline-size;
+}
+
+.workflow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@container (min-width: 700px) {
+  .workflow {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}

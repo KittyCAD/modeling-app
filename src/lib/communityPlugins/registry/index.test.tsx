@@ -20,6 +20,7 @@ import { commandsFacet } from '@src/registry/contracts/commands'
 const hello = `/* @zds-plugin
 id = "hello"
 name = "Hello"
+description = "Build your first local command."
 api_version = 1
 permissions = ["ui.notify"]
 */
@@ -60,14 +61,11 @@ describe('Plugin Builder', () => {
         .get(commandsFacet)
         .filter((command) => command.groupId.startsWith('community.'))
     await screen.findByText('Hello')
+    expect(screen.getByText('Build your first local command.')).toBeVisible()
     expect(commands()).toHaveLength(0)
-    expect(
-      screen.getByRole('button', { name: 'Start / approve reload' })
-    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Start preview' })).toBeDisabled()
     fireEvent.click(screen.getByRole('checkbox'))
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Start / approve reload' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Start preview' }))
     await vi.waitFor(() => expect(commands()).toHaveLength(1))
     commands()[0].onSubmit()
     expect(toast).toHaveBeenLastCalledWith('Hello!')
@@ -141,10 +139,17 @@ describe('Plugin Builder', () => {
 
     const restarted = await startApp()
     expect(restarted.entries.value[0].installation.id).toBe(identity)
+    expect(restarted.entries.value[0].installation.description).toBe(
+      'Build your first local command.'
+    )
     expect(commands()).toHaveLength(1)
     commands()[0].onSubmit()
     expect(toast).toHaveBeenLastCalledWith('Hello!')
     render(<InstalledPluginsSection registry={registry!} />)
+    expect(
+      screen.getByText(/This version does not declare settings/)
+    ).toBeVisible()
+    expect(screen.queryByLabelText('Greeting')).not.toBeInTheDocument()
     fireEvent.click(screen.getByLabelText('Enabled, including on startup'))
     await vi.waitFor(() => expect(commands()).toHaveLength(0))
     await restarted.settled()

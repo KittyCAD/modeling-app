@@ -18,6 +18,7 @@ export interface PluginInstallation {
   id: string
   pluginId: string
   name: string
+  description?: string
   enabled: boolean
   source:
     | { kind: 'snapshot'; contents: string }
@@ -93,6 +94,9 @@ export function parsePluginPreferences(
         typeof item.name !== 'string' ||
         !item.name.trim() ||
         item.name.length > 120 ||
+        (item.description !== undefined &&
+          (typeof item.description !== 'string' ||
+            item.description.length > 2000)) ||
         typeof item.enabled !== 'boolean' ||
         !isRecord(item.source)
       )
@@ -117,6 +121,9 @@ export function parsePluginPreferences(
         id: item.id,
         pluginId: item.plugin_id,
         name: item.name,
+        ...(typeof item.description === 'string' && item.description.trim()
+          ? { description: item.description.trim() }
+          : {}),
         enabled: item.enabled,
         source,
       })

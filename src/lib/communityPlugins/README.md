@@ -10,7 +10,7 @@ execution, and buffer-driven reloads. It is a development prototype, not a publi
    `examples/community-plugins/hello.zds.ts` into a disposable project.
 2. Open the file. Its Plugin Builder view inspects the TOML manifest and shows
    the requested permissions. Opening and compiling never activate the plugin.
-3. Approve notifications. Select **Start / approve reload** for a temporary
+3. Approve notifications. Select **Start preview** for a temporary
    preview, **Install snapshot** to retain these exact source contents, or
    **Install for development** to retain the source path and follow open-buffer
    changes. An installed plugin is enabled on startup by default.
@@ -36,7 +36,9 @@ edits are not retained in the installation and therefore do not survive restart.
 
 Both `.zds.js` and `.zds.ts` use a leading `/* @zds-plugin` TOML block. Metadata is
 parsed before any guest evaluation. The current manifest requires `id`, `name`,
-`api_version = 1`, and `permissions`. Unknown metadata fields fail inspection.
+`api_version = 1`, and `permissions`. An optional plain-text `description` (up to
+2000 characters) introduces the plugin in Builder and is retained with installed
+metadata, including when the source is unavailable. Unknown metadata fields fail inspection.
 A future directory package can put the same metadata in `zds-plugin.toml`.
 Directory packages are not implemented by this prototype.
 

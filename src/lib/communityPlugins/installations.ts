@@ -285,6 +285,9 @@ export function createPluginInstallations({
           id: crypto.randomUUID(),
           pluginId: source.manifest.id,
           name: source.manifest.name,
+          ...(source.manifest.description
+            ? { description: source.manifest.description }
+            : {}),
           enabled: true,
           source:
             mode === 'snapshot'

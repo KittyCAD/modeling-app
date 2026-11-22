@@ -6,6 +6,7 @@ import { parse as parseToml } from 'smol-toml'
 export interface PluginManifest {
   id: string
   name: string
+  description?: string
   apiVersion: 1
   permissions: readonly string[]
 }
@@ -40,8 +41,18 @@ export function parsePluginManifest(source: string): PluginManifest | Error {
       )
     }
     if (
+      value.description !== undefined &&
+      (typeof value.description !== 'string' || value.description.length > 2000)
+    )
+      return new Error(
+        'Plugin description must be text of at most 2000 characters.'
+      )
+    if (
       Object.keys(value).some(
-        (key) => !['id', 'name', 'api_version', 'permissions'].includes(key)
+        (key) =>
+          !['id', 'name', 'description', 'api_version', 'permissions'].includes(
+            key
+          )
       )
     ) {
       return new Error('Unknown plugin manifest field.')
@@ -49,6 +60,9 @@ export function parsePluginManifest(source: string): PluginManifest | Error {
     return {
       id: value.id,
       name: value.name,
+      ...(typeof value.description === 'string' && value.description.trim()
+        ? { description: value.description.trim() }
+        : {}),
       apiVersion: 1,
       permissions: [...new Set(value.permissions)],
     }

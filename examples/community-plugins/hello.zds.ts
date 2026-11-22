@@ -1,6 +1,7 @@
 /* @zds-plugin
 id = "hello"
 name = "Hello plugin"
+description = "A small starting point for your own tools. Customize a greeting and show it from the command palette."
 api_version = 1
 permissions = ["ui.notify"]
 */

@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { SettingDefinition, SettingValue } from '@zoo/zds-plugin'
 import type {
   InstalledPlugin,
@@ -9,6 +9,10 @@ import {
   acceptsSettingValue,
   settingValue,
 } from '@src/lib/communityPlugins/settings/schema'
+import {
+  pluginButton,
+  pluginQuietButton,
+} from '@src/lib/communityPlugins/presentation'
 import { reportRejection } from '@src/lib/trap'
 
 /** The existing Plugins panel hosts these controls until the settings page editor consumes the same metadata. */
@@ -22,22 +26,23 @@ export function PluginSettings({
   busy: boolean
 }) {
   useSignals()
+  const formId = useId()
   const page = entry.settingsPage.value
   if (!page || !entry.installation.enabled) return null
   const values = entry.settingsValues.value
   return (
     <fieldset
-      className="flex flex-col gap-3"
+      className="mt-1 flex min-w-0 flex-col gap-4 border-t b-4 pt-4"
       aria-label={`${page.title} settings`}
     >
-      <legend>User settings</legend>
+      <legend className="pr-2 text-sm font-semibold">User settings</legend>
       {Object.entries(page.fields).map(([key, field]) => {
         const value = settingValue(field, key, values)
         const overridden = Object.hasOwn(values, key)
         return (
           <SettingField
             key={`${page.id}.${key}:${JSON.stringify(field)}:${JSON.stringify(value)}`}
-            id={`${page.id}.${key}`}
+            id={`${formId}-${page.id}.${key}`}
             field={field}
             value={value}
             overridden={overridden}
@@ -53,6 +58,7 @@ export function PluginSettings({
         )
       })}
       <button
+        className={`${pluginQuietButton} self-start`}
         type="button"
         disabled={busy || Object.keys(values).length === 0}
         onClick={() => {
@@ -113,7 +119,9 @@ function SettingField({
         void commit().catch(reportRejection)
       }}
     >
-      <label htmlFor={id}>{field.title}</label>
+      <label htmlFor={id} className="text-sm font-medium">
+        {field.title}
+      </label>
       {field.description && (
         <p id={`${id}.description`} className="text-2 text-sm">
           {field.description}
@@ -141,7 +149,7 @@ function SettingField({
           value={typeof draft === 'string' ? draft : ''}
           disabled={busy}
           aria-describedby={field.description ? `${id}.description` : undefined}
-          className="rounded border b-4 bg-default px-2 py-1 text-default"
+          className="min-h-9 w-full rounded-md border b-4 bg-default px-3 py-2 text-sm text-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50"
           onChange={(event) => setDraft(event.target.value)}
         />
       )}
@@ -152,11 +160,12 @@ function SettingField({
         </p>
       )}
       {error && <p role="alert">{error.message}</p>}
-      <div className="flex gap-3">
-        <button type="submit" disabled={busy}>
+      <div className="flex flex-wrap gap-2">
+        <button className={pluginButton} type="submit" disabled={busy}>
           Save {field.title}
         </button>
         <button
+          className={pluginQuietButton}
           type="button"
           disabled={busy || !overridden}
           onClick={() => {

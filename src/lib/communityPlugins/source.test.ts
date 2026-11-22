@@ -38,4 +38,28 @@ throw new Error('must not run')`)
       )
     ).toBeInstanceOf(Error)
   })
+
+  it('accepts a plain-text description and trims its surrounding whitespace', () => {
+    const value = parsePluginManifest(
+      '/* @zds-plugin\nid = "hello"\nname = "Hello"\ndescription = "  A useful local tool.  "\napi_version = 1\npermissions = []\n*/'
+    )
+    expect(value).toEqual({
+      id: 'hello',
+      name: 'Hello',
+      description: 'A useful local tool.',
+      apiVersion: 1,
+      permissions: [],
+    })
+  })
+
+  it.each(['true', '42', '[]', JSON.stringify('a'.repeat(2001))])(
+    'rejects an invalid description: %s',
+    (description) => {
+      expect(
+        parsePluginManifest(
+          `/* @zds-plugin\nid = "hello"\nname = "Hello"\ndescription = ${description}\napi_version = 1\npermissions = []\n*/`
+        )
+      ).toBeInstanceOf(Error)
+    }
+  )
 })
