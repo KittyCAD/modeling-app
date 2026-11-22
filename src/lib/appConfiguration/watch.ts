@@ -9,7 +9,7 @@ import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { isErr, trap } from '@src/lib/trap'
 
-/** Boot installs this experiment only in opted-in dev builds; fetched manifests cannot remove it. */
+/** Boot installs this experiment in dev builds; fetched manifests cannot remove it. */
 export function watchDevAccountConfig(
   app: App,
   baseline: readonly BundledRegistryItemId[]

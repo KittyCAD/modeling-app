@@ -8,7 +8,7 @@ Project, grant permissions, or change native Electron plugin registration.
 
 ## Smoke test
 
-1. Use the dev API and a dev-user token. Create a cloud Project the user can read.
+1. Sign in normally against the dev API. Create a cloud Project the user can read.
    Add `app.toml` at the Project root and wait for its cloud save to finish:
 
    ```toml
@@ -48,19 +48,19 @@ Project, grant permissions, or change native Electron plugin registration.
    server-side check for the particular dev account, including an org member.
    The branch does not update any account fields itself.
 
-3. In this branch's worktree, use the usual project dependencies and generated
-   Wasm/bindings. With the same dev token already in `ZOO_API_TOKEN`, launch:
+3. In this branch's worktree, use the usual project dependencies, generated
+   Wasm/bindings, and local dev environment. Launch normally:
 
    ```sh
-   VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
-   VITE_ZOO_API_TOKEN="$ZOO_API_TOKEN" \
-   VITE_DEV_ACCOUNT_APP_CONFIG=1 \
-   npm run start -- --host=127.0.0.1 --port=4317 --strictPort
+   npm run start
    ```
 
-   Open <http://127.0.0.1:4317>. The switch is opt-in and only honored in a Vite
-   dev build. This worktree has its own environment files; existing local files
-   in a different checkout are not automatically copied here.
+   Open the local app and sign in as usual. The auth hook runs automatically in
+   dev builds on this branch; no additional flag, API-token override, or special
+   port is required. The optional token-based commands in step 2 are only one way
+   to update and inspect the account field. This worktree has its own environment
+   files; existing local files in a different checkout are not automatically
+   copied here.
 
 4. In DevTools, look for `[dev-app-config] Applied app configuration from Project
    ... at version ...`. On Home and in the new project shell the default Zoo
@@ -83,8 +83,8 @@ Project, grant permissions, or change native Electron plugin registration.
 - Log out: the startup composition is restored. A late response from the old
   account cannot apply after logout or an account/environment change.
 - Restore the original Company value and reload: ordinary company names are ignored.
-- Remove `VITE_DEV_ACCOUNT_APP_CONFIG=1` and restart Vite to disable the entire
-  experiment, regardless of the account field. Production builds ignore it.
+- Switching back to the original branch removes the experiment. Production
+  builds ignore the hook.
 
 The pointer is a temporary use of the Company field, not a new account API contract.
 The manifest cannot remove mandatory host services, approve plugin permissions,
