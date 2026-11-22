@@ -4,16 +4,18 @@ import {
   createPluginRuntime,
   type PluginRuntime,
 } from '@src/lib/communityPlugins/runtime'
+import type { ReadPluginSetting } from '@src/lib/communityPlugins/settings/schema'
 import { isErr } from '@src/lib/trap'
 
-/** One explicit development installation, owned by the backing editor rather than a pane. */
+/** Own one runtime generation at a time, retaining the previous instance when replacement fails. */
 export function createPluginSession(
   publish: (
     runtime: PluginRuntime | undefined,
     source?: PluginSource,
     grants?: ReadonlySet<string>
   ) => Promise<Error | undefined>,
-  notify: (message: string) => void
+  notify: (message: string) => void,
+  readSetting?: ReadPluginSetting
 ) {
   const status = signal('Stopped')
   const enabled = signal(false)
@@ -54,7 +56,12 @@ export function createPluginSession(
         return
       }
       status.value = 'Starting...'
-      const next = await createPluginRuntime(target, approved, notify)
+      const next = await createPluginRuntime(
+        target,
+        approved,
+        notify,
+        readSetting
+      )
       if (isErr(next)) {
         status.value = next.message
         return

@@ -15,6 +15,9 @@ execution, and buffer-driven reloads. It is a development prototype, not a publi
    **Install for development** to retain the source path and follow open-buffer
    changes. An installed plugin is enabled on startup by default.
 4. Find **Hello plugin: Say hello** in the command palette and invoke it.
+   For an installed copy, edit **Greeting** under **Settings > Plugins**, select
+   **Save Greeting**, and invoke the command again. **Reset Greeting** restores the
+   declared default. Values survive disabling the installation and restarting ZDS.
 5. Switch to Code and change the greeting. Successful builds reload a running
    preview or development installation. Snapshots retain their installed contents.
    A syntax or activation error leaves the previous working instance available.
@@ -64,7 +67,7 @@ extensions. Command IDs are namespaced by installation, independently of the
 self-declared manifest ID. Adapters must not perform effects while preparing
 contributions; acquisition failures must retain the previous installation.
 
-Only the `command` adapter is implemented. The intended additional adapters are:
+The `command` and `settings` adapters are implemented. The intended additional adapters are:
 
 | Contribution point | Trusted host responsibility |
 | --- | --- |
@@ -79,6 +82,51 @@ can grow alongside their checked adapters. TypeScript declaration merging helps
 authoring but grants no runtime authority. Async callbacks, callback arguments and
 results, declarative UI, and protocol versions for additional contribution points
 still need implementation before these adapters can be delivered.
+
+## Namespaced user settings
+
+An installation inherently owns its ordinary settings namespace. The SDK exposes
+`contribute('settings', { fields })` with string, boolean, and number definitions.
+Each field requires a local key, title, and matching default; descriptions, string
+length limits, and numeric bounds are supported. The host rejects unknown types,
+executable UI, unsupported properties, invalid defaults, duplicate declarations,
+and declarations exceeding 32 fields. The UI renders standard host controls.
+
+The guest reads declared fields with `zds.settings.getString(key)`, `getBoolean`,
+or `getNumber`. Reads return the current value and reject unknown keys or type
+mismatches. Declare settings before reading them during activation. Read inside a
+command callback when the command should follow later edits, as the hello example
+does. The SDK currently provides synchronous reads; users save and reset values
+through host controls. Guest writes and change subscriptions are not implemented.
+
+`settingsPagesFacet` describes live pages with stable page/field IDs, a title, and
+explicit extension or community-installation ownership. Community adapters assign
+ownership from the host installation identity; plugins cannot choose a namespace
+or core page owner. These descriptors can feed the redesigned settings editor
+without tying page identity to storage categories. This slice displays fields in
+the existing Plugins panel; it does not implement the sidebar/page migration or
+new settings URL routes.
+
+Page definitions follow the published Plankton graph, independently of the native
+settings actor's startup definitions. Successful hot reload replaces the schema
+alongside commands; failed activation preserves the previous working graph.
+Disabling or removing a schema withdraws its page without discarding values.
+Previews read defaults and do not publish installed-plugin settings pages.
+
+User overrides persist in a separate `settings` collection in
+`community-plugins.toml`, keyed by host installation UUID. Defaults are not saved
+as overrides. Incompatible saved values fall back to the current default with a UI
+notice, and remain retained for a future compatible definition. Resetting clears
+overrides; uninstall removes the installation's settings and grants. Two
+installations with the same manifest ID have independent values. Snapshots remain
+pinned: installing an updated example creates a new installation rather than
+silently changing an older snapshot's schema.
+
+All access is confined to that installation's declared keys. Reading ordinary
+settings needs no additional permission and confers no access to application
+settings, other plugins, project contents, or permission grants. A plugin-defined
+boolean cannot approve network or project access. Project-level overrides and
+secret storage remain outside this protocol.
 
 ## Permissions and isolation
 

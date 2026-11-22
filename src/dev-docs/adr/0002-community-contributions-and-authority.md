@@ -7,6 +7,12 @@ trusted host adapters mediate operations using separately declared and granted
 permissions, so adding a contribution point cannot silently broaden a plugin's
 authority.
 
+An installation inherently owns its ordinary settings namespace. Declaring fields
+describes values within that existing authority; it grants no access to application
+settings, other installations, design data, or permission grants. Settings values
+must remain separate from permission approvals, even when a plugin presents a
+setting with a name resembling a privileged capability.
+
 Bind resource authority to explicit host-issued handles, such as one document in
 one project opening or one model view and execution. Selecting another project or
 view must never redirect an existing handle to the newly active resource. An

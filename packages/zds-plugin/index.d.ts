@@ -5,9 +5,26 @@ export interface CommandContribution {
   run: () => void
 }
 
+export type SettingValue = string | boolean | number
+
+/** User-scoped, host-rendered fields. Definitions describe data, never executable UI. */
+export type SettingDefinition = {
+  title: string
+  description?: string
+} & (
+  | { type: 'string'; default: string; maxLength?: number }
+  | { type: 'boolean'; default: boolean }
+  | { type: 'number'; default: number; min?: number; max?: number }
+)
+
+export interface SettingsContribution {
+  fields: Readonly<Record<string, SettingDefinition>>
+}
+
 /** Each supported contribution point has a host adapter. Future SDK entry points extend this map. */
 export interface Contributions {
   command: CommandContribution
+  settings: SettingsContribution
 }
 
 /** API version 1. Register during activation; command handlers run only on host invocation. */
@@ -19,6 +36,12 @@ export interface PluginAPI {
   ui: {
     /** Requires the declared and granted `ui.notify` permission. */
     notify: (message: string) => void
+  }
+  /** Read current values of this installation's declared settings. No additional permission is needed. */
+  settings: {
+    getString: (key: string) => string
+    getBoolean: (key: string) => boolean
+    getNumber: (key: string) => number
   }
 }
 

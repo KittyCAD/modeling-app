@@ -22,6 +22,12 @@ import {
   type PluginSource,
 } from '@src/lib/communityPlugins/source'
 import type { PluginRuntime } from '@src/lib/communityPlugins/runtime'
+import type { SettingValue } from '@zoo/zds-plugin'
+import type { SettingsPage } from '@src/registry/contracts/settingsPages'
+import {
+  acceptsSettingValue,
+  readPluginSetting,
+} from '@src/lib/communityPlugins/settings/schema'
 import { isErr, reportRejection } from '@src/lib/trap'
 
 export interface InstalledPlugin {
@@ -31,6 +37,8 @@ export interface InstalledPlugin {
   granted: Signal<readonly PluginPermission[]>
   issue: Signal<string | undefined>
   status: ReadonlySignal<string>
+  settingsPage: ReadonlySignal<SettingsPage | undefined>
+  settingsValues: ReadonlySignal<Readonly<Record<string, SettingValue>>>
   suspended: boolean
   epoch: number
 }
@@ -41,6 +49,7 @@ export function createPluginInstallations({
   readSource,
   publish,
   notify,
+  getSettingsPage = () => undefined,
 }: {
   storage: () => Promise<PluginStorage>
   readSource: (path: string) => Promise<string>
@@ -51,8 +60,10 @@ export function createPluginInstallations({
     grants?: ReadonlySet<string>
   ) => Promise<Error | undefined>
   notify: (message: string) => void
+  getSettingsPage?: (id: string) => SettingsPage | undefined
 }) {
   const entries = signal<readonly InstalledPlugin[]>([])
+  const values = signal<PluginPreferences['settings']>([])
   const ready = signal(false)
   const error = signal<Error | undefined>(undefined)
   const busy = signal(false)
@@ -95,6 +106,7 @@ export function createPluginInstallations({
     const saved = await store.save(preferences, snapshot.token)
     if (isErr(saved)) return saved
     snapshot = saved
+    values.value = saved.preferences.settings
     for (const entry of entries.peek()) {
       const installation = saved.preferences.installations.find(
         (item) => item.id === entry.installation.id
@@ -112,7 +124,15 @@ export function createPluginInstallations({
     const session = createPluginSession(
       (runtime, source, grants) =>
         publish(installation.id, runtime, source, grants),
-      notify
+      notify,
+      (key, contributions) =>
+        readPluginSetting(
+          contributions,
+          key,
+          snapshot.preferences.settings.find(
+            (item) => item.installationId === installation.id
+          )?.values
+        )
     )
     const issue = signal<string | undefined>(undefined)
     return {
@@ -120,6 +140,12 @@ export function createPluginInstallations({
       session,
       issue,
       status: computed(() => issue.value ?? session.status.value),
+      settingsPage: computed(() => getSettingsPage(installation.id)),
+      settingsValues: computed(
+        () =>
+          values.value.find((item) => item.installationId === installation.id)
+            ?.values ?? {}
+      ),
       review: signal<PluginSource | undefined>(undefined),
       granted: signal<readonly PluginPermission[]>(
         snapshot.preferences.grants.find(
@@ -223,6 +249,7 @@ export function createPluginInstallations({
       if (isErr(loaded)) return loaded
       if (disposed || generation !== storeGeneration) return undefined
       snapshot = loaded
+      values.value = loaded.preferences.settings
       entries.value = loaded.preferences.installations.map(makeEntry)
       ready.value = true
       for (const entry of entries.peek()) await reconcile(entry)
@@ -267,7 +294,7 @@ export function createPluginInstallations({
         const permissions =
           source.manifest.permissions.filter(isPluginPermission)
         const failed = await save({
-          version: 1,
+          ...snapshot.preferences,
           installations: [...snapshot.preferences.installations, installation],
           grants: [
             ...snapshot.preferences.grants,
@@ -387,6 +414,9 @@ export function createPluginInstallations({
           grants: snapshot.preferences.grants.filter(
             (grant) => grant.installationId !== id
           ),
+          settings: snapshot.preferences.settings.filter(
+            (item) => item.installationId !== id
+          ),
         })
         if (failed || !entry) return failed
         await entry.session.dispose()
@@ -394,6 +424,58 @@ export function createPluginInstallations({
         return undefined
       })
     },
+    setSetting: (id: string, key: string, value: SettingValue) =>
+      enqueue(async () => {
+        const entry = find(id)
+        const page = entry?.settingsPage.peek()
+        if (
+          !entry ||
+          entry.suspended ||
+          !page ||
+          !Object.hasOwn(page.fields, key)
+        )
+          return new Error('This setting is not active for the installation.')
+        if (!acceptsSettingValue(page.fields[key], value))
+          return new Error('The value does not match the declared setting.')
+        const previous =
+          snapshot.preferences.settings.find(
+            (item) => item.installationId === id
+          )?.values ?? {}
+        return save({
+          ...snapshot.preferences,
+          settings: [
+            ...snapshot.preferences.settings.filter(
+              (item) => item.installationId !== id
+            ),
+            { installationId: id, values: { ...previous, [key]: value } },
+          ],
+        })
+      }),
+    resetSetting: (id: string, key?: string) =>
+      enqueue(async () => {
+        if (!find(id)) return new Error('Plugin installation was removed.')
+        const previous =
+          snapshot.preferences.settings.find(
+            (item) => item.installationId === id
+          )?.values ?? {}
+        const remaining =
+          key === undefined
+            ? {}
+            : Object.fromEntries(
+                Object.entries(previous).filter(([name]) => name !== key)
+              )
+        return save({
+          ...snapshot.preferences,
+          settings: [
+            ...snapshot.preferences.settings.filter(
+              (item) => item.installationId !== id
+            ),
+            ...(Object.keys(remaining).length
+              ? [{ installationId: id, values: remaining }]
+              : []),
+          ],
+        })
+      }),
     updateDevelopment: (
       path: string,
       source: PluginSource | Error,

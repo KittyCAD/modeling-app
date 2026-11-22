@@ -4,6 +4,11 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import { isErr, reportRejection } from '@src/lib/trap'
 import { isArray, isRecord } from '@src/lib/utils'
 import { parse as parseToml, stringify as stringifyToml } from 'smol-toml'
+import type { SettingValue } from '@zoo/zds-plugin'
+import {
+  isSettingKey,
+  isSettingValue,
+} from '@src/lib/communityPlugins/settings/schema'
 
 export const supportedPluginPermissions = ['ui.notify'] as const
 export type PluginPermission = (typeof supportedPluginPermissions)[number]
@@ -27,6 +32,10 @@ export interface PluginPreferences {
     installationId: string
     permissions: readonly PluginPermission[]
   }[]
+  settings: readonly {
+    installationId: string
+    values: Readonly<Record<string, SettingValue>>
+  }[]
 }
 
 export interface PluginPreferencesSnapshot {
@@ -47,6 +56,7 @@ export const emptyPluginPreferences = (): PluginPreferences => ({
   version: 1,
   installations: [],
   grants: [],
+  settings: [],
 })
 
 export function isPluginPermission(value: unknown): value is PluginPermission {
@@ -129,7 +139,34 @@ export function parsePluginPreferences(
         permissions: [...new Set(grant.permissions)],
       })
     }
-    return { version: 1, installations, grants }
+    const settings: PluginPreferences['settings'][number][] = []
+    const configured = new Set<string>()
+    if (value.settings !== undefined && !isArray(value.settings))
+      return new Error('Invalid plugin settings collection.')
+    for (const record of value.settings ?? []) {
+      if (
+        !isRecord(record) ||
+        typeof record.installation_id !== 'string' ||
+        !ids.has(record.installation_id) ||
+        configured.has(record.installation_id) ||
+        !isRecord(record.values) ||
+        Object.keys(record.values).length > 128 ||
+        Object.entries(record.values).some(
+          ([key, value]) => !isSettingKey(key) || !isSettingValue(value)
+        )
+      )
+        return new Error('Invalid plugin setting overrides.')
+      configured.add(record.installation_id)
+      const values: [string, SettingValue][] = []
+      for (const [key, value] of Object.entries(record.values)) {
+        if (isSettingValue(value)) values.push([key, value])
+      }
+      settings.push({
+        installationId: record.installation_id,
+        values: Object.fromEntries(values),
+      })
+    }
+    return { version: 1, installations, grants, settings }
   } catch (cause) {
     return new Error(
       `Cannot read plugin preferences: ${isErr(cause) ? cause.message : String(cause)}`
@@ -149,6 +186,10 @@ export function serializePluginPreferences(
     grants: preferences.grants.map(({ installationId, permissions }) => ({
       installation_id: installationId,
       permissions: [...permissions],
+    })),
+    settings: preferences.settings.map(({ installationId, values }) => ({
+      installation_id: installationId,
+      values: { ...values },
     })),
   })
 }

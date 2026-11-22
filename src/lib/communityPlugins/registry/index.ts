@@ -2,6 +2,8 @@ import { createElement } from 'react'
 import toast from 'react-hot-toast'
 import { useSignals } from '@preact/signals-react/runtime'
 import { effect } from '@preact/signals-core'
+import { settingsPagesFacet } from '@src/registry/contracts/settingsPages'
+import { settingsContributionAdapter } from '@src/lib/communityPlugins/settings/adapter'
 import { createPluginInstallations } from '@src/lib/communityPlugins/installations'
 import {
   createFilePluginStorage,
@@ -17,6 +19,7 @@ import {
   communityContributionAdaptersFacet,
   prepareContributions,
   type CommunityContributionAdapter,
+  type CommunityContributionOwner,
 } from '@src/lib/communityPlugins/contributions'
 import { pluginCompiler } from '@src/lib/communityPlugins/executor'
 import { PluginBuilder } from '@src/lib/communityPlugins/PluginBuilder'
@@ -96,6 +99,7 @@ export const createCommunityPluginsExtension = (storage?: PluginStorage) =>
     create: ({ executors, files }, scope) => {
       const content = slot([])
       const adapters = scope.observe(communityContributionAdaptersFacet)
+      const settingsPages = scope.observe(settingsPagesFacet)
       const sessions = new Map<Editor, PluginSession>()
       const retiring = new Set<Promise<void>>()
       const installed = new Map<string, readonly Extension[]>()
@@ -106,7 +110,8 @@ export const createCommunityPluginsExtension = (storage?: PluginStorage) =>
         namespace: string,
         runtime: PluginRuntime | undefined,
         source?: PluginSource,
-        grants?: ReadonlySet<string>
+        grants?: ReadonlySet<string>,
+        owner: CommunityContributionOwner = { kind: 'preview' }
       ) => {
         const update = pending.then(async () => {
           if (disposed)
@@ -118,7 +123,8 @@ export const createCommunityPluginsExtension = (storage?: PluginStorage) =>
                   source.manifest,
                   namespace,
                   grants,
-                  adapters.value
+                  adapters.value,
+                  owner
                 )
               : []
           if (isErr(items)) return items
@@ -156,7 +162,16 @@ export const createCommunityPluginsExtension = (storage?: PluginStorage) =>
         readSource: (path) =>
           readTextFile(files.fileOperationsService.required(), path),
         publish: (id, runtime, source, grants) =>
-          publish(`community.installed-${id}`, runtime, source, grants),
+          publish(`community.installed-${id}`, runtime, source, grants, {
+            kind: 'community',
+            installationId: id,
+          }),
+        getSettingsPage: (id) =>
+          settingsPages.value.find(
+            (page) =>
+              page.owner.kind === 'community' &&
+              page.owner.installationId === id
+          ),
         notify: (message) => {
           toast(message)
         },
@@ -264,6 +279,10 @@ export const createCommunityPluginsExtension = (storage?: PluginStorage) =>
             },
           }),
           contribute(communityContributionAdaptersFacet, () => commandAdapter),
+          contribute(
+            communityContributionAdaptersFacet,
+            () => settingsContributionAdapter
+          ),
           contribute(executorCapabilityFacet, () => pluginCompiler),
           contribute(editorCapabilityFacet, () => capability),
           contribute(editorViewsFacet, () => builder),

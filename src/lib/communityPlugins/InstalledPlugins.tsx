@@ -2,6 +2,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { communityPluginsService } from '@src/lib/communityPlugins/registry/contract'
 import type { PluginInstallations } from '@src/lib/communityPlugins/installations'
 import { isPluginPermission } from '@src/lib/communityPlugins/persistence'
+import { PluginSettings } from '@src/lib/communityPlugins/settings/PluginSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { Registry } from 'plankton'
 
@@ -139,6 +140,7 @@ export function InstalledPlugins({
                 Uninstall
               </button>
             </div>
+            <PluginSettings entry={entry} manager={manager} busy={busy} />
           </article>
         )
       })}

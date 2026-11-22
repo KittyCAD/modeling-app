@@ -1,7 +1,14 @@
-import type { PluginRuntime } from '@src/lib/communityPlugins/runtime'
+import type {
+  PluginRuntime,
+  GuestContribution,
+} from '@src/lib/communityPlugins/runtime'
 import type { PluginManifest } from '@src/lib/communityPlugins/source'
 import { isErr } from '@src/lib/trap'
 import { Facet, type Extension } from 'plankton'
+
+export type CommunityContributionOwner =
+  | { kind: 'preview' }
+  | { kind: 'community'; installationId: string }
 
 /** Trusted core features own parsing and adaptation of each public contribution point. */
 export interface CommunityContributionAdapter {
@@ -13,6 +20,8 @@ export interface CommunityContributionAdapter {
       namespace: string
       manifest: PluginManifest
       invoke: (callback: number) => Error | undefined
+      owner: CommunityContributionOwner
+      contributions: readonly GuestContribution[]
     }
   ) => Extension | Error
 }
@@ -27,7 +36,8 @@ export function prepareContributions(
   manifest: PluginManifest,
   namespace: string,
   grants: ReadonlySet<string>,
-  adapters: readonly CommunityContributionAdapter[]
+  adapters: readonly CommunityContributionAdapter[],
+  owner: CommunityContributionOwner = { kind: 'preview' }
 ): Extension[] | Error {
   const items: Extension[] = []
   for (const contribution of runtime.contributions) {
@@ -51,6 +61,8 @@ export function prepareContributions(
       namespace,
       manifest,
       invoke: runtime.invoke,
+      owner,
+      contributions: runtime.contributions,
     })
     if (isErr(item)) return item
     items.push(item)

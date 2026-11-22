@@ -22,6 +22,7 @@ const preferences = (contents = 'source'): PluginPreferences => ({
     },
   ],
   grants: [{ installationId: id, permissions: ['ui.notify'] }],
+  settings: [],
 })
 
 describe('installed plugin preferences', () => {

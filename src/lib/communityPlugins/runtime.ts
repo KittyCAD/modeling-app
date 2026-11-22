@@ -6,6 +6,10 @@ import {
 } from 'quickjs-emscripten-core'
 import type { PluginSource } from '@src/lib/communityPlugins/source'
 import { isErr } from '@src/lib/trap'
+import {
+  readPluginSetting,
+  type ReadPluginSetting,
+} from '@src/lib/communityPlugins/settings/schema'
 
 /** JSON messages are inspected by host adapters before any application contribution is installed. */
 export interface GuestContribution {
@@ -20,7 +24,7 @@ export interface PluginRuntime {
 }
 
 const bootstrap = `
-((publish, notify) => {
+((publish, notify, readSetting) => {
   const callbacks = [];
   let activating = true;
   const zds = Object.freeze({
@@ -34,6 +38,15 @@ const bootstrap = `
       const error = publish(JSON.stringify({ kind, definition: JSON.parse(definition) }));
       if (error) throw new Error(error);
     },
+    settings: Object.freeze(Object.fromEntries(['string', 'boolean', 'number'].map(type => [
+      'get' + type[0].toUpperCase() + type.slice(1),
+      key => {
+        const result = JSON.parse(readSetting(key));
+        if (result.error) throw new Error(result.error);
+        if (typeof result.value !== type) throw new Error('Setting has a different type: ' + key);
+        return result.value;
+      }
+    ]))),
     ui: Object.freeze({ notify(message) {
       const error = notify(message);
       if (error) throw new Error(error);
@@ -62,7 +75,9 @@ const bootstrap = `
 export async function createPluginRuntime(
   source: PluginSource,
   grants: ReadonlySet<string>,
-  notify: (message: string) => void
+  notify: (message: string) => void,
+  readSetting: ReadPluginSetting = (key, contributions) =>
+    readPluginSetting(contributions, key)
 ): Promise<PluginRuntime | Error> {
   let vm: QuickJSContext | undefined
   let bridge: QuickJSHandle | undefined
@@ -148,11 +163,33 @@ export async function createPluginRuntime(
         return context.newString('Notification failed')
       }
     })
+    const getSetting = context.newFunction('readSetting', (key) => {
+      if (disposed || context.typeof(key) !== 'string')
+        return context.newString(
+          JSON.stringify({ error: 'Expected a local setting key.' })
+        )
+      try {
+        const name = context.getString(key)
+        if (name.length > 64)
+          return context.newString(
+            JSON.stringify({ error: 'Expected a local setting key.' })
+          )
+        const value = readSetting(name, contributions)
+        return context.newString(
+          JSON.stringify(isErr(value) ? { error: value.message } : { value })
+        )
+      } catch {
+        return context.newString(
+          JSON.stringify({ error: 'Cannot read this setting.' })
+        )
+      }
+    })
     deadline = Date.now() + 100
     const makeBridge = context.evalCode(bootstrap)
     if (makeBridge.error) {
       publish.dispose()
       notifyFunction.dispose()
+      getSetting.dispose()
       const error = readResult(makeBridge)
       dispose()
       return error ?? new Error('Plugin bootstrap failed')
@@ -161,11 +198,13 @@ export async function createPluginRuntime(
       makeBridge.value,
       context.undefined,
       publish,
-      notifyFunction
+      notifyFunction,
+      getSetting
     )
     makeBridge.value.dispose()
     publish.dispose()
     notifyFunction.dispose()
+    getSetting.dispose()
     if (made.error) {
       const error = readResult(made)
       dispose()
