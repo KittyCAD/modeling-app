@@ -1,5 +1,7 @@
 import '@src/lib/projectSession/next/testFeature'
 import { codeSurface } from '@src/lib/editors/testViews'
+import appHeaderExtension from '@src/registry/extensions/appHeader'
+import appLogoExtension from '@src/registry/extensions/appLogo'
 import { signal } from '@preact/signals-core'
 import { factory, Registry, provide } from 'plankton'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
@@ -15,8 +17,19 @@ import type { OpenProjectSession } from '@src/lib/projectSession/next/contract'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { ProjectRoute } from '@src/lib/projectSession/next/ProjectRoute'
 import { ProjectView } from '@src/lib/projectSession/next/ProjectView'
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react'
+import {
+  createMemoryRouter,
+  MemoryRouter,
+  RouterProvider,
+} from 'react-router-dom'
 import {
   afterEach,
   beforeAll,
@@ -41,6 +54,7 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     registry,
     commands,
+    auth: { useUser: () => undefined },
   }),
 }))
 function createSession(
@@ -79,6 +93,8 @@ describe('project screen', () => {
     services = new Registry()
     await services.configure([
       editorsExtension,
+      appHeaderExtension,
+      appLogoExtension,
       markdownExtension,
       createProjectSessionExtension(
         factory({
@@ -104,6 +120,35 @@ describe('project screen', () => {
   afterEach(async () => {
     cleanup()
     await services.dispose()
+  })
+  it('opens the project and account menus without a legacy modeling context', () => {
+    render(
+      <MemoryRouter>
+        <ProjectView session={createSession('Bracket')} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Bracket' }))
+    const menu = within(screen.getByTestId('project-sidebar-menu'))
+    expect(menu.getByRole('link', { name: 'Go to Home' })).toHaveAttribute(
+      'href',
+      '/home'
+    )
+    fireEvent.click(menu.getByRole('button', { name: 'Open editor' }))
+    expect(commands.send).toHaveBeenCalledWith({
+      type: 'Find and select command',
+      data: {
+        name: OPEN_EDITOR_COMMAND.name,
+        groupId: OPEN_EDITOR_COMMAND.groupId,
+      },
+    })
+    expect(screen.queryByTestId('project-sidebar-menu')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'User menu' }))
+    expect(
+      screen.getByRole('button', { name: /User settings/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /Manage Zoo account/ })
+    ).toBeInTheDocument()
   })
   it('installs editor-owned native history when the new project shell opens', async () => {
     const original = window.electron
@@ -164,6 +209,52 @@ describe('project screen', () => {
     expect(session.files.read).not.toHaveBeenCalled()
     expect(session.files.write).not.toHaveBeenCalled()
     expect(readFile).not.toHaveBeenCalled()
+  })
+  it('keeps the header visible while Home navigation closes a cloud session', async () => {
+    const projects = services.required(projectSessionService)
+    const project = createSession('Cloud project').project.value
+    projects.openProject({
+      ...project,
+      storage: { type: 'cloud', projectId: 'cloud-id' },
+    })
+    let finishHome!: () => void
+    const homeReady = new Promise<void>((resolve) => {
+      finishHome = resolve
+    })
+    const router = createMemoryRouter(
+      [
+        { path: '/project/:id', element: <ProjectRoute /> },
+        {
+          path: '/home',
+          loader: () => {
+            projects.closeProject()
+            return homeReady
+          },
+          element: <h1>Project library</h1>,
+        },
+      ],
+      { initialEntries: ['/project/cloud-id'] }
+    )
+    render(<RouterProvider router={router} />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('link', { name: 'Projects' }))
+    })
+    expect(projects.currentSession.value).toBeUndefined()
+    expect(router.state.navigation.state).toBe('loading')
+    expect(screen.getByTestId('app-header')).toBeVisible()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loading Design Studio...'
+    )
+    expect(
+      screen.queryByRole('main', { name: 'Editor views' })
+    ).not.toBeInTheDocument()
+    await act(async () => {
+      finishHome()
+    })
+    expect(
+      screen.getByRole('heading', { name: 'Project library' })
+    ).toBeVisible()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
   it('shows the workspace and follows the project session selection', () => {
     const first = createSession('First')

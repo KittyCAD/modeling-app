@@ -71,6 +71,7 @@ import {
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { projectPublicationEnabledFacet } from '@src/registry/contracts/publishing'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsFacet,
@@ -329,7 +330,11 @@ const Home = () => {
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const homeProjectEntries = registry.observe(homeProjectEntriesFacet).value
+  const publicationEnabled = registry.observe(
+    projectPublicationEnabledFacet
+  ).value
   const projectStatuses = useProjectStatuses(
+    publicationEnabled,
     registry.required(cloudStorageService),
     homeProjectEntries,
     apiToken

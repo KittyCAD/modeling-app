@@ -1,3 +1,4 @@
+import { getAppCompositionDefine } from './vite.appManifest'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import type { ConfigEnv, UserConfig } from 'vite'
@@ -14,13 +15,15 @@ import {
 } from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig((env) => {
+export default defineConfig(async (env) => {
   const forgeEnv = env as ConfigEnv<'renderer'>
   const { root, mode, forgeConfigSelf } = forgeEnv
   const name = forgeConfigSelf?.name ?? 'main_window'
+  const appCompositionDefine = await getAppCompositionDefine(mode, root)
 
   return {
     customLogger: createCustomLogger(),
+    define: appCompositionDefine,
     root,
     mode,
     base: './',

@@ -60,6 +60,7 @@ export function useProjectStatus(
  * Loads the complete project index instead of fetching each project individually.
  */
 export function useProjectStatuses(
+  enabled: boolean,
   cloud: Pick<CloudStorageService, 'getProjectStatuses'>,
   homeProjects: readonly RemoteProjectReference[] | undefined,
   token?: string
@@ -79,7 +80,7 @@ export function useProjectStatuses(
     [homeProjects]
   )
   useEffect(() => {
-    if (!token || !remoteProjectIdsKey) {
+    if (!enabled || !token || !remoteProjectIdsKey) {
       setRemoteProjects([])
       return
     }
@@ -102,10 +103,13 @@ export function useProjectStatuses(
     return () => {
       cancelled = true
     }
-  }, [token, remoteProjectIdsKey, cloud])
+  }, [enabled, token, remoteProjectIdsKey, cloud])
 
   return useMemo(() => {
     const map = new Map<string, ProjectStatus>()
+    if (!enabled || !token || !remoteProjectIdsKey) {
+      return map
+    }
     for (const remote of remoteProjects) {
       map.set(remote.id, {
         publicationStatus: remote.publication_status,
@@ -113,5 +117,5 @@ export function useProjectStatuses(
       })
     }
     return map
-  }, [remoteProjects])
+  }, [enabled, token, remoteProjectIdsKey, remoteProjects])
 }

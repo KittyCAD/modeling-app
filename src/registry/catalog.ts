@@ -1,0 +1,86 @@
+import appLogoItem from '@src/registry/extensions/appLogo'
+import appHeaderItem from '@src/registry/extensions/appHeader'
+import saveItem from '@src/lib/save/registry'
+import executorsItem from '@src/lib/executors/registry'
+import debugItem from '@src/registry/extensions/debug'
+import projectSessionNextItem from '@src/lib/projectSession/registry'
+import markdownItem from '@src/lib/markdown/registry'
+import kclItem from '@src/lib/kcl/registry'
+import editorsItem from '@src/lib/editors/registry'
+import cloudProjectsItem from '@src/lib/cloudProjects/registry'
+import type { Extension } from 'plankton'
+import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
+import lspItem from '@src/lang/lsp/registry'
+import billingItem from '@src/lib/billing/registry'
+import cursorBlinkingItem from '@src/lib/cursorBlinking/registry'
+import engineConnectionItem from '@src/lib/engineConnection/registry'
+import projectLibrariesItem from '@src/lib/projectLibraries/registry'
+import rustContextItem from '@src/lib/rustContext/registry'
+import zookeeperItem from '@src/lib/zookeeper/registry'
+import authItem from '@src/registry/extensions/auth'
+import commandsItem from '@src/registry/extensions/commands'
+import engineSceneItem from '@src/registry/extensions/engineScene'
+import fileOperationsItem from '@src/registry/extensions/fileOperations'
+import getDesktopAppItem from '@src/registry/extensions/getDesktopApp'
+import homeProjectsItem from '@src/registry/extensions/homeProjects'
+import interactionPerformanceItem from '@src/registry/extensions/interactionPerformance'
+import keymapItem from '@src/registry/extensions/keymap'
+import layoutItem from '@src/registry/extensions/layout'
+import machineManagerItem from '@src/registry/extensions/machineManager'
+import markdownEditorItem from '@src/registry/extensions/markdownEditor'
+import projectExplorerItem from '@src/registry/extensions/projectExplorer'
+import projectSessionItem from '@src/registry/extensions/projectSession'
+import routerItem from '@src/registry/extensions/router'
+import runtimeItem from '@src/registry/extensions/runtime'
+import settingsItem from '@src/registry/extensions/settings'
+import userFeaturesItem from '@src/registry/extensions/userFeatures'
+import wasmItem from '@src/registry/extensions/wasm'
+import codeEditorItem from '@src/registry/plugins/codeEditor'
+import commandBarItem from '@src/registry/plugins/commandBar'
+import publishItem from '@src/registry/plugins/publish'
+import slicerItem from '@src/registry/plugins/slicer'
+
+/** Bundled registry entrypoints available to app compositions. Imports remain eager. */
+export const bundledRegistryItemCatalog = {
+  'zoo:lsp': lspItem,
+  'zoo:billing': billingItem,
+  'zoo:cloudProjects': cloudProjectsItem,
+  'zoo:cursorBlinking': cursorBlinkingItem,
+  'zoo:editors': editorsItem,
+  'zoo:engineConnection': engineConnectionItem,
+  'zoo:executors': executorsItem,
+  'zoo:kcl': kclItem,
+  'zoo:markdown': markdownItem,
+  'zoo:projectLibraries': projectLibrariesItem,
+  'zoo:projectSessionNext': projectSessionNextItem,
+  'zoo:rustContext': rustContextItem,
+  'zoo:save': saveItem,
+  'zoo:zookeeper': zookeeperItem,
+  'zoo:appHeader': appHeaderItem,
+  'zoo:appLogo': appLogoItem,
+  'zoo:auth': authItem,
+  'zoo:commands': commandsItem,
+  'zoo:debug': debugItem,
+  'zoo:engineScene': engineSceneItem,
+  'zoo:fileOperations': fileOperationsItem,
+  'zoo:getDesktopApp': getDesktopAppItem,
+  'zoo:homeProjects': homeProjectsItem,
+  'zoo:interactionPerformance': interactionPerformanceItem,
+  'zoo:keymap': keymapItem,
+  'zoo:layout': layoutItem,
+  'zoo:machineManager': machineManagerItem,
+  'zoo:markdownEditor': markdownEditorItem,
+  'zoo:projectExplorer': projectExplorerItem,
+  'zoo:projectSession': projectSessionItem,
+  'zoo:router': routerItem,
+  'zoo:runtime': runtimeItem,
+  'zoo:settings': settingsItem,
+  'zoo:userFeatures': userFeaturesItem,
+  'zoo:wasm': wasmItem,
+  'zoo:codeEditor': codeEditorItem,
+  'zoo:commandBar': commandBarItem,
+  'zoo:publish': publishItem,
+  'zoo:slicer': slicerItem,
+} satisfies Record<BundledRegistryItemId, Extension | undefined>
+
+export type { BundledRegistryItemId } from '@src/registry/catalogMetadata'

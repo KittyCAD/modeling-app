@@ -1,0 +1,7 @@
+# Pass with --app-config to omit publishing from the default app.
+schema-version = 1
+base = "zoo:default"
+
+[extensions]
+add = []
+exclude = ["zoo:publish"]

@@ -1,3 +1,5 @@
+import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
+import { projectPublicationEnabledFacet } from '@src/registry/contracts/publishing'
 import { executorsService } from '@src/lib/executors/registry/contract'
 import '@src/lib/projectSession/next/testFeature'
 import type { Feature } from '@kittycad/lib'
@@ -22,7 +24,10 @@ import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import {
+  appHeaderStartItemsFacet,
+  appHeaderEndItemsFacet,
+} from '@src/registry/contracts/appHeader'
 import { billingService } from '@src/registry/contracts/billing'
 import { commandsFacet } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
@@ -190,6 +195,49 @@ function expectedRuntimeFlags() {
   })
 }
 describe('project system', () => {
+  it('uses the supplied composition without installing omitted plugins', async () => {
+    const app = createAppForTest({
+      registryItemIds: defaultRegistryItemIds.filter(
+        (id) =>
+          id !== 'zoo:commandBar' &&
+          id !== 'zoo:slicer' &&
+          id !== 'zoo:publish' &&
+          id !== 'zoo:appLogo'
+      ),
+    })
+    try {
+      await waitForSettingsIdle(app)
+      const selectedPlugins = app.registry.get(plugins)
+      expect(
+        selectedPlugins.some(
+          (plugin) =>
+            plugin.id === 'command-bar' ||
+            plugin.id === 'slicer' ||
+            plugin.id === 'publish'
+        )
+      ).toBe(false)
+      expect(
+        app.registry
+          .get(appHeaderEndItemsFacet)
+          .some(
+            (item) =>
+              item.id === 'command-bar.open' || item.id === 'publish.open'
+          )
+      ).toBe(false)
+      expect(
+        app.registry.get(appHeaderStartItemsFacet).map((item) => item.id)
+      ).toEqual(['project.menu'])
+      expect(
+        app.registry.get(appHeaderEndItemsFacet).map((item) => item.id)
+      ).toContain('account.menu')
+      expect(app.registry.get(projectPublicationEnabledFacet)).toBe(false)
+      app.syncPluginSettingsFromCurrent()
+      expect(app.registry.get(plugins)).toEqual(selectedPlugins)
+    } finally {
+      await app.disposeAsync()
+    }
+  })
+
   it('closes project editor and executor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
@@ -972,14 +1020,18 @@ describe('project system', () => {
         .find((plugin) => plugin.id === 'code-editor')
       expect(codeEditorPlugin).toBeDefined()
       expect(
-        app.registry.get(appHeaderItemsFacet).map((item) => item.id)
+        app.registry.get(appHeaderEndItemsFacet).map((item) => item.id)
       ).toEqual(
         expect.arrayContaining([
           'command-bar.open',
           'code-editor.render',
           'publish.open',
+          'account.menu',
         ])
       )
+      expect(
+        app.registry.get(appHeaderStartItemsFacet).map((item) => item.id)
+      ).toContain('project.menu')
       expect(
         app.registry.required(projectSession).executingEditor.value
       ).toBeUndefined()

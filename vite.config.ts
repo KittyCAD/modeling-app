@@ -1,3 +1,4 @@
+import { getAppCompositionDefine } from './vite.appManifest'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import react from '@vitejs/plugin-react'
@@ -8,10 +9,12 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
 import { createCustomLogger, indexHtmlCsp } from './vite.base.config'
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }) => {
+  const appCompositionDefine = await getAppCompositionDefine(mode)
   return {
     customLogger: createCustomLogger(),
     define: {
+      ...appCompositionDefine,
       'import.meta.env.VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV),
       'import.meta.env.MODELING_APP_COMMIT_SHA': JSON.stringify(
         process.env.VERCEL_GIT_COMMIT_SHA
