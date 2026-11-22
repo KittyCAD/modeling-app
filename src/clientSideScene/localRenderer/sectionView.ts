@@ -5,8 +5,17 @@ import {
   Plane,
   Scene,
   Vector3,
+  Vector4,
 } from 'three'
 import { ClippingGroup } from 'three/webgpu'
+import {
+  attribute,
+  modelWorldMatrix,
+  positionGeometry,
+  uniform,
+  varying,
+  vec4,
+} from 'three/tsl'
 import type { LocalViewportOptions } from '@src/clientSideScene/localRenderer/viewportOptions'
 
 export function getSectionPlane(
@@ -36,6 +45,41 @@ export function getSectionPlane(
 export function setSectionPlane(group: ClippingGroup, plane: Plane | null) {
   group.enabled = plane !== null
   group.clippingPlanes = plane ? [plane] : []
+}
+
+/** Clip the line itself as well as its expanded screen-space ribbon. Otherwise
+ * a wide pick target can reach across the cut from an entirely removed edge. */
+export class SectionLineClipping {
+  private readonly plane = uniform(new Vector4(0, 0, 0, 1))
+  readonly maskNode = varying(
+    modelWorldMatrix.mul(
+      vec4(
+        positionGeometry.y
+          .lessThan(0.5)
+          .select(
+            attribute('instanceStart', 'vec3'),
+            attribute('instanceEnd', 'vec3')
+          ),
+        1
+      )
+    ).xyz
+  )
+    .dot(this.plane.xyz)
+    .add(this.plane.w)
+    .greaterThanEqual(0)
+
+  setPlane(plane: Plane | null) {
+    if (plane) {
+      this.plane.value.set(
+        plane.normal.x,
+        plane.normal.y,
+        plane.normal.z,
+        plane.constant
+      )
+    } else {
+      this.plane.value.set(0, 0, 0, 1)
+    }
+  }
 }
 
 /** Picking and highlights flatten the source hierarchy. Retain its section cut,

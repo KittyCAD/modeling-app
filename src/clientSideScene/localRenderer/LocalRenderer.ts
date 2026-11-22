@@ -365,6 +365,8 @@ export class LocalRenderer {
     )
     const plane = getSectionPlane(this.sectionBounds, this.viewportOptions)
     setSectionPlane(this.modelSectionGroup, plane)
+    this.gpu?.edgeRenderer.setSectionPlane(plane)
+    this.gpu?.sketchLineRenderer.setSectionPlane(plane)
     this.gpu?.integerIdPicker.setSectionPlane(plane)
     this.gpu?.selectionHighlightRenderer.setSectionPlane(plane)
   }

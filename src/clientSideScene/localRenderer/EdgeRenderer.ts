@@ -1,5 +1,12 @@
 import { LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX } from '@src/clientSideScene/localRenderer/config'
-import { Color, Group, InstancedBufferAttribute, type Object3D } from 'three'
+import {
+  Color,
+  Group,
+  InstancedBufferAttribute,
+  type Object3D,
+  type Plane,
+} from 'three'
+import { SectionLineClipping } from '@src/clientSideScene/localRenderer/sectionView'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
@@ -74,6 +81,7 @@ export class EdgeRenderer {
   private readonly group = new Group()
   private readonly material: Line2NodeMaterial
   private readonly selectionMaterial = new Line2NodeMaterial()
+  private readonly sectionClipping = new SectionLineClipping()
   private selectionTargets: EdgeSelectionTarget[] = []
 
   constructor(
@@ -82,6 +90,7 @@ export class EdgeRenderer {
     linewidth = LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX
   ) {
     this.material = new Line2NodeMaterial({ color, linewidth })
+    this.material.maskNode = this.sectionClipping.maskNode
     this.material.worldUnits = false
     this.material.transparent = false
     this.material.opacity = 1
@@ -214,6 +223,10 @@ export class EdgeRenderer {
 
   setVisible(visible: boolean) {
     this.group.visible = visible
+  }
+
+  setSectionPlane(plane: Plane | null) {
+    this.sectionClipping.setPlane(plane)
   }
 
   setColor(color: Color) {

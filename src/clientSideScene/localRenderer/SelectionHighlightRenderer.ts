@@ -40,7 +40,10 @@ import {
   RenderTarget,
   type WebGPURenderer,
 } from 'three/webgpu'
-import { SectionViewScene } from '@src/clientSideScene/localRenderer/sectionView'
+import {
+  SectionLineClipping,
+  SectionViewScene,
+} from '@src/clientSideScene/localRenderer/sectionView'
 
 const HIGHLIGHT_INTERIOR_OPACITY = 0.2
 const HIGHLIGHT_LINE_WIDTH_PX = 2
@@ -57,6 +60,7 @@ export class SelectionHighlightRenderer {
   private readonly selectionMaskScene = new SectionViewScene()
   private readonly hoverLineScene = new SectionViewScene()
   private readonly selectionLineScene = new SectionViewScene()
+  private readonly sectionLineClipping = new SectionLineClipping()
   private readonly drawingBufferSize = new Vector2()
   private readonly texelSize = new Vector2(1, 1)
   private readonly savedClearColor = new Color()
@@ -185,6 +189,8 @@ export class SelectionHighlightRenderer {
       SKETCH_SELECTION_COLOR,
       renderer.outputColorSpace
     )
+    this.hoverLineMaterial.maskNode = this.sectionLineClipping.maskNode
+    this.selectionLineMaterial.maskNode = this.sectionLineClipping.maskNode
 
     this.maskTarget.texture.name = 'local-renderer-highlight-mask'
     this.maskTarget.texture.generateMipmaps = false
@@ -223,6 +229,7 @@ export class SelectionHighlightRenderer {
   }
 
   setSectionPlane(plane: Plane | null) {
+    this.sectionLineClipping.setPlane(plane)
     this.hoverMaskScene.setSectionPlane(plane)
     this.selectionMaskScene.setSectionPlane(plane)
     this.hoverLineScene.setSectionPlane(plane)

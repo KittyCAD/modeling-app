@@ -79,6 +79,7 @@ function fakeGpu() {
     removeFromParent: vi.fn(),
     setVisible: vi.fn(),
     setColor: vi.fn(),
+    setSectionPlane: vi.fn(),
     dispose: vi.fn(),
   })
   return {

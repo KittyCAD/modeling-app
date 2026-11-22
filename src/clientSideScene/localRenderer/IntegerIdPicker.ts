@@ -35,7 +35,10 @@ import {
   type Node,
   type WebGPURenderer,
 } from 'three/webgpu'
-import { SectionViewScene } from '@src/clientSideScene/localRenderer/sectionView'
+import {
+  SectionLineClipping,
+  SectionViewScene,
+} from '@src/clientSideScene/localRenderer/sectionView'
 
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
@@ -54,6 +57,7 @@ export type IntegerIdPickResult = {
 export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
   private readonly scene = new SectionViewScene()
+  private readonly sectionLineClipping = new SectionLineClipping()
   private readonly drawingBufferSize = new Vector2()
   private readonly materials = new Set<Material>()
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
@@ -178,6 +182,7 @@ export class IntegerIdPicker {
     const material = new Line2NodeMaterial({
       linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
     })
+    material.maskNode = this.sectionLineClipping.maskNode
     material.worldUnits = false
     material.alphaToCoverage = false
     material.depthTest = true
@@ -220,6 +225,7 @@ export class IntegerIdPicker {
 
   setSectionPlane(plane: Plane | null) {
     this.scene.setSectionPlane(plane)
+    this.sectionLineClipping.setPlane(plane)
     this.invalidate()
   }
 
