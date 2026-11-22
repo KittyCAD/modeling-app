@@ -12,6 +12,7 @@ import {
 import { communityPluginsService } from '@src/lib/communityPlugins/registry/contract'
 import { observations as filesObservations } from '@src/registry/contracts/fileOperations'
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import type { PluginRuntime } from '@src/lib/communityPlugins/runtime'
 import type { PluginSource } from '@src/lib/communityPlugins/source'
@@ -150,13 +151,17 @@ export const createCommunityPluginsExtension = (storage?: PluginStorage) =>
         storage: async () => {
           if (storage) return storage
           const { getAppSettingsFilePath } = await import('@src/lib/desktop')
-          const path = fsZds.join(
-            fsZds.dirname(await getAppSettingsFilePath()),
-            'community-plugins.toml'
-          )
+          const directory = fsZds.dirname(await getAppSettingsFilePath())
+          const operations = files.fileOperationsService.required()
           return createFilePluginStorage(
-            files.fileOperationsService.required(),
-            path
+            {
+              readFile: (path) => operations.readFile(path),
+              writeFile: async (path, contents) => {
+                await ensureDirectory(operations, directory)
+                await operations.writeFile(path, contents)
+              },
+            },
+            fsZds.join(directory, 'community-plugins.toml')
           )
         },
         readSource: (path) =>
