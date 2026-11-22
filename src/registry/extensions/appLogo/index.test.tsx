@@ -33,7 +33,7 @@ it('can omit or replace the logo without removing the project and account menus'
       contents: { name: 'Bracket', path: '/project', children: [] },
       metadata: { title: 'Bracket', readWriteAccess: false },
     }),
-    files: { read: vi.fn(), write: vi.fn() },
+    files: { read: vi.fn(), readBytes: vi.fn(), write: vi.fn() },
   }
   render(
     <MemoryRouter>

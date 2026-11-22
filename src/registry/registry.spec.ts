@@ -2,7 +2,8 @@ import type { ElectronPluginContext } from '@src/registry/pluginIpc'
 import { bundledElectronPluginRegistrations } from '@src/registry/electronPlugins'
 import type { Extension } from 'plankton'
 import { coreRegistryItems } from '@src/registry/registry'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
 
 // Explicit entrypoints verify the default composition and registration order.
 const legacyModules = import.meta.glob<{
@@ -17,14 +18,18 @@ const legacyModules = import.meta.glob<{
     '../lang/lsp/registry/index.ts',
     '../lib/billing/registry/index.ts',
     '../lib/cloudProjects/registry/index.ts',
+    '../lib/communityPlugins/registry/index.ts',
     '../lib/cursorBlinking/registry/index.ts',
     '../lib/editors/registry/index.ts',
     '../lib/engineConnection/registry/index.ts',
+    '../lib/executors/registry/index.ts',
     '../lib/kcl/registry/index.ts',
     '../lib/markdown/registry/index.ts',
     '../lib/projectLibraries/registry/index.ts',
     '../lib/projectSession/registry/index.ts',
     '../lib/rustContext/registry/index.ts',
+    '../lib/save/registry/index.ts',
+    '../lib/typescript/registry/index.ts',
     '../lib/zookeeper/registry/index.ts',
     './extensions/auth/index.ts',
     './extensions/commands/index.ts',

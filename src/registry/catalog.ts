@@ -1,4 +1,6 @@
 import appLogoItem from '@src/registry/extensions/appLogo'
+import communityPluginsItem from '@src/lib/communityPlugins/registry'
+import typescriptItem from '@src/lib/typescript/registry'
 import appHeaderItem from '@src/registry/extensions/appHeader'
 import saveItem from '@src/lib/save/registry'
 import executorsItem from '@src/lib/executors/registry'
@@ -45,6 +47,7 @@ export const bundledRegistryItemCatalog = {
   'zoo:lsp': lspItem,
   'zoo:billing': billingItem,
   'zoo:cloudProjects': cloudProjectsItem,
+  'zoo:communityPlugins': communityPluginsItem,
   'zoo:cursorBlinking': cursorBlinkingItem,
   'zoo:editors': editorsItem,
   'zoo:engineConnection': engineConnectionItem,
@@ -55,6 +58,7 @@ export const bundledRegistryItemCatalog = {
   'zoo:projectSessionNext': projectSessionNextItem,
   'zoo:rustContext': rustContextItem,
   'zoo:save': saveItem,
+  'zoo:typescript': typescriptItem,
   'zoo:zookeeper': zookeeperItem,
   'zoo:appHeader': appHeaderItem,
   'zoo:appLogo': appLogoItem,
