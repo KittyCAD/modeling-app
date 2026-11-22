@@ -1,5 +1,7 @@
 import { matchesEditor } from '@src/lib/editors/matching'
 import { ReadOnlyIndicator } from '@src/lib/editors/ReadOnlyIndicator'
+import { OpenEditorProjectMenuItem } from '@src/lib/editors/OpenEditorProjectMenuItem'
+import { projectMenuItemsFacet } from '@src/lib/projectSession/next/projectMenu'
 import type { EditorView as NativeEditorView } from '@codemirror/view'
 import {
   computed,
@@ -303,6 +305,10 @@ const extension: Factory = defineFactory({
     } satisfies InputOf<typeof codeEditorsExtensionFacet>
     return {
       items: [
+        contribute(projectMenuItemsFacet, () => ({
+          id: 'editors.open',
+          Component: OpenEditorProjectMenuItem,
+        })),
         contribute(editorTabIndicatorsFacet, () => ({
           id: 'editors.read-only',
           component: ReadOnlyIndicator,

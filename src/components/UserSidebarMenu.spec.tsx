@@ -8,7 +8,14 @@ import {
 } from 'react-router-dom'
 
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
+
+const actions = {
+  fileOperations: testFileOperations,
+  onSignOut: vi.fn(),
+  onSignOutAll: vi.fn(),
+}
 
 describe('UserSidebarMenu tests', () => {
   test("Renders user's name and email if available", async () => {
@@ -31,9 +38,10 @@ describe('UserSidebarMenu tests', () => {
       deletion_scheduled: false,
     }
 
+    Object.freeze(userWellFormed)
     render(
       <TestWrap>
-        <UserSidebarMenu user={userWellFormed} />
+        <UserSidebarMenu {...actions} user={userWellFormed} />
       </TestWrap>
     )
 
@@ -73,7 +81,7 @@ describe('UserSidebarMenu tests', () => {
 
     render(
       <TestWrap>
-        <UserSidebarMenu user={userNoName} />
+        <UserSidebarMenu {...actions} user={userNoName} />
       </TestWrap>
     )
 
@@ -108,7 +116,7 @@ describe('UserSidebarMenu tests', () => {
 
     render(
       <TestWrap>
-        <UserSidebarMenu user={userNoAvatar} />
+        <UserSidebarMenu {...actions} user={userNoAvatar} />
       </TestWrap>
     )
 

@@ -6,7 +6,7 @@ import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRen
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import { appHeaderEndItemsFacet } from '@src/registry/contracts/appHeader'
 import {
   findKeymapItemForCommand,
   type KeymapDocument,
@@ -145,13 +145,13 @@ const renderHeaderItem = [
     key: codeEditorKeymap.source,
   }),
   contribute(
-    appHeaderItemsFacet,
+    appHeaderEndItemsFacet,
     () =>
       ({
         id: 'code-editor.render',
         order: 5,
         Component: RenderHeaderItem,
-      }) satisfies InputOf<typeof appHeaderItemsFacet>
+      }) satisfies InputOf<typeof appHeaderEndItemsFacet>
   ),
 ]
 const codeEditor = createZdsPlugin({

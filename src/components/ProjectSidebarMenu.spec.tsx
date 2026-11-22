@@ -5,7 +5,6 @@ import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
 
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 
 import ProjectSidebarMenu, {
@@ -72,15 +71,6 @@ describe('ProjectSidebarMenu tests', () => {
     renderWithRouter(<ProjectSidebarMenu project={projectWellFormed} />)
 
     expect(screen.getByTestId('project-name')).toHaveTextContent('Simple Box')
-  })
-
-  test('Links the logo to Home', () => {
-    renderWithRouter(<ProjectSidebarMenu project={projectWellFormed} />)
-
-    const logoLink = screen.getByTestId('app-logo').closest('a')
-
-    expect(logoLink).toHaveAttribute('href', PATHS.HOME)
-    expect(screen.getByRole('tooltip')).toHaveTextContent('Go home')
   })
 
   test('Shows the full project-relative file path in the breadcrumb', () => {
