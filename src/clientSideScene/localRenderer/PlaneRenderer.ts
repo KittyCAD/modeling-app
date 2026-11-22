@@ -1,4 +1,4 @@
-import { getLocalCameraSceneScale } from '@src/clientSideScene/cameraSceneScale'
+import { MIN_CAMERA_SCENE_SCALE } from '@src/clientSideScene/cameraSceneScale'
 import { createPlaneMaterials } from '@src/clientSideScene/localRenderer/planeMaterials'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { type ResolvedTheme, Themes } from '@src/lib/theme'
@@ -27,6 +27,12 @@ const MILLIMETERS_TO_METERS = 1 / 1000
 const LABEL_FONT = '24px "Source Code VF", monospace'
 const LABEL_TEXTURE_SCALE = 2
 const LABEL_MM_PER_PIXEL = 0.12
+// Planes grow to at most this fraction of the camera-to-target distance. A 45°
+// view is about 0.83 distances tall, so their edges stay (nearly) in view.
+const MAX_PLANE_SIZE_PER_CAMERA_DISTANCE = 0.8
+// Steps of about 3×. They stop at the camera's smallest clipping scale, since
+// planes smaller than that get cut by the near clipping plane.
+const PLANE_SCALES = [1000, 300, 100, 30, 10, 3, 1, 0.3, 0.1, 0.03, 0.01, 0.003]
 // Planes crossing at their centers split each other into quadrants. Drawing
 // each quadrant as its own mesh lets the renderer sort the translucent fills
 // back to front, which it can't do for whole planes that intersect.
@@ -240,7 +246,7 @@ export class PlaneRenderer {
   }
 
   updateScale(cameraDistanceMm: number, fixedGridScale?: number) {
-    this.scale = fixedGridScale ?? getLocalCameraSceneScale(cameraDistanceMm)
+    this.scale = fixedGridScale ?? getPlaneScale(cameraDistanceMm)
     this.applyScale()
   }
 
@@ -324,4 +330,13 @@ export class PlaneRenderer {
     )
     return label
   }
+}
+
+// The largest listed scale that keeps planes within their maximum size.
+function getPlaneScale(cameraDistanceMm: number) {
+  const maxScale =
+    (cameraDistanceMm * MAX_PLANE_SIZE_PER_CAMERA_DISTANCE) / PLANE_SIZE_MM
+  return (
+    PLANE_SCALES.find((scale) => scale <= maxScale) ?? MIN_CAMERA_SCENE_SCALE
+  )
 }

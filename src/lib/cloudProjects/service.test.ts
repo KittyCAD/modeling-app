@@ -635,7 +635,7 @@ describe('memory cloud storage', () => {
     expect(storage.projects.value[0].revision).toBe('1')
   })
 
-  it('fetches the mutation version metadata for refresh and uses that revision for the next save', async () => {
+  it('uses the refreshed mutation revision for the next save', async () => {
     const { storage } = setup()
     const root = await storage.openProject('one')
     vi.mocked(api.getRemoteProject).mockClear()
