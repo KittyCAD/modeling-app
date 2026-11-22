@@ -51,7 +51,7 @@ export const app = App.fromDefaults({
 export const AppContext = React.createContext(app)
 window.app = app
 
-if (import.meta.env.DEV) {
+if (import.meta.env.MODE === 'development') {
   const { watchDevAccountConfig } = await import(
     '@src/lib/appConfiguration/watch'
   )

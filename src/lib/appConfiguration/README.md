@@ -62,6 +62,10 @@ Project, grant permissions, or change native Electron plugin registration.
    files; existing local files in a different checkout are not automatically
    copied here.
 
+   Desktop uses the same hook with `make run-desktop` (live Electron renderer).
+   A dev build made with `npm run tronb:vite:dev` also includes it: the hook checks
+   Vite's `development` mode, not `import.meta.env.DEV`, which is false for builds.
+
 4. In DevTools, look for `[dev-app-config] Applied app configuration from Project
    ... at version ...`. On Home and in the new project shell the default Zoo
    logo/Home link should disappear; the project and account controls should remain.
