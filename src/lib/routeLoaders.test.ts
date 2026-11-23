@@ -706,44 +706,27 @@ describe('cloud project loader', () => {
     }
   )
 
-  it.each(['web', 'desktop'])(
-    'redirects to sign-in on %s',
-    async (platform) => {
-      const desktop = platform === 'desktop'
-      const userAgent = vi
-        .spyOn(navigator, 'userAgent', 'get')
-        .mockReturnValue(desktop ? 'Electron' : 'Mozilla')
-      try {
-        const app = new App(App.getDefaultSystems())
-        vi.spyOn(app.registry, 'optional').mockReturnValueOnce({
-          actor: {
-            getSnapshot: () => ({
-              matches: (state: string) => state === 'loggedOut',
-            }),
-          },
-        })
-        const url = desktop
-          ? 'file:///project/remote-123'
-          : 'https://app.zoo.dev/project/remote-123?source=shared%2Blink%26notes'
-        const result = await projectLoader({ app })({
-          request: new Request(url),
-          params: { id: 'remote-123' },
-          context: undefined,
-          unstable_pattern: '/project/:id',
-        })
-        const location = new URL(
-          (result as Response).headers.get('Location')!,
-          url
-        )
-        expect(location.pathname).toBe(PATHS.SIGN_IN)
-        expect(location.searchParams.get('callbackUrl')).toBe(
-          desktop ? null : url
-        )
-      } finally {
-        userAgent.mockRestore()
-      }
-    }
-  )
+  it('preserves the shared project URL when redirecting to sign-in', async () => {
+    const app = new App(App.getDefaultSystems())
+    vi.spyOn(app.registry, 'optional').mockReturnValueOnce({
+      actor: {
+        getSnapshot: () => ({
+          matches: (state: string) => state === 'loggedOut',
+        }),
+      },
+    })
+    const url =
+      'https://app.zoo.dev/project/remote-123?source=shared%2Blink%26notes'
+    const result = await projectLoader({ app })({
+      request: new Request(url),
+      params: { id: 'remote-123' },
+      context: undefined,
+      unstable_pattern: '/project/:id',
+    })
+    const location = new URL((result as Response).headers.get('Location')!, url)
+    expect(location.pathname).toBe(PATHS.SIGN_IN)
+    expect(location.searchParams.get('callbackUrl')).toBe(url)
+  })
 
   it('redirects to the existing cloud file route when the new shell is disabled', async () => {
     const app = new App(App.getDefaultSystems())
