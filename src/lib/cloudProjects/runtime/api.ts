@@ -8,7 +8,6 @@ import {
   withCloudFailureContextSync,
 } from '@src/lib/cloudProjects/runtime/failureContext'
 import {
-  getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
 } from '@src/lib/cloudProjects/runtime/archive'
@@ -321,7 +320,7 @@ function buildProjectUploadFiles(
         ...upload.files.map((file) => ({
           name: file.relativePath,
           data: new Blob([toArrayBuffer(file.data)], {
-            type: getMimeType(file.relativePath),
+            type: 'application/octet-stream',
           }),
         })),
       ]
