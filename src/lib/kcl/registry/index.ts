@@ -1,4 +1,12 @@
 import { createStaleModelIndicator } from '@src/lib/kcl/modeling/StaleIndicator'
+import {
+  observations as modelingInput,
+  modelingStatusItemsFacet,
+} from '@src/lib/kcl/registry/contract'
+import { observations as filesInput } from '@src/registry/contracts/fileOperations'
+import { defaultModelingStatusItems } from '@src/lib/kcl/modeling/statusItems'
+import { createMeasurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
+import { createPhysicalAnalysisService } from '@src/registry/extensions/engineScene/physicalAnalysis/physicalAnalysisService'
 import { cameraCommands } from '@src/lib/kcl/registry/cameraCommands'
 import { renderCommands } from '@src/lib/kcl/registry/renderCommands'
 import { acquireKclExecutionPolicy } from '@src/lib/kcl/modeling/executionPolicy'
@@ -66,6 +74,8 @@ const extension = factory({
     wasmInput: wasmInputs,
     executorsInput: executorInputs,
     editorsInput: editorInputs,
+    filesInput,
+    modelingInput,
   },
   create: ({
     camera,
@@ -77,6 +87,8 @@ const extension = factory({
     wasmInput,
     executorsInput,
     editorsInput,
+    filesInput,
+    modelingInput,
   }) => {
     const freshness = createStaleModelIndicator(
       (instance) =>
@@ -221,6 +233,12 @@ const extension = factory({
           })
         })
       )
+      const measurement = createMeasurementToolService()
+      const physicalAnalysis = createPhysicalAnalysisService()
+      onDispose(() => {
+        measurement.close()
+        physicalAnalysis.close()
+      })
       const requestRender = () => executor.run(execution.capability)
       onDispose(render.attach(editor, requestRender))
       return {
@@ -230,6 +248,13 @@ const extension = factory({
         render: requestRender,
         attachCameraViewport: camera.attach,
         cameraShortcuts: camera.shortcuts,
+        get wasm() {
+          return getWasm()
+        },
+        fileOperations: filesInput.fileOperationsService.required(),
+        measurement,
+        physicalAnalysis,
+        statusItems: modelingInput.modelingStatusItemsFacet,
       }
     })({
       id: 'kcl.modeling',
@@ -262,5 +287,13 @@ const extension = factory({
 export default [
   // The legacy file route needs these inputs even with project-shell editing off.
   kclExecutionSettingsExtension,
-  withProjectShellFeature(extension, 'kcl'),
+  withProjectShellFeature(
+    [
+      extension,
+      ...defaultModelingStatusItems.map((item) =>
+        contribute(modelingStatusItemsFacet, () => item)
+      ),
+    ],
+    'kcl'
+  ),
 ]
