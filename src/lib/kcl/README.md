@@ -35,6 +35,17 @@ The [executor guide](../executors/README.md) describes scheduling and output.
 [Scene settings](scene/README.md#kcl-refresh-policy) explains how a
 setting opts into execution refresh.
 
+## Registry discovery
+
+Importing the KCL contribution does not start the legacy app or initialize WASM.
+The shared local-renderer view lives in
+[`LocalWebGPUSceneView`](../../clientSideScene/localRenderer/LocalWebGPUSceneView.tsx);
+the legacy `LocalWebGPUScene` wrapper supplies its app and modeling dependencies.
+Native file-extension queries use the supplied module through
+[`wasmFileExtensions`](../../lang/wasmFileExtensions.ts), independently of the
+WASM startup helpers. Unit tests can discover the Code and Modeling contributions
+without generated Rust bindings or a built WASM bundle.
+
 ## Ownership and lifetime
 
 | Owner | Responsibility |

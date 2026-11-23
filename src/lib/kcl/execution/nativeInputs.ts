@@ -1,5 +1,5 @@
 import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { relevantFileExtensions } from '@src/lang/wasmFileExtensions'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /** Native input metadata is read after WASM initializes, independently of scene startup. */
