@@ -1,4 +1,5 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { getBodiesFromArtifactGraph } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph, CodeRef } from '@src/lang/wasm'
 import {
   buildBodyOperationTree,
@@ -540,6 +541,104 @@ describe('body feature hierarchy', () => {
     expect(tree.branches[0].operations).toEqual(nodes)
     expect(tree.nodes).toHaveLength(1)
   })
+
+  it.each([
+    {
+      resultId: 'result',
+      consumedCopies: ['copy1', 'copy2'],
+      expected: ['result'],
+    },
+    {
+      resultId: 'result',
+      consumedCopies: ['copy1'],
+      expected: ['result', 'copy2'],
+    },
+    {
+      resultId: 'copy1',
+      consumedCopies: ['copy1', 'copy2'],
+      expected: ['copy1'],
+    },
+  ])(
+    'keeps consumed patterns in the Boolean history: $expected',
+    ({ resultId, consumedCopies, expected }) => {
+      const tool = { ...sweep('tool', 10), consumed: true }
+      const pattern: BodyArtifact = {
+        type: 'pattern',
+        id: 'pattern',
+        sourceId: tool.id,
+        copyIds: ['copy1', 'copy2'],
+        copyFaceIds: [],
+        copyEdgeIds: [],
+        subType: 'circular',
+        codeRef: codeRef(20),
+      }
+      const result: BodyArtifact = {
+        type: 'compositeSolid',
+        id: resultId,
+        subType: 'subtract',
+        consumed: false,
+        solidIds: [],
+        toolIds: [tool.id, ...consumedCopies],
+        codeRef: codeRef(30),
+      }
+      const artifacts = graph(tool, pattern, result)
+      const nodes = [call(10), call(20), call(30)]
+      const tree = buildBodyOperationTree(
+        nodes,
+        getBodiesFromArtifactGraph(artifacts),
+        artifacts
+      )
+      expect(tree.branches.map((branch) => branch.id)).toEqual(expected)
+      expect(tree.branches[0].artifact).toBe(result)
+      expect(tree.branches[0].operations).toEqual(nodes)
+      expect(tree.nodes).toHaveLength(expected.length)
+      if (expected.length > 1) {
+        expect(tree.branches[1].artifact).toBe(pattern)
+        expect(tree.branches[1].operations).toEqual(nodes.slice(0, 2))
+      }
+    }
+  )
+
+  it.each(['merge', 'new'] as const)(
+    'groups an extrusion on a body face only for %s',
+    (method) => {
+      const head = sweep('head', 10)
+      const face: Artifact = {
+        type: 'cap',
+        id: 'face',
+        subType: 'end',
+        sweepId: head.id,
+        pathIds: [],
+        edgeCutEdgeIds: [],
+        cmdId: head.id,
+        faceCodeRef: codeRef(10),
+      }
+      const profile: Artifact = {
+        type: 'path',
+        id: 'profile',
+        subType: 'region',
+        planeId: face.id,
+        segIds: [],
+        sweepId: 'stem',
+        consumed: true,
+        trajectorySweepId: null,
+        codeRef: codeRef(20),
+      }
+      const stem = { ...sweep('stem', 30, profile.id), method }
+      const nodes = [call(10), call(20), call(30)]
+      const tree = buildBodyOperationTree(
+        nodes,
+        bodies(head, stem),
+        graph(head, face, profile, stem)
+      )
+      expect(tree.branches.map((branch) => branch.id)).toEqual(
+        method === 'merge' ? ['head'] : ['head', 'stem']
+      )
+      expect(tree.branches[0].operations).toEqual(
+        method === 'merge' ? nodes : [nodes[0]]
+      )
+    }
+  )
 
   it('groups nested 3D patterns without combining unrelated source bodies', () => {
     const a = { ...sweep('a', 10, 'path'), patternIds: ['first'] }

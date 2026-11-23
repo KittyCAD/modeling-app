@@ -1,4 +1,5 @@
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import { getMergedSweepBodyArtifact } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import {
   getOperationTreeNodeKey,
@@ -6,6 +7,7 @@ import {
   type OperationTreeNode,
 } from '@src/lib/featureTree/featureTreeOperationTree'
 import { incrementMapCounter, isArray } from '@src/lib/utils'
+import { isErr } from '@src/lib/trap'
 
 export type BodyArtifact = Extract<
   Artifact,
@@ -182,6 +184,10 @@ export function buildBodyOperationTree(
       )
     if (artifact?.type === 'path' && artifact.sweepId)
       return sourceBody(artifact.sweepId, seen)
+    if (artifact?.type === 'sweep' && !artifact.consumed) {
+      const merged = getMergedSweepBodyArtifact(artifact, graph)
+      if (!isErr(merged) && merged.id !== id) return sourceBody(merged.id, seen)
+    }
     if (
       artifact?.type === 'compositeSolid' &&
       artifact.solidIds.length > 0 &&
@@ -194,16 +200,19 @@ export function buildBodyOperationTree(
     }
     return id
   }
-  const live = new Map<string, BodyArtifact>()
+  const live = new Map<string, { id: string; artifact: BodyArtifact }>()
   for (const [id, artifact] of bodies) {
     const sourceId = sourceBody(artifact.type === 'pattern' ? artifact.id : id)
     const source = graph.get(sourceId)
-    live.set(
-      sourceId,
-      source?.type === 'sweep' || source?.type === 'compositeSolid'
-        ? source
-        : artifact
-    )
+    if (
+      (source?.type === 'sweep' || source?.type === 'compositeSolid') &&
+      !source.consumed
+    ) {
+      live.set(sourceId, { id: sourceId, artifact: source })
+    } else if (!live.has(sourceId)) {
+      // A surviving copy remains selectable after its source is consumed.
+      live.set(sourceId, { id, artifact })
+    }
   }
 
   function dependencies(artifact: Artifact): string[] {
@@ -242,7 +251,8 @@ export function buildBodyOperationTree(
   const assigned = new Set<OperationTreeNode>()
   const branches = Array.from(
     live,
-    ([id, artifact], index): BodyOperationTreeBranch => {
+    ([id, body], index): BodyOperationTreeBranch => {
+      const { artifact } = body
       // Each ancestor has a cutoff: clones inherit earlier edits, not later ones.
       const before = new Map<string, number>()
       const pending = [{ id: artifact.id, limit: Infinity }]
@@ -265,6 +275,8 @@ export function buildBodyOperationTree(
         const next = pending.pop()
         if (!next || (before.get(next.id) ?? -1) >= next.limit) continue
         before.set(next.id, next.limit)
+        const pattern = patternByCopy.get(next.id)
+        if (pattern) pending.push({ id: pattern.id, limit: next.limit })
         const source = graph.get(next.id)
         if (!source) continue
         const operation = producer(source)
@@ -338,7 +350,7 @@ export function buildBodyOperationTree(
         artifact.type === 'compositeSolid' ? artifact.outputIndex : null,
       ])
       return {
-        id,
+        id: body.id,
         artifact,
         index,
         expansionKey,
