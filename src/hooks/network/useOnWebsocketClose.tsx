@@ -1,3 +1,4 @@
+import { canAutomaticallyRecoverEngine } from '@src/lib/engineConnection/recovery'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type {
@@ -55,7 +56,7 @@ export function useOnWebsocketClose({
       if (
         code === WebSocketCloseCode.AbnormalClosure.toString() &&
         !reconnectRequested &&
-        ++abnormalCloseRetries.current > 3
+        !canAutomaticallyRecoverEngine(++abnormalCloseRetries.current)
       ) {
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',

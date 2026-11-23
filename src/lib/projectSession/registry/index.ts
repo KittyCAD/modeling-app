@@ -1,3 +1,4 @@
+import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
 import { createProjectSessionService } from '@src/lib/projectSession/next/session'
@@ -26,4 +27,7 @@ export const createProjectSessionExtension = (
     id
   )
 
-export default createProjectSessionExtension()
+export default [
+  createProjectSessionExtension(),
+  withProjectShellFeature(projectSourcesExtension, 'project-sources'),
+]

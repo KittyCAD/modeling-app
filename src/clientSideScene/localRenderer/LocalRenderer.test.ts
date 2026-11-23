@@ -112,7 +112,8 @@ function fixture(
     1,
     0.1,
     10000
-  )
+  ),
+  claimInitialCameraFrame?: () => boolean
 ) {
   const manager = Object.assign(new EventTarget(), {
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
@@ -149,7 +150,10 @@ function fixture(
   const onRendererFailed = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
-    legacyLocalRendererHost(manager as unknown as KclManager),
+    {
+      ...legacyLocalRendererHost(manager as unknown as KclManager),
+      claimInitialCameraFrame,
+    },
     {
       theme: Themes.Light,
       enableSSAO: false,
@@ -416,6 +420,71 @@ describe('local GLB loading', () => {
     })
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
     f.renderer.dispose()
+  })
+
+  it('keeps the scene camera when a local presentation is recreated, while allowing explicit resets', async () => {
+    const claimInitialCameraFrame = vi
+      .fn()
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
+    const camera = new PerspectiveCamera(45, 1, 0.1, 10000)
+    const first = fixture(camera, claimInitialCameraFrame)
+    first.done()
+    await vi.waitFor(() =>
+      expect(first.renderer.isLoadedSceneCurrent()).toBe(true)
+    )
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    first.renderer.dispose()
+
+    const reattached = fixture(camera, claimInitialCameraFrame)
+    camera.position.set(10, 20, 30)
+    reattached.done()
+    await vi.waitFor(() =>
+      expect(reattached.renderer.isLoadedSceneCurrent()).toBe(true)
+    )
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(camera.position.toArray()).toEqual([10, 20, 30])
+    reattached.renderer.resetCameraAfterModelLoad()
+    expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    reattached.renderer.dispose()
+  })
+
+  it('retains reset requests across failed loads and consumes initial framing only once', async () => {
+    const claimInitialCameraFrame = vi.fn(() => false)
+    const f = fixture(
+      new PerspectiveCamera(45, 1, 0.1, 10000),
+      claimInitialCameraFrame
+    )
+    try {
+      f.renderer.resetCameraAfterModelLoad()
+      f.done(false)
+      expect(resetCameraPosition).not.toHaveBeenCalled()
+      expect(claimInitialCameraFrame).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.done(false)
+      f.renderer.resetCameraAfterModelLoad()
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    } finally {
+      f.renderer.dispose()
+    }
   })
 
   it('keeps planes in fit bounds until their visibility update follows the model load', async () => {

@@ -254,14 +254,14 @@ export const defaultKeymap: KeymapDocument = {
     },
     {
       id: 'project-explorer.arrow-up',
-      title: 'Clone project explorer selection up',
+      title: 'Select previous project explorer row',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowup'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
     },
     {
       id: 'project-explorer.arrow-down',
-      title: 'Clone project explorer selection down',
+      title: 'Select next project explorer row',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowdown'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,

@@ -474,7 +474,9 @@ export class ConnectionManager extends EventTarget {
       geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
-      tearDownManager: this.tearDown.bind(this),
+      tearDownManager: (options) => {
+        if (this.connection === connection) this.tearDown(options)
+      },
       onReconnectRequested: this.handleReconnectRequested.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,

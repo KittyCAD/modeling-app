@@ -40,11 +40,11 @@ const cases = [
     start: (actions: HomeProjectActionsService) => actions.duplicate(project),
   },
   {
-    label: 'Cloning',
-    method: 'cloneToLibrary',
+    label: 'Duplicating',
+    method: 'duplicateToLibrary',
     args: [project, 'library', { title: 'Copy' }],
     start: (actions: HomeProjectActionsService) =>
-      actions.cloneToLibrary(project, 'library', { title: 'Copy' }),
+      actions.duplicateToLibrary(project, 'library', { title: 'Copy' }),
   },
   {
     label: 'Deleting',
@@ -75,15 +75,15 @@ describe('Home project action progress', () => {
         canRename: () => true,
         canDelete: () => true,
         canDuplicate: () => true,
-        canCloneToLibrary: () => true,
+        canDuplicateToLibrary: () => true,
         canReviewDuplicateRealizations: () => true,
         canSeparateProjectCopies: () => true,
-        getCloneToLibraryTargets: () => [],
+        getDuplicateToLibraryTargets: () => [],
         open: vi.fn(() => work()),
         rename: vi.fn(() => work()),
         delete: vi.fn(() => work()),
         duplicate: vi.fn(() => work()),
-        cloneToLibrary: vi.fn(() => work()),
+        duplicateToLibrary: vi.fn(() => work()),
         deleteDuplicateRealizations: vi.fn(() => work()),
         separateProjectCopies: vi.fn(() => work()),
       }
