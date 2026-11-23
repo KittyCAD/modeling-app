@@ -168,7 +168,7 @@ function ShareProjectDialog({
           Share project
         </h2>
         <p className="mt-2 text-xs leading-5 text-2">
-          Grant read-only access to other users in your organization.
+          Copy a link to this project.
         </p>
       </div>
       <div className="flex min-h-0 flex-col gap-4 overflow-y-auto px-4 py-4">
@@ -182,6 +182,7 @@ function ShareProjectDialog({
               className="min-w-0 flex-1 select-text rounded border b-4 bg-default px-2.5 py-1.5 focus-visible:outline-color-4"
               type="url"
               value={url}
+              aria-describedby={isPersonal ? `${id}-access-note` : undefined}
               readOnly
               onFocus={(event) => event.currentTarget.select()}
             />
@@ -199,6 +200,14 @@ function ShareProjectDialog({
               {copied ? 'Copied' : 'Copy link'}
             </ActionButton>
           </div>
+          {isPersonal && (
+            <p
+              id={`${id}-access-note`}
+              className="mt-2 text-xs leading-5 text-2"
+            >
+              Only you can open this project link.
+            </p>
+          )}
         </div>
         {(libraryName || ownership) && (
           <section aria-labelledby={`${id}-library`}>
