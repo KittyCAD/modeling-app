@@ -487,6 +487,7 @@ describe('KclManager settings ownership', () => {
 
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager
+    engine.started = true
     const setTheme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
     const setViewportRendering = vi
       .spyOn(engine, 'setViewportRendering')

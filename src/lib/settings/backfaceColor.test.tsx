@@ -1,4 +1,4 @@
-import { Registry } from '@kittycad/registry'
+import { Registry } from 'plankton'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { expect, test, vi } from 'vitest'
