@@ -484,7 +484,8 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     let mut old_ast = old.ast.clone();
     let mut new_ast = new.ast.clone();
 
-    // An edited AST can arrive with digests from before the edit.
+    // We don't want to compare digests against none. An edited AST can also
+    // arrive with digests from before the edit.
     old_ast.compute_digest();
     new_ast.compute_digest();
 
