@@ -30,7 +30,7 @@ interface UseStateMachineCommandsArgs<
   onCancel?: () => void
 }
 
-/** Legacy app readiness adapter; view-owned command actors can call `registerMachineCommands` directly. */
+/** Supplies legacy readiness checks to `registerMachineCommands`; other hosts can supply their own checks and command service. */
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,

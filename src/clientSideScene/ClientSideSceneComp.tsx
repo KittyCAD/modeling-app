@@ -6,7 +6,7 @@ import {
 import { useApp, useSingletons } from '@src/lib/boot'
 import { useToolbarConfig } from '@src/hooks/useToolbarConfig'
 
-/** The file route supplies app ownership; project Modeling views supply their own manager and command actor. */
+/** Supplies the file route's manager, settings, commands, and toolbar configuration to the shared scene view. */
 export function ClientSideScene(
   props: Omit<ComponentProps<typeof ClientSideSceneView>, 'host'>
 ) {
