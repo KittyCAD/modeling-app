@@ -9,6 +9,15 @@ The runtime uses `fs-zds/memory` for owned bytes and directory entries and imple
 `IZooDesignStudioFS`. Generic filesystem implementations retain their own storage
 resources; cloud project identity, persistence policy, and lifecycle live here.
 
+## Upload content types
+
+Project creation and updates send every file as `application/octet-stream`,
+including KCL, TOML, images, and files with unknown extensions. The multipart
+`body` metadata remains `application/json`. The API determines each stored file's
+content type from its relative path using `mime_guess`, with an octet-stream
+fallback. This avoids maintaining a second extension mapping in the client,
+as agreed in [#15207](https://github.com/KittyCAD/modeling-app/issues/15207#issuecomment-7050005060).
+
 ## Archive limits
 
 Cloud project ZIPs support up to 1 GiB (1,073,741,824 bytes) of compressed
