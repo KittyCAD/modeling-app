@@ -367,6 +367,7 @@ export default class RustContext {
     generation: number | null | undefined
   ) {
     const context = await this._checkContextInstance()
+    if (this.destroyed) return
     this.hasOpenedProject = true
     this.setDefaultPlanes(planes, generation, this.capturePlaneOwner(context))
   }
