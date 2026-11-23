@@ -164,6 +164,7 @@ function fixture(
     {
       theme: Themes.Light,
       enableSSAO: false,
+      viewportRendering: 'default',
       shouldHighlightEdges: false,
       fixedSizeGrid: true,
       backfaceColor: '#00D5FF',

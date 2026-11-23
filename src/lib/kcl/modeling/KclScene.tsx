@@ -56,6 +56,7 @@ export function KclScene({
           host={resource.localHost}
           theme={preferences.theme}
           enableSSAO={preferences.enableSSAO}
+          viewportRendering={preferences.viewportRendering}
           shouldHighlightEdges={preferences.highlightEdges}
           fixedSizeGrid={preferences.fixedSizeGrid}
           backfaceColor={preferences.backfaceColor}

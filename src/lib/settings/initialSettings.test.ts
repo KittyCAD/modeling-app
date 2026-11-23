@@ -4,7 +4,7 @@ import { shouldShowSettingInput } from '@src/lib/settings/settingsUtils'
 import { describe, expect, it } from 'vitest'
 
 describe('renderer settings', () => {
-  it('shows the controls for the selected renderer and keeps both preferences', () => {
+  it('shows the same controls for both renderers and keeps both preferences', () => {
     const settings = createSettings()
     const { useLocalRenderer, viewportRendering, enableSSAO } =
       settings.modeling
@@ -19,11 +19,11 @@ describe('renderer settings', () => {
           'user',
           settings
         )
-      ).toBe(!local)
+      ).toBe(true)
       expect(
         shouldShowSettingInput(enableSSAO as Setting<unknown>, 'user', settings)
       ).toBe(true)
-      expect(enableSSAO.isEnabled(settings)).toBe(local)
+      expect(enableSSAO.isEnabled(settings)).toBe(false)
       expect(
         shouldShowSettingInput(
           enableSSAO as Setting<unknown>,

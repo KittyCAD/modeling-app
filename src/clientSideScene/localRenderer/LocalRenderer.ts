@@ -21,6 +21,7 @@ import {
   projectEntityPoint,
 } from '@src/clientSideScene/localRenderer/projectEntityPoint'
 import {
+  EDGE_COLOR,
   EdgeRenderer,
   getBodyEdges,
   getSketchLineColor,
@@ -101,7 +102,17 @@ import type {
   KITTYCAD_GLTF_BREP,
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
+import {
+  PHOSPHOR_EDGE_COLOR,
+  RETRO_CAD_EDGE_COLOR,
+  phosphorOutput,
+  retroCadOutput,
+} from '@src/clientSideScene/localRenderer/viewportStyles'
+import type { ViewportRendering } from '@src/lib/settings/viewportRendering'
+
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+// About how many Retro CAD grid cells span the model's largest dimension.
+const RETRO_CAD_GRID_CELLS = 32
 
 const MODEL_LOAD_ERROR_TOAST_ID = 'local-renderer-model-load-error'
 
@@ -210,6 +221,7 @@ type GpuResources = {
 type RendererSettings = {
   theme: ResolvedTheme
   enableSSAO: boolean
+  viewportRendering: ViewportRendering
   shouldHighlightEdges: boolean
   fixedSizeGrid: boolean
   pickingEnabled: boolean
@@ -230,6 +242,7 @@ type CameraFraming =
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
+  viewportRendering: ViewportRendering
   shouldHighlightEdges: boolean
   fixedSizeGrid: boolean
   backfaceColor: string
@@ -253,6 +266,14 @@ export class LocalRenderer {
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
+  // Shared by all model materials, so switching styles doesn't rebuild their shaders.
+  private readonly retroCadAmount = uniform(0)
+  private readonly retroCadGridSpacing = uniform(0.01)
+  private phosphorPipeline: {
+    camera: PerspectiveCamera | OrthographicCamera
+    pipeline: RenderPipeline
+    scenePass: PassNode
+  } | null = null
   /** Bumped when an execution starts. Async work started before it is stale. */
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
@@ -296,6 +317,7 @@ export class LocalRenderer {
     this.settings = {
       theme: props.theme,
       enableSSAO: props.enableSSAO,
+      viewportRendering: props.viewportRendering,
       shouldHighlightEdges: props.shouldHighlightEdges,
       fixedSizeGrid: props.fixedSizeGrid,
       pickingEnabled: false,
@@ -304,7 +326,11 @@ export class LocalRenderer {
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
-    const backfacePlugin = backfaceColorPlugin(this.backfaceColor)
+    this.retroCadAmount.value = props.viewportRendering === 'retrocad' ? 1 : 0
+    const backfacePlugin = backfaceColorPlugin(
+      this.backfaceColor,
+      retroCadOutput(this.retroCadAmount, this.retroCadGridSpacing)
+    )
     this.gltfLoader.register(() => backfacePlugin)
 
     this.container.style.opacity = '0'
@@ -677,7 +703,39 @@ export class LocalRenderer {
     }
 
   private get backgroundColor() {
-    return getThemeBackgroundColor(this.settings.theme)
+    return this.settings.viewportRendering === 'default'
+      ? getThemeBackgroundColor(this.settings.theme)
+      : 'rgb(0, 0, 0)'
+  }
+
+  // Edges always show in the stylized modes, which draw them in their own color.
+  private applyEdgeStyle() {
+    const { viewportRendering, shouldHighlightEdges } = this.settings
+    const edgeRenderer = this.gpu?.edgeRenderer
+    if (!edgeRenderer) return
+    edgeRenderer.setVisible(
+      shouldHighlightEdges || viewportRendering !== 'default'
+    )
+    edgeRenderer.setColor(
+      viewportRendering === 'retrocad'
+        ? RETRO_CAD_EDGE_COLOR
+        : viewportRendering === 'phosphor'
+          ? PHOSPHOR_EDGE_COLOR
+          : EDGE_COLOR
+    )
+  }
+
+  setViewportRendering(viewportRendering: ViewportRendering) {
+    if (this.settings.viewportRendering === viewportRendering) return
+    this.settings.viewportRendering = viewportRendering
+    this.retroCadAmount.value = viewportRendering === 'retrocad' ? 1 : 0
+    this.gpu?.selectionHighlightRenderer.setBackgroundColor(
+      this.backgroundColor
+    )
+    this.applyEdgeStyle()
+    this.disposeAmbientOcclusionPipeline()
+    this.disposePhosphorPipeline()
+    this.invalidateBaseRender()
   }
 
   /**
@@ -722,7 +780,7 @@ export class LocalRenderer {
     }
 
     this.settings.shouldHighlightEdges = shouldHighlightEdges
-    this.gpu?.edgeRenderer.setVisible(shouldHighlightEdges)
+    this.applyEdgeStyle()
     this.gpu?.integerIdPicker.setEdgesVisible(shouldHighlightEdges)
     this.invalidateBaseRender()
   }
@@ -750,6 +808,7 @@ export class LocalRenderer {
       this.animationFrameId = -1
     }
     this.disposeAmbientOcclusionPipeline()
+    this.disposePhosphorPipeline()
     const { gpu } = this
     this.gpu = null
     if (gpu) {
@@ -902,6 +961,12 @@ export class LocalRenderer {
     }
   }
 
+  private disposePhosphorPipeline() {
+    this.phosphorPipeline?.pipeline.dispose()
+    this.phosphorPipeline?.scenePass.dispose()
+    this.phosphorPipeline = null
+  }
+
   private disposeAmbientOcclusionPipeline() {
     this.ambientOcclusionPipeline?.pipeline.dispose()
     this.ambientOcclusionPipeline?.scenePass.dispose()
@@ -925,6 +990,7 @@ export class LocalRenderer {
     // Local geometry is expressed in meters. Keep the sampling radius
     // proportional to the part instead of GTAO's room-scale default.
     this.ambientOcclusionRadius = Math.max(modelScale * 0.5, 0.00001)
+    this.retroCadGridSpacing.value = niceStep(modelScale / RETRO_CAD_GRID_CELLS)
     if (this.ambientOcclusionPipeline) {
       this.configureAmbientOcclusion(
         this.ambientOcclusionPipeline.aoPass,
@@ -986,7 +1052,22 @@ export class LocalRenderer {
       // private renderer._nodes which felt wrong to call.
       // Simplest solution: draw thumbnails without SSAO. If this becomes a problem
       // revisit the above options.
-      if (!this.settings.enableSSAO || size) {
+      const { viewportRendering } = this.settings
+      if (viewportRendering === 'phosphor' && !size) {
+        if (this.phosphorPipeline?.camera !== camera) {
+          this.disposePhosphorPipeline()
+          const scenePass = pass(scene, camera)
+          const pipeline = new RenderPipeline(renderer)
+          pipeline.outputColorTransform = false
+          pipeline.outputNode = phosphorOutput(scenePass.getTextureNode())
+          this.phosphorPipeline = { camera, pipeline, scenePass }
+        }
+        this.phosphorPipeline.pipeline.render()
+      } else if (
+        !this.settings.enableSSAO ||
+        size ||
+        viewportRendering !== 'default'
+      ) {
         renderer.render(scene, camera)
       } else {
         if (this.ambientOcclusionPipeline?.camera !== camera) {
@@ -1390,6 +1471,8 @@ export class LocalRenderer {
       ),
     }
 
+    this.applyEdgeStyle()
+
     // updateLocalCamera() below matches this to the shared camera.
     this.camera = new PerspectiveCamera()
     this.disposers.push(
@@ -1631,7 +1714,10 @@ export class LocalRenderer {
 // The glTF materials are single-sided, but the engine draws the backs of faces
 // in the backface color, which shows on open surfaces.
 // This makes GLTFLoaderbuild doubleSided materials.
-function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
+function backfaceColorPlugin(
+  backfaceColor: Node<'color'>,
+  outputNode: Node<'vec4'>
+): GLTFLoaderPlugin {
   const colorNode = select(frontFacing, color(materialColor), backfaceColor)
   return {
     name: 'zoo_backface_color',
@@ -1639,9 +1725,19 @@ function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
     extendMaterialParams: (_materialIndex, params) => {
       params.side = DoubleSide
       params.colorNode = colorNode
+      params.outputNode = outputNode
       return null
     },
   }
+}
+
+/** Rounds up to 1, 2 or 5 times a power of ten, like ruler markings. */
+function niceStep(value: number) {
+  const magnitude = 10 ** Math.floor(Math.log10(value))
+  const fraction = value / magnitude
+  return (
+    (fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10) * magnitude
+  )
 }
 
 function disposeObject3D(root: Object3D) {

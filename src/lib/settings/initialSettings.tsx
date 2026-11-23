@@ -256,10 +256,9 @@ function createCoreSettings() {
         defaultValue: true,
         hideOnLevel: 'project',
         description:
-          'Add ambient occlusion. Unavailable with Retro CAD and Phosphor in cloud rendering.',
+          'Add ambient occlusion. Unavailable with Retro CAD and Phosphor.',
         validate: (v) => typeof v === 'boolean',
         isEnabled: (context) =>
-          context.modeling.useLocalRenderer.current ||
           context.modeling.viewportRendering.current === 'default',
       }),
       /**
@@ -285,10 +284,8 @@ function createCoreSettings() {
         title: 'Rendering style',
         hideOnLevel: 'project',
         defaultValue: 'default',
-        description: 'Choose how streamed models look in the viewport.',
+        description: 'Choose how models look in the viewport.',
         validate: isViewportRendering,
-        isEnabled: (context) => !context.modeling.useLocalRenderer.current,
-        hideWhenDisabled: true,
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>

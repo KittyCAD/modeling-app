@@ -12,7 +12,7 @@ import { type ResolvedTheme, Themes } from '@src/lib/theme'
 import { isErr } from '@src/lib/trap'
 
 // The engine draws edges in this colour in both themes: see edgeColor in theme.ts.
-const EDGE_COLOR = new Color(0x1c1c1c)
+export const EDGE_COLOR = new Color(0x1c1c1c)
 
 // Sketch lines contrast with the background.
 export function getSketchLineColor(theme: ResolvedTheme) {

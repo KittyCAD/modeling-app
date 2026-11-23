@@ -33,14 +33,9 @@ export function createCameraInputApplier(
 export function applySceneOverlayTheme(
   scene: { theme: Themes },
   theme: Themes,
-  viewportRendering: PostEffectType | ViewportRendering,
-  geometryOnly: boolean
+  viewportRendering: PostEffectType | ViewportRendering
 ) {
-  const overlayTheme = getSceneOverlayTheme(
-    theme,
-    viewportRendering,
-    geometryOnly
-  )
+  const overlayTheme = getSceneOverlayTheme(theme, viewportRendering)
   if (scene.theme !== overlayTheme) scene.theme = overlayTheme
   return overlayTheme
 }

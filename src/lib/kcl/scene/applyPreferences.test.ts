@@ -57,16 +57,15 @@ it('keeps camera input application independent between views', () => {
 })
 
 it.each([
-  [Themes.Light, 'noeffect', false, Themes.Dark],
-  [Themes.Dark, 'noeffect', false, Themes.Light],
-  [Themes.Light, 'retrocad', false, Themes.Light],
-  [Themes.Light, 'phosphor', false, Themes.Light],
-  [Themes.Light, 'retrocad', true, Themes.Dark],
+  [Themes.Light, 'noeffect', Themes.Dark],
+  [Themes.Dark, 'noeffect', Themes.Light],
+  [Themes.Light, 'retrocad', Themes.Light],
+  [Themes.Light, 'phosphor', Themes.Light],
 ] as const)(
-  'uses %s/%s/local=%s to give sketch graphics the %s foreground',
-  (theme, mode, local, expected) => {
+  'uses %s/%s to give sketch graphics the %s foreground',
+  (theme, mode, expected) => {
     const scene = { theme: Themes.System }
-    expect(applySceneOverlayTheme(scene, theme, mode, local)).toBe(expected)
+    expect(applySceneOverlayTheme(scene, theme, mode)).toBe(expected)
     expect(scene.theme).toBe(expected)
   }
 )
