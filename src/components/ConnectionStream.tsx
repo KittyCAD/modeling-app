@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -11,7 +12,7 @@ import {
   type EngineDisconnectEvent,
   useOnPeerConnectionClose,
 } from '@src/hooks/network/useOnPeerConnectionClose'
-import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
+import { useOnEngineOnline } from '@src/hooks/network/useOnEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
@@ -33,13 +34,12 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromPoint,
   normalizeEntityReference,
   sendQueryEntityTypeWithPoint,
 } from '@src/lib/selections'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { getResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
@@ -47,11 +47,10 @@ import type {
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
-
 const stringHash = (value: string) => {
   let hash = 0
   for (let i = 0; i < value.length; i++) {
@@ -69,7 +68,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -78,6 +77,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
+  // Each renderer needs its own kind of engine session, so the choice is fixed
+  // when the scene mounts instead of following the setting live.
+  const [isLocalRendering] = useState(
+    () => settingsValues.modeling.useLocalRenderer.current
+  )
+  const theme = getResolvedTheme(settingsValues.app.theme.current)
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
@@ -97,7 +102,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,
-  } = useTryConnect()
+  } = useTryConnect({ geometryOnly: isLocalRendering })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -193,30 +198,38 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
             const selectedEntityRef = normalizeEntityReference(result.reference)
             let entityId: string | undefined
-            if (selectedEntityRef?.type === 'plane')
-              entityId = selectedEntityRef.plane_id
-            else if (selectedEntityRef?.type === 'face')
-              entityId = selectedEntityRef.face_id
-            else if (selectedEntityRef?.type === 'solid2d')
-              entityId = selectedEntityRef.solid2d_id
-            else if (selectedEntityRef?.type === 'solid3d')
-              entityId = selectedEntityRef.solid3d_id
-            else if (selectedEntityRef?.type === 'solid2d_edge')
-              entityId = selectedEntityRef.edge_id
-            else if (selectedEntityRef?.type === 'segment')
-              entityId = selectedEntityRef.segment_id
-            else if (selectedEntityRef?.type === 'region')
-              entityId = selectedEntityRef.region_id
-            else if (
-              selectedEntityRef?.type === 'edge' &&
-              selectedEntityRef.side_faces[0]
-            ) {
-              entityId = selectedEntityRef.side_faces[0]
-            } else if (
-              selectedEntityRef?.type === 'vertex' &&
-              selectedEntityRef.side_faces[0]
-            ) {
-              entityId = selectedEntityRef.side_faces[0]
+            switch (selectedEntityRef?.type) {
+              case 'annotation':
+                entityId = selectedEntityRef.annotation_id
+                break
+              case 'plane':
+                entityId = selectedEntityRef.plane_id
+                break
+              case 'face':
+                entityId = selectedEntityRef.face_id
+                break
+              case 'solid2d':
+                entityId = selectedEntityRef.solid2d_id
+                break
+              case 'solid3d':
+                entityId = selectedEntityRef.solid3d_id
+                break
+              case 'solid2d_edge':
+                entityId = selectedEntityRef.edge_id
+                break
+              case 'segment':
+                entityId = selectedEntityRef.segment_id
+                break
+              case 'region':
+                entityId = selectedEntityRef.region_id
+                break
+              case 'edge':
+              case 'vertex':
+                entityId = selectedEntityRef.side_faces[0]
+                break
+              case 'helix':
+              case undefined:
+                break
             }
             if (!entityId) {
               return
@@ -302,38 +315,32 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       ]
     )
 
+  const connectToEngine = () => {
+    setShowManualConnect(false)
+    tryConnecting({
+      authToken: props.authToken || '',
+      videoWrapperRef,
+      setAppState,
+      videoRef,
+      setIsSceneReady,
+      isConnecting,
+      numberOfConnectionAttempts,
+      timeToConnect: TIME_TO_CONNECT,
+      setShowManualConnect,
+      sceneInfra,
+      settingsActor: settings.actor,
+    }).catch((e) => {
+      console.warn(e)
+      setShowManualConnect(true)
+    })
+  }
+
   // TODO: Handle PingPong checks
 
   const onPageMountedParams = useMemo(
     () => ({
       callback: () => {
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        })
-          .then(() => {
-            // Take a screen shot after the page mounts and zoom to fit runs
-            if (projectIORef && projectIORef.path) {
-              createThumbnailPNGOnDesktop({
-                fileOperations,
-                projectDirectoryWithoutEndingSlash: projectIORef.path,
-              })
-            }
-          })
-          .catch((e) => {
-            console.warn(e)
-            setShowManualConnect(true)
-          })
+        connectToEngine()
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -384,23 +391,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     // It needs to have been in an idle state first!
     if (!isIdle.current) return
     isIdle.current = false
-    setShowManualConnect(false)
-    tryConnecting({
-      authToken: props.authToken || '',
-      videoWrapperRef,
-      setAppState,
-      videoRef,
-      setIsSceneReady,
-      isConnecting,
-      numberOfConnectionAttempts,
-      timeToConnect: TIME_TO_CONNECT,
-      setShowManualConnect,
-      sceneInfra,
-      settingsActor: settings.actor,
-    }).catch((e) => {
-      console.warn(e)
-      setShowManualConnect(true)
-    })
+    connectToEngine()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
@@ -410,8 +401,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       idleCallback: () => {
         isIdle.current = true
       },
+      enabled: !isLocalRendering,
     }),
-    [onPageIdleStartCb]
+    [onPageIdleStartCb, isLocalRendering]
   )
   useOnPageIdle(onPageIdleParams)
 
@@ -426,23 +418,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
           )
         }
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
         // Also exhaust any retry already running when the close budget is spent.
@@ -470,55 +446,23 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
-  const onVitestEngineOnline = useMemo(
+  const onEngineOnline = useMemo(
     () => ({
       engineCommandManager,
       callback: () => {
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
   )
-  useOnVitestEngineOnline(onVitestEngineOnline)
+  useOnEngineOnline(onEngineOnline)
 
   const onPeerConnectionCloseParams = useMemo(
     () => ({
       callback: (eventType: EngineDisconnectEvent) => {
         reportEngineDisconnect(eventType)
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
       engineCommandManager,
     }),
@@ -548,23 +492,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       },
       connect: () => {
         if (engineCommandManager.lastConnectionError?.terminal) return
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
+        connectToEngine()
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -587,23 +515,31 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnOfflineToExitSketchMode(onOfflineToExitSketchModeParams)
 
-  // Hardcoded engine background color based on theme
-  const style = useMemo(
-    () => ({
-      backgroundColor:
-        getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
-          ? 'rgb(250, 250, 250)'
-          : 'rgb(30, 30, 30)',
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settingsValues.app.theme.current]
-  )
+  const style = {
+    backgroundColor: getThemeBackgroundColor(theme),
+  }
 
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) =>
       sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
     [sceneInfra.camControls.wasDragging]
   )
+
+  useEffect(() => {
+    // This effect runs when a project gets opened.
+    const cameraControls = sceneInfra.camControls
+    const wasLocalCameraMode = cameraControls.localCameraMode
+    cameraControls.localCameraMode = isLocalRendering
+    // The engine gives a streamed scene its starting view. A local scene has
+    // to set its own, or it opens with the previous project's camera.
+    if (isLocalRendering) {
+      cameraControls.resetLocalCameraToDefaultView()
+    }
+
+    return () => {
+      cameraControls.localCameraMode = wasLocalCameraMode
+    }
+  }, [sceneInfra.camControls, isLocalRendering])
 
   return (
     <div
@@ -624,18 +560,29 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
+        className={`w-full cursor-pointer h-full${
+          isLocalRendering ? ' opacity-0' : ''
+        }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className={isLocalRendering ? 'opacity-0' : 'cursor-pointer'}
         id="freeze-frame"
       >
         No canvas support
       </canvas>
+      {isLocalRendering && (
+        <LocalWebGPUScene
+          theme={theme}
+          enableSSAO={settingsValues.modeling.enableSSAO.current}
+          shouldHighlightEdges={settingsValues.modeling.highlightEdges.current}
+          fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
+          backfaceColor={settingsValues.modeling.backfaceColor.current}
+        />
+      )}
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={
@@ -669,23 +616,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           callback={() => {
             abnormalCloseRetries.current = 0
             numberOfConnectionAttempts.current = 0
-            setShowManualConnect(false)
-            tryConnecting({
-              authToken: props.authToken || '',
-              videoWrapperRef,
-              setAppState,
-              videoRef,
-              setIsSceneReady,
-              isConnecting,
-              numberOfConnectionAttempts,
-              timeToConnect: TIME_TO_CONNECT,
-              setShowManualConnect,
-              sceneInfra,
-              settingsActor: settings.actor,
-            }).catch((e) => {
-              console.warn(e)
-              setShowManualConnect(true)
-            })
+            connectToEngine()
           }}
         >
           Connecting and setting up scene...

@@ -30,6 +30,7 @@ __all__ = [
     "Finding",
     "FindingFamily",
     "FixedLints",
+    "GltfExportExtra",
     "GltfExportOptions",
     "GltfImportOptions",
     "GltfStorage",
@@ -97,6 +98,9 @@ __all__ = [
 
 @typing.final
 class AcisImportOptions:
+    r"""
+    Options for importing ACIS part format.
+    """
     def __new__(cls) -> AcisImportOptions:
         r"""
         Set the options to their defaults.
@@ -131,6 +135,9 @@ class CameraLookAt:
 
 @typing.final
 class CatiaImportOptions:
+    r"""
+    Options for importing CATIA part format.
+    """
     def __new__(cls) -> CatiaImportOptions:
         r"""
         Set the options to their defaults.
@@ -148,6 +155,9 @@ class CompilationIssue:
 
 @typing.final
 class CreoImportOptions:
+    r"""
+    Options for importing PTC Creo part format.
+    """
     def __new__(cls) -> CreoImportOptions:
         r"""
         Set the options to their defaults.
@@ -449,6 +459,9 @@ class InputFormat3d:
 
 @typing.final
 class InventorImportOptions:
+    r"""
+    Options for importing Autodesk Inventor part format.
+    """
     def __new__(cls) -> InventorImportOptions:
         r"""
         Set the options to their defaults.
@@ -530,6 +543,9 @@ class NamedView:
 
 @typing.final
 class NxImportOptions:
+    r"""
+    Options for importing Siemens NX part format.
+    """
     def __new__(cls) -> NxImportOptions:
         r"""
         Set the options to their defaults.
@@ -557,6 +573,9 @@ class ObjImportOptions:
 
 @typing.final
 class ParasolidImportOptions:
+    r"""
+    Options for importing Parasolid part format.
+    """
     def __new__(cls) -> ParasolidImportOptions:
         r"""
         Set the options to their defaults.
@@ -736,6 +755,9 @@ class SketchConstraintStatus:
 
 @typing.final
 class SldprtImportOptions:
+    r"""
+    Options for importing SolidWorks part format.
+    """
     def __new__(cls) -> SldprtImportOptions:
         r"""
         Set the options to their defaults.
@@ -947,6 +969,32 @@ class FindingFamily(enum.Enum):
     Simplify = ...
     r"""
     The user has expressed something in a complex way that could be simplified.
+    """
+
+@typing.final
+class GltfExportExtra(enum.Enum):
+    r"""
+    Additional data that can be included in a glTF 2.0 export.
+    """
+    Sketches = ...
+    r"""
+    Sketch geometry and metadata.
+    """
+    Regions = ...
+    r"""
+    Sketch regions and their resolver metadata.
+    """
+    ImportedFiles = ...
+    r"""
+    Original imported files.
+    """
+    Mbd = ...
+    r"""
+    Model-based definition (MBD) annotations.
+    """
+    GeometryUuids = ...
+    r"""
+    UUIDs and source UUIDs on boundary-representation solids, edges, faces, and surfaces.
     """
 
 @typing.final

@@ -6,6 +6,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import { emptyOperationsByModule } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import { Themes } from '@src/lib/theme'
 import { vi } from 'vitest'
 
@@ -47,6 +48,7 @@ export function createSceneGraphDelta(
       variables: {},
       operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
+      namedViews: null,
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],
@@ -286,7 +288,9 @@ export function createMockSceneInfra(): SceneInfra {
 }
 
 export function createMockRustContext(): RustContext {
+  const settings = createSettings()
   return {
+    prepareForSketchInsertion: vi.fn().mockResolvedValue(undefined),
     addSegment: vi.fn(),
     addConstraint: vi.fn(),
     chainSegment: vi.fn(),
@@ -298,9 +302,7 @@ export function createMockRustContext(): RustContext {
     settingsActor: {
       send: vi.fn(),
       getSnapshot: vi.fn(() => ({
-        context: {
-          app: {},
-        },
+        context: settings,
       })),
     },
   } as unknown as RustContext

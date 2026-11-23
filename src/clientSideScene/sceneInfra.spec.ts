@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
@@ -14,6 +14,45 @@ function makeSceneInfraForCallbacksTest() {
     () => ({}) as any
   )
 }
+
+describe('SceneInfra overlay frames', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('updates only the current overlays on the next frame without waiting for a timer', () => {
+    vi.useFakeTimers()
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const stale = vi.fn(() => null)
+    const current = vi.fn(() => null)
+    const send = vi.fn()
+    sceneInfra.setSend(send)
+
+    sceneInfra.overlayCallbacks([stale])
+    sceneInfra.overlayCallbacks([current])
+    vi.advanceTimersToNextFrame()
+
+    expect(stale).not.toHaveBeenCalled()
+    expect(current).toHaveBeenCalledOnce()
+    expect(send).toHaveBeenCalledExactlyOnceWith({
+      type: 'Set Segment Overlays',
+      data: { type: 'set-many', overlays: {} },
+    })
+  })
+
+  it('does not repopulate overlays after the scene stops', () => {
+    vi.useFakeTimers()
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const callback = vi.fn(() => null)
+    const send = vi.fn()
+    sceneInfra.setSend(send)
+    sceneInfra.overlayCallbacks([callback])
+    sceneInfra.stop()
+    vi.advanceTimersToNextFrame()
+    vi.advanceTimersByTime(500)
+
+    expect(callback).not.toHaveBeenCalled()
+    expect(send).not.toHaveBeenCalled()
+  })
+})
 
 describe('SceneInfra callback resets', () => {
   it('clears solver-only mouse down selection callback when listeners reset', () => {

@@ -1,10 +1,17 @@
 name: E2E Tests
 
+# Due to test infrastructure scaling limitations, we do not automatically run
+# E2E tests on every push. Instead, PRs opt-in by applying the `run-e2e` label
+# once local development is complete. Remove the label to save CI costs if a PR
+# needs to undergo further changes. Consider only applying the label to the top
+# of large PR stacks.
+
 on:
   push:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   schedule:
     - cron: 0 * * * * # hourly
   workflow_call:
@@ -36,7 +43,16 @@ env:
   VITE_KITTYCAD_WEBSOCKET_URL: wss://api.dev.zoo.dev/ws/modeling/commands?pr=5402
 
 jobs:
+  e2e-enabled:
+    if: >-
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'run-e2e')
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - run: echo "E2E is enabled for this event"
+
   track-setup:
+    needs: [e2e-enabled]
     if: ${{ !inputs.grep }}
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
@@ -80,11 +96,75 @@ jobs:
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
+  build-web:
+    needs: [build-wasm]
+    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
+      - name: Copy prepared Wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build:e2e:web
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-web-app
+          path: build/
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+
   snapshots:
     name: e2e:snapshots
-    needs: [build-wasm]
+    needs: [build-web]
     if: github.repository == 'kittycad/modeling-app'
     runs-on: namespace-profile-macos-8-cores
+
+    env:
+      E2E_USE_PREBUILT_APP: '1'
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -108,6 +188,11 @@ jobs:
         with:
           name: prepared-ts-rs-bindings
           path: prepared-ts-rs-bindings
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-web-app
+          path: build
 
       - name: Copy prepared Wasm
         run: |
@@ -227,31 +312,39 @@ jobs:
 
   web:
     name: e2e:web (${{ matrix.config.label }}, shard ${{ matrix.shardIndex }})
-    needs: [build-wasm]
-    if: ${{ !cancelled() && needs.build-wasm.result == 'success' && !inputs.grep }}
+    needs: [build-web]
+    if: ${{ !cancelled() && needs.build-web.result == 'success' && !inputs.grep }}
     runs-on: ${{ matrix.config.os }}
     continue-on-error: ${{ matrix.config.optional == true && github.repository != 'kittycad/modeling-app' }}
     env:
+      E2E_USE_PREBUILT_APP: '1'
       OS_NAME: ${{ contains(matrix.config.os, 'ubuntu') && 'ubuntu' || (contains(matrix.config.os, 'windows') && 'windows' || 'macos') }}
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2]
-        shardTotal: [2]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
         config:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-            label: ubuntu
-            test_script: test:e2e:web
+            label: chrome
+            test_command: npm run test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
-            optional: true # WebKit coverage is non-blocking for external callers
-          - os: namespace-profile-windows-8-cores
-            label: windows
-            test_script: test:e2e:web
-            playwright_cache_path: ~/AppData/Local/ms-playwright
+        include:
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-ubuntu-8-cores
+              label: firefox
+              test_command: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:e2e:web:firefox
+              playwright_cache_path: ~/.cache/ms-playwright
+          - shardIndex: 1
+            shardTotal: 1
+            config:
+              os: namespace-profile-macos-8-cores
+              label: webkit
+              test_command: npm run test:e2e:web:webkit
+              playwright_cache_path: ~/Library/Caches/ms-playwright
+              optional: true # WebKit coverage is non-blocking for external callers
 
     steps:
       - uses: actions/create-github-app-token@v3
@@ -275,6 +368,11 @@ jobs:
         with:
           name: prepared-ts-rs-bindings
           path: prepared-ts-rs-bindings
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-web-app
+          path: build
 
       - name: Copy prepared Wasm
         run: |
@@ -315,7 +413,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run ${{ matrix.config.test_script }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: ${{ matrix.config.test_command }} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -359,8 +457,8 @@ jobs:
       matrix:
         os:
           - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
-        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
-        shardTotal: [8]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7]
+        shardTotal: [7]
         playwright_cache_path:
           - ~/.cache/ms-playwright
         include:
@@ -494,6 +592,7 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
+    needs: [e2e-enabled]
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
 
@@ -574,6 +673,9 @@ jobs:
     if: ${{ inputs.grep }}
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
 
+    env:
+      E2E_USE_PREBUILT_APP: '1'
+
     steps:
       - uses: actions/create-github-app-token@v3
         id: app-token
@@ -593,7 +695,7 @@ jobs:
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false
           rustflags: '' # use .cargo/config.toml
@@ -613,6 +715,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build web app
+        run: npm run build:e2e:web
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0

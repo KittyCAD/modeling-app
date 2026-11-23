@@ -1,8 +1,8 @@
-import { Registry } from '@kittycad/registry'
 import { routerService } from '@src/registry/contracts/router'
-import routerRegistryItem, { createRouterRegistryService } from '.'
+import { Registry } from 'plankton'
 import type { Location } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import routerRegistryItem, { createRouterRegistryService } from '.'
 
 const testLocation = (pathname: string): Location => ({
   pathname,
@@ -18,14 +18,12 @@ describe('router extension', () => {
   beforeEach(() => {
     window.history.replaceState(null, '', '/')
   })
-
-  afterEach(() => {
-    registry?.[Symbol.dispose]()
+  afterEach(async () => {
+    await registry?.dispose()
     registry = undefined
     window.history.replaceState(null, '', '/')
   })
-
-  it('provides non-nullable browser-backed fallback values', () => {
+  it('provides non-nullable browser-backed fallback values', async () => {
     window.history.replaceState(
       { usr: { from: 'browser' }, key: 'browser-key' },
       '',
@@ -33,9 +31,8 @@ describe('router extension', () => {
     )
 
     registry = new Registry()
-    registry.configure([routerRegistryItem])
-
-    const router = registry.get(routerService)
+    await registry.configure([routerRegistryItem])
+    const router = registry.required(routerService)
     const location = testLocation('/settings')
     const navigate = vi.fn()
 

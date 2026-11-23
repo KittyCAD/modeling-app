@@ -1,17 +1,13 @@
-import {
-  defineContract,
-  defineService,
-  defineValueSpec,
-} from '@kittycad/registry'
+import { inputs, observeService, observe } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
 import {
   type ExtensionSettingsContribution,
-  type ResolvedExtensionSettings,
   mergeExtensionSettings,
+  type ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-
+import { contract, Facet, service } from 'plankton'
 export type SettingsRegistryService = {
   actor: SettingsActorType
   current: ReadonlySignal<SettingsType>
@@ -28,16 +24,19 @@ export type SettingsRegistryService = {
  * spec contributes extra setting definitions into the actor model during
  * startup.
  */
-export const settingsContract = defineContract({
-  settingsService: defineService<SettingsRegistryService>('settings.service'),
-  settingsValueSpec: defineValueSpec<
+export const settingsContract = contract({
+  settingsService: service<SettingsRegistryService>('settings.service'),
+  settingsFacet: new Facet<
     ExtensionSettingsContribution,
     ResolvedExtensionSettings
-  >({
-    name: 'settings',
-    defaultValue: {},
-    combine: mergeExtensionSettings,
-  }),
+  >('settings', (inputs) =>
+    inputs.length ? mergeExtensionSettings(inputs) : {}
+  ),
 })
 
-export const { settingsService, settingsValueSpec } = settingsContract
+export const { settingsService, settingsFacet } = settingsContract
+
+export const observations = inputs({
+  settingsService: observeService(settingsService),
+  settingsFacet: observe(settingsFacet),
+})

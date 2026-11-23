@@ -1,0 +1,9 @@
+.surface {
+  @apply h-full min-h-0 w-full min-w-0 overflow-hidden;
+}
+.surface > :global(.cm-editor) {
+  @apply h-full min-h-0;
+}
+.surface :global(.cm-scroller) {
+  @apply overflow-auto;
+}

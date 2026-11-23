@@ -38,7 +38,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below, after the manifest is edited.
           rustflags: '' # Use .cargo/config.toml
@@ -69,7 +69,7 @@ jobs:
             --bench digest_benchmark \
             --bench memory_benchmark_criterion
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v5.5.0
+        uses: CodSpeedHQ/action@v5.6.3
         with:
           mode: simulation
           working-directory: rust

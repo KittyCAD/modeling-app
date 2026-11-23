@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_compatibility_argument_evaluation.kcl
+---
+// Evaluate arguments before checking keyword labels. The undefined name must
+// fail before the interpreter reports the unexpected label or runs the sketch body.
+
+before = 17
+profile = sketch(unexpected = notDefinedAnywhere, on = XY) {
+  assert(false, error = "The sketch body ran before its arguments were checked")
+}
+after = 99

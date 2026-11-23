@@ -160,11 +160,11 @@ function CommandBarHeaderFooter({
             </p>
             {Object.entries(nonHiddenArgs || {}).flatMap(
               ([argName, arg], i) => {
-                const { value: argValue, isRequired } = evaluateCommandBarArg(
-                  argName,
-                  arg,
-                  commandBarState.context
-                )
+                const { value: submittedValue, isRequired } =
+                  evaluateCommandBarArg(argName, arg, commandBarState.context)
+                const argValue =
+                  commandBarState.context.argumentDrafts[argName] ??
+                  submittedValue
                 const isCurrentArg = argName === currentArgument?.name
                 const isSkipFalse = arg.skip === false
 

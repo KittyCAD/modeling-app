@@ -1,23 +1,12 @@
 import { Combobox } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import Fuse from 'fuse.js'
-import {
-  type ForwardedRef,
-  forwardRef,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: hash-based keybinding highlighting (useLocation).
-import { useLocation } from 'react-router-dom'
-
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
-  type KeybindingRow,
   createRowUserBinding,
   findKeybindingConflict,
   formatKeybindingConflict,
   getKeybindingRows,
+  type KeybindingRow,
   normalizeVisibleKeymapWhen,
   serializeKeymapWhen,
 } from '@src/components/Settings/keybindingRows'
@@ -29,25 +18,35 @@ import { platform } from '@src/lib/utils'
 import {
   type CommandScope,
   commandKey,
-  commandScopesValueSpec,
-  commandsValueSpec,
+  commandScopesFacet,
+  commandsFacet,
 } from '@src/registry/contracts/commands'
 import {
   BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  createUnbindBinding,
+  getKeymapItemWhen,
   KEYMAP_SCHEMA_VERSION,
   type KeymapArguments,
   type KeymapBinding,
   type KeymapItem,
   type KeymapService,
-  USER_KEYMAP_SOURCE,
-  createUnbindBinding,
-  getKeymapItemWhen,
   keymapBindingCanCollideWithTyping,
+  keymapFacet,
   keymapService,
-  keymapValueSpec,
   normalizeEventKey,
+  USER_KEYMAP_SOURCE,
 } from '@src/registry/contracts/keymap'
+import Fuse from 'fuse.js'
+import {
+  type ForwardedRef,
+  forwardRef,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: hash-based keybinding highlighting (useLocation).
+import { useLocation } from 'react-router-dom'
 
 type AllKeybindingsFieldsProps = object
 
@@ -70,7 +69,7 @@ const keymapModifierDisplay: Record<string, string> = {
 }
 
 const iconButtonClassName =
-  'relative inline-flex h-6 w-6 items-center justify-center rounded border border-transparent bg-transparent p-0 text-chalkboard-70 transition-opacity hover:border-chalkboard-30 hover:bg-chalkboard-20 dark:text-chalkboard-30 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-80'
+  'relative inline-flex h-6 w-6 items-center justify-center rounded border border-transparent bg-transparent p-0 text-chalkboard-70 hover:border-chalkboard-30 hover:bg-chalkboard-20 dark:text-chalkboard-30 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-80'
 
 export const AllKeybindingsFields = forwardRef(
   (
@@ -81,9 +80,9 @@ export const AllKeybindingsFields = forwardRef(
     const { registry } = useApp()
     const location = useLocation()
     const keymap = registry.optional(keymapService)
-    const contributedKeymap = registry.signal(keymapValueSpec).value
-    const commands = registry.signal(commandsValueSpec).value
-    const commandScopes = registry.signal(commandScopesValueSpec).value
+    const contributedKeymap = registry.observe(keymapFacet).value
+    const commands = registry.observe(commandsFacet).value
+    const commandScopes = registry.observe(commandScopesFacet).value
     const persistedKeymap = keymap?.persistedKeymap.value ?? {
       version: KEYMAP_SCHEMA_VERSION,
       bindings: [],
