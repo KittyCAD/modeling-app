@@ -9,7 +9,7 @@ import {
 import { EditorView } from '@codemirror/view'
 import type { Editor } from '@src/lib/editors/registry/contract'
 
-/** History retains inert effects and a view identity, never an EditorView or a native context. */
+/** Associate checkpoint effects with their owner so undo can update text after that view closes. */
 interface OwnedHistory {
   owner: symbol
   forward: readonly StateEffect<unknown>[]
@@ -49,29 +49,38 @@ export function createModelingDocumentAdapter(
       annotations: Transaction.addToHistory.of(false),
     })
   }
-  const unsubscribe = editor.subscribe((transaction) => {
+  const unsubscribe = editor.subscribe((update) => {
     if (closed || sending || !view) return
-    const effects = transaction.effects.flatMap((effect) =>
-      effect.is(ownedHistory) && effect.value.owner === owner
-        ? effect.value.forward
-        : []
+    const owned = (transaction: Transaction) =>
+      transaction.effects.flatMap((effect) =>
+        effect.is(ownedHistory) && effect.value.owner === owner
+          ? effect.value.forward
+          : []
+      )
+    const hasEffects = update.transactions.some(
+      (transaction) => owned(transaction).length > 0
     )
-    if (!transaction.docChanged && !effects.length) return
-    if (effects.length) beforePublish(transaction.state.doc.toString())
-    else if (transaction.docChanged) externalChange()
-    view.update([
-      view.state.update({
+    if (!update.docChanged && !hasEffects) return
+    if (hasEffects) beforePublish(update.state.doc.toString())
+    else if (update.docChanged) externalChange()
+    let state = view.state
+    const transactions = update.transactions.map((transaction) => {
+      const next = state.update({
         changes: transaction.changes,
-        effects,
+        effects: owned(transaction),
         annotations: [
           Transaction.addToHistory.of(false),
           Transaction.userEvent.of(
             transaction.annotation(Transaction.userEvent) ?? 'sync'
           ),
         ],
-      }),
-    ])
+      })
+      state = next.state
+      return next
+    })
+    view.update(transactions)
   })
+
   const suspend = () => {
     closed = true
     unsubscribe()
@@ -90,6 +99,7 @@ export function createModelingDocumentAdapter(
         dispatchTransactions: (transactions, target) => {
           if (
             closed ||
+            editor.signal.aborted ||
             (editor.readOnly.peek() && transactions.some((tr) => tr.docChanged))
           )
             return
@@ -100,9 +110,16 @@ export function createModelingDocumentAdapter(
               .flatMap((invert) => invert(transaction))
               .filter(acceptsHistoryEffect)
             if (!transaction.docChanged && !forward.length) continue
-            beforePublish(transaction.state.doc.toString())
             sending = true
             try {
+              // Match Code surfaces: history records the editing view's cursor,
+              // while ordinary selection moves remain local to that view.
+              if (!editor.state.selection.eq(transaction.startState.selection))
+                editor.dispatch({
+                  selection: transaction.startState.selection,
+                  annotations: Transaction.addToHistory.of(false),
+                })
+              beforePublish(transaction.state.doc.toString())
               const isolation = transaction.annotation(isolateHistory)
               editor.dispatch({
                 changes: transaction.changes,

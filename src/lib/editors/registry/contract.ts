@@ -1,5 +1,6 @@
 import { inputs, observe, observeService } from '@src/registry/inputs'
 import type {
+  ChangeSet,
   EditorState,
   Extension,
   Transaction,
@@ -13,6 +14,16 @@ import type {
 } from '@src/lib/editors/matching'
 import { contract, Facet, service } from 'plankton'
 import type { ComponentType } from 'react'
+
+/** One atomic document update, including any ordered history-replay transactions. */
+export interface EditorUpdate {
+  /** Ordered source transactions for presentation changes and checkpoint effects. */
+  readonly transactions: readonly Transaction[]
+  /** Authoritative canonical state, including normalized preview history. */
+  readonly state: EditorState
+  readonly changes: ChangeSet
+  readonly docChanged: boolean
+}
 
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
@@ -28,7 +39,7 @@ export interface Editor {
   readonly state: EditorState
   readonly signal: AbortSignal
   dispatch: (...specs: TransactionSpec[]) => void
-  subscribe: (listener: (transaction: Transaction) => void) => () => void
+  subscribe: (listener: (update: EditorUpdate) => void) => () => void
   undo: () => boolean
   redo: () => boolean
 }

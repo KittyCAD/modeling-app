@@ -182,8 +182,8 @@ it('maps the cursor through only the changed text when adopting a remote snapsho
 it('does not dispatch a document change for an unchanged remote snapshot', async () => {
   const { cloud, editor, saving } = await setup()
   const changed = vi.fn()
-  const unsubscribe = editor.subscribe((transaction) => {
-    if (transaction.docChanged) changed()
+  const unsubscribe = editor.subscribe((update) => {
+    if (update.docChanged) changed()
   })
   vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2'))
   try {
