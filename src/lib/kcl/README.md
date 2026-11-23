@@ -222,7 +222,9 @@ Every Modeling view exposes Render and a freshness indicator. The registered
 Modeling context has been acquired. Its default `mod+s` binding uses the existing
 keymap system and supports user remapping. Opening the command palette retains its
 originating editor until dismissal or submission. Other documents are unaffected;
-views sharing the requested editor consume the same new capture.
+views sharing the requested editor consume the same new capture. Render also
+wakes an idle streamed scene and restores its saved camera before presenting
+the requested model.
 
 Each view captures native settings when the shared source request is published,
 before asynchronous file reads or pending native work can delay it. Later
