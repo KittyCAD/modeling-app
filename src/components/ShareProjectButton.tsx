@@ -28,8 +28,10 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
   const onLocalRoute = pathname?.startsWith(`${PATHS.LOCAL}/`)
   if (!onProjectRoute && !onFileRoute && !onLocalRoute) return null
 
-  const cloud = registry.optional(cloudStorageService)
   const auth = registry.optional(authService)
+  if (!auth?.isLoggedIn.value || !auth.organization.current.value) return null
+
+  const cloud = registry.optional(cloudStorageService)
   const appUrl = registry.optional(runtimeService)?.current.value.appUrl
 
   const nextProject = registry.optional(projectSessionService)?.currentProject
@@ -47,7 +49,7 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
   }
 
   const sharing =
-    cloud && projectId && appUrl && auth?.isLoggedIn.value
+    cloud && projectId && appUrl
       ? {
           projectId,
           url: new URL(
@@ -60,7 +62,7 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
   return (
     <Popover
       className="flex"
-      key={sharing ? `${sharing.url}:${auth?.user.value?.id ?? ''}` : undefined}
+      key={sharing ? `${sharing.url}:${auth.user.value?.id ?? ''}` : undefined}
     >
       {({ open }) => (
         <>
@@ -153,7 +155,8 @@ function ShareProjectDialog({
           Share project
         </h2>
         <p className="mt-2 text-xs leading-5 text-2">
-          People with access can sign in to open the latest saved version.
+          Members of your organization with access can sign in to open the
+          latest saved version.
         </p>
       </div>
       <div className="flex min-h-0 flex-col gap-4 overflow-y-auto px-4 py-4">
