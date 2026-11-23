@@ -25,6 +25,7 @@ test.describe(
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
       const local = await page.evaluate(
         () => window.engineCommandManager.geometryOnly
       )
@@ -45,6 +46,12 @@ test.describe(
           { x: coord, y: coord, z: coord },
           { x: 0, y: 0, z: 0 }
         )
+
+        if (local) {
+          await expect
+            .poll(async () => (await scene.getCameraInfo()).position)
+            .toEqual([coord, coord, coord])
+        }
 
         const resolvedCoords = await scene.convertPagePositionToStream(
           clickCoords.x,
