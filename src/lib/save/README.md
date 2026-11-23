@@ -59,6 +59,9 @@ state and persistence boundary.
 Double-clicking a tab or pressing F2 on a focused tab opens the same path input for renaming. Renames wait for
 previously requested writes, reject existing destinations, and update every buffer
 for the original source while preserving document text, history, and views.
+Renaming to a path such as `parts/drafts/model.kcl` creates missing destination
+directories through file operations before moving the file. The confirmed rename
+adds those directories and the destination to the in-memory tree without a scan.
 Requests capture their project opening and stop adopting results when that opening
 or the editor closes. Storage operations already started may still finish against
 their captured path.

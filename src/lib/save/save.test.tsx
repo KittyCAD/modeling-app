@@ -70,6 +70,7 @@ describe('contributed editor saving', () => {
   let registry: Registry
   const writeFile = vi.fn<typeof testFileOperations.writeFile>()
   const createFile = vi.fn<typeof testFileOperations.createFile>()
+  const createDirectory = vi.fn<typeof testFileOperations.createDirectory>()
   const rename = vi.fn<typeof testFileOperations.rename>()
   const extra = slot()
   beforeAll(async () => {
@@ -80,6 +81,9 @@ describe('contributed editor saving', () => {
   })
   beforeEach(async () => {
     createFile.mockReset().mockResolvedValue(undefined)
+    createDirectory
+      .mockReset()
+      .mockImplementation(testFileOperations.createDirectory)
     rename.mockReset().mockResolvedValue(undefined)
     writeFile.mockReset().mockResolvedValue(undefined)
     registry = new Registry()
@@ -92,6 +96,7 @@ describe('contributed editor saving', () => {
           ...testFileOperations,
           writeFile,
           createFile,
+          createDirectory,
           rename,
         }),
       ],
@@ -721,6 +726,131 @@ describe('contributed editor saving', () => {
           name: 'new.md',
           value: join(root, 'new.md'),
         })
+      } finally {
+        await rm(root, { recursive: true, force: true })
+      }
+    }
+  )
+  it.each(['editor', 'project'])(
+    'stops a nested rename if the %s closes during directory creation',
+    async (closed) => {
+      const projects = await namingProject()
+      const editor = open()
+      const pending = deferred()
+      createDirectory.mockReturnValueOnce(pending.promise)
+      naming().rename(editor)
+      const submitted = naming().submit(editor, 'parts/notes.txt')
+      await vi.waitFor(() => expect(createDirectory).toHaveBeenCalled())
+      if (closed === 'editor')
+        registry.required(editorsService).closeEditor(editor.id)
+      else projects.closeProject()
+      pending.resolve()
+      await submitted
+      expect(rename).not.toHaveBeenCalled()
+      expect(editor.src.peek()).toBe('/project/notes.txt')
+    }
+  )
+  it('moves a saved buffer into new directories without rereading the project', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'zds-nested-rename-'))
+    const source = join(root, 'notes.txt')
+    const destination = join(root, 'parts', 'drafts', 'notes.txt')
+    const readDirectory = vi.spyOn(testFileOperations, 'readDirectory')
+    try {
+      await testFileOperations.createFile(source, 'saved contents')
+      rename.mockImplementation(testFileOperations.rename)
+      writeFile.mockImplementation(testFileOperations.writeFile)
+      const projects = createProjectSessionService(testFileOperations)
+      projects.openProject({
+        contents: {
+          name: 'project',
+          path: root,
+          children: [{ name: 'notes.txt', path: source, children: null }],
+        },
+        metadata: { title: 'Project', readWriteAccess: true },
+      })
+      await registry.replace(extra, [provide(projectSessionService, projects)])
+      const editor = requireSuccess(
+        registry.required(editorsService).openEditor(source, 'saved contents')
+      )
+      registry.required(editorsService).createView(editor)
+      change(editor, 'unsaved edits')
+      renderNamingPane()
+      fireEvent.doubleClick(screen.getByRole('tab', { name: /notes.txt/ }))
+      const input = screen.getByRole('textbox', {
+        name: 'Project-relative file path',
+      })
+      fireEvent.change(input, { target: { value: 'parts/drafts/notes.txt' } })
+      fireEvent.keyDown(input, { key: 'Enter' })
+      await vi.waitFor(() => expect(editor.src.peek()).toBe(destination))
+      expect(await testFileOperations.exists(source)).toBe(false)
+      expect(
+        new TextDecoder().decode(await testFileOperations.readFile(destination))
+      ).toBe('saved contents')
+      expect(editor.contents.peek()).toBe('unsaved edits')
+      expect(saving().state(editor).peek().dirty).toBe(true)
+      expect(projects.listFiles().map((file) => file.path)).toEqual([
+        destination,
+      ])
+      const arg = registry
+        .get(commandsFacet)
+        .find(({ id }) => id === OPEN_EDITOR_COMMAND.id)?.args?.src
+      if (arg?.inputType !== 'options' || typeof arg.options !== 'function')
+        throw new Error('Expected Open Editor source options')
+      expect(arg.options({ argumentsToSubmit: {} })).toEqual([
+        { name: 'parts/drafts/notes.txt', value: destination },
+      ])
+      expect(readDirectory).not.toHaveBeenCalled()
+      expect(await saving().save(editor)).toBeUndefined()
+      expect(
+        new TextDecoder().decode(await testFileOperations.readFile(destination))
+      ).toBe('unsaved edits')
+    } finally {
+      readDirectory.mockRestore()
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+  it.each(['blocked/notes.txt', 'parts/occupied.txt'])(
+    'retains the source and edits when a nested rename to %s fails',
+    async (path) => {
+      const root = await mkdtemp(join(tmpdir(), 'zds-failed-nested-rename-'))
+      const source = join(root, 'notes.txt')
+      try {
+        await testFileOperations.createFile(source, 'saved contents')
+        await testFileOperations.createFile(
+          join(root, 'blocked'),
+          'not a folder'
+        )
+        await testFileOperations.createDirectory(join(root, 'parts'))
+        const occupied = join(root, 'parts', 'occupied.txt')
+        await testFileOperations.createFile(occupied, 'keep this file')
+        rename.mockImplementation(testFileOperations.rename)
+        const projects = createProjectSessionService(testFileOperations)
+        projects.openProject({
+          contents: {
+            name: 'project',
+            path: root,
+            children: [{ name: 'notes.txt', path: source, children: null }],
+          },
+          metadata: { title: 'Project', readWriteAccess: true },
+        })
+        await registry.replace(extra, [
+          provide(projectSessionService, projects),
+        ])
+        const editor = open(source)
+        change(editor, 'unsaved edits')
+        naming().rename(editor)
+        await naming().submit(editor, path)
+        expect(naming().state(editor).peek()?.error).toBeTruthy()
+        expect(editor.src.peek()).toBe(source)
+        expect(editor.contents.peek()).toBe('unsaved edits')
+        expect(saving().state(editor).peek().dirty).toBe(true)
+        expect(projects.listFiles().map((file) => file.path)).toEqual([source])
+        expect(
+          new TextDecoder().decode(await testFileOperations.readFile(source))
+        ).toBe('saved contents')
+        expect(
+          new TextDecoder().decode(await testFileOperations.readFile(occupied))
+        ).toBe('keep this file')
       } finally {
         await rm(root, { recursive: true, force: true })
       }

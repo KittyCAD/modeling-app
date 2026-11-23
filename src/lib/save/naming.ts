@@ -6,6 +6,7 @@ import type {
   EditorsService,
 } from '@src/lib/editors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import type {
   OpenProjectSession,
   ProjectSessionService,
@@ -210,6 +211,16 @@ export function createEditorNaming(
             return new Error('This editor is read-only')
           if (current.source) {
             const source = current.source
+            const parent = fsZds.dirname(destination)
+            if (parent !== fsZds.dirname(source)) {
+              await ensureDirectory(files, parent)
+              if (!active()) return new Error('The editor changed while naming')
+              if (
+                editor.readOnly.peek() ||
+                !current.session.project.peek().metadata.readWriteAccess
+              )
+                return new Error('This editor is read-only')
+            }
             const affected = editors.editors
               .peek()
               .filter((candidate) => candidate.src.peek() === current.source)
