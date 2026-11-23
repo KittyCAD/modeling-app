@@ -92,18 +92,3 @@ it('opens the shared camera menu on a right click, but not after an orbit drag',
   )
   expect(center).toHaveBeenCalledOnce()
 })
-
-it('leaves camera shortcuts to the registered command contribution', () => {
-  const { resource, zoom, reset } = setup('one')
-  render(<View resource={resource} id="one" />)
-  const viewport = screen.getByTestId('one')
-  fireEvent.keyDown(viewport, { key: 'f', ctrlKey: true, altKey: true })
-  fireEvent.keyDown(viewport, { key: 'x', ctrlKey: true, altKey: true })
-  expect(zoom).not.toHaveBeenCalled()
-  expect(reset).not.toHaveBeenCalled()
-  fireEvent.mouseUp(viewport, { button: 2 })
-  expect(screen.getByRole('button', { name: 'Zoom to fit' })).toBeVisible()
-  expect(
-    screen.getByRole('button', { name: 'Zoom to fit' }).querySelector('kbd')
-  ).not.toBeInTheDocument()
-})

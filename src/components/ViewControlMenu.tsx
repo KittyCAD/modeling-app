@@ -1,3 +1,8 @@
+import { cameraShortcutHints } from '@src/lib/cameraViewCommands'
+import {
+  keymapService,
+  keymapScopesFacet,
+} from '@src/registry/contracts/keymap'
 import { createCameraViewMenuItems } from '@src/components/CameraViewMenu'
 import { memo, useMemo } from 'react'
 
@@ -20,7 +25,11 @@ import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   useSignals()
-  const { settings, layout } = useApp()
+  const { settings, layout, registry } = useApp()
+  const keymap = registry.optional(keymapService)
+  const cameraKeymap = keymap?.keymap.value
+  const cameraScopes = keymap?.getCurrentScopes()
+  const cameraScopeMetadata = registry.observe(keymapScopesFacet).value
   const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
@@ -56,6 +65,15 @@ export function useViewControlMenuItems() {
     () => [
       ...createCameraViewMenuItems({
         camera: kclManager.sceneInfra.camControls,
+        shortcuts:
+          cameraKeymap && cameraScopes
+            ? cameraShortcutHints(
+                cameraKeymap,
+                { type: 'legacy' },
+                cameraScopes,
+                cameraScopeMetadata
+              )
+            : undefined,
         disabled: shouldLockView,
         reset: () =>
           resetCameraPosition({
@@ -161,6 +179,9 @@ export function useViewControlMenuItems() {
     ],
     [
       shouldLockView,
+      cameraKeymap,
+      cameraScopes,
+      cameraScopeMetadata,
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
