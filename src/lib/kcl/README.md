@@ -248,6 +248,32 @@ A view can supply command definitions and scopes through
 service owns their registration, palette, and invocation. These adapters do not
 create a command-bar actor for each view.
 
+## Canonical document and history
+
+[`createModelingDocumentAdapter`](machine/document.ts) lets `KclManager` keep its
+existing CodeMirror listeners while editing a project-owned editor. The adapter
+creates a private presentation of that editor's text. Changes go through the
+editor's document and undo history, then update sibling views. Undo and redo from
+the manager delegate to the same canonical history used by Code views.
+
+Checkpoint effects retain an owner identity. The matching Modeling view can
+restore its native checkpoint; sibling views receive the text change without
+replaying another scene's checkpoint. A committed preview also records its before
+and after text, so undo remains usable after the native owner closes. The
+[editor update contract](../editors/README.md#atomic-document-updates) explains
+how preview replay reaches observers as one update.
+
+A hosted manager borrows its scene and document instead of allocating or saving
+another copy. `adoptExecution` supplies an already executed model and marks its
+native project ready without opening it again. Late edits and adoption replies
+cannot update a closed owner.
+
+[`activateSceneEntityAtPoint`](scene/activateEntity.ts) shares the existing
+sketch and annotation activation path between the legacy stream and a
+machine-owned scene. The caller supplies the destination and input eligibility;
+responses are ignored if the source, artifact graph, or eligibility changes.
+Connecting this adapter to the new Modeling view remains the machine-host step.
+
 ## Code map
 
 - `execution/`: source capture, native execution, and native input metadata.
