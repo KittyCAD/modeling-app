@@ -98,10 +98,14 @@ function ShareProjectDialog({
   const [details, setDetails] = useState<{
     access?: ProjectAccessResponse
     libraryId?: string
-    organizationName?: string
   } | null>()
   const access = details?.access
-  const organizationName = details?.organizationName
+  const organization =
+    registry.optional(authService)?.organization.current.value
+  const organizationName =
+    organization && access?.organization_id === organization.id
+      ? organization.name?.trim()
+      : undefined
   const libraryId = details?.libraryId
   const library = libraryId
     ? registry
@@ -122,15 +126,7 @@ function ShareProjectDialog({
       const info = await cloud
         .getProjectSharingInfo(projectId, signal)
         .catch(() => null)
-      if (signal.aborted) return
-      setDetails(info ?? null)
-      const access = info?.access
-      if (access?.scope !== 'organization' || !access.organization_id) return
-      const organizationName = await cloud
-        .getOrganizationName(access.organization_id, signal)
-        .catch(() => undefined)
-      if (!signal.aborted && organizationName)
-        setDetails({ ...info, organizationName })
+      if (!signal.aborted) setDetails(info ?? null)
     }
     void load()
     return () => controller.abort()
@@ -209,7 +205,7 @@ function ShareProjectDialog({
               <dt className="text-2">Who can open this link</dt>
               <dd className="min-w-0 break-words">
                 {access.scope === 'organization'
-                  ? `Members of ${organizationName ?? 'the owning organization'}`
+                  ? `Members of ${organizationName || 'the owning organization'}`
                   : 'Project owner'}
               </dd>
               <dt className="text-2">Your access</dt>

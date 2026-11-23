@@ -877,12 +877,6 @@ export function createCloudProjectRuntime(
       if (requestConfig.accountId === config().accountId)
         return { access: project.access, libraryId: project.library_id }
     },
-    getOrganizationName: async (id: string, signal: AbortSignal) => {
-      const requestConfig = config()
-      const org = await api.getRemoteOrganization(requestConfig, signal)
-      if (org.id === id && requestConfig.accountId === config().accountId)
-        return org.name?.trim() || undefined
-    },
     thumbnail: (project: RemoteProjectSummary) =>
       api.getRemoteProjectThumbnailUrl(config(), project),
     pathFor,
