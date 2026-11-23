@@ -12,7 +12,15 @@ The element found at the top (yay descriptive names!) of our interfaces. It is u
 
 The element found at the bottom of our interfaces. It is used to get information about where you are and what you're doing in the application at the moment.
 
-The left side is for "global" items like your network status, and the right side is for "local", context-specific information such as your current selection in the Workbench.
+### Project status bar
+
+Information shared across the project's editor views, such as network health, application updates, and the current environment.
+
+### Modeling view status bar
+
+Status and controls for one Modeling view, such as execution, geometry selection, measurement, and file units. It belongs to that view even when several views show the same document.
+
+**Also called:** Modeling footer.
 
 ## Home
 
