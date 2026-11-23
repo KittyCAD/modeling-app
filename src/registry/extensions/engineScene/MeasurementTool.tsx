@@ -1,29 +1,20 @@
-import { LegacySceneToolsProvider } from './LegacySceneToolsProvider'
+import { useLegacySceneToolsHost } from './useLegacySceneToolsHost'
 import {
   MeasurementToolView,
   MeasurementStatusBarItemView,
   MeasurementDraggablePanelView,
 } from './MeasurementToolView'
 export function MeasurementTool() {
-  return (
-    <LegacySceneToolsProvider>
-      <MeasurementToolView />
-    </LegacySceneToolsProvider>
-  )
+  const host = useLegacySceneToolsHost()
+  return <MeasurementToolView host={host} />
 }
 export function MeasurementStatusBarItem() {
-  return (
-    <LegacySceneToolsProvider>
-      <MeasurementStatusBarItemView />
-    </LegacySceneToolsProvider>
-  )
+  const host = useLegacySceneToolsHost()
+  return <MeasurementStatusBarItemView host={host} />
 }
 export function MeasurementDraggablePanel(
-  props: Parameters<typeof MeasurementDraggablePanelView>[0]
+  props: Omit<Parameters<typeof MeasurementDraggablePanelView>[0], 'host'>
 ) {
-  return (
-    <LegacySceneToolsProvider>
-      <MeasurementDraggablePanelView {...props} />
-    </LegacySceneToolsProvider>
-  )
+  const host = useLegacySceneToolsHost()
+  return <MeasurementDraggablePanelView {...props} host={host} />
 }

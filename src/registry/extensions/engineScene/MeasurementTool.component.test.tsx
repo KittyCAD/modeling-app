@@ -36,6 +36,12 @@ import {
 } from '@src/registry/extensions/engineScene/MeasurementTool'
 import { measurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
 
+import { MeasurementStatusBarItemView } from './MeasurementToolView'
+import { PhysicalAnalysisStatusBarItemView } from './physicalAnalysis/PhysicalAnalysisToolView'
+import { createMeasurementToolService } from './measurementToolService'
+import { createPhysicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
+import type { SceneToolsHost } from './sceneToolsHost'
+
 function response(type: string, data: unknown) {
   return {
     resp: { type: 'modeling', data: { modeling_response: { type, data } } },
@@ -171,5 +177,64 @@ it.each(['mounted', 'replaced'])(
     expect(
       within(stream).queryByRole('button', { name: /Close/ })
     ).not.toBeInTheDocument()
+  }
+)
+
+it.each([
+  {
+    View: MeasurementStatusBarItemView,
+    name: 'Measure',
+    service: 'measurement' as const,
+  },
+  {
+    View: PhysicalAnalysisStatusBarItemView,
+    name: 'Physical analysis',
+    service: 'physicalAnalysis' as const,
+  },
+])(
+  'opens and closes $name in only its supplied scene',
+  async ({ View, name, service }) => {
+    const containers = [
+      document.createElement('div'),
+      document.createElement('div'),
+    ]
+    for (const container of containers) document.body.append(container)
+    onTestFinished(() => containers.forEach((container) => container.remove()))
+    const hosts: SceneToolsHost[] = containers.map((container, index) => ({
+      selections: { graphSelections: [], otherSelections: [] },
+      artifactGraph: new Map(),
+      idle: false,
+      executing: false,
+      unit: 'mm',
+      executionKey: `scene-${index}`,
+      sendModelingCommand: vi.fn(
+        async () => new Error('Inactive scenes cannot execute')
+      ),
+      container,
+      measurement: createMeasurementToolService(),
+      physicalAnalysis: createPhysicalAnalysisService(),
+    }))
+    render(
+      <>
+        <View host={hosts[0]} />
+        <View host={hosts[1]} />
+      </>
+    )
+
+    fireEvent.click(screen.getAllByRole('button', { name })[1])
+    const close = await within(containers[1]).findByRole('button', {
+      name: /Close/,
+    })
+    expect(
+      within(containers[0]).queryByRole('button', { name: /Close/ })
+    ).not.toBeInTheDocument()
+    expect(hosts[0][service].isOpen.value).toBe(false)
+    expect(hosts[1][service].isOpen.value).toBe(true)
+
+    fireEvent.click(close)
+    expect(
+      within(containers[1]).queryByRole('button', { name: /Close/ })
+    ).not.toBeInTheDocument()
+    expect(hosts[1][service].isOpen.value).toBe(false)
   }
 )

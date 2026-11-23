@@ -12,7 +12,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
-import { useSceneToolsHost } from '../sceneToolsHost'
+import type { SceneToolsHost } from '../sceneToolsHost'
 import {
   getModelingData,
   getResponseErrorMessage,
@@ -304,9 +304,8 @@ function showCopyError() {
 const copyResultsButtonClassName =
   'm-0 w-full border-0 bg-transparent text-left hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90'
 
-export function PhysicalAnalysisToolView() {
+export function PhysicalAnalysisToolView({ host }: { host: SceneToolsHost }) {
   useSignals()
-  const host = useSceneToolsHost()
   const physicalAnalysisService = host.physicalAnalysis
   const [status, setStatus] = useState<'idle' | 'analyzing'>('idle')
   const [result, setResult] = useState<PhysicalAnalysisResult | null>(null)
@@ -585,14 +584,15 @@ export function PhysicalAnalysisToolView() {
 }
 
 export function PhysicalAnalysisDraggablePanelView({
+  host,
   containerRef,
   top,
 }: {
+  host: SceneToolsHost
   containerRef: RefObject<HTMLElement | null>
   top: number
 }) {
   useSignals()
-  const host = useSceneToolsHost()
   const physicalAnalysisService = host.physicalAnalysis
   const measurementToolService = host.measurement
 
@@ -648,14 +648,17 @@ export function PhysicalAnalysisDraggablePanelView({
         </div>
       }
     >
-      <PhysicalAnalysisToolView key={host.executionKey} />
+      <PhysicalAnalysisToolView key={host.executionKey} host={host} />
     </Draggable>
   )
 }
 
-export function PhysicalAnalysisStatusBarItemView() {
+export function PhysicalAnalysisStatusBarItemView({
+  host,
+}: {
+  host: SceneToolsHost
+}) {
   useSignals()
-  const host = useSceneToolsHost()
   const physicalAnalysisService = host.physicalAnalysis
   const [streamElement, setStreamElement] = useState<HTMLElement | null>(null)
   const [panelTop, setPanelTop] = useState(panelMargin)
@@ -709,6 +712,7 @@ export function PhysicalAnalysisStatusBarItemView() {
         streamElement &&
         createPortal(
           <PhysicalAnalysisDraggablePanelView
+            host={host}
             containerRef={streamContainerRef}
             top={panelTop}
           />,

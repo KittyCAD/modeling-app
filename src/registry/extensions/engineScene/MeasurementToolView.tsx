@@ -10,7 +10,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
-import { useSceneToolsHost } from './sceneToolsHost'
+import type { SceneToolsHost } from './sceneToolsHost'
 import {
   getModelingData as getModelingDataForResponse,
   getResponseErrorMessage as getResponseErrorMessageWithFallback,
@@ -423,9 +423,8 @@ function showMeasurementCopyError() {
 const copyMeasurementButtonClassName =
   'm-0 w-full border-0 bg-transparent text-left hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90'
 
-export function MeasurementToolView() {
+export function MeasurementToolView({ host }: { host: SceneToolsHost }) {
   useSignals()
-  const host = useSceneToolsHost()
   const measurementToolService = host.measurement
   const [distanceModePreference, setDistanceModePreference] = useState<{
     selectionKey: string
@@ -700,9 +699,12 @@ export function MeasurementToolView() {
   )
 }
 
-export function MeasurementStatusBarItemView() {
+export function MeasurementStatusBarItemView({
+  host,
+}: {
+  host: SceneToolsHost
+}) {
   useSignals()
-  const host = useSceneToolsHost()
   const measurementToolService = host.measurement
   const [streamElement, setStreamElement] = useState<HTMLElement | null>(null)
   const [result, setResult] = useState<MeasurementResult | null>(null)
@@ -850,7 +852,10 @@ export function MeasurementStatusBarItemView() {
       {isOpen &&
         streamElement &&
         createPortal(
-          <MeasurementDraggablePanelView containerRef={streamContainerRef} />,
+          <MeasurementDraggablePanelView
+            host={host}
+            containerRef={streamContainerRef}
+          />,
           streamElement
         )}
     </div>
@@ -858,12 +863,13 @@ export function MeasurementStatusBarItemView() {
 }
 
 export function MeasurementDraggablePanelView({
+  host,
   containerRef,
 }: {
+  host: SceneToolsHost
   containerRef: RefObject<HTMLElement | null>
 }) {
   useSignals()
-  const host = useSceneToolsHost()
   const measurementToolService = host.measurement
 
   if (!measurementToolService.isOpen.value) {
@@ -909,7 +915,7 @@ export function MeasurementDraggablePanelView({
         </div>
       }
     >
-      <MeasurementToolView key={host.executionKey} />
+      <MeasurementToolView key={host.executionKey} host={host} />
     </Draggable>
   )
 }
