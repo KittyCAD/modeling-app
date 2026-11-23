@@ -17,12 +17,14 @@ export function createCameraViewMenuItems({
   center,
   disabled = false,
   centerDisabled,
+  showShortcutLabels = true,
 }: {
   camera: Pick<CameraControls, 'updateCameraToAxis' | 'zoomToFit'>
   reset: () => Promise<void>
   center: () => Promise<void>
   disabled?: boolean
   centerDisabled?: boolean
+  showShortcutLabels?: boolean
 }) {
   return [
     ...Object.values(AxisNames).map((axisName) => (
@@ -43,7 +45,7 @@ export function createCameraViewMenuItems({
           .zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
           .catch(reportRejection)
       }}
-      hotkey="mod+alt+f"
+      hotkey={showShortcutLabels ? 'mod+alt+f' : undefined}
     >
       Zoom to fit
     </ContextMenuItem>,
@@ -52,7 +54,7 @@ export function createCameraViewMenuItems({
         reset().catch(reportRejection)
       }}
       disabled={disabled}
-      hotkey="mod+alt+x"
+      hotkey={showShortcutLabels ? 'mod+alt+x' : undefined}
     >
       Reset view
     </ContextMenuItem>,
@@ -61,7 +63,7 @@ export function createCameraViewMenuItems({
         center().catch(reportRejection)
       }}
       disabled={centerDisabled ?? disabled}
-      hotkey={`mod+alt+c`}
+      hotkey={showShortcutLabels ? 'mod+alt+c' : undefined}
     >
       Center view on selection
     </ContextMenuItem>,
