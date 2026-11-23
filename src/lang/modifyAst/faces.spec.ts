@@ -189,35 +189,44 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
      )`
 
   describe('Testing addShell', () => {
-    it('should add a basic shell call on cylinder end cap', async () => {
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        cylinder,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const faces = getCapFromCylinder(artifactGraph)
-      const thickness = (await stringToKclExpression(
-        '1',
-        rustContextInThisFile
-      )) as KclCommandValue
-      const result = addShell({
-        ast,
-        artifactGraph,
-        faces,
-        thickness,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) {
-        throw result
-      }
+    it.each([
+      { subtype: 'start', tagArg: 'tagStart', tag: 'capStart001' },
+      { subtype: 'end', tagArg: 'tagEnd', tag: 'capEnd001' },
+    ])(
+      'should shell the $subtype cap of a sketch v1 extrusion',
+      async ({ subtype, tagArg, tag }) => {
+        const { artifactGraph, ast } = await getAstAndArtifactGraph(
+          cylinder,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const cap = [...artifactGraph.values()].find(
+          (a) => a.type === 'cap' && a.subType === subtype
+        )
+        if (!cap) throw new Error(`Cylinder ${subtype} cap not found`)
+        const faces = createSelectionFromArtifacts([cap], artifactGraph)
+        const thickness = (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result = addShell({
+          ast,
+          artifactGraph,
+          faces,
+          thickness,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) {
+          throw result
+        }
 
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinderWithEndTag)
-      expect(newCode).toContain(
-        `shell001 = shell(extrude001, faces = capEnd001, thickness = 1)`
-      )
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        expect(newCode).toContain(
+          `extrude001 = extrude(profile001, length = 10, ${tagArg} = $${tag})\nshell001 = shell(extrude001, faces = ${tag}, thickness = 1)`
+        )
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
 
     it('should add a shell call on variable-less extrude', async () => {
       // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640
@@ -878,8 +887,7 @@ fillet001 = fillet(
         `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line5)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    }, 15_000)
-
+    })
     it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])

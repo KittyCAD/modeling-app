@@ -44,6 +44,7 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
     structuredClone(initialConnectingTypeGroupState)
   )
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
+  const [webrtcEnabled, setWebrtcEnabled] = useState(true)
   const [overallState, setOverallState] = useState<NetworkHealthState>(
     NetworkHealthState.Disconnected
   )
@@ -142,19 +143,23 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
           acc === true || acc === undefined ? acc : hasIssue(a),
         false
       ),
-      [ConnectingTypeGroup.ICE]: steps[ConnectingTypeGroup.ICE].reduce(
-        (acc: boolean | undefined, a) =>
-          acc === true || acc === undefined ? acc : hasIssue(a),
-        false
-      ),
-      [ConnectingTypeGroup.WebRTC]: steps[ConnectingTypeGroup.WebRTC].reduce(
-        (acc: boolean | undefined, a) =>
-          acc === true || acc === undefined ? acc : hasIssue(a),
-        false
-      ),
+      [ConnectingTypeGroup.ICE]: webrtcEnabled
+        ? steps[ConnectingTypeGroup.ICE].reduce(
+            (acc: boolean | undefined, a) =>
+              acc === true || acc === undefined ? acc : hasIssue(a),
+            false
+          )
+        : false,
+      [ConnectingTypeGroup.WebRTC]: webrtcEnabled
+        ? steps[ConnectingTypeGroup.WebRTC].reduce(
+            (acc: boolean | undefined, a) =>
+              acc === true || acc === undefined ? acc : hasIssue(a),
+            false
+          )
+        : false,
     }
     setIssues(issues)
-  }, [steps])
+  }, [steps, webrtcEnabled])
 
   useEffect(() => {
     setHasIssues(
@@ -229,6 +234,7 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
     }
 
     const onEngineAvailable = ({ detail: connection }: CustomEvent) => {
+      setWebrtcEnabled(connection.webrtc)
       connection.addEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener

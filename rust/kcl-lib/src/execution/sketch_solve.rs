@@ -19,6 +19,7 @@ use crate::exec::NumericType;
 use crate::exec::Sketch;
 use crate::exec::UnitType;
 use crate::execution::AbstractSegment;
+use crate::execution::KclVersion;
 use crate::execution::Metadata;
 use crate::execution::Segment;
 use crate::execution::SegmentKind;
@@ -59,7 +60,7 @@ fn solver_unit(exec_state: &ExecState) -> UnitLength {
 }
 
 pub(crate) fn solver_convergence_tolerance(exec_state: &ExecState) -> f64 {
-    if exec_state.entry_point_version_is_v3_or_higher() {
+    if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
         UnitLength::Millimeters.convert_to(
             solver_unit(exec_state),
             POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM,
@@ -219,6 +220,7 @@ fn substitute_sketch_var(
         KclValue::GdtAnnotation { .. } => Ok(value),
         KclValue::CameraView { .. } => Ok(value),
         KclValue::NamedView { .. } => Ok(value),
+        KclValue::Sheet { .. } => Ok(value),
         KclValue::Plane { .. } => Ok(value),
         KclValue::Face { .. } => Ok(value),
         KclValue::Segment {

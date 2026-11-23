@@ -45,7 +45,7 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
 function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
   return setBaseCallInAst({
     ...args,
-    variableIfNewDecl: 'note',
+    variableIfNewDecl: 'annotation',
     labeledSelectionArgNames: GDT_LABELED_SELECTION_ARG_NAMES,
   })
 }

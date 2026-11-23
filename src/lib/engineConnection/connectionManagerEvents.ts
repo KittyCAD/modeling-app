@@ -50,6 +50,7 @@ export const createOnEngineConnectionOpened = ({
   camControlsCameraChange,
   connection,
   setStreamIsReady,
+  isCurrent,
 }: {
   settings: SettingsViaQueryString
   sendSceneCommand: (
@@ -62,8 +63,10 @@ export const createOnEngineConnectionOpened = ({
   camControlsCameraChange: () => void
   connection: Connection
   setStreamIsReady: (isStreamReady: boolean) => void
+  /** Startup may resume after its owner closes or replaces the connection. */
+  isCurrent: () => boolean
 }) => {
-  const onEngineConnectionOpened = async () => {
+  const initializeRenderer = async () => {
     // Set the stream's camera projection type
     // We don't send a command to the engine if in perspective mode because
     // for now it's the engine's default.
@@ -81,6 +84,7 @@ export const createOnEngineConnectionOpened = ({
       })
     }
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'setting theme',
@@ -89,6 +93,7 @@ export const createOnEngineConnectionOpened = ({
       },
     })
     await setTheme(settings.theme)
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'setting theme completed',
@@ -112,11 +117,13 @@ export const createOnEngineConnectionOpened = ({
       },
     })
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'camControlsCameraChange',
     })
     camControlsCameraChange()
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'restoreRemoteCameraStateAndTriggerSync',
@@ -130,13 +137,22 @@ export const createOnEngineConnectionOpened = ({
       },
     })
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'default_system_properties_set',
     })
 
     await setDefaultSystemProperties(settings.backfaceColor)
+  }
 
+  const onEngineConnectionOpened = async () => {
+    if (!isCurrent()) return
+    if (!connection.geometryOnly) {
+      await initializeRenderer()
+    }
+
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'Dispatching SceneReady',
@@ -149,7 +165,7 @@ export const createOnEngineConnectionOpened = ({
     )
 
     // Enables the toolbar reading from App state
-    setStreamIsReady(true)
+    if (isCurrent()) setStreamIsReady(true)
   }
   return onEngineConnectionOpened
 }
@@ -189,7 +205,7 @@ export const createOnEngineConnectionStarted = ({
   connection,
   trackListener,
 }: {
-  peerConnection: RTCPeerConnection
+  peerConnection: RTCPeerConnection | undefined
   getUnreliableSubscriptions: () => {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
@@ -208,6 +224,10 @@ export const createOnEngineConnectionStarted = ({
   // This is the second datachannel initialized on the peerConnection. One is already
   // attached when the createWebsocket() workflow is triggered before this code.
   const onEngineConnectionStarted = () => {
+    if (!peerConnection) {
+      return
+    }
+
     // When the EngineConnection starts a connection, we want to register
     // callbacks into the WebSocket/PeerConnection.
     EngineDebugger.addLog({

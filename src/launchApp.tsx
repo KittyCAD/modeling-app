@@ -1,0 +1,126 @@
+import { AppStreamProvider } from '@src/AppState'
+import { Router } from '@src/Router'
+import { AppToaster } from '@src/components/AppToaster'
+import type { Root } from 'react-dom/client'
+import toast from 'react-hot-toast'
+import { HotkeysProvider } from 'react-hotkeys-hook'
+import ModalContainer from 'react-modal-promise'
+import type { App } from '@src/lib/app'
+import {
+  clearAutoUpdateDownloadProgress,
+  setAutoUpdateDownloadProgress,
+  setAutoUpdateReady,
+} from '@src/lib/autoUpdate'
+import { AppContext, app } from '@src/lib/boot'
+import { initializeClientErrorReporting } from '@src/lib/clientErrors'
+import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLifecycleClientReporting'
+import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
+import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
+import { markOnce } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
+import reportWebVitals from '@src/reportWebVitals'
+
+/** Start the full application only after the browser handoff is resolved. */
+export function launchApp(root: Root) {
+  initSingletonBehavior(app)
+  if (window.electron) {
+    initElectronBehavior(window.electron, app)
+  }
+  mountAppToReact(app, root)
+}
+
+/** initialize behaviors that rely on singletons */
+function initSingletonBehavior(app: App) {
+  initializeClientErrorReporting(app.auth.isLoggedIn)
+  const { singletons } = app
+  markOnce('code/willAuth')
+  initializeWindowExceptionHandler(singletons.kclManager)
+
+  // Don't start the app machine until all these singletons
+  // are initialized, and the wasm module is loaded.
+  singletons.kclManager.wasmInstancePromise
+    .then((wasmInstance) => {
+      // Application commands must be created after the initPromise because
+      // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
+      app.commands.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            ...createApplicationCommands({
+              app,
+              wasmInstance,
+            }),
+          ],
+        },
+      })
+    })
+    .catch(reportRejection)
+}
+
+/** initialize behaviors that rely on electron (this is only available on desktop) */
+function initElectronBehavior(
+  electron: NonNullable<typeof window.electron>,
+  app: App
+) {
+  initializeElectronLifecycleClientReporting(electron, app.auth.isLoggedIn)
+
+  // Monkey patch to prevent issues in the web app with automated browser translation
+  // This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until
+  // we roll out our own i18n solution and can disable browser translation altogether.
+  // https://github.com/KittyCAD/modeling-app/issues/4959
+  monkeyPatchForBrowserTranslation()
+
+  electron.onUpdateChecking(() => {
+    console.log('Checking for updates...')
+  })
+
+  electron.onUpdateNotAvailable(() => {
+    clearAutoUpdateDownloadProgress()
+    const message = "You're already using the latest version of the app."
+    console.log(message)
+    toast.success(message)
+  })
+
+  electron.onUpdateDownloadStart((progress) => {
+    console.log('Downloading app update...', progress)
+    setAutoUpdateDownloadProgress(progress)
+  })
+
+  electron.onUpdateDownloadProgress((progress) => {
+    setAutoUpdateDownloadProgress(progress)
+  })
+
+  electron.onUpdateError(({ error }) => {
+    clearAutoUpdateDownloadProgress()
+    console.error(error)
+  })
+
+  electron.onUpdateDownloaded(({ version, releaseNotes }) => {
+    clearAutoUpdateDownloadProgress()
+    setAutoUpdateReady({ version, releaseNotes })
+    console.log(
+      `A new update (${version}) was downloaded and is ready to install.`
+    )
+  })
+}
+
+/** mount the app as a React node and begin rendering its components */
+function mountAppToReact(app: App, root: Root) {
+  root.render(
+    <AppContext.Provider value={app}>
+      <HotkeysProvider>
+        <AppStreamProvider>
+          <Router />
+          <AppToaster />
+          <ModalContainer enterTimeout={0} exitTimeout={0} />
+        </AppStreamProvider>
+      </HotkeysProvider>
+    </AppContext.Provider>
+  )
+
+  // If you want to start measuring performance in your app, pass a function
+  // to log results (for example: reportWebVitals(console.log))
+  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  reportWebVitals()
+}

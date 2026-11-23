@@ -6,14 +6,8 @@ import type {
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
-import { AxisNames } from '@src/lib/constants'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { AxisNames, ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometric,
-  uuidv4,
-} from '@src/lib/utils'
 import { PerspectiveCamera, Vector3 } from 'three'
 
 const ORIENTATION_AXES = {
@@ -23,14 +17,8 @@ const ORIENTATION_AXES = {
   right: AxisNames.X,
   top: AxisNames.Z,
   bottom: AxisNames.NEG_Z,
-  isometric: null, // Engine positions this for us
+  isometric: null, // viewIsometric() positions this
 } satisfies Record<ArtifactOrientation, AxisNames | null>
-
-/**
- * Matches the padding the Zoom to fit command passes. Other `zoom_to_fit` call
- * sites use 0.2.
- */
-const FIT_PADDING = 0.1
 
 /** Read the client camera in the form `view::directed` stores in KCL. */
 export async function captureNamedViewCamera(
@@ -134,11 +122,9 @@ function enginePoint(point: ArtifactPoint3d): {
 export async function applyNamedViewCamera({
   camera,
   sceneInfra,
-  engineCommandManager,
 }: {
   camera: ArtifactCameraView
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
 }): Promise<void> {
   await applyProjection({ camera, sceneInfra })
 
@@ -149,8 +135,10 @@ export async function applyNamedViewCamera({
     const axis = ORIENTATION_AXES[camera.look.orientation]
 
     if (axis === null) {
-      // `view_isometric` frames the model itself.
-      await engineViewIsometric({ engineCommandManager, padding: FIT_PADDING })
+      // viewIsometric() frames the model itself.
+      await sceneInfra.camControls.viewIsometric({
+        padding: ZOOM_TO_FIT_PADDING,
+      })
 
       if (target === undefined && distance === undefined) {
         return
@@ -177,13 +165,11 @@ export async function applyNamedViewCamera({
       target,
       distance,
       sceneInfra,
-      engineCommandManager,
     })
   }
 
   if (target === undefined || distance === undefined) {
-    await engineStreamZoomToFit({ engineCommandManager, padding: FIT_PADDING })
-    await getCameraSettings(engineCommandManager)
+    await sceneInfra.camControls.zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
   }
 }
 
@@ -203,14 +189,12 @@ async function lookAlongDirection({
   target,
   distance,
   sceneInfra,
-  engineCommandManager,
 }: {
   direction: ArtifactPoint3d
   up: ArtifactPoint3d
   target: { x: number; y: number; z: number } | undefined
   distance: number | undefined
   sceneInfra: SceneInfra
-  engineCommandManager: ConnectionManager
 }): Promise<void> {
   const center = target ?? {
     x: sceneInfra.camControls.target.x,
@@ -223,31 +207,13 @@ async function lookAlongDirection({
       sceneInfra.camControls.target
     )
 
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center,
-      vantage: {
-        x: center.x - direction.x * eyeDistance,
-        y: center.y - direction.y * eyeDistance,
-        z: center.z - direction.z * eyeDistance,
-      },
-      up: enginePoint(up),
+  await sceneInfra.camControls.lookAt({
+    center,
+    vantage: {
+      x: center.x - direction.x * eyeDistance,
+      y: center.y - direction.y * eyeDistance,
+      z: center.z - direction.z * eyeDistance,
     },
-  })
-  await getCameraSettings(engineCommandManager)
-}
-
-async function getCameraSettings(
-  engineCommandManager: ConnectionManager
-): Promise<void> {
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
+    up: enginePoint(up),
   })
 }

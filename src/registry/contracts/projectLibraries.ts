@@ -1,8 +1,5 @@
-import {
-  defineContract,
-  defineService,
-  defineValueSpec,
-} from '@kittycad/registry'
+import { inputs, observeService, observe } from '@src/registry/inputs'
+import type { RemoteProjectSummary } from '@src/lib/cloudProjects/runtime/types'
 import type { Project } from '@src/lib/project'
 import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
@@ -17,23 +14,25 @@ import {
 } from '@src/lib/projectLibraries'
 import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
-import type { CloudProjectRelationship } from '@src/registry/contracts/cloudSync'
+import { contract, Facet, service } from 'plankton'
+
+type CloudProjectRelationship = {
+  remoteProject?: RemoteProjectSummary
+}
+
 import type {
   HomeProjectEntry,
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
 import type { ComponentType } from 'react'
-
 export type ProjectLibrarySettingDefaultContribution =
   | ProjectLibrarySetting
   | readonly ProjectLibrarySetting[]
-
 export interface ProjectLibrarySettingDefaultPolicyInput {
   initialDefaultDir: string
   legacyProjectDirectory?: string
   isDesktop: boolean
 }
-
 export interface ProjectLibrarySettingDefaultPolicy {
   id: string
   priority?: number
@@ -41,22 +40,18 @@ export interface ProjectLibrarySettingDefaultPolicy {
     input: ProjectLibrarySettingDefaultPolicyInput
   ) => readonly ProjectLibrarySetting[] | undefined
 }
-
 export type ProjectLibrarySettingDefaultPolicyContribution =
   | ProjectLibrarySettingDefaultPolicy
   | readonly ProjectLibrarySettingDefaultPolicy[]
-
 export type ProjectLibraryRealizationThumbnail = {
   type: 'local'
   path: string
 }
-
 export type ProjectLibraryRealizationSyncFailure = {
   message: string
   at?: string
   kind?: string
 }
-
 export type ProjectLibraryRealizationLibraryRef = Pick<
   ProjectLibrary,
   'id' | 'title' | 'path' | 'type' | 'order'
@@ -68,9 +63,8 @@ export type ProjectLibraryRealizationLibraryRef = Pick<
  *
  * A local realization is one concrete project folder on disk. The same local
  * realization may be visible through multiple libraries when library paths
- * overlap, but cloud identity is not resolved here. If two local realizations
- * point at the same cloud project ID, they remain two realizations so cloudSync
- * can classify and clean them up with full disk/metadata context.
+ * overlap. Cloud projects are contributed separately from the server; legacy
+ * cloud metadata never causes a local realization to be synchronized or removed.
  */
 export interface ProjectLibraryRealization {
   id: string
@@ -92,7 +86,6 @@ export interface ProjectLibraryRealization {
   conflict?: unknown
   syncFailure?: ProjectLibraryRealizationSyncFailure
 }
-
 export type ProjectLibraryRealizationContribution = Omit<
   ProjectLibraryRealization,
   'id' | 'libraryIds' | 'libraryRefs'
@@ -103,19 +96,15 @@ export type ProjectLibraryRealizationContribution = Omit<
   libraryIds?: readonly string[]
   libraryRefs?: readonly ProjectLibraryRealizationLibraryRef[]
 }
-
 export type ProjectLibraryRealizationContributionGroup =
   | ProjectLibraryRealizationContribution
   | readonly ProjectLibraryRealizationContribution[]
-
 export type ProjectLibraryRealizationsInvalidationInput = {
   libraryId?: string
 }
-
 export type ProjectLibraryRealizationWatchOptions = {
   libraries: readonly ProjectLibrary[]
 }
-
 export interface ProjectLibraryRealizationsService {
   /**
    * Refreshes configured realization discovery. Prefer passing `libraryId`
@@ -131,15 +120,15 @@ export interface ProjectLibraryRealizationsService {
     options: ProjectLibraryRealizationWatchOptions
   ) => () => void
 }
-
 export interface ProjectLibraryOperation<
-  Input extends { library: ProjectLibrary },
+  Input extends {
+    library: ProjectLibrary
+  },
   Result = unknown,
 > {
   isAvailable?: (input: { library: ProjectLibrary }) => boolean
   run: (input: Input) => Result | Promise<Result>
 }
-
 export interface ProjectLibraryCreateProjectInput {
   library: ProjectLibrary
   requestedProjectName: string
@@ -152,64 +141,60 @@ export interface ProjectLibraryCreateProjectInput {
   /** Optional complete project to write before publishing it. */
   initialProject?: ProjectLibraryInitialProject
 }
-
 export interface ProjectLibraryProjectInput {
   library: ProjectLibrary
   project: HomeProjectEntry
 }
-
 export type ProjectLibraryOpenProjectInput = ProjectLibraryProjectInput
-
 export type ProjectLibraryDuplicateProjectInput = ProjectLibraryProjectInput
-
 export interface ProjectLibraryRenameProjectInput
   extends ProjectLibraryProjectInput {
   requestedName: string
 }
-
 export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
-
-export interface ProjectLibraryMoveProjectFromInput
+export interface ProjectLibraryCloneProjectFromInput
   extends ProjectLibraryProjectInput {
   targetLibrary: ProjectLibrary
 }
-
-export interface ProjectLibraryMoveProjectSource {
+export interface ProjectLibraryCloneProjectSource {
   localProjectPath: string
   localProjectName: string
   defaultFile?: string
+  files?: readonly { relativePath: string; data: Uint8Array }[]
 }
-
-export interface ProjectLibraryMoveProjectToInput
+export interface ProjectLibraryCloneProjectToInput
   extends ProjectLibraryProjectInput {
   sourceLibrary: ProjectLibrary
-  source: ProjectLibraryMoveProjectSource
+  source: ProjectLibraryCloneProjectSource
+  requestedProjectTitle?: string
 }
-
-export interface ProjectLibraryMoveProjectResult {
+export interface ProjectLibraryCloneProjectResult {
   localProjectPath?: string
   defaultFile?: string
 }
-
-export interface ProjectLibraryMoveProjectFromOperation
+export interface ProjectLibraryCloneProjectFromOperation
   extends ProjectLibraryOperation<
-    ProjectLibraryMoveProjectFromInput,
-    ProjectLibraryMoveProjectSource | undefined
+    ProjectLibraryCloneProjectFromInput,
+    ProjectLibraryCloneProjectSource | undefined
   > {
-  canMoveProject?: (input: ProjectLibraryProjectInput) => boolean
+  canCloneProject?: (input: ProjectLibraryProjectInput) => boolean
 }
-
-export interface ProjectLibraryMoveProjectToOperation
+export interface ProjectLibraryCloneProjectToOperation
   extends ProjectLibraryOperation<
-    ProjectLibraryMoveProjectToInput,
-    ProjectLibraryMoveProjectResult | undefined
+    ProjectLibraryCloneProjectToInput,
+    ProjectLibraryCloneProjectResult | undefined
   > {
   canReceiveProject?: (
-    input: Omit<ProjectLibraryMoveProjectToInput, 'source'>
+    input: Omit<ProjectLibraryCloneProjectToInput, 'source'>
   ) => boolean
 }
-
 export interface ProjectLibraryTypeOperations {
+  refresh?: ProjectLibraryOperation<
+    {
+      library: ProjectLibrary
+    },
+    Error | undefined
+  >
   createProject?: ProjectLibraryOperation<
     ProjectLibraryCreateProjectInput,
     Project | undefined
@@ -224,10 +209,9 @@ export interface ProjectLibraryTypeOperations {
   >
   renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
-  moveProjectFrom?: ProjectLibraryMoveProjectFromOperation
-  moveProjectTo?: ProjectLibraryMoveProjectToOperation
+  cloneProjectFrom?: ProjectLibraryCloneProjectFromOperation
+  cloneProjectTo?: ProjectLibraryCloneProjectToOperation
 }
-
 export interface ProjectLibrarySettingsDetailsProps {
   library: ProjectLibrarySetting
   index: number
@@ -260,10 +244,11 @@ export interface ProjectLibraryRelationshipMembershipPolicy {
   libraryId: string
   includes: (input: { relationship: CloudProjectRelationship }) => boolean
 }
-
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
+  /** Libraries discovered by this type in addition to configured settings. */
+  libraries?: readonly ProjectLibrary[]
   icon?: string
   order?: number
   /** Initial value used when settings are seeded or migrated for this type. */
@@ -289,7 +274,6 @@ export interface ProjectLibraryTypeContribution {
     signal: AbortSignal
   }) => Promise<ProjectLibraryRealizationContribution[]>
 }
-
 export function getProjectLibraryRealizationsForLibrary(
   realizations: readonly ProjectLibraryRealization[],
   libraryId: string
@@ -298,19 +282,16 @@ export function getProjectLibraryRealizationsForLibrary(
     realization.libraryIds.includes(libraryId)
   )
 }
-
 export function getHomeProjectEntriesForLibrary(
   projects: readonly HomeProjectEntry[],
   libraryId: string
 ) {
   return projects.filter((project) => project.libraryIds?.includes(libraryId))
 }
-
 export function combineProjectLibraryTypes(
   contributions: readonly ProjectLibraryTypeContribution[]
 ) {
   const typeById = new Map<ProjectLibraryType, ProjectLibraryTypeContribution>()
-
   for (const contribution of contributions) {
     const previousContribution = typeById.get(contribution.type)
     const operations = {
@@ -325,6 +306,14 @@ export function combineProjectLibraryTypes(
       ...previousContribution,
       ...contribution,
     }
+    const libraries = [
+      ...(previousContribution?.libraries ?? []),
+      ...(contribution.libraries ?? []),
+    ]
+    if (libraries.length)
+      nextContribution.libraries = [
+        ...new Map(libraries.map((library) => [library.id, library])).values(),
+      ]
     if (Object.keys(operations).length > 0) {
       nextContribution.operations = operations
     }
@@ -334,10 +323,8 @@ export function combineProjectLibraryTypes(
     }
     typeById.set(contribution.type, nextContribution)
   }
-
   return typeById
 }
-
 export function getProjectLibraryOperation<
   OperationName extends keyof ProjectLibraryTypeOperations,
 >(
@@ -349,21 +336,22 @@ export function getProjectLibraryOperation<
   if (!operation) {
     return undefined
   }
-
-  if (operation.isAvailable && !operation.isAvailable({ library })) {
+  if (
+    operation.isAvailable &&
+    !operation.isAvailable({
+      library,
+    })
+  ) {
     return undefined
   }
-
   return operation
 }
-
 export function getProjectLibraryCreateProjectOperation(
   libraryType: ProjectLibraryTypeContribution | undefined,
   library: ProjectLibrary
 ) {
   return getProjectLibraryOperation(libraryType, library, 'createProject')
 }
-
 export function combineProjectLibrarySettingDefaults(
   contributions: readonly ProjectLibrarySettingDefaultContribution[]
 ) {
@@ -373,7 +361,6 @@ export function combineProjectLibrarySettingDefaults(
     )
   )
 }
-
 export function combineProjectLibrarySettingDefaultPolicies(
   contributions: readonly ProjectLibrarySettingDefaultPolicyContribution[]
 ) {
@@ -386,7 +373,6 @@ export function combineProjectLibrarySettingDefaultPolicies(
       return priorityDiff === 0 ? a.id.localeCompare(b.id) : priorityDiff
     })
 }
-
 export function resolveProjectLibrarySettingDefaults(
   policies: readonly ProjectLibrarySettingDefaultPolicy[],
   input: ProjectLibrarySettingDefaultPolicyInput
@@ -397,16 +383,13 @@ export function resolveProjectLibrarySettingDefaults(
       return mergeProjectLibrarySettings(defaults)
     }
   }
-
   return []
 }
-
 function projectLibraryRealizationStableId(
   realization: ProjectLibraryRealizationContribution
 ) {
   return `local:${normalizeLibraryPath(realization.localProjectPath)}`
 }
-
 function projectLibraryRealizationLibraryIds(
   realization: ProjectLibraryRealizationContribution
 ) {
@@ -421,12 +404,10 @@ function projectLibraryRealizationLibraryIds(
     )
   )
 }
-
 function projectLibraryRealizationLibraryRefs(
   realization: ProjectLibraryRealizationContribution
 ) {
   const refsById = new Map<string, ProjectLibraryRealizationLibraryRef>()
-
   for (const ref of realization.libraryRefs ?? []) {
     refsById.set(ref.id, ref)
   }
@@ -446,10 +427,8 @@ function projectLibraryRealizationLibraryRefs(
       type: '',
     })
   }
-
   return Array.from(refsById.values())
 }
-
 function projectLibraryRealizationFromContribution(
   contribution: ProjectLibraryRealizationContribution
 ): ProjectLibraryRealization {
@@ -462,7 +441,6 @@ function projectLibraryRealizationFromContribution(
     localProjectPath,
     ...realization
   } = contribution
-
   return {
     ...realization,
     id: id ?? projectLibraryRealizationStableId(contribution),
@@ -481,7 +459,6 @@ export function combineProjectLibraryRealizationContributions(
   contributionGroups: readonly ProjectLibraryRealizationContributionGroup[]
 ) {
   const realizationsByPath = new Map<string, ProjectLibraryRealization>()
-
   for (const contribution of contributionGroups.flatMap((group) =>
     isArray(group) ? group : [group]
   )) {
@@ -508,53 +485,61 @@ export function combineProjectLibraryRealizationContributions(
         : realization
     )
   }
-
   return Array.from(realizationsByPath.values())
 }
 
-export const projectLibrariesContract = defineContract({
-  projectLibraryRealizationsService:
-    defineService<ProjectLibraryRealizationsService>(
-      'project-library-realizations'
-    ),
-  projectLibraryTypesValueSpec: defineValueSpec<
+/** Directory selection and refresh behavior shared by project-library consumers. */
+export interface ProjectLibrariesService {
+  readonly projectDirectoryPath: string
+  readonly defaultProjectName: string
+  refreshProjects: () => Promise<void>
+}
+export const projectLibrariesContract = contract({
+  projectLibrariesService:
+    service<ProjectLibrariesService>('project-libraries'),
+  projectLibraryRealizationsService: service<ProjectLibraryRealizationsService>(
+    'project-library-realizations'
+  ),
+  projectLibraryTypesFacet: new Facet<
     ProjectLibraryTypeContribution,
     Map<ProjectLibraryType, ProjectLibraryTypeContribution>
-  >({
-    name: 'project-library-types',
-    defaultValue: new Map(),
-    combine: combineProjectLibraryTypes,
-  }),
-  projectLibrarySettingDefaultsValueSpec: defineValueSpec<
+  >('project-library-types', combineProjectLibraryTypes),
+  projectLibrarySettingDefaultsFacet: new Facet<
     ProjectLibrarySettingDefaultContribution,
     ProjectLibrarySetting[]
-  >({
-    name: 'project-library-setting-defaults',
-    defaultValue: [],
-    combine: combineProjectLibrarySettingDefaults,
-  }),
-  projectLibrarySettingDefaultPoliciesValueSpec: defineValueSpec<
+  >('project-library-setting-defaults', combineProjectLibrarySettingDefaults),
+  projectLibrarySettingDefaultPoliciesFacet: new Facet<
     ProjectLibrarySettingDefaultPolicyContribution,
     ProjectLibrarySettingDefaultPolicy[]
-  >({
-    name: 'project-library-setting-default-policies',
-    defaultValue: [],
-    combine: combineProjectLibrarySettingDefaultPolicies,
-  }),
-  projectLibraryRealizationsValueSpec: defineValueSpec<
+  >(
+    'project-library-setting-default-policies',
+    combineProjectLibrarySettingDefaultPolicies
+  ),
+  projectLibraryRealizationsFacet: new Facet<
     ProjectLibraryRealizationContributionGroup,
     ProjectLibraryRealization[]
-  >({
-    name: 'project-library-realizations',
-    defaultValue: [],
-    combine: combineProjectLibraryRealizationContributions,
-  }),
+  >(
+    'project-library-realizations',
+    combineProjectLibraryRealizationContributions
+  ),
 })
-
 export const {
+  projectLibrariesService,
   projectLibraryRealizationsService,
-  projectLibraryTypesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibraryRealizationsValueSpec,
+  projectLibraryTypesFacet,
+  projectLibrarySettingDefaultsFacet,
+  projectLibrarySettingDefaultPoliciesFacet,
+  projectLibraryRealizationsFacet,
 } = projectLibrariesContract
+
+export const observations = inputs({
+  projectLibraryTypesFacet: observe(projectLibraryTypesFacet),
+  projectLibrariesService: observeService(projectLibrariesService),
+  projectLibraryRealizationsFacet: observe(projectLibraryRealizationsFacet),
+  projectLibrarySettingDefaultsFacet: observe(
+    projectLibrarySettingDefaultsFacet
+  ),
+  projectLibrarySettingDefaultPoliciesFacet: observe(
+    projectLibrarySettingDefaultPoliciesFacet
+  ),
+})

@@ -13,6 +13,17 @@ export function getHomeProjectDisplayName(project: HomeProjectEntry) {
   return (project.title || project.name).replace(FILE_EXT, '')
 }
 
+export function findHomeProjectByPath(
+  entries: readonly HomeProjectEntry[],
+  projectPath: string
+) {
+  return entries.find(
+    (entry) =>
+      entry.localProjectPath === projectPath ||
+      entry.projectPath === projectPath
+  )
+}
+
 export function homeProjectDisplayNameExists({
   entries,
   requestedName,
@@ -22,10 +33,14 @@ export function homeProjectDisplayNameExists({
   requestedName: string
   projectId: string
 }) {
+  const selected = entries?.find((project) => project.id === projectId)
   return Boolean(
     entries?.some(
       (project) =>
         project.id !== projectId &&
+        (!selected?.libraryIds?.length ||
+          !project.libraryIds?.length ||
+          project.libraryIds.some((id) => selected.libraryIds!.includes(id))) &&
         getHomeProjectDisplayName(project) === requestedName
     )
   )
