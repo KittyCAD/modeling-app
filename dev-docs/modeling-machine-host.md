@@ -8,7 +8,7 @@ The project editor's Modeling view now uses the existing `modelingMachine` and i
 
 The shared editor remains the authority for text, history, and persistence. The manager's hidden CodeMirror surface retains its existing AST, diagnostics, checkpoint listeners, and view-local selection behavior. Its document adapter forwards edits to the shared editor. The manager does not install another save listener, filesystem watcher, or scene-settings observer.
 
-The generic executor remains responsible for captured project sources and settings. `runtime.borrowModel` acknowledges machine-produced source before the document publishes it, so an ordinary executor refresh does not execute the same edit again. A changed import, external document edit, or execution-setting change retires the machine owner before the executor runs a replacement model. Native work drains before its context is freed.
+The shared executor captures project sources. Each view applies those sources and its requested execution settings through its native runtime. `runtime.borrowModel` acknowledges machine-produced source before the document publishes it, so an ordinary executor refresh does not execute the same edit again. A changed import, external document edit, or execution-setting change retires the machine owner before the executor runs a replacement model. Native work drains before its context is freed.
 
 ## Document and native history
 
@@ -20,7 +20,7 @@ Retirement first suspends document publication. The actor can then finish its ex
 
 ## Picking and presentation
 
-`createKclSceneSelection().handoff()` detaches the prototype click listener and suspends its engine-selection projection. The machine uses the shared engine subscriptions in `src/lib/scene/modelingMachineSubscriptions.ts`. The file route's hook delegates to the same subscription implementation.
+`createKclSceneSelection().handoff()` detaches the prototype click listener and suspends its engine-selection projection. The machine uses the shared engine subscriptions in `src/lib/kcl/scene/modelingMachineSubscriptions.ts`. The file route's hook delegates to the same subscription implementation.
 
 The selection controller remains a read model for existing status and correspondence consumers. Clear and filter actions delegate to the machine. A dialog-owned picking session temporarily handles point queries and projection; the machine's ordinary selection remains untouched. Closing that session restores the machine's selection presentation. Delayed scene queries and stale handoff cleanup cannot take ownership back from a newer owner.
 
