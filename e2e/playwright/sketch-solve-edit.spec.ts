@@ -24,7 +24,9 @@ async function waitForCodeChange(
   page: Page,
   previousCode: string
 ): Promise<string> {
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCode)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCode, {
+    useInnerText: true,
+  })
   return await page.locator('.cm-content').innerText()
 }
 
@@ -266,7 +268,6 @@ test.describe('Sketch solve edit tests', { tag: '@web' }, () => {
         await line1End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(2)
 
         // Second line segment
@@ -283,7 +284,6 @@ test.describe('Sketch solve edit tests', { tag: '@web' }, () => {
         await line2End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(4)
 
         // Third line segment
@@ -296,9 +296,8 @@ test.describe('Sketch solve edit tests', { tag: '@web' }, () => {
         await line3Start()
         previousCode = await waitForCodeChange(page, previousCode)
         await line3End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        await cancelLineChaining()
         await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
         await expect(pointHandles).toHaveCount(6)
       })
 
