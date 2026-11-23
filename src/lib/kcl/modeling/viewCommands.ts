@@ -41,7 +41,7 @@ export function boundSceneCommands(
 }
 
 export async function setViewFileUnits(
-  context: Pick<ModelingViewContext, 'executor' | 'wasm'>,
+  context: Pick<ModelingViewContext, 'executor' | 'wasm' | 'render'>,
   unit: UnitLength
 ): Promise<Error | undefined> {
   const { editor } = context.executor
@@ -57,6 +57,9 @@ export async function setViewFileUnits(
   const next = changeDefaultUnits(before, unit, wasm)
   if (isErr(next)) return next
   const changes = buildMinimalDocumentChange(before, next)
-  if (changes) editor.dispatch({ changes })
+  if (changes) {
+    editor.dispatch({ changes })
+    await context.render()
+  }
   return undefined
 }

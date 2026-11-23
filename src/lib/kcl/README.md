@@ -195,7 +195,7 @@ Each view owns geometry selection through `resource.selection`, scoped to its
 current execution. Both renderers use the existing picking adapters. Opening a
 command dialog gives its arguments a separate picking session; cancelling leaves
 the underlying view selection intact. Re-execution invalidates old geometry picks.
-See [the selection contract](scene/README.md#view-selection-and-dialog-picking).
+See [the selection contract](scene/README.md#view-selection).
 
 ## View status
 
@@ -216,7 +216,8 @@ With Automatically Render off, editing text or failing to capture new sources
 can leave that geometry available but out of date. Measurement continues to use
 that displayed model. Native re-execution, disconnection, scene replacement,
 and closing the view invalidate pending query responses. File-unit changes are
-editor transactions: they preserve undo history and refuse to overwrite text
+editor transactions: they preserve undo history and request rendering after a
+successful edit, matching the legacy units menu. They refuse to overwrite text
 that changed while the operation was waiting for WASM.
 
 The footer works without a modeling-machine host. Its assembly lives in
