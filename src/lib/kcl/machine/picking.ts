@@ -13,9 +13,9 @@ import type {
 } from '@src/machines/modelingMachine'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import type { MachineSceneResource } from '@src/lib/kcl/scene/open'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { PickingArgument } from '@src/lib/scene/selection'
+import type { PickingArgument } from '@src/lib/kcl/scene/selection'
 import type {
   SelectionSource,
   ActiveSelectionItem,
@@ -26,8 +26,8 @@ import {
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
-import { attachSceneKeyboardFocus } from '@src/lib/scene/selectionAdapter'
-import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
+import { attachSceneKeyboardFocus } from '@src/lib/kcl/scene/selectionAdapter'
+import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/kcl/scene/picking'
 import { reportRejection } from '@src/lib/trap'
 
 /** Hand input to one machine while exposing selection through the existing mode-independent facade. Dialogs borrow picking without changing ordinary machine selection. */
@@ -42,7 +42,7 @@ export function bindMachinePicking({
   wasm,
   isClosed,
 }: {
-  scene: KclSceneResource
+  scene: MachineSceneResource
   model: KclManager
   actor: ActorRefFrom<typeof modelingMachine>
   state: ReadonlySignal<SnapshotFrom<typeof modelingMachine>>

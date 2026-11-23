@@ -1,4 +1,4 @@
-import { Registry, factory, contribute } from 'plankton'
+import { Registry, factory, contribute, provide } from 'plankton'
 import { createCommandsExtension } from '@src/registry/extensions/commands'
 import {
   commandSystemService,
@@ -20,9 +20,9 @@ import {
   within,
   cleanup as cleanupReact,
 } from '@testing-library/react'
-import { KclScene } from '@src/lib/kcl/KclScene'
+import { KclScene } from '@src/lib/kcl/modeling/KclScene'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { createScenePresentationPreferences } from '@src/lib/kcl/presentationPreferences'
+import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import { createExecutorOutput } from '@src/lib/executors/output'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import type { WebSocketResponse } from '@kittycad/lib'
@@ -42,19 +42,50 @@ import {
   buildTheWorldAndNoEngineConnection,
   createSettledUserFeaturesForTest,
 } from '@src/unitTestUtils'
-import { createKclRuntime } from '@src/lib/kcl/runtime'
-import { modelingTestContext } from '@src/lib/kcl/testContext'
-import { createKclSceneSelection } from '@src/lib/kcl/sceneSelection'
+import { createKclRuntime } from '@src/lib/kcl/execution/runtime'
+import { modelingTestContext } from '@src/lib/kcl/modeling/testContext'
+import { createKclSceneSelection } from '@src/lib/kcl/scene/sceneSelection'
 import {
   openMachineModelingOwner,
   createMachineModelingHost,
 } from '@src/lib/kcl/machine/host'
-import { createKeymapTree } from '@src/registry/contracts/keymap'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import {
+  KEYMAP_SCHEMA_VERSION,
+  keymapService,
+  keymapScopesFacet,
+  provideKeymapItem,
+} from '@src/registry/contracts/keymap'
+import keymapExtension from '@src/registry/extensions/keymap'
+import {
+  fileOperationsService,
+  type FileOperationsRegistryService,
+} from '@src/registry/contracts/fileOperations'
 
-async function commandEnvironment(wasm: ModuleType, manager: MachineManager) {
+vi.mock('@src/registry/extensions/keymap/persistence', () => ({
+  readUserKeymapFile: async () => ({ version: 2, bindings: [] }),
+  writeUserKeymapFile: async () => {},
+}))
+import type { MachineSceneResource } from '@src/lib/kcl/scene/open'
+
+async function commandEnvironment(
+  wasm: ModuleType,
+  manager: MachineManager,
+  fileOperations: FileOperationsRegistryService
+) {
   const registry = new Registry()
   await registry.configure([
+    keymapExtension,
+    [provide(fileOperationsService, fileOperations)],
+    [
+      provideKeymapItem({
+        id: 'test.extrude',
+        title: 'Extrude',
+        source: 'test',
+        when: ['mode-modeling'],
+        keystrokes: ['e'],
+        command: 'modeling:Extrude',
+      }),
+    ],
     createCommandsExtension(
       factory({ create: () => ({ exports: { manager } }) })
     ),
@@ -63,6 +94,8 @@ async function commandEnvironment(wasm: ModuleType, manager: MachineManager) {
   return {
     commands: registry.required(commandSystemService),
     contextualCommands: registry.required(contextualCommandsService),
+    keymap: registry.required(keymapService),
+    keymapScopes: registry.observe(keymapScopesFacet),
     dispose: async () => await registry.dispose(),
   }
 }
@@ -185,7 +218,7 @@ async function fixture(
     presentation
   )
   picking.selection.setModel({ sceneId: Symbol(), executionId: Symbol() })
-  const scene: KclSceneResource = {
+  const scene: MachineSceneResource = {
     ...view.resource,
     sceneInfra: world.sceneInfra,
     runtime: native,
@@ -211,12 +244,16 @@ async function fixture(
   const invalidated = vi.fn(async () => {})
   const commandEnv =
     sharedCommands ??
-    (await commandEnvironment(world.instance, world.machineManager))
+    (await commandEnvironment(
+      world.instance,
+      world.machineManager,
+      world.kclManager.systemDeps.fileOperations
+    ))
   const deps = {
     commands: commandEnv.commands,
     contextualCommands: commandEnv.contextualCommands,
-    keymapTree: signal(createKeymapTree([])),
-    keymapScopes: signal([]),
+    keymapTree: commandEnv.keymap.keymap,
+    keymapScopes: commandEnv.keymapScopes,
     fileOperations: world.kclManager.systemDeps.fileOperations,
     kclExecutionSettings: world.kclManager.systemDeps.kclExecutionSettings,
     userFeatures: { ...createSettledUserFeaturesForTest(), has: () => false },
@@ -449,11 +486,15 @@ it('renders the machine-backed Modeling view and cancels plane picking without l
     })
     expect(host.owner.peek()?.state.peek().matches('idle')).toBe(true)
     picking.close()
+    fireEvent.pointerDown(
+      within(toolbar).getByRole('button', { name: /Start Sketch/i })
+    )
     fireEvent.click(
       within(toolbar).getByRole('button', { name: /Start Sketch/i })
     )
     await screen.findByText('Select a plane or face to start sketching.')
     await act(async () => {
+      view.scene.sceneInfra.renderer.domElement.focus()
       fireEvent.keyDown(view.scene.sceneInfra.renderer.domElement, {
         key: 'Escape',
         bubbles: true,
@@ -508,21 +549,14 @@ it('opens modeling dialogs from the toolbar, hotkey, and shared command catalogu
     owner: signal(view.owner),
     error: signal(undefined),
   }
-  view.deps.keymapTree.value = createKeymapTree([
-    {
-      id: 'extrude',
-      title: 'Extrude',
-      source: 'test',
-      when: ['mode-modeling'],
-      keystrokes: ['e'],
-      command: 'modeling:Extrude',
-    },
-  ])
   try {
     render(<KclScene context={view.view.context} />)
     const toolbar = await screen.findByRole('toolbar', {
       name: 'Modeling tools',
     })
+    fireEvent.pointerDown(
+      within(toolbar).getByRole('button', { name: /^Extrude/ })
+    )
     fireEvent.click(within(toolbar).getByRole('button', { name: /^Extrude/ }))
     await screen.findByRole('region', { name: 'Extrude' })
     const shared = view.commandEnv.commands.actor
@@ -533,7 +567,11 @@ it('opens modeling dialogs from the toolbar, hotkey, and shared command catalogu
     await vi.waitFor(() =>
       expect(shared.getSnapshot().matches('Closed')).toBe(true)
     )
-    fireEvent.keyDown(view.scene.element, { key: 'e', bubbles: true })
+    act(() => view.scene.sceneInfra.renderer.domElement.focus())
+    fireEvent.keyDown(view.scene.sceneInfra.renderer.domElement, {
+      key: 'e',
+      bubbles: true,
+    })
     await screen.findByRole('region', { name: 'Extrude' })
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     await vi.waitFor(() =>
@@ -557,6 +595,73 @@ it('opens modeling dialogs from the toolbar, hotkey, and shared command catalogu
       view.owner.actor
     )
   } finally {
+    cleanupReact()
+    await view.dispose()
+  }
+})
+
+it('honors shortcut recording, remapped chords, and viewport availability through the global keymap', async () => {
+  const view = await fixture('local')
+  view.view.context.machine = {
+    owner: signal(view.owner),
+    error: signal(undefined),
+  }
+  const outside = document.createElement('button')
+  document.body.append(outside)
+  try {
+    render(<KclScene context={view.view.context} />)
+    await screen.findByRole('toolbar', { name: 'Modeling tools' })
+    const canvas = view.scene.sceneInfra.renderer.domElement
+    const shared = view.commandEnv.commands.actor
+    const keymap = view.commandEnv.keymap
+    act(() => canvas.focus())
+    const resume = keymap.suspendListening()
+    fireEvent.keyDown(canvas, { key: 'e', bubbles: true })
+    expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    resume()
+    act(() => {
+      view.view.editor.readOnly.value = true
+    })
+    fireEvent.keyDown(canvas, { key: 'e', bubbles: true })
+    expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    act(() => {
+      view.view.editor.readOnly.value = false
+    })
+    await act(async () =>
+      keymap.savePersistedKeymap({
+        version: KEYMAP_SCHEMA_VERSION,
+        bindings: [
+          {
+            command: 'modeling:Extrude',
+            keystrokes: ['g', 'e'],
+            when: ['mode-modeling'],
+          },
+        ],
+      })
+    )
+    fireEvent.keyDown(canvas, { key: 'e', bubbles: true })
+    expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    fireEvent.keyDown(canvas, { key: 'g', bubbles: true })
+    expect(keymap.partialMatch.peek()).toBe(true)
+    expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    fireEvent.keyDown(canvas, { key: 'e', bubbles: true })
+    await screen.findByRole('region', { name: 'Extrude' })
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      view.owner.actor
+    )
+    expect(keymap.partialMatch.peek()).toBe(false)
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await vi.waitFor(() =>
+      expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    )
+    act(() => canvas.focus())
+    act(() => outside.focus())
+    fireEvent.keyDown(outside, { key: 'g', bubbles: true })
+    fireEvent.keyDown(outside, { key: 'e', bubbles: true })
+    expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    expect(keymap.partialMatch.peek()).toBe(false)
+  } finally {
+    outside.remove()
     cleanupReact()
     await view.dispose()
   }
@@ -587,6 +692,9 @@ profile = sketch(on = XY) {
         name: 'Modeling tools',
       })
       await act(async () => {
+        fireEvent.pointerDown(
+          within(toolbar).getByRole('button', { name: /^Extrude/ })
+        )
         fireEvent.click(
           within(toolbar).getByRole('button', { name: /^Extrude/ })
         )
@@ -664,33 +772,82 @@ profile = sketch(on = XY) {
   }
 )
 
-it('keeps an open command bound to its original view when another view becomes active or closes', async () => {
+it('routes commands to the focused view and preserves an open palette or dialog target', async () => {
   const first = await fixture()
   const second = await fixture('local', undefined, first.commandEnv)
+  first.view.context.machine = {
+    owner: signal(first.owner),
+    error: signal(undefined),
+  }
+  second.view.context.machine = {
+    owner: signal(second.owner),
+    error: signal(undefined),
+  }
+  const paletteInput = document.createElement('input')
+  document.body.append(paletteInput)
   try {
-    expect(second.owner.commands.actor).toBe(first.owner.commands.actor)
-    first.owner.commandSource.activate()
-    first.owner.commands.send({
-      type: 'Find and select command',
-      data: { name: 'Extrude', groupId: 'modeling' },
-    })
+    render(
+      <>
+        <KclScene context={first.view.context} />
+        <KclScene context={second.view.context} />
+      </>
+    )
+    await vi.waitFor(() =>
+      expect(
+        screen.getAllByRole('toolbar', { name: 'Modeling tools' })
+      ).toHaveLength(2)
+    )
+    const firstCanvas = first.scene.sceneInfra.renderer.domElement
+    const secondCanvas = second.scene.sceneInfra.renderer.domElement
     const shared = first.owner.commands.actor
+    act(() => firstCanvas.focus())
+    fireEvent.keyDown(firstCanvas, { key: 'e', bubbles: true })
+    await screen.findByRole('region', { name: 'Extrude' })
     expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
       first.owner.actor
     )
-    second.owner.commandSource.activate()
+    act(() => secondCanvas.focus())
     expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
       first.owner.actor
     )
-    await second.owner.dispose()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await vi.waitFor(() =>
+      expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    )
+    act(() => secondCanvas.focus())
+    fireEvent.keyDown(secondCanvas, { key: 'e', bubbles: true })
+    await screen.findByRole('region', { name: 'Extrude' })
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      second.owner.actor
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    await vi.waitFor(() =>
+      expect(shared.getSnapshot().matches('Closed')).toBe(true)
+    )
+    act(() => firstCanvas.focus())
+    act(() => first.owner.commands.send({ type: 'Open' }))
+    act(() => paletteInput.focus())
+    await act(async () =>
+      first.owner.commands.send({
+        type: 'Find and select command',
+        data: { name: 'Loft', groupId: 'modeling' },
+      })
+    )
+    await screen.findByRole('region', { name: 'Loft' })
+    expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
+      first.owner.actor
+    )
+    await act(async () => second.owner.dispose())
     expect(shared.getSnapshot().context.selectedCommand?.machineActor).toBe(
       first.owner.actor
     )
     expect(shared.getSnapshot().matches('Closed')).toBe(false)
-    await first.owner.dispose()
+    await act(async () => first.owner.dispose())
     expect(shared.getSnapshot().matches('Closed')).toBe(true)
     expect(shared.getSnapshot().status).toBe('active')
   } finally {
+    paletteInput.remove()
+    cleanupReact()
     await second.dispose()
     await first.dispose()
   }
@@ -905,6 +1062,47 @@ profile = sketch(on = XY) {
   } finally {
     response.resolve({ success: false, errors: [] })
     await replacement?.dispose()
+    await view.dispose()
+  }
+})
+
+it('releases a legacy sketch owner before another native editing owner is acquired', async () => {
+  // This explicitly exercises the pre-sketch-block machine path.
+  const view = await fixture(
+    'streamed',
+    '@settings(kclVersion = 1.0)\nanswer = 42'
+  )
+  try {
+    view.owner.actor.send({ type: 'Enter sketch' })
+    await vi.waitFor(() =>
+      expect(view.owner.state.peek().matches('Sketch no face')).toBe(true)
+    )
+    const planes = view.owner.rust.defaultPlanes
+    if (!planes) throw new Error('Default planes were not adopted')
+    view.owner.actor.send({
+      type: 'Select sketch plane',
+      data: {
+        type: 'defaultPlane',
+        plane: 'XY',
+        planeId: planes.xy,
+        zAxis: [0, 0, 1],
+        yAxis: [0, 1, 0],
+      },
+    })
+    await vi.waitFor(() =>
+      expect(view.owner.state.peek().matches('Sketch')).toBe(true)
+    )
+    let closed = false
+    const closing = view.owner.dispose().then(() => {
+      closed = true
+    })
+    await vi.waitFor(() => expect(closed).toBe(true), { timeout: 2000 })
+    await closing
+    const next = view.native.borrowModel(async () => {})
+    if (next instanceof Error) throw next
+    next.release()
+  } finally {
+    view.owner.actor.stop()
     await view.dispose()
   }
 })

@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import type { ModelingViewRuntime } from '@src/lib/kcl/registry/contract'
 
 const Scene = lazy(() =>
-  import('@src/lib/kcl/KclScene').then(({ KclScene }) => ({
+  import('@src/lib/kcl/modeling/KclScene').then(({ KclScene }) => ({
     default: KclScene,
   }))
 )

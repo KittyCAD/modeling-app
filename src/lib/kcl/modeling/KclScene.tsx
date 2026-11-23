@@ -1,11 +1,17 @@
+import { bindModelingCommandFocus } from '@src/lib/kcl/machine/commandFocus'
 import { ModelingStatusBar } from '@src/lib/kcl/modeling/ModelingStatusBar'
-import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
+import type { ModelingViewRuntime as ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import { KclViewControls } from '@src/lib/kcl/modeling/KclViewControls'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUSceneView'
 import { KclConnectionStatus } from '@src/lib/kcl/modeling/KclConnectionStatus'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, lazy, Suspense } from 'react'
 
+const MachineModelingView = lazy(() =>
+  import('@src/lib/kcl/machine/View').then((module) => ({
+    default: module.MachineModelingView,
+  }))
+)
 const hiddenPlanes = { xy: false, xz: false, yz: false }
 
 /**
@@ -20,10 +26,12 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
   const { session, viewExecution, attachCameraViewport } = context
   const state = session.state.value
   const resource = session.resource.value
+  const machineOwner = context.machine?.owner.value
   const preferences = resource?.preferences.localRenderer.value
   const selection = resource?.selection
   const output = viewExecution.state.value
-  const error = selection?.error.value ?? output.error
+  const error =
+    context.machine?.error.value ?? selection?.error.value ?? output.error
   useEffect(() => {
     if (container.current) return session.attach(container.current)
   }, [session])
@@ -34,6 +42,14 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
         () => session.resource.value
       )
   }, [attachCameraViewport, session])
+  useEffect(() => {
+    if (!viewport.current || !machineOwner) return
+    return bindModelingCommandFocus(
+      viewport.current,
+      machineOwner.commandSource,
+      () => !machineOwner.commands.actor.getSnapshot().matches('Closed')
+    )
+  }, [machineOwner])
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
       <div ref={viewport} className="relative min-h-0 flex-1 overflow-hidden">
@@ -46,9 +62,25 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
             shouldHighlightEdges={preferences.highlightEdges}
             fixedSizeGrid={preferences.fixedSizeGrid}
             backfaceColor={preferences.backfaceColor}
-            pickingEnabled={selection?.pickingEnabled.value ?? false}
-            defaultPlaneVisibility={hiddenPlanes}
+            pickingEnabled={
+              machineOwner
+                ? !machineOwner.state.value.matches('sketchSolveMode')
+                : (selection?.pickingEnabled.value ?? false)
+            }
+            defaultPlaneVisibility={
+              machineOwner?.state.value.context.defaultPlaneVisibility ??
+              context.interactions.active.value?.defaultPlanes.value ??
+              hiddenPlanes
+            }
           />
+        )}
+        {context.interactions.views.value.map(({ id, Component }) => (
+          <Component key={id} />
+        ))}
+        {context.machine && machineOwner && (
+          <Suspense fallback={null}>
+            <MachineModelingView owner={machineOwner} context={context} />
+          </Suspense>
         )}
         {resource && (
           <KclViewControls

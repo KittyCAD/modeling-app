@@ -1,7 +1,7 @@
 import type { EnginePrimitiveSelection } from '@src/machines/modelingSharedTypes'
 import { computed, type ReadonlySignal } from '@preact/signals-core'
 import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
-import type { SceneSelection } from '@src/lib/scene/selection'
+import type { SceneSelection } from '@src/lib/kcl/scene/selection'
 import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 
 /** References retain their domain and owner; generic consumers need no interaction-mode dispatch. */
