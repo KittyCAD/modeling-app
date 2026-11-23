@@ -1,29 +1,20 @@
-import { LegacySceneToolsProvider } from '../LegacySceneToolsProvider'
+import { useLegacySceneToolsHost } from '../useLegacySceneToolsHost'
 import {
   PhysicalAnalysisToolView,
   PhysicalAnalysisStatusBarItemView,
   PhysicalAnalysisDraggablePanelView,
 } from './PhysicalAnalysisToolView'
 export function PhysicalAnalysisTool() {
-  return (
-    <LegacySceneToolsProvider>
-      <PhysicalAnalysisToolView />
-    </LegacySceneToolsProvider>
-  )
+  const host = useLegacySceneToolsHost()
+  return <PhysicalAnalysisToolView host={host} />
 }
 export function PhysicalAnalysisStatusBarItem() {
-  return (
-    <LegacySceneToolsProvider>
-      <PhysicalAnalysisStatusBarItemView />
-    </LegacySceneToolsProvider>
-  )
+  const host = useLegacySceneToolsHost()
+  return <PhysicalAnalysisStatusBarItemView host={host} />
 }
 export function PhysicalAnalysisDraggablePanel(
-  props: Parameters<typeof PhysicalAnalysisDraggablePanelView>[0]
+  props: Omit<Parameters<typeof PhysicalAnalysisDraggablePanelView>[0], 'host'>
 ) {
-  return (
-    <LegacySceneToolsProvider>
-      <PhysicalAnalysisDraggablePanelView {...props} />
-    </LegacySceneToolsProvider>
-  )
+  const host = useLegacySceneToolsHost()
+  return <PhysicalAnalysisDraggablePanelView {...props} host={host} />
 }

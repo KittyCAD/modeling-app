@@ -2,9 +2,9 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { uuidv4 } from '@src/lib/utils'
-import { useCallback, type ReactNode } from 'react'
+import { useCallback } from 'react'
 import type { ModelingCmd } from '@kittycad/lib'
-import { SceneToolsProvider } from './sceneToolsHost'
+import type { SceneToolsHost } from './sceneToolsHost'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -13,11 +13,7 @@ const emptyGraph: ArtifactGraph = new Map()
 const emptySelections: Selections = { graphSelections: [], otherSelections: [] }
 
 /** Adapt the legacy modeling machine once; tool views consume only the explicit host. */
-export function LegacySceneToolsProvider({
-  children,
-}: {
-  children: ReactNode
-}) {
+export function useLegacySceneToolsHost(): SceneToolsHost {
   useSignals()
   const { state } = useModelingContext()
   const { engineCommandManager, kclManager, store } = state.context
@@ -32,28 +28,22 @@ export function LegacySceneToolsProvider({
       }),
     [engineCommandManager]
   )
-  return (
-    <SceneToolsProvider
-      host={{
-        selections: state.context.selectionRanges ?? emptySelections,
-        artifactGraph: graph,
-        idle: state.matches('idle'),
-        executing,
-        unit:
-          kclManager.fileSettings.defaultLengthUnit ??
-          store.defaultUnit?.current ??
-          DEFAULT_DEFAULT_LENGTH_UNIT,
-        executionKey: 'legacy',
-        sendModelingCommand,
-        // Resolve when a panel opens; the stream can mount or be replaced after this provider renders.
-        get container() {
-          return document.getElementById('stream')
-        },
-        measurement: measurementToolService,
-        physicalAnalysis: physicalAnalysisService,
-      }}
-    >
-      {children}
-    </SceneToolsProvider>
-  )
+  return {
+    selections: state.context.selectionRanges ?? emptySelections,
+    artifactGraph: graph,
+    idle: state.matches('idle'),
+    executing,
+    unit:
+      kclManager.fileSettings.defaultLengthUnit ??
+      store.defaultUnit?.current ??
+      DEFAULT_DEFAULT_LENGTH_UNIT,
+    executionKey: 'legacy',
+    sendModelingCommand,
+    // Resolve when a panel opens; the stream can mount or be replaced after the adapter renders.
+    get container() {
+      return document.getElementById('stream')
+    },
+    measurement: measurementToolService,
+    physicalAnalysis: physicalAnalysisService,
+  }
 }
