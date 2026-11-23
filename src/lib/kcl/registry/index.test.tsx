@@ -1,11 +1,22 @@
-import { commandsExtension } from '@src/registry/extensions/commands'
-import keymapExtension from '@src/registry/extensions/keymap'
+import { createActor } from 'xstate'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { MachineManager } from '@src/lib/MachineManager'
+import { createContextualCommands } from '@src/lib/commands/contextual'
+import {
+  commandSystemService,
+  contextualCommandsService,
+} from '@src/registry/contracts/commands'
+import {
+  keymapService,
+  createKeymapTree,
+  createEmptyPersistedKeymap,
+} from '@src/registry/contracts/keymap'
 import { userFeaturesExtension } from '@src/registry/extensions/userFeatures'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { signal } from '@preact/signals-core'
 import '@src/lib/projectSession/next/testFeature'
-import { contribute, provide, Registry } from 'plankton'
+import { factory, contribute, provide, Registry } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
 import {
   editorsService,
@@ -37,6 +48,57 @@ import {
   createTestKclScene,
   createTestSettings,
 } from '@src/lib/kcl/testFixtures'
+
+const testKeymap = factory({
+  create: () => ({
+    items: [
+      provide(keymapService, {
+        keymap: signal(createKeymapTree([])),
+        persistedKeymap: signal(createEmptyPersistedKeymap()),
+        partialMatch: signal(false),
+        applyScope: () => {},
+        removeScope: () => {},
+        getCurrentScopes: () => [],
+        savePersistedKeymap: async () => {},
+        addUserBinding: async () => {},
+        removeUserBinding: async () => {},
+        unbind: async () => {},
+        suspendListening: () => () => {},
+        handleKeyDown: () => false,
+        focusScope: () => ({ onFocus: () => {}, onBlur: () => {} }),
+      }),
+    ],
+  }),
+})
+
+// Registry tests exercise source capture and scene ownership. Tool dispatch uses
+// the real command extension in machine/host.spec.tsx, where native code is available.
+const testCommands = factory({
+  create: () => {
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [],
+        machineManager: new MachineManager(),
+        wasmInstancePromise: new Promise<ModuleType>(() => {}),
+      },
+    })
+    const contextual = createContextualCommands()
+    return {
+      items: [
+        provide(commandSystemService, {
+          actor,
+          send: (event) => actor.send(event),
+          useState: () => actor.getSnapshot(),
+        }),
+        provide(contextualCommandsService, contextual),
+      ],
+      dispose: () => {
+        actor.stop()
+        contextual.dispose()
+      },
+    }
+  },
+})
 
 // This suite checks registry/executor ownership. The real machine/native boundary is exercised by machine/host.spec.tsx.
 vi.mock('@src/lib/kcl/machine/host', () => ({
@@ -86,8 +148,8 @@ it.each([false, true])(
     const wasm = new Promise<ModuleType>(() => {})
     const registry = new Registry()
     await registry.configure([
-      commandsExtension,
-      keymapExtension,
+      testCommands,
+      testKeymap,
       userFeaturesExtension,
       editorsExtension,
       executorsExtension,
@@ -321,8 +383,8 @@ it.each([false, true])(
     settings.current.peek().modeling.useLocalRenderer.user = local
     const registry = new Registry()
     await registry.configure([
-      commandsExtension,
-      keymapExtension,
+      testCommands,
+      testKeymap,
       userFeaturesExtension,
       editorsExtension,
       executorsExtension,
@@ -387,8 +449,8 @@ it('keeps a pending shared capture alive when one Modeling view closes', async (
   )
   const registry = new Registry()
   await registry.configure([
-    commandsExtension,
-    keymapExtension,
+    testCommands,
+    testKeymap,
     userFeaturesExtension,
     editorsExtension,
     executorsExtension,
@@ -467,8 +529,8 @@ it.each([false, true])(
     settings.current.peek().modeling.useLocalRenderer.user = local
     const registry = new Registry()
     await registry.configure([
-      commandsExtension,
-      keymapExtension,
+      testCommands,
+      testKeymap,
       userFeaturesExtension,
       editorsExtension,
       executorsExtension,
@@ -584,8 +646,8 @@ it('shows stale tabs with Automatically Render Off and refreshes through the Ren
   vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
   const registry = new Registry()
   await registry.configure([
-    commandsExtension,
-    keymapExtension,
+    testCommands,
+    testKeymap,
     userFeaturesExtension,
     editorsExtension,
     executorsExtension,
