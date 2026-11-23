@@ -1,4 +1,29 @@
 import { createStaleModelIndicator } from '@src/lib/kcl/modeling/StaleIndicator'
+import { inputs, observe, observeService } from '@src/registry/inputs'
+import { observations as commandsInput } from '@src/registry/contracts/commands'
+import {
+  keymapService,
+  keymapScopesFacet,
+} from '@src/registry/contracts/keymap'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { observations as featuresInput } from '@src/registry/contracts/userFeatures'
+import { observations as projectInput } from '@src/lib/projectSession/next/contract'
+import { MachineManager } from '@src/lib/MachineManager'
+import { createActiveSelection } from '@src/lib/kcl/selection'
+import { createModelingInteractions } from '@src/lib/kcl/interactions'
+import { deferMachineHost } from '@src/lib/kcl/machine/deferred'
+import { streamedSketchPresentation } from '@src/lib/kcl/sketch/streamPresentation'
+import {
+  modelingInteractionViewsFacet,
+  type ModelingViewRuntime,
+} from '@src/lib/kcl/registry/contract'
+const keymapInput = inputs({
+  keymapService: observeService(keymapService),
+  keymapScopesFacet: observe(keymapScopesFacet),
+})
+const machinesInput = inputs({
+  machineManagerService: observeService(machineManagerService),
+})
 import {
   observations as modelingInput,
   modelingStatusItemsFacet,
@@ -36,13 +61,13 @@ import {
   type KclViewExecution,
 } from '@src/lib/kcl/modeling/viewExecution'
 import { createKclExecution } from '@src/lib/kcl/execution/executor'
-import { KclScene } from '@src/lib/kcl/modeling/KclScene'
+import { KclSceneLoader as KclScene } from '@src/lib/kcl/KclSceneLoader'
 import { openKclScene } from '@src/lib/kcl/scene/open'
 import { createKclSession } from '@src/lib/kcl/modeling/session'
 import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
 import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
-import { isErr } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { SceneDisconnected } from '@src/lib/kcl/scene/recovery'
 import { uuidv4 } from '@src/lib/utils'
@@ -74,6 +99,11 @@ const extension = factory({
     editorsInput: editorInputs,
     filesInput,
     modelingInput,
+    commandsInput,
+    keymapInput,
+    machinesInput,
+    featuresInput,
+    projectInput,
   },
   create: ({
     camera,
@@ -87,6 +117,11 @@ const extension = factory({
     editorsInput,
     filesInput,
     modelingInput,
+    commandsInput,
+    keymapInput,
+    machinesInput,
+    featuresInput,
+    projectInput,
   }) => {
     const freshness = createStaleModelIndicator(
       (instance) =>
@@ -228,7 +263,27 @@ const extension = factory({
       })
       const requestRender = () => executor.run(execution.capability)
       onDispose(render.attach(editor, requestRender))
-      return {
+      let machine: ReturnType<typeof deferMachineHost>
+      const context: ModelingViewRuntime = {
+        settings,
+        selection: createActiveSelection(
+          () => context,
+          () => context.machine?.owner.value?.selection
+        ),
+        interactions: createModelingInteractions(
+          () => context,
+          modelingInput.modelingInteractionsFacet,
+          modelingInput.modelingInteractionViewsFacet,
+          (id) => machine.use((host) => host.enter(id))
+        ),
+        tools: {
+          error: signal(undefined),
+          close: () => {
+            void machine
+              ?.use((host) => host.closeDialog())
+              .catch(reportRejection)
+          },
+        },
         executor,
         session,
         viewExecution,
@@ -243,6 +298,47 @@ const extension = factory({
         physicalAnalysis,
         statusItems: modelingInput.modelingStatusItemsFacet,
       }
+      machine = deferMachineHost(async () => {
+        const { createMachineModelingHost } = await import(
+          '@src/lib/kcl/machine/host'
+        )
+        return createMachineModelingHost(() => context, {
+          commands: commandsInput.commandSystemService.required(),
+          contextualCommands:
+            commandsInput.contextualCommandsService.required(),
+          kclExecutionSettings: nativeSettings,
+          keymapTree: keymapInput.keymapService.required().keymap,
+          keymapScopes: keymapInput.keymapScopesFacet,
+          fileOperations: filesInput.fileOperationsService.required(),
+          userFeatures: featuresInput.userFeaturesService.required(),
+          machineManager:
+            machinesInput.machineManagerService.current.value?.manager ??
+            new MachineManager(),
+          // TODO: Supply project export metadata through an explicit next-project adapter.
+          // The native model and files are already captured by this view's executor.
+          project: signal(undefined),
+          projectPath: signal(
+            projectInput.projectSessionService.current.value?.currentProject.peek()
+              ?.contents.path ?? ''
+          ),
+        })
+      })
+      context.machine = machine
+      onDispose(() => {
+        machine.dispose().catch(reportRejection)
+      })
+      const stopRecovery = effect(() => {
+        const state = context.session.state.value
+        if (state.type === 'connecting' || state.type === 'error') {
+          context.tools.close()
+          context.tools.error.value = undefined
+          context.interactions.close().catch(reportRejection)
+          context.interactions.error.value = undefined
+        }
+      })
+      onDispose(stopRecovery)
+      onDispose(context.interactions.dispose)
+      return context
     })({
       id: 'kcl.modeling',
       label: 'Modeling',
@@ -253,6 +349,10 @@ const extension = factory({
     return {
       items: [
         contribute(editorTabIndicatorsFacet, () => freshness.indicator),
+        contribute(
+          modelingInteractionViewsFacet,
+          () => streamedSketchPresentation
+        ),
         contribute(executorCapabilityFacet, () => execution.capability),
         contribute(editorViewsFacet, () => modelingView),
         contribute(editorLanguagesFacet, () => ({

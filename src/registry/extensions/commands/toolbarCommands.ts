@@ -20,6 +20,7 @@ import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constra
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import {
   MODE_MODELING_COMMAND_SCOPE,
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
@@ -267,8 +268,11 @@ export function createToolbarCommands(
     createToolbarCommand({
       id: TOOLBAR_COMMAND_IDS.sketchSolve.cancel,
       displayName: 'Cancel sketch solve action',
-      description: 'Cancel the active sketch solve action.',
-      scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
+      description: 'Cancel the active sketch action or plane selection.',
+      scopes: [
+        MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+        MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+      ],
       onSubmit: () => sendModelingEvent({ type: 'Cancel' }),
     }),
     createToolbarCommand({

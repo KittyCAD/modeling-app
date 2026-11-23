@@ -1,3 +1,6 @@
+import { commandsExtension } from '@src/registry/extensions/commands'
+import keymapExtension from '@src/registry/extensions/keymap'
+import { userFeaturesExtension } from '@src/registry/extensions/userFeatures'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import { signal } from '@preact/signals-core'
@@ -83,6 +86,9 @@ it.each([false, true])(
     const wasm = new Promise<ModuleType>(() => {})
     const registry = new Registry()
     await registry.configure([
+      commandsExtension,
+      keymapExtension,
+      userFeaturesExtension,
       editorsExtension,
       executorsExtension,
       kclExtension,
@@ -315,6 +321,9 @@ it.each([false, true])(
     settings.current.peek().modeling.useLocalRenderer.user = local
     const registry = new Registry()
     await registry.configure([
+      commandsExtension,
+      keymapExtension,
+      userFeaturesExtension,
       editorsExtension,
       executorsExtension,
       kclExtension,
@@ -378,6 +387,9 @@ it('keeps a pending shared capture alive when one Modeling view closes', async (
   )
   const registry = new Registry()
   await registry.configure([
+    commandsExtension,
+    keymapExtension,
+    userFeaturesExtension,
     editorsExtension,
     executorsExtension,
     kclExtension,
@@ -455,6 +467,9 @@ it.each([false, true])(
     settings.current.peek().modeling.useLocalRenderer.user = local
     const registry = new Registry()
     await registry.configure([
+      commandsExtension,
+      keymapExtension,
+      userFeaturesExtension,
       editorsExtension,
       executorsExtension,
       kclExtension,
@@ -569,6 +584,9 @@ it('shows stale tabs with Automatically Render Off and refreshes through the Ren
   vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
   const registry = new Registry()
   await registry.configure([
+    commandsExtension,
+    keymapExtension,
+    userFeaturesExtension,
     editorsExtension,
     executorsExtension,
     kclExtension,

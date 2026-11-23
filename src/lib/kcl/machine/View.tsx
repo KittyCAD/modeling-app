@@ -1,12 +1,9 @@
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import { machineDialogPicking } from '@src/lib/kcl/machine/dialogPicking'
 import type { SelectionArgument } from '@src/components/ModelingDialog/arguments'
-import { keyboardEventToKeymapChord } from '@src/lib/keymapEvent'
-import { matchKeymapKeystrokes } from '@src/registry/contracts/keymap'
-import { isArray } from '@src/lib/utils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
-import { useEffect, useRef, useCallback } from 'react'
+import { useRef, useCallback } from 'react'
 import { ClientSideSceneView } from '@src/clientSideScene/ClientSideSceneView'
 import { ModelingMachineToolbar } from '@src/components/Toolbar/ModelingMachineToolbar'
 import ModelingDialog from '@src/components/ModelingDialog/ModelingDialog'
@@ -17,10 +14,6 @@ import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { commandKey, isModelingDialogCommand } from '@src/lib/commandUtils'
 import type { MachineModelingOwner } from '@src/lib/kcl/machine/host'
 import type { ModelingViewRuntime } from '@src/lib/kcl/registry/contract'
-import {
-  modelingMachineStateToToolbarModeName,
-  toolbarModeNameToKeymapScope,
-} from '@src/lib/toolbar'
 import { toolbarToastsSignal } from '@src/lib/toolbarToast'
 import type { Project } from '@src/lib/project'
 
@@ -55,76 +48,6 @@ export function MachineModelingView({
     },
     [owner]
   )
-  useEffect(() => {
-    const element = owner.scene.element
-    let pending: string[] = []
-    let timer: ReturnType<typeof setTimeout> | undefined
-    const key = (event: KeyboardEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.isComposing ||
-        (event.target instanceof Element &&
-          event.target.closest(
-            'input,textarea,select,[contenteditable="true"]'
-          ))
-      )
-        return
-      const chord = keyboardEventToKeymapChord(event)
-      if (!chord) return
-      const commands = new Map(
-        owner.commands.actor
-          .getSnapshot()
-          .context.commands.map((command) => [commandKey(command), command])
-      )
-      const scope =
-        toolbarModeNameToKeymapScope[
-          modelingMachineStateToToolbarModeName(owner.actor.getSnapshot())
-        ]
-      const match = matchKeymapKeystrokes(
-        owner.keymapTree.peek(),
-        [scope],
-        [...pending, chord],
-        owner.keymapScopes.peek(),
-        (item) => {
-          const command = commands.get(item.command)
-          return !!command && !command.disabled
-        }
-      )
-      clearTimeout(timer)
-      if (match.type === 'none') {
-        pending = []
-        return
-      }
-      event.preventDefault()
-      event.stopPropagation()
-      if (match.type === 'prefix') {
-        pending.push(chord)
-        timer = setTimeout(() => {
-          pending = []
-        }, 1000)
-        return
-      }
-      pending = []
-      const command = commands.get(match.item.command)
-      if (!command) return
-      const args = match.item.arguments
-      owner.commands.send({
-        type: 'Find and select command',
-        data: {
-          name: String(command.name),
-          groupId: command.groupId,
-          ...(args && typeof args === 'object' && !isArray(args)
-            ? { argDefaultValues: args }
-            : {}),
-        },
-      })
-    }
-    element.addEventListener('keydown', key)
-    return () => {
-      clearTimeout(timer)
-      element.removeEventListener('keydown', key)
-    }
-  }, [owner])
   return (
     <ModelingMachineContext.Provider
       value={{

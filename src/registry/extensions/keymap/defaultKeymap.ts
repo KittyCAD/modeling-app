@@ -381,7 +381,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'toolbar.sketch.cancel',
       title: 'Cancel sketch action',
-      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE, MODE_SKETCH_NO_FACE_KEYMAP_SCOPE],
       keystrokes: ['escape'],
       command: TOOLBAR_COMMAND_IDS.sketchSolve.cancel,
     },

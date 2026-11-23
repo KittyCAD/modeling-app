@@ -1,7 +1,12 @@
+import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
+import { createActiveSelection } from '@src/lib/kcl/selection'
+import { createModelingInteractions } from '@src/lib/kcl/interactions'
+import { createTestSettings } from '@src/lib/kcl/testFixtures'
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import { signal } from '@preact/signals-core'
 import { createEditorDocument } from '@src/lib/editors/document'
 import { createExecutor } from '@src/lib/executors/executor'
-import type { ModelingViewContext } from '@src/lib/kcl/registry/contract'
+import type { ModelingViewRuntime as ModelingViewContext } from '@src/lib/kcl/registry/contract'
 import type { KclSession } from '@src/lib/kcl/modeling/session'
 import type { KclSceneResource } from '@src/lib/kcl/scene/open'
 import { defaultModelingStatusItems } from '@src/lib/kcl/modeling/statusItems'
@@ -13,7 +18,9 @@ import { createPhysicalAnalysisService } from '@src/registry/extensions/engineSc
 import { vi } from 'vitest'
 
 /** Real document/executor state with complete scene contracts; no native model or transport is opened. */
-export function modelingTestContext() {
+export function modelingTestContext(
+  presentation: ScenePresentation = 'streamed'
+) {
   const readOnly = signal(false)
   const document = createEditorDocument(
     '@settings(kclVersion = 3.0)\nanswer = 42',
@@ -40,7 +47,11 @@ export function modelingTestContext() {
     ['region']
   )
   selection.setModel({ sceneId: Symbol(), executionId: Symbol() })
-  const base = createTestKclScene('streamed', { selection })
+  const settings = createTestSettings()
+  const preferences = createScenePresentationPreferences(
+    () => settings.current.value
+  )
+  const base = createTestKclScene(presentation, { selection, preferences })
   const resource = {
     ...base,
     commands: {
@@ -77,6 +88,10 @@ export function modelingTestContext() {
     result: resource.runtime.state.peek(),
   })
   const context: ModelingViewContext = {
+    settings,
+    selection: createActiveSelection(() => context),
+    interactions: createModelingInteractions(() => context, signal([])),
+    tools: { error: signal(undefined), close: () => {} },
     executor: execution.executor,
     session,
     viewExecution: {
@@ -100,6 +115,8 @@ export function modelingTestContext() {
     editor,
     viewState,
     dispose: () => {
+      preferences.dispose()
+      context.interactions.dispose()
       context.measurement.close()
       context.physicalAnalysis.close()
       selection.dispose()

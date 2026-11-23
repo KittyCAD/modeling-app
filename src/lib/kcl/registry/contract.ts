@@ -1,5 +1,4 @@
 import { inputs, observe } from '@src/registry/inputs'
-import type { ContextualCommandsService } from '@src/lib/commands/contextual'
 import type { MachineModelingHost } from '@src/lib/kcl/machine/host'
 import type {
   createModelingInteractions,
@@ -43,7 +42,6 @@ export interface ModelingViewContext {
 }
 /** The factory retains the machine's mutable ownership and disposal controls. */
 export interface ModelingViewRuntime extends ModelingViewContext {
-  commandRouting?: Pick<ContextualCommandsService, 'clear'>
   machine?: Pick<MachineModelingHost, 'owner' | 'error'>
 }
 export interface ModelingStatusItem {

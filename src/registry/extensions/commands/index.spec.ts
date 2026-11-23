@@ -16,6 +16,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
   provideCommand,
   SETTINGS_COMMAND_SCOPE,
@@ -349,13 +350,25 @@ describe('commands extension', () => {
     ).toEqual([MODE_MODELING_COMMAND_SCOPE])
     expect(
       toolbarCommands
-        .filter((command) => command.id?.startsWith('zds.toolbar.sketch.'))
+        .filter(
+          (command) =>
+            command.id?.startsWith('zds.toolbar.sketch.') &&
+            command.id !== TOOLBAR_COMMAND_IDS.sketchSolve.cancel
+        )
         .every(
           (command) =>
             command.scopes.length === 1 &&
             command.scopes[0] === MODE_SKETCH_SOLVE_COMMAND_SCOPE
         )
     ).toBe(true)
+    expect(
+      toolbarCommands.find(
+        (command) => command.id === TOOLBAR_COMMAND_IDS.sketchSolve.cancel
+      )?.scopes
+    ).toEqual([
+      MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+      MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+    ])
   })
 
   it('allows reset view across files while keeping its mnemonic modeling-only', () => {

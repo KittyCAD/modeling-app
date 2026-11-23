@@ -43,8 +43,8 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
  * presentation is fixed at creation; a local presentation also supplies a GLB host.
  */
 export interface KclSceneResource {
-  readonly sceneInfra: SceneInfra
-  readonly machineInput: {
+  readonly sceneInfra?: SceneInfra
+  readonly machineInput?: {
     manager: ConnectionManager
     handoffPicking: ReturnType<typeof createKclSceneSelection>['handoff']
   }
@@ -321,3 +321,12 @@ export type OpenKclScene = (
   signal: AbortSignal,
   onDisconnect: (error: Error) => void
 ) => Promise<KclSceneResource | Error>
+
+/** Machine hosts require the scene's native command and interaction dependencies. */
+export type MachineSceneResource = KclSceneResource &
+  Required<Pick<KclSceneResource, 'sceneInfra' | 'machineInput'>>
+export function hasMachineInput(
+  scene: KclSceneResource
+): scene is MachineSceneResource {
+  return !!scene.sceneInfra && !!scene.machineInput
+}

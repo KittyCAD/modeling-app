@@ -303,6 +303,7 @@ const keymapExtension: Factory = defineFactory({
           commandsByKey.get(item.command)
         return (
           command !== undefined &&
+          (!('disabled' in command) || !command.disabled) &&
           (!owner || getKeymapItemWhen(item).includes(owner.scope)) &&
           isCommandAvailable(command, effectiveCommandScopes)
         )

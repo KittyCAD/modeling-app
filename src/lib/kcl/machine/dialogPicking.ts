@@ -6,7 +6,10 @@ import {
 import { resolveToCodeRef } from '@src/lang/queryAst'
 import { engineTopologyFallbackFromReference } from '@src/lib/selections'
 import type { MachineModelingOwner } from '@src/lib/kcl/machine/host'
-import type { PickingArgument, SceneSelection } from '@src/lib/scene/selection'
+import type {
+  PickingArgument,
+  SceneSelection,
+} from '@src/lib/kcl/scene/selection'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 
 /** Linked views offer targets through the same argument filter used by the legacy form and machine selection. */
