@@ -670,7 +670,7 @@ export class KclManager extends File {
 
         // A delayed watcher notification can describe our last acknowledged
         // save while the editor already contains a newer committed edit or preview.
-        if (isCodeTheSame(code, this._lastKnownFileCode)) return
+        if (isCodeTheSame(code, this._lastKnownFileCode.peek())) return
 
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload
@@ -762,7 +762,7 @@ export class KclManager extends File {
   private sceneSettingsActive = signal(false)
   private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
-  private _lastKnownFileCode = ''
+  private readonly _lastKnownFileCode = signal('')
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -2165,7 +2165,7 @@ export class KclManager extends File {
   readonly saveState = signal<'saved' | 'saving' | 'failed'>('saved')
 
   private markFileCodeAsSynced(code: string) {
-    this._lastKnownFileCode = normalizeLineEndings(code)
+    this._lastKnownFileCode.value = normalizeLineEndings(code)
     this.saveState.value =
       this.hasUnsavedLocalChanges() && this.fileSaveQueue.hasEdits(this.path)
         ? 'saving'
@@ -2203,7 +2203,7 @@ export class KclManager extends File {
   }
 
   hasUnsavedLocalChanges() {
-    return !isCodeTheSame(this.code, this._lastKnownFileCode)
+    return !isCodeTheSame(this.code, this._lastKnownFileCode.value)
   }
 
   clearAst() {
@@ -4128,7 +4128,7 @@ export class KclManager extends File {
     return {
       ...request,
       mode,
-      baseline: this._lastKnownFileCode,
+      baseline: this._lastKnownFileCode.peek(),
       fileSelectionGeneration: this.fileSelectionGeneration,
       cloudSnapshotGeneration: this.cloudSnapshotGeneration,
       previousWrites: [
@@ -4165,7 +4165,7 @@ export class KclManager extends File {
     }
     if (!isCurrent()) return
     const baseline =
-      mode === 'outgoing' ? request.baseline : this._lastKnownFileCode
+      mode === 'outgoing' ? request.baseline : this._lastKnownFileCode.peek()
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(

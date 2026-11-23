@@ -34,6 +34,7 @@ export enum ClientErrorCode {
   EngineUnsupportedVideoCodec = 'engine_unsupported_video_codec',
   EngineWebrtcDisconnect = 'engine_webrtc_disconnect',
   FileOperationsError = 'file_operations_error',
+  LocalRendererFailure = 'local_renderer_failure',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
   UnsupportedBrowserFeature = 'unsupported_browser_feature',
