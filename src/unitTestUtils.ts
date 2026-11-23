@@ -1,3 +1,5 @@
+import { onTestFinished } from 'vitest'
+import type { ModelingMachineInput } from '@src/machines/modelingSharedTypes'
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { signal } from '@preact/signals-core'
@@ -322,4 +324,17 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor,
     machineManager,
   }
+}
+
+/** Complete legacy machine dependencies for integration tests without an engine connection. */
+export async function buildModelingMachineInput(): Promise<ModelingMachineInput> {
+  const world = await buildTheWorldAndNoEngineConnection()
+  onTestFinished(() => {
+    world.kclManager.close()
+    world.rustContext.destroy()
+    world.sceneInfra.dispose()
+    world.settingsActor.stop()
+    world.commandBarActor.stop()
+  })
+  return { ...world, wasmInstance: world.instance }
 }

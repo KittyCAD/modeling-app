@@ -15,14 +15,14 @@ import {
   type ModelingMachineToolbarHost,
 } from '@src/components/Toolbar/ModelingMachineToolbar'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import type { ModelingMachineInput } from '@src/machines/modelingSharedTypes'
+import { buildModelingMachineInput } from '@src/unitTestUtils'
 import { buildToolbarConfig } from '@src/lib/toolbar'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-function fixture() {
+async function fixture() {
+  const input = await buildModelingMachineInput()
   const machine = modelingMachine.provide({
     guards: {
       'Selection is sketchBlock': () => false,
@@ -40,11 +40,7 @@ function fixture() {
       'stop scene infra': () => {},
     },
   })
-  const actor = createActor(machine, {
-    input: {
-      kclManager: { sceneInfra: { animate: vi.fn() } },
-    } as unknown as ModelingMachineInput,
-  }).start()
+  const actor = createActor(machine, { input }).start()
   const toolbarConfig = buildToolbarConfig({ send: vi.fn() })
   toolbarConfig.modeling.items = [
     {
@@ -72,7 +68,7 @@ function fixture() {
     keymapTree: { items: [], root: { children: new Map(), items: [] } },
     keymapScopes: [],
     platform: '',
-    wasmInstance: {} as ModuleType,
+    wasmInstance: input.wasmInstance,
     ast: createEmptyAst(),
     artifactGraph: new Map(),
     editorHasFocus: false,
@@ -102,9 +98,9 @@ function fixture() {
   return { actor, host, View }
 }
 
-it('uses the supplied machine for awaiting-target and cancel toolbars without touching a sibling or global context', () => {
-  const first = fixture(),
-    second = fixture()
+it('uses the supplied machine for awaiting-target and cancel toolbars without touching a sibling or global context', async () => {
+  const first = await fixture(),
+    second = await fixture()
   try {
     const view = render(
       <>
@@ -152,8 +148,8 @@ it('uses the supplied machine for awaiting-target and cancel toolbars without to
   }
 })
 
-it('uses supplied execution readiness and command configuration when rerendered', () => {
-  const f = fixture()
+it('uses supplied execution readiness and command configuration when rerendered', async () => {
+  const f = await fixture()
   try {
     const view = render(<f.View disabled />)
     expect(screen.getByRole('button', { name: 'Start Sketch' })).toBeDisabled()
