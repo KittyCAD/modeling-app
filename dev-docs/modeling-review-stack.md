@@ -2,27 +2,24 @@
 
 The primary migration reuses `modelingMachine`, its sketch children, the legacy toolbar, and the legacy form dialogs inside independently owned editor views. Independent tool contributions remain the intended direction, recorded in [ADR 0002](../src/dev-docs/adr/0002-machine-backed-modeling-transition.md). They are not a prerequisite for the editor ownership change.
 
-Each wave contains at most four branches. Each row is based on the preceding row, including across waves. Existing foundations remain PRs #15158, #15159, and #15160; no duplicate foundation PRs are needed. Reorganized optional review refs use new names; older published optional refs are retained as development history. The existing `codex/modeling-machine-host` branch is the shortened primary cutover.
+The review sequence keeps ownership changes separate from optional interaction and presentation changes. The current waves contain at most four PRs. Each wave follows the preceding one.
 
-| Wave | Branch | Review focus |
-| --- | --- | --- |
-| Scene | `codex/review-scene-host` | Owned connections and renderer hosts; based on `franknoirot/add-executors` |
-| Scene | `codex/review-scene-settings` | Shared scene settings and declared execution refresh |
-| Scene | `codex/review-kcl-scene` | Executor-owned KCL models, project source capture, focus recovery |
-| Scene | `codex/review-scene-selection` | Execution-qualified selection and dialog picking |
-| Shared views | `codex/review-status-views` | Legacy status controls behind explicit hosts |
-| Shared views | `codex/review-modeling-status` | View-owned extensible Modeling footer |
-| Shared views | `codex/review-command-views` | Shared toolbar, form dialog, and codemod dependencies |
-| Shared views | `codex/review-machine-adapters` | View-local actor binding, toolbar resolver, command registration, native queue, and shared Three.js views |
-| Machine migration | `codex/review-machine-document` | Canonical document/history adapter and adoption of an already-executed native model |
-| Machine migration | `codex/modeling-machine-host` | Actual machine-backed Modeling view, exclusive picking handoff, source acknowledgement, retirement, and ADR 0002 |
-| Machine migration | `codex/review-tool-dialog-modes` | Optional contributed Extrude/Loft Form/Code editors submitting through the machine |
-| Presentation | `codex/review-machine-responsive-tools` | Optional semantic groups and responsive toolbar presentation |
-| Presentation | `codex/review-machine-compact-status` | Optional compact status layout |
-| Correspondence | `codex/review-machine-artifact-correspondence` | Artifact-backed provenance query policies |
-| Correspondence | `codex/review-machine-selection-bridges` | Explicit Code/Modeling links, decorations, and constrained cross-view command picking |
-| Correspondence | `codex/review-machine-entity-styling` | Arbitrary local entity styling and source-view correspondence hues |
-| Correspondence | `codex/review-machine-sketch-correspondence` | Correspondence through the machine's native sketch context |
+| Wave | Branch | PR | Review focus |
+| --- | --- | --- | --- |
+| Scene | `codex/review-scene-host` | #15213 | Owned connections and renderer hosts |
+| Scene | `codex/review-scene-settings` | #15221 | Shared settings and declared execution refresh |
+| Scene | `codex/review-kcl-scene` | #15268 | Shared source snapshots with independent native scenes |
+| Selection and shared views | `codex/review-scene-selection` | #15303 | Execution-qualified selection and dialog picking |
+| Selection and shared views | `codex/modeling-camera-keymaps` | #15361 | Registered camera commands and shortcut labels |
+| Selection and shared views | `codex/review-status-views` | #15304 | Legacy status controls behind explicit hosts |
+| Selection and shared views | `codex/explicit-execution` | #15329 | Explicit rendering and result freshness |
+| Modeling adapters | `codex/review-modeling-status` | #15364 | View-owned Modeling footer |
+| Modeling adapters | `codex/review-command-views` | #15365 | Shared toolbar and form-dialog views |
+| Modeling adapters | `codex/review-machine-adapters` | #15368 | Explicit machine, command, native queue, and Three.js dependencies |
+| Modeling adapters | `codex/review-machine-document` | #15369 | Shared document/history and adoption of an existing native model |
+| Machine integration | `codex/modeling-machine-host` | Draft follows #15369 | Machine-backed Modeling view, picking handoff, and owner retirement |
+
+Optional follow-ups cover contributed dialog modes, responsive tool groups, compact status layout, and Code/Modeling correspondence. Their branch names remain `codex/review-tool-dialog-modes` and the `codex/review-machine-*` presentation/correspondence branches. They require separate restacking and review before publication.
 
 The initial editor transition can stop at `codex/modeling-machine-host`, which includes the stream-only sketch tint and opacity control. The former `codex/review-machine-sketch-presentation` cut is folded into that primary branch; its local ref is retained as an alias of its parent and needs no separate PR. The later branches are enhancements, not dependencies of that transition. Command reuse exposes the existing tool system; it does not establish tested parity for every command or renderer. Project export metadata and feature-tree integration remain explicit adapter work. Live stream, local GPU, and packaged desktop smoke tests remain necessary.
 

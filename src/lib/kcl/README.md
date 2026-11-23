@@ -97,6 +97,24 @@ camera pose across idle and transient reconnects, restoring it after the next
 execution instead of framing the model again. Closing the view discards that pose.
 Local rendering is exempt from idle teardown.
 
+## Modeling interactions
+
+A completed native execution can lend its model to the view's
+[`machine/host.ts`](machine/host.ts). That host runs the existing modeling machine,
+sketch tools, toolbar, and form dialogs against the view's own scene. The focused
+view supplies commands to the application command service; an open dialog retains
+its original target when focus changes.
+
+The machine uses the shared document/history adapter. External source or execution
+settings changes retire its editing owner before the runtime builds a replacement
+model. Retirement stops document publication immediately and waits for sketch
+cleanup before releasing the native context. Streamed sketch editing contributes
+a background tint and opacity control through the interaction-view facet.
+
+See the [host guide](../../../dev-docs/modeling-machine-host.md) for ownership and
+picking, and [ADR 0002](../../dev-docs/adr/0002-machine-backed-modeling-transition.md)
+for the planned transition from the machine to independent tool contributions.
+
 ## Camera commands
 
 The [camera contribution](registry/cameraCommands.ts) registers standard views,
