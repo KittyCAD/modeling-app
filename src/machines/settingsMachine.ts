@@ -11,7 +11,6 @@ import { Setting } from '@src/lib/settings/Setting'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { Setting } from '@src/lib/settings/Setting'
 import type {
   BaseUnit,
   DynamicBooleanSetEvent,
@@ -31,9 +30,8 @@ import {
   setThemeClass,
   Themes,
 } from '@src/lib/theme'
-import { hasProperty } from '@src/lib/utils'
+import { hasProperty, hexToRgba } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { hexToRgba } from '@src/lib/utils'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
