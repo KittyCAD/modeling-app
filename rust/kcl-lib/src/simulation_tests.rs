@@ -5042,27 +5042,6 @@ mod sketch_block_circle_simple {
         super::execute(TEST_NAME).await
     }
 }
-mod sketch_block_modeling_command_is_error {
-    const TEST_NAME: &str = "sketch_block_modeling_command_is_error";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME).await
-    }
-}
 mod holes_cube {
     const TEST_NAME: &str = "holes_cube";
 
@@ -10249,6 +10228,279 @@ mod loft_clone_boolean_source_tags {
 }
 mod loft_mirror_boolean_source_tags {
     const TEST_NAME: &str = "loft_mirror_boolean_source_tags";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_sketch_return {
+    const TEST_NAME: &str = "sketch_block_compatibility_sketch_return";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_scoped_return {
+    const TEST_NAME: &str = "sketch_block_compatibility_scoped_return";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_scoped_error {
+    const TEST_NAME: &str = "sketch_block_compatibility_scoped_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_scoped_exit {
+    const TEST_NAME: &str = "sketch_block_compatibility_scoped_exit";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_parent_variable {
+    const TEST_NAME: &str = "sketch_block_compatibility_parent_variable";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_parent_function {
+    const TEST_NAME: &str = "sketch_block_compatibility_parent_function";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_local_shadow {
+    const TEST_NAME: &str = "sketch_block_compatibility_local_shadow";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_bindings {
+    const TEST_NAME: &str = "sketch_block_compatibility_bindings";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_argument_evaluation {
+    const TEST_NAME: &str = "sketch_block_compatibility_argument_evaluation";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_missing_on {
+    const TEST_NAME: &str = "sketch_block_compatibility_missing_on";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_invalid_on {
+    const TEST_NAME: &str = "sketch_block_compatibility_invalid_on";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_nested_sketch {
+    const TEST_NAME: &str = "sketch_block_compatibility_nested_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod sketch_block_compatibility_engine_restriction {
+    const TEST_NAME: &str = "sketch_block_compatibility_engine_restriction";
 
     /// Test parsing KCL.
     #[test]

@@ -1,8 +1,5 @@
-import {
-  appendValueSpec,
-  defineContract,
-  defineService,
-} from '@kittycad/registry'
+import { contract, Facet, service } from 'plankton'
+import { inputs, observe, observeService } from '@src/registry/inputs'
 import type {
   EditorMatchContext,
   EditorMatcher,
@@ -51,12 +48,22 @@ export interface EditorAutosavePolicy {
 
 export const {
   editorSaveService,
-  editorOnSaveValueSpec,
-  editorAutosavePoliciesValueSpec,
-} = defineContract({
-  editorOnSaveValueSpec: appendValueSpec<EditorOnSave>('editors.onSave'),
-  editorAutosavePoliciesValueSpec: appendValueSpec<EditorAutosavePolicy>(
-    'editors.autosavePolicies'
+  editorOnSaveFacet,
+  editorAutosavePoliciesFacet,
+} = contract({
+  editorOnSaveFacet: new Facet<EditorOnSave, readonly EditorOnSave[]>(
+    'editors.onSave',
+    (values) => values
   ),
-  editorSaveService: defineService<EditorSave>('editors.save'),
+  editorAutosavePoliciesFacet: new Facet<
+    EditorAutosavePolicy,
+    readonly EditorAutosavePolicy[]
+  >('editors.autosavePolicies', (values) => values),
+  editorSaveService: service<EditorSave>('editors.save'),
+})
+
+export const observations = inputs({
+  editorOnSaveFacet: observe(editorOnSaveFacet),
+  editorAutosavePoliciesFacet: observe(editorAutosavePoliciesFacet),
+  editorSaveService: observeService(editorSaveService),
 })

@@ -1177,19 +1177,24 @@ impl ExecutorContext {
             &self.settings.project_directory,
             &exec_state.mod_local.path,
         )?;
-        if matches!(&module_path, ModulePath::Std { value } if value == "view")
-            && !exec_state.entry_point_version_is_v3_or_higher()
+        let std_module_minimum = match &module_path {
+            ModulePath::Std { value } if value == "view" => Some((value, KclVersion::V3Preview, 3)),
+            ModulePath::Std { value } if value == "drawing" => Some((value, KclVersion::V4Preview, 4)),
+            _ => None,
+        };
+        if let Some((name, minimum, major)) = std_module_minimum
+            && !exec_state.entry_point_version_at_least(minimum)
         {
             if matches!(&exec_state.mod_local.path, ModulePath::Std { value } if value == "prelude") {
-                // The prelude must remain usable before V3, but its view module
-                // must be absent from those programs.
-                let added_in = annotations::VersionConstraint::new(3, 0);
-                exec_state.record_not_yet_added(format!("{}view", memory::MODULE_PREFIX), added_in, true);
+                // Defer the version diagnostic until the program references this module.
+                let added_in = annotations::VersionConstraint::new(major, 0);
+                exec_state.record_not_yet_added(format!("{}{name}", memory::MODULE_PREFIX), added_in, true);
                 return Ok(());
             }
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "The `std::view` module requires KCL 3.0-preview, but this program uses KCL {}.",
+                    "The `{module_path}` module requires KCL {}, but this program uses KCL {}.",
+                    minimum.as_str(),
                     exec_state.entry_point_kcl_version().as_str()
                 ),
                 vec![source_range],
@@ -1412,7 +1417,7 @@ impl ExecutorContext {
         };
         if let Some(feature) = v3_only_feature
             && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
-            && !exec_state.entry_point_version_is_v3_or_higher()
+            && !exec_state.entry_point_version_at_least(KclVersion::V3Preview)
         {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -2239,7 +2244,8 @@ fn enum_variant_value(
 
     // Older KCL versions report every enum use. In V3, an explicit experimental
     // annotation on either the declaration or the binding still applies.
-    if !exec_state.entry_point_version_is_v3_or_higher() || def.is_experimental() || binding_experimental {
+    if !exec_state.entry_point_version_at_least(KclVersion::V3Preview) || def.is_experimental() || binding_experimental
+    {
         exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
     }
 
@@ -6286,7 +6292,7 @@ fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclEr
 /// and shadowing is a redefinition error). Returns whether a scope
 /// environment was pushed; the caller must pop it on every path.
 pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
-    if !exec_state.entry_point_version_is_v3_or_higher() {
+    if !exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
         return Ok(false);
     }
     exec_state.mut_stack().push_new_env_for_block()?;
@@ -7449,34 +7455,6 @@ a = PI * 2
         assert_eq!(issues.len(), 1, "{issues:#?}");
         assert_eq!(issues[0].severity, Severity::Error);
         assert!(issues[0].message.starts_with("The `@warnings` attribute was renamed"));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn sketch_block_unqualified_functions_use_sketch2() {
-        let ast = r#"
-s = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
-  coincident([line1.end, line2.start])
-}
-"#;
-        let result = parse_execute(ast).await.unwrap();
-        let mem = result.exec_state.stack();
-        let sketch_value = mem
-            .memory
-            .get_from_owned("s", result.mem_env, SourceRange::default(), 0)
-            .unwrap();
-
-        let KclValue::Object { value, .. } = sketch_value else {
-            panic!("Expected sketch block to return an object, got {sketch_value:?}");
-        };
-
-        assert!(value.contains_key("line1"));
-        assert!(value.contains_key("line2"));
-        // Ensure sketch2 aliases used during execution are not returned as
-        // sketch block fields.
-        assert!(!value.contains_key("line"));
-        assert!(!value.contains_key("coincident"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -1,12 +1,6 @@
 import { requireSuccess, codeSurface } from '@src/lib/editors/testViews'
 import '@src/lib/projectSession/next/testFeature'
-import {
-  defineRegistryItem,
-  provide,
-  provideService,
-  Registry,
-  Slot,
-} from '@kittycad/registry'
+import { Registry, contribute, provide, slot } from 'plankton'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import {
   afterEach,
@@ -23,27 +17,29 @@ import savingExtension, {
 } from '@src/lib/save/registry'
 import {
   editorSaveService,
-  editorOnSaveValueSpec,
+  editorOnSaveFacet,
 } from '@src/lib/save/registry/contract'
 import editorsExtension from '@src/lib/editors/registry'
 import {
-  editorCapabilityValueSpec,
-  editorTabIndicatorsValueSpec,
+  editorCapabilityFacet,
+  editorTabIndicatorsFacet,
   editorsService,
   type Editor,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import { EditorView } from '@src/lib/editors/EditorView'
-import { editorViewsValueSpec } from '@src/lib/editors/registry/contract'
+import { editorViewsFacet } from '@src/lib/editors/registry/contract'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { LayoutType } from '@src/lib/layout/types'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { commandsFacet } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
-
-vi.mock('@src/lib/paths', () => ({ PATHS: { INDEX: '/' } }))
-
+vi.mock('@src/lib/paths', () => ({
+  PATHS: {
+    INDEX: '/',
+  },
+}))
 function deferred() {
   let resolve!: () => void
   let reject!: (reason: Error) => void
@@ -51,71 +47,75 @@ function deferred() {
     resolve = yes
     reject = no
   })
-  return { promise, resolve, reject }
+  return {
+    promise,
+    resolve,
+    reject,
+  }
 }
-
 describe('contributed editor saving', () => {
   let registry: Registry
   const writeFile = vi.fn<typeof testFileOperations.writeFile>()
-  const extra = new Slot()
+  const extra = slot()
   beforeAll(async () => {
-    await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+    await moduleFsViaModuleImport({
+      type: StorageName.NodeFS,
+      options: {},
+    })
   })
-  beforeEach(() => {
+  beforeEach(async () => {
     writeFile.mockReset().mockResolvedValue(undefined)
     registry = new Registry()
-    registry.configure([
+    await registry.configure([
       editorsExtension,
       savingExtension,
-      extra.of(),
-      defineRegistryItem({
-        providesServices: [
-          provideService(fileOperationsService, {
-            ...testFileOperations,
-            writeFile,
-          }),
-        ],
-      }),
+      extra,
+      [
+        provide(fileOperationsService, {
+          ...testFileOperations,
+          writeFile,
+        }),
+      ],
     ])
   })
-  afterEach(() => {
+  afterEach(async () => {
     cleanup()
-    registry[Symbol.dispose]()
+    await registry.dispose()
   })
   const open = (src = '/project/notes.txt') => {
-    const editors = registry.get(editorsService)
+    const editors = registry.required(editorsService)
     const editor = requireSuccess(editors.openEditor(src, 'original'))
     editors.createView(editor)
     return editor
   }
   const change = (editor: Editor, text: string) =>
     editor.dispatch({
-      changes: { from: 0, to: editor.state.doc.length, insert: text },
+      changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: text,
+      },
     })
-  const saving = () => registry.get(editorSaveService)
-
+  const saving = () => registry.required(editorSaveService)
   it('saves the Modeling document after clicking its background without focusing Code first', async () => {
-    await registry.reconfigureAsync(extra, [
-      defineRegistryItem({
-        provides: [
-          provide(
-            editorViewsValueSpec,
-            defineEditorView({
-              id: 'modeling',
-              label: 'Modeling',
-              matches: '*',
-              priority: 1000,
-              Component: () => (
-                <div aria-label="Model background">
-                  <button type="button">Scene control</button>
-                </div>
-              ),
-            })
-          ),
-        ],
-      }),
+    await registry.replace(extra, [
+      [
+        contribute(editorViewsFacet, () =>
+          defineEditorView({
+            id: 'modeling',
+            label: 'Modeling',
+            matches: '*' as const,
+            priority: 1000,
+            Component: () => (
+              <div aria-label="Model background">
+                <button type="button">Scene control</button>
+              </div>
+            ),
+          })
+        ),
+      ],
     ])
-    const editors = registry.get(editorsService)
+    const editors = registry.required(editorsService)
     const first = open('/first.kcl')
     const second = open('/second.kcl')
     change(second, 'second model')
@@ -144,15 +144,16 @@ describe('contributed editor saving', () => {
     expect(saving().lastFocusedEditor.peek()).toBe(second)
     expect(first.contents.peek()).toBe('original')
     expect(saving().state(second).peek().dirty).toBe(false)
-    const control = screen.getAllByRole('button', { name: 'Scene control' })[1]
+    const control = screen.getAllByRole('button', {
+      name: 'Scene control',
+    })[1]
     fireEvent.pointerDown(control)
     control.focus()
     expect(document.activeElement).toBe(control)
   })
-
   it('finishes saving while another view of the document remains open', async () => {
     const editor = open()
-    const editors = registry.get(editorsService)
+    const editors = registry.required(editorsService)
     const first = editors.views.peek()[0]
     const second = requireSuccess(editors.createView(editor))
     const pending = deferred()
@@ -168,9 +169,8 @@ describe('contributed editor saving', () => {
     editors.closeView(second.id)
     expect(await saving().save(editor)).toBeInstanceOf(Error)
   })
-
   it('keeps unnamed buffers dirty and refuses IO until a source is assigned', async () => {
-    const editors = registry.get(editorsService)
+    const editors = registry.required(editorsService)
     const editor = requireSuccess(editors.createEditor())
     expect(saving().state(editor).value.dirty).toBe(true)
     expect(await saving().save(editor)).toBeInstanceOf(Error)
@@ -180,9 +180,8 @@ describe('contributed editor saving', () => {
     expect(writeFile).toHaveBeenCalledWith('/project/new.txt', '')
     expect(saving().state(editor).value.dirty).toBe(false)
   })
-
   it('supports save behavior without file persistence or a fileOperations service', async () => {
-    registry.configure([editorsExtension, saveExtension, extra.of()])
+    await registry.configure([editorsExtension, saveExtension, extra])
     const editor = open()
     change(editor, 'save elsewhere')
     const missing = await saving().save(editor)
@@ -192,16 +191,14 @@ describe('contributed editor saving', () => {
       error: missing,
     })
     const commit = vi.fn(async () => undefined)
-    await registry.reconfigureAsync(extra, [
-      defineRegistryItem({
-        provides: [
-          provide(editorOnSaveValueSpec, {
-            id: 'test.customSave',
-            matches: '*',
-            onSave: commit,
-          }),
-        ],
-      }),
+    await registry.replace(extra, [
+      [
+        contribute(editorOnSaveFacet, () => ({
+          id: 'test.customSave',
+          matches: '*' as const,
+          onSave: commit,
+        })),
+      ],
     ])
     expect(await saving().save(editor)).toBeUndefined()
     expect(commit).toHaveBeenCalledWith({
@@ -212,25 +209,22 @@ describe('contributed editor saving', () => {
     expect(saving().state(editor).value.dirty).toBe(false)
     expect(writeFile).not.toHaveBeenCalled()
   })
-
   it('runs matching hooks only after a successful write, using the saved snapshot rather than later typing', async () => {
     const saved = vi.fn()
     const unrelated = vi.fn()
-    await registry.reconfigureAsync(extra, [
-      defineRegistryItem({
-        provides: [
-          provide(editorOnSaveValueSpec, {
-            id: 'test.saved',
-            matches: ({ contents }) => contents === 'to save',
-            onSave: saved,
-          }),
-          provide(editorOnSaveValueSpec, {
-            id: 'test.other',
-            matches: '.md',
-            onSave: unrelated,
-          }),
-        ],
-      }),
+    await registry.replace(extra, [
+      [
+        contribute(editorOnSaveFacet, () => ({
+          id: 'test.saved',
+          matches: ({ contents }) => contents === 'to save',
+          onSave: saved,
+        })),
+        contribute(editorOnSaveFacet, () => ({
+          id: 'test.other',
+          matches: '.md' as const,
+          onSave: unrelated,
+        })),
+      ],
     ])
     const editor = open()
     change(editor, 'to save')
@@ -254,27 +248,24 @@ describe('contributed editor saving', () => {
     expect(await saving().save(editor)).toBeInstanceOf(Error)
     expect(saved).not.toHaveBeenCalled()
   })
-
   it('orders handlers explicitly and stops on failure without completing the save', async () => {
     const other = vi.fn()
     const failure = new Error('Metadata could not be applied')
-    await registry.reconfigureAsync(extra, [
-      defineRegistryItem({
-        provides: [
-          provide(editorOnSaveValueSpec, {
-            id: 'test.other',
-            order: 20,
-            matches: '*',
-            onSave: other,
-          }),
-          provide(editorOnSaveValueSpec, {
-            id: 'test.failure',
-            order: 10,
-            matches: '*',
-            onSave: () => failure,
-          }),
-        ],
-      }),
+    await registry.replace(extra, [
+      [
+        contribute(editorOnSaveFacet, () => ({
+          id: 'test.other',
+          order: 20,
+          matches: '*' as const,
+          onSave: other,
+        })),
+        contribute(editorOnSaveFacet, () => ({
+          id: 'test.failure',
+          order: 10,
+          matches: '*' as const,
+          onSave: () => failure,
+        })),
+      ],
     ])
     const editor = open()
     change(editor, 'updated')
@@ -288,7 +279,6 @@ describe('contributed editor saving', () => {
       error: result,
     })
   })
-
   it('clears dirty on undo and saves a snapshot while subsequent typing stays dirty', async () => {
     const editor = open()
     const state = saving().state(editor)
@@ -306,11 +296,13 @@ describe('contributed editor saving', () => {
     expect(state.value.saving).toBe(true)
     pending.resolve()
     await save
-    expect(state.value).toMatchObject({ dirty: true, saving: false })
+    expect(state.value).toMatchObject({
+      dirty: true,
+      saving: false,
+    })
     change(editor, 'to save')
     expect(state.value.dirty).toBe(false)
   })
-
   it('keeps failures dirty and exposes a recoverable error', async () => {
     const editor = open()
     change(editor, 'changed')
@@ -329,7 +321,6 @@ describe('contributed editor saving', () => {
       error: undefined,
     })
   })
-
   it('orders saves to one path and updates other buffers against the actual disk baseline', async () => {
     const first = open(),
       second = open()
@@ -350,7 +341,6 @@ describe('contributed editor saving', () => {
     expect(saving().state(first).value.dirty).toBe(true)
     expect(saving().state(second).value.dirty).toBe(false)
   })
-
   it.each(['same buffer', 'another buffer'])(
     'discards saves queued before remote adoption in %s',
     async (target) => {
@@ -363,12 +353,10 @@ describe('contributed editor saving', () => {
       await Promise.resolve()
       change(editor, 'queued local edit')
       const queued = saving().save(editor)
-
       change(adopted, 'remote contents')
       expect(saving().adopt(adopted, 'remote contents')).toBeUndefined()
       pending.resolve()
       await Promise.all([first, queued])
-
       expect(writeFile.mock.calls.map(([, contents]) => contents)).toEqual([
         'first local edit',
       ])
@@ -378,7 +366,6 @@ describe('contributed editor saving', () => {
         error: undefined,
       })
       expect(saving().state(editor).peek().saving).toBe(false)
-
       change(adopted, 'edit after adoption')
       expect(await saving().save(adopted)).toBeUndefined()
       expect(writeFile).toHaveBeenLastCalledWith(
@@ -388,7 +375,6 @@ describe('contributed editor saving', () => {
       expect(saving().state(adopted).peek().dirty).toBe(false)
     }
   )
-
   it('preserves the remote baseline adopted by another buffer during a save', async () => {
     const editor = open(),
       adopted = open()
@@ -397,12 +383,10 @@ describe('contributed editor saving', () => {
     change(editor, 'local edit')
     const saved = saving().save(editor)
     await Promise.resolve()
-
     change(adopted, 'remote contents')
     expect(saving().adopt(adopted, 'remote contents')).toBeUndefined()
     pending.resolve()
     expect(await saved).toBeUndefined()
-
     expect(adopted.contents.peek()).toBe('remote contents')
     expect(saving().state(adopted).peek().dirty).toBe(false)
     expect(saving().state(editor).peek()).toMatchObject({
@@ -410,7 +394,6 @@ describe('contributed editor saving', () => {
       saving: false,
     })
   })
-
   it('skips queued saves for closed or reassociated buffers', async () => {
     const first = open(),
       closed = open(),
@@ -420,8 +403,10 @@ describe('contributed editor saving', () => {
     const saves = [first, closed, renamed].map((editor) =>
       saving().save(editor)
     )
-    registry.get(editorsService).closeEditor(closed.id)
-    registry.get(editorsService).setSource(renamed.id, '/project/other.txt')
+    registry.required(editorsService).closeEditor(closed.id)
+    registry
+      .required(editorsService)
+      .setSource(renamed.id, '/project/other.txt')
     pending.resolve()
     const results = await Promise.all(saves)
     expect(results.slice(1).every((result) => result instanceof Error)).toBe(
@@ -429,7 +414,6 @@ describe('contributed editor saving', () => {
     )
     expect(writeFile).toHaveBeenCalledTimes(1)
   })
-
   it('stops queued writes when its registry lifetime ends', async () => {
     const first = open(),
       second = open()
@@ -439,40 +423,38 @@ describe('contributed editor saving', () => {
     const one = persistenceService.save(first),
       two = persistenceService.save(second)
     await Promise.resolve()
-    registry[Symbol.dispose]()
+    await registry.dispose()
     pending.resolve()
     await one
     expect(await two).toBeInstanceOf(Error)
     expect(writeFile).toHaveBeenCalledTimes(1)
     expect(await persistenceService.save(first)).toBeInstanceOf(Error)
   })
-
   it('preserves the saved baseline when capabilities change and cleans up on close', async () => {
     const editor = open()
     change(editor, 'changed')
-    await registry.reconfigureAsync(extra, [
-      defineRegistryItem({
-        provides: [
-          provide(editorCapabilityValueSpec, {
-            id: 'extra',
-            matches: '*',
-            setup: () => {},
-          }),
-        ],
-      }),
+    await registry.replace(extra, [
+      [
+        contribute(editorCapabilityFacet, () => ({
+          id: 'extra',
+          matches: '*' as const,
+          setup: () => {},
+        })),
+      ],
     ])
     expect(saving().state(editor).value.dirty).toBe(true)
-    registry.get(editorsService).setSource(editor.id, '/project/renamed.md')
+    registry
+      .required(editorsService)
+      .setSource(editor.id, '/project/renamed.md')
     await saving().save(editor)
     expect(writeFile).toHaveBeenCalledWith('/project/renamed.md', 'changed')
-    registry.get(editorsService).closeEditor(editor.id)
+    registry.required(editorsService).closeEditor(editor.id)
     expect(await saving().save(editor)).toBeInstanceOf(Error)
   })
-
   it('shows contributed indicators independently and saves the focused buffer with the shortcut and command', async () => {
     const first = open(),
       second = open('/project/other.md')
-    const indicators = registry.signal(editorTabIndicatorsValueSpec)
+    const indicators = registry.observe(editorTabIndicatorsFacet)
     const layout = {
       id: 'editors',
       label: 'Editors',
@@ -481,25 +463,37 @@ describe('contributed editor saving', () => {
     } as const
     render(
       <EditorsPane
-        editors={registry.get(editorsService)}
+        editors={registry.required(editorsService)}
         indicators={indicators}
         layout={layout}
       />
     )
     expect(
-      screen.queryByRole('img', { name: 'Unsaved changes' })
+      screen.queryByRole('img', {
+        name: 'Unsaved changes',
+      })
     ).not.toBeInTheDocument()
     await act(async () => {
       change(first, 'save first')
     })
-    expect(screen.getByRole('tab', { name: /notes.txt/ })).toContainElement(
-      screen.getByRole('img', { name: 'Unsaved changes' })
+    expect(
+      screen.getByRole('tab', {
+        name: /notes.txt/,
+      })
+    ).toContainElement(
+      screen.getByRole('img', {
+        name: 'Unsaved changes',
+      })
     )
     await act(async () => {
-      fireEvent.click(screen.getByRole('tab', { name: /notes.txt/ }))
-      codeSurface(registry.get(editorsService), first).focus()
+      fireEvent.click(
+        screen.getByRole('tab', {
+          name: /notes.txt/,
+        })
+      )
+      codeSurface(registry.required(editorsService), first).focus()
       fireEvent.keyDown(
-        codeSurface(registry.get(editorsService), first).contentDOM,
+        codeSurface(registry.required(editorsService), first).contentDOM,
         {
           key: 's',
           code: 'KeyS',
@@ -511,16 +505,21 @@ describe('contributed editor saving', () => {
     })
     expect(writeFile).toHaveBeenCalledWith(first.src.peek(), 'save first')
     expect(
-      screen.queryByRole('img', { name: 'Unsaved changes' })
+      screen.queryByRole('img', {
+        name: 'Unsaved changes',
+      })
     ).not.toBeInTheDocument()
     expect(
-      codeSurface(registry.get(editorsService), second).state.doc.toString()
+      codeSurface(
+        registry.required(editorsService),
+        second
+      ).state.doc.toString()
     ).toBe('original')
     await act(async () => {
       change(first, 'save via command')
-      codeSurface(registry.get(editorsService), first).contentDOM.blur()
+      codeSurface(registry.required(editorsService), first).contentDOM.blur()
       const command = registry
-        .get(commandsValueSpec)
+        .get(commandsFacet)
         .find(({ id }) => id === SAVE_EDITOR_COMMAND.id)!
       await command.onSubmit?.()
     })
@@ -530,19 +529,21 @@ describe('contributed editor saving', () => {
     )
     // A second extension can decorate the same tab without knowing about saving.
     await act(async () => {
-      await registry.reconfigureAsync(extra, [
-        defineRegistryItem({
-          provides: [
-            provide(editorTabIndicatorsValueSpec, {
-              id: 'test.notice',
-              component: () => <span title="Independent indicator">!</span>,
-            }),
-          ],
-        }),
+      await registry.replace(extra, [
+        [
+          contribute(editorTabIndicatorsFacet, () => ({
+            id: 'test.notice',
+            component: () => <span title="Independent indicator">!</span>,
+          })),
+        ],
       ])
       change(first, 'unsaved again')
     })
     expect(screen.getAllByTitle('Independent indicator')).toHaveLength(2)
-    expect(screen.getByRole('img', { name: 'Unsaved changes' })).toBeVisible()
+    expect(
+      screen.getByRole('img', {
+        name: 'Unsaved changes',
+      })
+    ).toBeVisible()
   })
 })

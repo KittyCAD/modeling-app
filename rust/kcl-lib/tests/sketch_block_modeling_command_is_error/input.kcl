@@ -1,3 +1,0 @@
-sketch(on = XY) {
-  startSketchOn(XY)
-}

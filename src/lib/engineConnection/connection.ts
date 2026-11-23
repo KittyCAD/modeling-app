@@ -199,6 +199,23 @@ export class Connection extends EventTarget {
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
+    this.websocket.addEventListener(
+      'close',
+      (event) => {
+        this.stopPingPong()
+        this.tearDownManager({
+          route: 'websocket-closed',
+          initiatedBy: 'unknown',
+          code: event.code.toString(),
+          reason: event.reason,
+        })
+      },
+      { once: true }
+    )
+    const authenticated = () => {
+      if (this.pingIntervalId === undefined) this.startPingPong()
+      callback('auth success')
+    }
     const onWebSocketOpen = (event: Event) => {
       this.send({
         type: 'headers',
@@ -242,19 +259,21 @@ export class Connection extends EventTarget {
 
       switch (resp.type) {
         case 'pong':
+          this.setPong(Date.now())
+          this.setPing(undefined)
           break
 
         // Sessions without WebRTC use the session data response as the
         // successful connection handshake.
         case 'modeling_session_data':
           if (!webrtc) {
-            callback('auth success')
+            authenticated()
           }
           break
 
         // Only fires on successful authentication.
         case 'ice_server_info':
-          callback('auth success')
+          authenticated()
           return
         case 'debug':
         case 'modeling':
@@ -263,8 +282,14 @@ export class Connection extends EventTarget {
         case 'sdp_answer':
         case 'modeling_batch':
         case 'metrics_request':
-        case 'reconnect':
           break
+        case 'reconnect':
+          this.tearDownManager({
+            route: 'backend-shutdown',
+            initiatedBy: 'api',
+            reconnectRequested: true,
+          })
+          return
       }
       if (!this.handleMessage) {
         console.warn('unable to process message, handleMessage is missing')

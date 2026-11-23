@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design with Plankton"
+  short_description: "Wire ZDS features with Plankton composition and lifetimes"
+
+policy:
+  allow_implicit_invocation: false

@@ -151,7 +151,6 @@ test('Finds the credits of Free subscription', async () => {
   expect(Math.floor(billing.allowance!)).toEqual(20)
   expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
   expect(billing.hasSubscription).toBe(false)
-  expect(billing.isOrg).toBe(false)
 })
 
 test('Finds the credits of Plus subscription', async () => {
@@ -180,7 +179,6 @@ test('Finds the credits of Plus subscription', async () => {
   expect(Math.floor(billing.allowance!)).toEqual(100)
   expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
   expect(billing.hasSubscription).toBe(true)
-  expect(billing.isOrg).toBe(false)
 })
 
 test.each(['pro', 'custom-unlimited-individual-plan'])(
@@ -212,7 +210,6 @@ test.each(['pro', 'custom-unlimited-individual-plan'])(
     expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
     expect(billing.allowance).toBeUndefined()
     expect(billing.hasSubscription).toBe(true)
-    expect(billing.isOrg).toBe(false)
   }
 )
 
@@ -246,7 +243,6 @@ test.each(['enterprise', 'enterprise-free', 'team', 'custom-org-plan'])(
     expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
     expect(billing.allowance).toBeUndefined()
     expect(billing.hasSubscription).toBe(true)
-    expect(billing.isOrg).toBe(true)
   }
 )
 
@@ -326,5 +322,4 @@ test.each<SubscriptionOptions>([
   expect(Math.floor(billing.allowance!)).toEqual(20)
   expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
   expect(billing.hasSubscription).toBe(true)
-  expect(billing.isOrg).toBe(opts.type?.type === 'organization')
 })

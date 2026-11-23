@@ -194,6 +194,7 @@ export async function cloneProjectIntoLocalDirectory({
   defaultFile,
   requestedProjectTitle = sourceProjectName,
   wasmInstancePromise,
+  files: sourceFiles,
 }: {
   fileOperations: FileOperationsRegistryService
   projectDirectoryPath: string
@@ -202,13 +203,14 @@ export async function cloneProjectIntoLocalDirectory({
   defaultFile?: string
   requestedProjectTitle?: string
   wasmInstancePromise: Promise<ModuleType> | ModuleType
+  files?: readonly { relativePath: string; data: Uint8Array }[]
 }): Promise<CloneProjectIntoLocalDirectoryResult> {
   if (
     getRelativePathIfContained(sourceProjectPath, projectDirectoryPath) !==
     undefined
   )
     return Promise.reject(
-      new Error('The clone destination must be outside the source project.')
+      new Error('The duplicate destination must be outside the source project.')
     )
   const entrypoint = defaultFile
     ? getRelativePathIfContained(sourceProjectPath, defaultFile)?.replaceAll(
@@ -220,10 +222,13 @@ export async function cloneProjectIntoLocalDirectory({
     return Promise.reject(
       new Error('The project entrypoint must be inside the source project.')
     )
-  const files = await collectProjectFilesForUpload({
-    fileOperations,
-    projectRoot: sourceProjectPath,
-  })
+  const files =
+    sourceFiles ??
+    (await collectProjectFilesForUpload({
+      fileOperations,
+      projectRoot: sourceProjectPath,
+      includeIgnored: true,
+    }))
   const project = await createProjectInLocalDirectory({
     fileOperations,
     projectDirectoryPath,
