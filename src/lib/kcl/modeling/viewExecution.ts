@@ -2,9 +2,12 @@ import * as Effect from 'effect/Effect'
 import * as Scope from 'effect/Scope'
 import * as Exit from 'effect/Exit'
 import * as ExecutionStrategy from 'effect/ExecutionStrategy'
-import { computed, signal } from '@preact/signals-core'
+import { computed, effect, signal, untracked } from '@preact/signals-core'
 import type { ExecState } from '@src/lang/wasm'
-import type { Executor } from '@src/lib/executors/registry/contract'
+import type {
+  Executor,
+  ExecutionInput,
+} from '@src/lib/executors/registry/contract'
 import type { KclExecutionCapability } from '@src/lib/kcl/execution/executor'
 import type { KclSession } from '@src/lib/kcl/modeling/session'
 import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
@@ -55,6 +58,21 @@ export function createKclViewExecution(
     | undefined
   let published: typeof retained
   let completedRevision: unknown
+  const readSettings = () => ({
+    revision: readRevision(),
+    configuration: readConfiguration(),
+  })
+  let requested:
+    | { input: ExecutionInput; settings: ReturnType<typeof readSettings> }
+    | undefined
+  let consumedRequest: ExecutionInput | undefined
+  // Source capture can await project reads or another native run. Preserve the
+  // settings from the request rather than reading newer preferences afterward.
+  const stopRequested = effect(() => {
+    const input = executor.result(capability).value.requested
+    if (input && requested?.input !== input)
+      requested = { input, settings: untracked(readSettings) }
+  })
   const execute = (input: NonNullable<typeof retained>) => {
     if (disposed) return
     retained = input
@@ -95,6 +113,7 @@ export function createKclViewExecution(
       lifetime,
       Effect.sync(() => {
         disposed = true
+        stopRequested()
         run++
         controller?.abort()
         session.dispose()
@@ -113,12 +132,15 @@ export function createKclViewExecution(
         published?.sources !== executor.output.value.get(capability)?.sources ||
         !Object.is(published?.revision, readRevision()),
     })),
-    run: (sources: KclSourceSnapshot) =>
-      execute({
-        sources,
-        revision: readRevision(),
-        configuration: readConfiguration(),
-      }),
+    run: (sources: KclSourceSnapshot) => {
+      const input = executor.result(capability).peek().input
+      const settings =
+        input && requested?.input === input && consumedRequest !== input
+          ? requested.settings
+          : readSettings()
+      consumedRequest = input
+      execute({ sources, ...settings })
+    },
     /** Rebuild this scene from its last requested input, even when the document has newer edits. */
     refresh: (currentSettings = false) => {
       if (retained)

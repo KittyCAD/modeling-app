@@ -13,7 +13,9 @@ await executor.run(capability)
 `input` observes the current eligible source, contents, and dependency revision.
 `result` observes the last completed attempt's input, data or error, completion
 identity, progress, and freshness. Its `requested` field identifies the active
-request's input, falling back to the completed input when idle. Before any request,
+request's input, falling back to the completed input when idle. Each request gets
+a distinct input object, including requests with unchanged values, so consumers
+can capture additional inputs once per request. Before any request,
 there is no completed input and the result is stale.
 
 An edit, rename, language change, or dependency revision can mark a result stale

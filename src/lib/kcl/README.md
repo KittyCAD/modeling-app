@@ -224,10 +224,13 @@ keymap system and supports user remapping. Opening the command palette retains i
 originating editor until dismissal or submission. Other documents are unaffected;
 views sharing the requested editor consume the same new capture.
 
-`createKclViewExecution.run` captures native settings when the scene request is
-made, before connection startup or queued native work. The runtime serializes that
-configuration before its queue. `refresh` replays the retained request for recovery.
-Source-capture errors remain shared; native errors remain local to their scene.
+Each view captures native settings when the shared source request is published,
+before asynchronous file reads or pending native work can delay it. Later
+preference changes leave that requested model out of date. Settings-only automatic
+refreshes capture current settings without recapturing sources. The runtime
+serializes configuration before its native queue; `refresh` replays the retained
+request for recovery. Source-capture errors remain shared, while native errors
+remain local to their scene.
 
 Selection and modeling commands must distinguish an execution's geometry identity
 from freshness relative to working text. Editing marks the displayed model stale;
