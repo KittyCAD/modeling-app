@@ -3,11 +3,11 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { KclRuntime } from '@src/lib/kcl/execution/runtime'
 import { SceneExecutionEvents } from '@src/lib/kcl/scene/execution'
-import { createSceneSelection } from '@src/lib/scene/selection'
+import { createSceneSelection } from '@src/lib/kcl/scene/selection'
 import {
   sceneSelectionAdapter,
   attachSceneSelectionInput,
-} from '@src/lib/scene/selectionAdapter'
+} from '@src/lib/kcl/scene/selectionAdapter'
 import { isRecord } from '@src/lib/utils'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 

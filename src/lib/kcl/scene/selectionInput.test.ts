@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals-core'
-import { attachSceneSelectionInput } from '@src/lib/scene/selectionAdapter'
-import { createSceneSelection } from '@src/lib/scene/selection'
+import { attachSceneSelectionInput } from '@src/lib/kcl/scene/selectionAdapter'
+import { createSceneSelection } from '@src/lib/kcl/scene/selection'
 import { expect, it, vi } from 'vitest'
 
 it('selects on primary click, ignores camera drags, and releases input on detach', async () => {

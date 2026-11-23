@@ -1,5 +1,5 @@
-import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
-export { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
+import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/kcl/scene/picking'
+export { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/kcl/scene/picking'
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {

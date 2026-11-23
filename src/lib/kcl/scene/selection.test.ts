@@ -5,7 +5,7 @@ import {
   type PickingArgument,
   type SceneSelection,
   type SelectionAdapter,
-} from '@src/lib/scene/selection'
+} from '@src/lib/kcl/scene/selection'
 import fc from 'fast-check'
 import { expect, it, vi } from 'vitest'
 

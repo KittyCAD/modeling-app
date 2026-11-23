@@ -1,11 +1,11 @@
 import {
   getEntityRefId,
   entityReferenceKey,
-} from '@src/lib/scene/entityReference'
+} from '@src/lib/kcl/scene/entityReference'
 export {
   getEntityRefId,
   entityReferenceKey,
-} from '@src/lib/scene/entityReference'
+} from '@src/lib/kcl/scene/entityReference'
 import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'

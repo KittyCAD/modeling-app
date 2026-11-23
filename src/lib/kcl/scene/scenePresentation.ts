@@ -1,4 +1,4 @@
-import type { SceneSelectionController } from '@src/lib/scene/selection'
+import type { SceneSelectionController } from '@src/lib/kcl/scene/selection'
 import { computed } from '@preact/signals-core'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'

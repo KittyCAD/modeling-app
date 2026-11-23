@@ -1,12 +1,12 @@
 import type { EntityType } from '@kittycad/lib'
 import { effect } from '@preact/signals-core'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
+import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/kcl/scene/picking'
 import type {
   SceneSelectionController,
   SelectionAdapter,
   SelectionModel,
-} from '@src/lib/scene/selection'
+} from '@src/lib/kcl/scene/selection'
 import type { CameraControls } from '@src/clientSideScene/CameraControls'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'

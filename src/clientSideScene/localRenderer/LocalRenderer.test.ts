@@ -1,6 +1,6 @@
 import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { sceneSelectionAdapter } from '@src/lib/scene/selectionAdapter'
+import { sceneSelectionAdapter } from '@src/lib/kcl/scene/selectionAdapter'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'

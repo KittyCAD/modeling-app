@@ -1,8 +1,8 @@
 import { expect, it, vi } from 'vitest'
-import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/scene/picking'
+import { sendQueryEntityTypeWithPointFromSceneClick } from '@src/lib/kcl/scene/picking'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import type { SelectionModel } from '@src/lib/scene/selection'
-import { sceneSelectionAdapter } from '@src/lib/scene/selectionAdapter'
+import type { SelectionModel } from '@src/lib/kcl/scene/selection'
+import { sceneSelectionAdapter } from '@src/lib/kcl/scene/selectionAdapter'
 
 const model: SelectionModel = {
   sceneId: Symbol('scene'),

@@ -1,4 +1,4 @@
-import { createSceneSelection } from '@src/lib/scene/selection'
+import { createSceneSelection } from '@src/lib/kcl/scene/selection'
 import { signal } from '@preact/signals-core'
 import { emptyExecState } from '@src/lang/wasm'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'

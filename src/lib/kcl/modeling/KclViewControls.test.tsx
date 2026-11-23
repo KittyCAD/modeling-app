@@ -14,7 +14,7 @@ import {
   createTestKclScene,
   createTestSettings,
 } from '@src/lib/kcl/testFixtures'
-import { createSceneSelection } from '@src/lib/scene/selection'
+import { createSceneSelection } from '@src/lib/kcl/scene/selection'
 import type { KclSceneResource } from '@src/lib/kcl/scene/open'
 import { Themes } from '@src/lib/theme'
 

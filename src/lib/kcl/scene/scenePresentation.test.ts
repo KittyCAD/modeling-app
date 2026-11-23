@@ -1,4 +1,4 @@
-import { createSceneSelection } from '@src/lib/scene/selection'
+import { createSceneSelection } from '@src/lib/kcl/scene/selection'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'

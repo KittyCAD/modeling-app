@@ -1,8 +1,9 @@
-# KCL scene connections and refresh settings
+# KCL scenes
 
-This module connects KCL scenes to the engine and defines which preference
-changes require KCL execution. It uses `ConnectionManager` for transport and
-provides the refresh policy consumed by `KclManager` in the file route.
+This module owns connection, viewport, selection, and refresh behavior for KCL
+scenes in Modeling views and the legacy file route. It uses `ConnectionManager`
+for transport and provides the refresh policy consumed by `KclManager` in the
+file route.
 
 ## Connection ownership
 
@@ -116,20 +117,22 @@ The SDK integration direction and adapter constraints are documented in
 
 ## View selection and dialog picking
 
-`createSceneSelection` owns ordinary selection for one Modeling view. Its model
-identity includes both a scene and a fresh execution identity; every native run,
+[`createSceneSelection`](selection.ts) owns ordinary selection for one Modeling
+view. Its model identity includes both a scene and a fresh execution identity;
+every native run,
 including a cache hit or a settings refresh, invalidates previous references.
 Closing the scene cancels pending picking and highlighting work. Two views of
 one buffer have independent selections.
 
-`sceneSelectionAdapter` uses the point-query helper extracted from the legacy
-selection module. ConnectionManager sends it to the stream engine or routes it
-to the existing LocalRenderer GPU picker. Highlight projection uses the existing
+[`sceneSelectionAdapter`](selectionAdapter.ts) uses the [point-query helper](picking.ts)
+extracted from the legacy selection module. ConnectionManager sends it to the
+stream engine or routes it to the existing LocalRenderer GPU picker. Highlight projection uses the existing
 selection/filter commands, including the local renderer's selection sync. The
 adapter adds no raycaster or transport. Nonempty highlights use one replacement
 command, with no intermediate clear; filters are sent only when they change or
-a new execution becomes current. Entity reference identity is extracted
-from queryAst and re-exported there for existing consumers.
+a new execution becomes current. [Entity reference helpers](entityReference.ts)
+have no runtime dependency on AST or WASM modules. `queryAst` re-exports them for
+existing consumers.
 
 Click selects one entity, Shift-click toggles membership, and a background click
 clears selection (Shift-background leaves it alone). Camera drags do not select.

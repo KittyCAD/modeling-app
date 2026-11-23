@@ -7,7 +7,7 @@ import {
   type ReadonlySignal,
   type Signal,
 } from '@preact/signals-core'
-import { entityReferenceKey } from '@src/lib/scene/entityReference'
+import { entityReferenceKey } from '@src/lib/kcl/scene/entityReference'
 import { isErr } from '@src/lib/trap'
 
 /** Identity is replaced for every execution, including native cache hits. References cannot cross models. */
