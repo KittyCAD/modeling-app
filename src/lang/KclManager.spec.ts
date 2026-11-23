@@ -835,6 +835,27 @@ describe('KclManager storage checks before sketch insertion', () => {
     return { app, kclManager, schedule, execute }
   }
 
+  it('notifies unsaved-state consumers when the current contents are acknowledged', async () => {
+    const { app, kclManager } = await setup()
+    const observed: boolean[] = []
+    setEditorBuffer(kclManager, 'width = 2')
+    const stop = effect(() => {
+      observed.push(kclManager.hasUnsavedLocalChanges())
+    })
+    try {
+      expect(observed.at(-1)).toBe(true)
+      kclManager.synchronizeCurrentEditorAfterDirectGlobalReplay({
+        filePath: kclManager.path,
+        nextContent: kclManager.code,
+        shouldSyncRust: false,
+      })
+      expect(observed.at(-1)).toBe(false)
+    } finally {
+      stop()
+      await app.dispose()
+    }
+  })
+
   it('preserves the live sketch and its selection when storage is unchanged', async () => {
     const { app, kclManager, schedule, execute } = await setup()
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 1')

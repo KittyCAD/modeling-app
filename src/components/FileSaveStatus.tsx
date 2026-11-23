@@ -1,76 +1,90 @@
+import type { ReadonlySignal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useApp } from '@src/lib/boot'
-import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-
+import type { KclManager } from '@src/lang/KclManager'
+import type { ProjectStorage } from '@src/lib/projectSession/storage'
 import { reportRejection, trap } from '@src/lib/trap'
-import { selectCommand } from '@src/lib/commandUtils'
-import { findHomeProjectByPath } from '@src/lib/homeProjects'
-import {
-  homeProjectActionsService,
-  homeProjectEntriesFacet,
-} from '@src/registry/contracts/homeProjects'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
+import type { ReactNode } from 'react'
 
-export function FileSaveStatus() {
+interface FileSaveStatusProps {
+  project: ReadonlySignal<
+    | {
+        readonly path: string
+        readonly executingEditor: ReadonlySignal<
+          | Pick<
+              KclManager,
+              'saveState' | 'codeSignal' | 'hasUnsavedLocalChanges'
+            >
+          | null
+          | undefined
+        >
+      }
+    | undefined
+  >
+  storageFor: (
+    path: string
+  ) => Pick<ProjectStorage, 'saveState' | 'writeAvailability'>
+  retrySave: ProjectSessionService['retrySave']
+  readOnlyAction?: ReactNode
+}
+
+export function FileSaveStatus({
+  project,
+  storageFor,
+  retrySave,
+  readOnlyAction,
+}: FileSaveStatusProps) {
   useSignals()
-  const app = useApp()
-  const className = defaultStatusBarItemClassNames
-  const path = app.projectSignal.value?.path
+  const path = project.value?.path
   if (!path) return null
-  const editor = app.projectSignal.value?.executingEditor.value
-  const storage = app.projectSession.storageFor(path)
+  const editor = project.value?.executingEditor.value
+  const storage = storageFor(path)
   const availability = storage.writeAvailability.value
   const status =
     storage.saveState?.value ??
     (editor ? { state: editor.saveState.value } : undefined)
+  const editorCode = editor?.codeSignal.value
+  const unsaved =
+    (editorCode !== undefined && editor?.hasUnsavedLocalChanges()) ||
+    (status !== undefined && status.state !== 'saved')
+  let message: ReactNode
   if (!availability.writable) {
-    const project = findHomeProjectByPath(
-      app.registry.observe(homeProjectEntriesFacet).value,
-      path
-    )
-    const canCopy =
-      project &&
-      !project.readWriteAccess &&
-      app.registry
-        .optional(homeProjectActionsService)
-        ?.canCloneToLibrary(project)
-    return (
-      <span role="status" className={className}>
+    message = (
+      <>
         {availability.reason}
-        {canCopy && (
-          <button
-            type="button"
-            onClick={() =>
-              selectCommand(app.commands, {
-                groupId: 'projects',
-                name: 'Clone project',
-                argDefaultValues: { project: project.id },
-              })
-            }
-          >
-            Create an editable copy
-          </button>
-        )}
-      </span>
+        {readOnlyAction}
+      </>
+    )
+  } else if (status?.state === 'saving') {
+    message = 'Saving...'
+  } else if (status?.state === 'failed') {
+    message = (
+      <button
+        type="button"
+        className="rounded-sm hover:underline focus-visible:outline-appForeground"
+        onClick={() => {
+          void retrySave().then(trap).catch(reportRejection)
+        }}
+      >
+        Save failed. Retry
+      </button>
     )
   }
-  if (!status || status.state === 'saved') return null
+  if (!message && !unsaved) return null
   return (
-    <span role="status" className={className}>
-      {status.state === 'saving' ? (
-        'Saving...'
-      ) : (
-        <button
-          type="button"
-          onClick={() => {
-            void app.projectSession
-              .retrySave()
-              .then(trap)
-              .catch(reportRejection)
-          }}
-        >
-          Save failed. Retry
-        </button>
+    <span
+      role="status"
+      className="inline-flex shrink-0 self-center items-center gap-1.5 text-xs text-2"
+    >
+      {unsaved && (
+        <span
+          role="img"
+          aria-label="Unsaved changes"
+          title="Unsaved changes"
+          className="h-1.5 w-1.5 shrink-0 rounded-full bg-current"
+        />
       )}
+      {message}
     </span>
   )
 }
