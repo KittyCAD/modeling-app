@@ -589,3 +589,41 @@ it('honors a changed projection preference during ordinary connection recovery',
     session.dispose()
   }
 })
+
+it('resumes an idle streamed scene when execution is requested without viewport input', async () => {
+  vi.useFakeTimers()
+  const first = scene('streamed'),
+    second = scene('streamed')
+  first.preferences = { ...first.preferences, idleTimeout: signal(1000) }
+  const open = vi
+    .fn<OpenKclScene>()
+    .mockResolvedValueOnce(first)
+    .mockResolvedValueOnce(second)
+  const replay = vi.fn()
+  const session = createKclSession(open, replay)
+  session.attach(container())
+  try {
+    await session.execute(snapshot, runSignal())
+    const pose = first.snapshotCamera()
+    await vi.advanceTimersByTimeAsync(1100)
+    expect(session.state.peek().type).toBe('idle')
+    const requested = { src: 'edited.kcl', files: new Map() }
+    const configuration = { requested: 'settings' }
+    expect(
+      await session.execute(requested, runSignal(), configuration)
+    ).not.toBeInstanceOf(Error)
+    expect(second.runtime.execute).toHaveBeenCalledExactlyOnceWith(
+      requested,
+      configuration
+    )
+    expect(second.restoreCamera).toHaveBeenCalledWith({
+      ...pose,
+      is_ortho:
+        second.preferences.camera.peek().cameraProjection === 'orthographic',
+    })
+    expect(second.frameModel).not.toHaveBeenCalled()
+    expect(replay).not.toHaveBeenCalled()
+  } finally {
+    session.dispose()
+  }
+})

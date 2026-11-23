@@ -215,7 +215,10 @@ export function createKclSession(
   }
   // A renderer change needs a new connection even when the old one is healthy.
   // Keep the session and camera, and settle calls waiting on the retired attempt.
-  const replaceScene = (projection: 'snapshot' | 'settings' = 'settings') => {
+  const replaceScene = (
+    projection: 'snapshot' | 'settings' = 'settings',
+    replayRetainedModel = true
+  ) => {
     if (disposed) return
     cancelRetry()
     rememberCamera(projection)
@@ -235,7 +238,7 @@ export function createKclSession(
         width: container.clientWidth,
         height: container.clientHeight,
       })
-    onSceneReplaced()
+    if (replayRetainedModel) onSceneReplaced()
   }
   // Manual retry, viewport resize, and focus recovery use the same checks.
   // Only an attached viewport with a usable size can replace a failed/stale resource.
@@ -402,6 +405,11 @@ export function createKclSession(
       signal: AbortSignal,
       configuration?: object
     ): Promise<{ result: ExecState } | Error> => {
+      // A Render command can arrive from Code while this viewport is idle.
+      // This call supplies its requested model, so waking must not also replay
+      // the previous model through `onSceneReplaced`.
+      if (!signal.aborted && state.peek().type === 'idle')
+        replaceScene('settings', false)
       const owner = attempt
       lastInput = Date.now()
       return enqueue(async () => {
