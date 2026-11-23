@@ -50,7 +50,9 @@ async function localAxisPosition(
     : positive
 }
 
-test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Testing Gizmo', { tag: '@web' }, () => {
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     const cases = [
       {
@@ -114,15 +116,17 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
         page,
         homePage,
         scene,
+        editor,
       }) => {
         const u = await getUtils(page)
-        await page.addInitScript((TEST_CODE_GIZMO) => {
-          localStorage.setItem('persistCode', TEST_CODE_GIZMO)
-        }, TEST_CODE_GIZMO)
 
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', TEST_CODE_GIZMO)
+        )
         await u.waitForPageLoad()
 
         // wait for execution done
@@ -243,6 +247,7 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
       page,
       homePage,
       scene,
+      editor,
     }) => {
       const testCase = {
         testDescription: 'Right view',
@@ -252,13 +257,14 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
 
       // Test prelude taken from the above test
       const u = await getUtils(page)
-      await page.addInitScript((TEST_CODE_GIZMO) => {
-        localStorage.setItem('persistCode', TEST_CODE_GIZMO)
-      }, TEST_CODE_GIZMO)
+
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', TEST_CODE_GIZMO)
+      )
       await page.waitForTimeout(100)
       // wait for execution done
       if (rendererTag === '@streamRenderer') {
