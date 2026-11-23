@@ -209,18 +209,21 @@ export function createEditorNaming(
             !current.session.project.peek().metadata.readWriteAccess
           )
             return new Error('This editor is read-only')
+          const parent = fsZds.dirname(destination)
+          const existingParent = current.source
+            ? fsZds.dirname(current.source)
+            : root
+          if (parent !== existingParent) {
+            await ensureDirectory(files, parent)
+            if (!active()) return new Error('The editor changed while naming')
+            if (
+              editor.readOnly.peek() ||
+              !current.session.project.peek().metadata.readWriteAccess
+            )
+              return new Error('This editor is read-only')
+          }
           if (current.source) {
             const source = current.source
-            const parent = fsZds.dirname(destination)
-            if (parent !== fsZds.dirname(source)) {
-              await ensureDirectory(files, parent)
-              if (!active()) return new Error('The editor changed while naming')
-              if (
-                editor.readOnly.peek() ||
-                !current.session.project.peek().metadata.readWriteAccess
-              )
-                return new Error('This editor is read-only')
-            }
             const affected = editors.editors
               .peek()
               .filter((candidate) => candidate.src.peek() === current.source)

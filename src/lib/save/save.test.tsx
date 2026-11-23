@@ -81,9 +81,7 @@ describe('contributed editor saving', () => {
   })
   beforeEach(async () => {
     createFile.mockReset().mockResolvedValue(undefined)
-    createDirectory
-      .mockReset()
-      .mockImplementation(testFileOperations.createDirectory)
+    createDirectory.mockReset().mockResolvedValue(undefined)
     rename.mockReset().mockResolvedValue(undefined)
     writeFile.mockReset().mockResolvedValue(undefined)
     registry = new Registry()
@@ -641,12 +639,17 @@ describe('contributed editor saving', () => {
     ])
     naming().cancel(source)
   })
-  it.each(['tab', 'command'])(
-    'selects Markdown preview and lists a newly saved buffer created from the %s',
-    async (createFrom) => {
+  it.each([
+    ['tab', 'new.md'],
+    ['command', 'new.md'],
+    ['tab', 'parts/drafts/new.md'],
+  ])(
+    'selects Markdown preview and lists a newly saved buffer created from the %s at %s',
+    async (createFrom, savedPath) => {
       const root = await mkdtemp(join(tmpdir(), 'zds-first-save-'))
       try {
         createFile.mockImplementation(testFileOperations.createFile)
+        createDirectory.mockImplementation(testFileOperations.createDirectory)
         writeFile.mockImplementation(testFileOperations.writeFile)
         rename.mockImplementation(testFileOperations.rename)
         const projects = createProjectSessionService(testFileOperations)
@@ -679,7 +682,7 @@ describe('contributed editor saving', () => {
         const input = screen.getByRole('textbox', {
           name: 'Project-relative file path',
         })
-        fireEvent.change(input, { target: { value: 'new.md' } })
+        fireEvent.change(input, { target: { value: savedPath } })
         fireEvent.keyDown(input, { key: 'Enter' })
         await screen.findByRole('heading', { name: 'New document' })
         expect(editors.viewState(view).peek().selected?.id).toBe(
@@ -699,13 +702,13 @@ describe('contributed editor saving', () => {
             : arg.options
         await vi.waitFor(() =>
           expect(options()).toContainEqual({
-            name: 'new.md',
-            value: join(root, 'new.md'),
+            name: savedPath,
+            value: join(root, savedPath),
           })
         )
         expect(
           new TextDecoder().decode(
-            await testFileOperations.readFile(join(root, 'new.md'))
+            await testFileOperations.readFile(join(root, savedPath))
           )
         ).toBe('# New document')
         expect(saving().state(editor).peek().dirty).toBe(false)
@@ -723,19 +726,30 @@ describe('contributed editor saving', () => {
           value: join(root, 'renamed.md'),
         })
         expect(options()).not.toContainEqual({
-          name: 'new.md',
-          value: join(root, 'new.md'),
+          name: savedPath,
+          value: join(root, savedPath),
         })
       } finally {
         await rm(root, { recursive: true, force: true })
       }
     }
   )
-  it.each(['editor', 'project'])(
-    'stops a nested rename if the %s closes during directory creation',
-    async (closed) => {
+  it.each([
+    ['rename', 'editor'],
+    ['rename', 'project'],
+    ['first save', 'editor'],
+    ['first save', 'project'],
+  ])(
+    'stops a nested %s if the %s closes during directory creation',
+    async (operation, closed) => {
       const projects = await namingProject()
-      const editor = open()
+      const editor =
+        operation === 'rename'
+          ? open()
+          : requireSuccess(
+              registry.required(editorsService).createEditor('draft')
+            )
+      const originalSource = editor.src.peek()
       const pending = deferred()
       createDirectory.mockReturnValueOnce(pending.promise)
       naming().rename(editor)
@@ -747,9 +761,28 @@ describe('contributed editor saving', () => {
       pending.resolve()
       await submitted
       expect(rename).not.toHaveBeenCalled()
-      expect(editor.src.peek()).toBe('/project/notes.txt')
+      expect(createFile).not.toHaveBeenCalled()
+      expect(editor.src.peek()).toBe(originalSource)
     }
   )
+  it('keeps a first save unnamed when folder creation fails and allows retrying', async () => {
+    const projects = await namingProject()
+    const editor = requireSuccess(
+      registry.required(editorsService).createEditor('draft')
+    )
+    createDirectory.mockRejectedValueOnce(new Error('Cannot create folder'))
+    naming().rename(editor)
+    await naming().submit(editor, 'parts/drafts/notes.txt')
+    expect(naming().state(editor).peek()?.error).toBe('Cannot create folder')
+    expect(editor.src.peek()).toBeUndefined()
+    expect(editor.contents.peek()).toBe('draft')
+    expect(saving().state(editor).peek().dirty).toBe(true)
+    expect(projects.listFiles()).toEqual([])
+    expect(createFile).not.toHaveBeenCalled()
+    await naming().submit(editor, 'parts/drafts/notes.txt')
+    expect(editor.src.peek()).toBe('/project/parts/drafts/notes.txt')
+    expect(saving().state(editor).peek().dirty).toBe(false)
+  })
   it('moves a saved buffer into new directories without rereading the project', async () => {
     const root = await mkdtemp(join(tmpdir(), 'zds-nested-rename-'))
     const source = join(root, 'notes.txt')
@@ -758,6 +791,7 @@ describe('contributed editor saving', () => {
     try {
       await testFileOperations.createFile(source, 'saved contents')
       rename.mockImplementation(testFileOperations.rename)
+      createDirectory.mockImplementation(testFileOperations.createDirectory)
       writeFile.mockImplementation(testFileOperations.writeFile)
       const projects = createProjectSessionService(testFileOperations)
       projects.openProject({
@@ -824,6 +858,7 @@ describe('contributed editor saving', () => {
         const occupied = join(root, 'parts', 'occupied.txt')
         await testFileOperations.createFile(occupied, 'keep this file')
         rename.mockImplementation(testFileOperations.rename)
+        createDirectory.mockImplementation(testFileOperations.createDirectory)
         const projects = createProjectSessionService(testFileOperations)
         projects.openProject({
           contents: {
