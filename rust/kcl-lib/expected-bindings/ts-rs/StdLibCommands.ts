@@ -7596,7 +7596,7 @@ export default {
     "summary": "Fills closed regions to make planar surfaces contained by their boundaries.",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {

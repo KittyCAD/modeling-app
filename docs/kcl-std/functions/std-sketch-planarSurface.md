@@ -5,8 +5,6 @@ excerpt: "Fills closed regions to make planar surfaces contained by their bounda
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Fills closed regions to make planar surfaces contained by their boundaries.
 
 ```kcl
@@ -40,7 +38,7 @@ Edges must be provided in the order they connect.
 
 ```kcl
 // Select a closed region explicitly before filling it.
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0)
 
 // Sketch a closed quadrilateral
 sketch001 = sketch(on = XY) {
@@ -63,7 +61,7 @@ mySurface = planarSurface(region001)
 ![Rendered example of planarSurface 0](/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface0.png)
 
 ```kcl
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0)
 
 // In this example, we'll extrude a cylinder with no caps, then use
 // `planarSurface` to create a separate surface for one cap.

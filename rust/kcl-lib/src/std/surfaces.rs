@@ -539,7 +539,7 @@ mod tests {
     async fn planar_surface_batches_regions_in_input_order() {
         let result = parse_execute(
             r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0)
 profile = sketch(on = XY) {
   left = circle(start = [2mm, 0mm], center = [0mm, 0mm])
   right = circle(start = [12mm, 0mm], center = [10mm, 0mm])
@@ -591,7 +591,7 @@ surfaces = planarSurface([leftRegion, rightRegion], tolerance = 0.01mm)
     async fn planar_surface_preserves_face_api_disambiguation() {
         let result = parse_execute(
             r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0)
 profile = sketch(on = XY) {
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
 }
@@ -634,7 +634,7 @@ surface = planarSurface([{
         ] {
             let error = parse_execute(&format!(
                 r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0)
 profile = sketch(on = XY) {{
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
 }}
