@@ -11,7 +11,12 @@ import {
 import { isRecord } from '@src/lib/utils'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 
-/** Bind shared picking to one runtime; execution invalidates geometry IDs and successful completion supplies a new target. */
+/**
+ * Creates selection for one KCL scene. Picks use this scene's connection and
+ * input canvas; execution signals and events from `model` determine when that
+ * geometry can be selected. The returned `dispose` removes the input and runtime
+ * listeners and releases the selection controller when the scene closes.
+ */
 export function createKclSceneSelection(
   manager: ConnectionManager,
   sceneInfra: SceneInfra,
@@ -27,6 +32,8 @@ export function createKclSceneSelection(
     sceneInfra.camControls,
     selection
   )
+  // Stop using references as soon as execution starts. `invalidate` clears the
+  // view selection and dialog fields and prevents pending picks from updating them.
   const stopExecuting = effect(() => {
     if (model.executing.value) selection.invalidate()
   })
@@ -34,6 +41,9 @@ export function createKclSceneSelection(
     if (!(event instanceof CustomEvent)) return
     const detail: unknown = event.detail
     if (!isRecord(detail) || typeof detail.successful !== 'boolean') return
+    // `createKclRuntime` emits `ExecutionDone` after clearing `executing`.
+    // A successful result gets a fresh identity so earlier references remain
+    // invalid even when native execution reused cached geometry.
     if (!model.executing.peek() && detail.successful && !model.failed.peek())
       selection.setModel({ sceneId, executionId: Symbol('execution') })
     else selection.invalidate()

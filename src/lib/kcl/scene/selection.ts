@@ -10,7 +10,12 @@ import {
 import { entityReferenceKey } from '@src/lib/kcl/scene/entityReference'
 import { isErr } from '@src/lib/trap'
 
-/** Identity is replaced for every execution, including native cache hits. References cannot cross models. */
+/**
+ * Identifies the scene and execution that produced a geometry reference.
+ * `createKclSceneSelection` supplies a fresh object after each successful
+ * execution. `setModel` and `validate` compare these objects by identity, so
+ * references from an earlier execution cannot be used with its replacement.
+ */
 export interface SelectionModel {
   readonly sceneId: symbol
   readonly executionId: symbol
@@ -20,7 +25,12 @@ export interface SceneSelection {
   readonly reference: EntityReference
 }
 
-/** Argument accessors point at dialog-owned values, not a second selection store. */
+/**
+ * Connects one dialog field, such as Profiles, to scene picking. The dialog
+ * supplies `value` and `setValue` for that field; accepted picks update it
+ * directly. The Modeling view's own selection stays unchanged while the
+ * dialog is open.
+ */
 export interface PickingArgument {
   readonly id: string
   readonly filter: readonly EntityType[]
@@ -29,6 +39,12 @@ export interface PickingArgument {
   accepts: (reference: EntityReference) => boolean
   setValue: (value: readonly SceneSelection[]) => void
 }
+/**
+ * Controls which dialog field receives scene picks. Re-execution clears the
+ * fields and invalidates `model`; the dialog must call `bindCurrentModel` and
+ * `activate` before picking again. `close` returns picking to the view without
+ * copying the dialog's field values into the view selection.
+ */
 export interface DialogPickingSession {
   readonly model: ReadonlySignal<SelectionModel | null>
   activate: (argumentId: string | null) => Error | undefined
@@ -36,6 +52,12 @@ export interface DialogPickingSession {
   validate: (values: readonly SceneSelection[]) => EntityReference[] | Error
   close: () => void
 }
+/**
+ * Supplies renderer-specific picking and highlighting to `createSceneSelection`.
+ * `present` applies the selected references and allowed entity types. If it
+ * awaits work, it must check `isCurrent` before applying the result so an older
+ * update cannot highlight geometry in a replacement model.
+ */
 export interface SelectionAdapter {
   pick: (
     point: Pick<MouseEvent, 'clientX' | 'clientY'>
@@ -54,7 +76,12 @@ interface DialogState {
   active: Signal<PickingArgument | undefined>
 }
 
-/** One Modeling view owns ordinary selection; a dialog temporarily owns picking and displayed highlights. */
+/**
+ * Manages selection for one Modeling view. Without a dialog, scene clicks
+ * update `selected`. While a picking session is open, clicks update the active
+ * dialog field instead, and `displayed` shows that field's geometry. Closing the
+ * session restores the highlights from the unchanged view selection.
+ */
 export function createSceneSelection(
   adapter: SelectionAdapter,
   defaultFilter: readonly EntityType[]
@@ -69,6 +96,8 @@ export function createSceneSelection(
   let projection = 0
   let presents = Promise.resolve()
   let picks = Promise.resolve()
+  // Invalidate pending picks when their recipient changes, even if the model
+  // stays the same. A reply for the view must not populate a newly opened dialog.
   const changeOwner = () => {
     ownership++
     picks = Promise.resolve()
@@ -99,6 +128,8 @@ export function createSceneSelection(
     if (!currentModel) return
     const current = () =>
       !disposed && ticket === projection && currentModel === model.peek()
+    // Apply highlight updates in order. `ticket` lets queued updates skip work
+    // once a newer selection or filter has replaced them.
     presents = presents
       .then(async () => {
         if (current())
@@ -188,6 +219,8 @@ export function createSceneSelection(
       if (!pickingEnabled.peek()) return Promise.resolve()
       const captured = { clientX: point.clientX, clientY: point.clientY }
       picks = picks.then(async () => {
+        // Picking uses the engine's selection filter. Wait until `present`
+        // has applied the filter captured for this click.
         await presents
         if (
           disposed ||
