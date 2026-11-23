@@ -179,27 +179,31 @@ describe('project explorer project menu', () => {
       await dispose()
     }
   })
-  test('opens one Duplicate action with the current project preselected', async () => {
-    const { app, dispose } = await createProjectMenuApp()
-    try {
-      renderWithRouter(
-        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
-      )
-      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-      fireEvent.click(screen.getByRole('button', { name: 'Duplicate project' }))
-      expect(app.commands.send).toHaveBeenCalledWith({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Duplicate project',
-          argDefaultValues: { project: 'current-project' },
-        },
-      })
-      expect(app.projectOperations.duplicateProject).not.toHaveBeenCalled()
-    } finally {
-      await dispose()
+  test.each(['Chrome', 'Electron'])(
+    'omits Duplicate project from the modeling-view menu in %s',
+    async (userAgent) => {
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
+      const { app, dispose } = await createProjectMenuApp()
+      try {
+        renderWithRouter(
+          <ProjectSidebarMenu
+            app={app}
+            enableMenu
+            project={projectWellFormed}
+          />
+        )
+        fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+        expect(
+          screen.getByRole('button', { name: /Project settings/ })
+        ).toBeVisible()
+        expect(
+          screen.queryByRole('button', { name: 'Duplicate project' })
+        ).not.toBeInTheDocument()
+      } finally {
+        await dispose()
+      }
     }
-  })
+  )
   test('reveals the current project from the contributed menu item on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     const showInFolder = vi.fn()
