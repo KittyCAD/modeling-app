@@ -1,13 +1,7 @@
 import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import { collectProjectFilesForClone } from '@src/lib/projectSession/projectFiles'
-import { selectCommand } from '@src/lib/commandUtils'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
-import {
-  factory as defineFactory,
-  provide,
-  contribute,
-  type InputOf,
-} from 'plankton'
+import { factory as defineFactory, provide, contribute } from 'plankton'
 import { computed } from '@preact/signals-core'
 import {
   findHomeProjectByPath,
@@ -20,7 +14,6 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { observations as commandsObservations } from '@src/registry/contracts/commands'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   observations as homeProjectsObservations,
@@ -31,7 +24,6 @@ import {
   homeProjectActionsService,
   homeProjectEntriesFacet,
 } from '@src/registry/contracts/homeProjects'
-import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
 import {
   observations as projectLibrariesObservations,
   getProjectLibraryOperation,
@@ -469,62 +461,5 @@ const homeProjectEntryViewModels = defineFactory({
     }
   },
 })
-const duplicateProjectToLibraryProjectMenuItem = defineFactory({
-  dependencies: {
-    homeProjects: homeProjectsObservations,
-    commands: commandsObservations,
-  },
-  key: 'home-projects.clone-to-library-project-menu-item',
-  create: ({ homeProjects: homeProjectsInputs, commands: commandsInputs }) => {
-    const findProject = (projectPath: string) =>
-      findHomeProjectByPath(
-        homeProjectsInputs.homeProjectEntriesFacet.value,
-        projectPath
-      )
-    const _projectExplorerProjectMenuItemsContribution: InputOf<
-      typeof projectExplorerProjectMenuItemsFacet
-    > = {
-      id: 'home-projects.clone-to-library-project-menu-item',
-      order: 10,
-      label: 'Duplicate project',
-      dataTestId: 'project-sidebar-duplicate-project',
-      isVisible: ({ projectPath }) => {
-        const project = findProject(projectPath)
-        const actions =
-          homeProjectsInputs.homeProjectActionsService.current.value
-        return Boolean(project && actions?.canDuplicateToLibrary(project))
-      },
-      onSelect: ({ projectPath }) => {
-        const project = findProject(projectPath)
-        const commandSystem = commandsInputs.commandSystemService.current.value
-        if (!project || !commandSystem) {
-          return
-        }
-        selectCommand(commandSystem, {
-          groupId: 'projects',
-          name: 'Duplicate project',
-          argDefaultValues: {
-            project: project.id,
-          },
-        })
-      },
-    }
-    return {
-      items: [
-        contribute(
-          projectExplorerProjectMenuItemsFacet,
-          () => _projectExplorerProjectMenuItemsContribution,
-          {
-            key: 'home-projects.clone-to-library-project-menu-item',
-          }
-        ),
-      ],
-    }
-  },
-})
-const homeProjectsExtension = [
-  homeProjectActions,
-  homeProjectEntryViewModels,
-  duplicateProjectToLibraryProjectMenuItem,
-]
+const homeProjectsExtension = [homeProjectActions, homeProjectEntryViewModels]
 export default homeProjectsExtension
