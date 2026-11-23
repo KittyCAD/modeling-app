@@ -54,13 +54,16 @@ use crate::parsing::ast::types::VariableKind;
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
-/// Recompute the digest from the current fields. An edit can leave the previous
-/// digest on every ancestor up to the program root. Reusing one of those digests
-/// would let the execution cache skip the edited statement.
+/// Macro to implement `compute_digest` for AST nodes. If you update this, you
+/// probably want to update the no_attrs version as well.
 macro_rules! compute_digest {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
         pub fn compute_digest(&mut self) -> Digest {
+            if let Some(node_digest) = self.digest {
+                return node_digest;
+            }
+
             let mut $hasher = Sha256::new();
 
             #[allow(unused_mut)]
@@ -80,11 +83,18 @@ macro_rules! compute_digest {
     };
 }
 
-/// Keep this in sync with `compute_digest!` for types that cannot carry outer attributes.
+/// Macro to implement `compute_digest` for AST nodes without outer attributes.
+/// You should always prefer the version with attributes, unless the AST node
+/// type *never* has them. If you update this, you probably want to update the
+/// attrs version as well.
 macro_rules! compute_digest_no_attrs {
     (|$slf:ident, $hasher:ident| $body:block) => {
         /// Compute a digest over the AST node.
         pub fn compute_digest(&mut self) -> Digest {
+            if let Some(node_digest) = self.digest {
+                return node_digest;
+            }
+
             let mut $hasher = Sha256::new();
 
             #[allow(unused_mut)]

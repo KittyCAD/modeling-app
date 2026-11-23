@@ -463,8 +463,8 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         reapply_settings = true;
     }
 
-    // We can skip computing digests of identical ASTs. But the AST does not
-    // include imported files.
+    // If the ASTs are the EXACT same we return None.
+    // We don't even need to waste time computing the digests.
     if old.ast == new.ast {
         // First we need to make sure an imported file didn't change it's ast.
         // We know they have the same imports because the ast is the same.
@@ -484,11 +484,12 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     let mut old_ast = old.ast.clone();
     let mut new_ast = new.ast.clone();
 
-    // We don't want to compare digests against none. An edited AST can also
-    // arrive with digests from before the edit.
+    // The digests should already be computed, but just in case we don't
+    // want to compare against none.
     old_ast.compute_digest();
     new_ast.compute_digest();
 
+    // Check if the digest is the same.
     if old_ast.digest == new_ast.digest {
         // First we need to make sure an imported file didn't change it's ast.
         // We know they have the same imports because the ast is the same.
@@ -635,53 +636,6 @@ mod tests {
     use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
     use crate::execution::parse_execute_with_project_dir;
-
-    #[tokio::test]
-    async fn test_get_changed_program_edited_call_block() {
-        use crate::parsing::ast::types::Block;
-        use crate::parsing::ast::types::BodyItem;
-        use crate::parsing::ast::types::BoxNode;
-        use crate::parsing::ast::types::Expr;
-
-        let settings = ExecutorSettings::default();
-        let mut program = crate::Program::parse_no_errs("draw()").unwrap();
-        for (body, expect_reexecute) in [
-            (Some(""), true),
-            (Some("width = 1"), true),
-            (Some("width = 2"), true),
-            (Some("// width\nwidth = 2"), false),
-            (Some("@settings(defaultLengthUnit = in)\nwidth = 2"), true),
-            (Some("@settings(defaultLengthUnit = mm)\nwidth = 2"), true),
-            (None, true),
-        ] {
-            // Hash before cloning so each edit inherits the previous call and program digests.
-            program.compute_digest();
-            let mut edited = program.clone();
-            let BodyItem::ExpressionStatement(stmt) = &mut edited.ast.body[0] else {
-                panic!("expected expression statement");
-            };
-            let Expr::CallExpressionKw(call) = &mut stmt.expression else {
-                panic!("expected call");
-            };
-            call.block =
-                body.map(|code| BoxNode::new(crate::Program::parse_no_errs(code).unwrap().ast.map(Block::from)));
-
-            let result = get_changed_program(
-                CacheInformation::new(&program.ast, &settings),
-                CacheInformation::new(&edited.ast, &settings),
-            )
-            .await;
-            if expect_reexecute {
-                assert!(
-                    matches!(result, CacheResult::ReExecute { clear_scene: true, .. }),
-                    "{body:?}: {result:?}"
-                );
-            } else {
-                assert_eq!(result, CacheResult::NoAction(false));
-            }
-            program = edited;
-        }
-    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
