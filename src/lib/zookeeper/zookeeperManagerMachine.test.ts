@@ -93,12 +93,17 @@ describe('appendReplayMessages', () => {
   const reasoning = {
     reasoning: { type: 'text', content: 'Checking constraints' },
   }
+  const activity = {
+    activity: { kind: 'commentary', text: 'Checking the model.' },
+  }
   const answer = { end_of_stream: { whole_response: 'Bracket created.' } }
   const nextRequest = { type: 'user', content: 'Add a hole' }
   const messages = [
+    activity,
     notice,
     request,
     reasoning,
+    activity,
     { delta: { delta: 'Bracket ' } },
     answer,
     nextRequest,
@@ -2688,6 +2693,9 @@ describe('mirrored conversation messages', () => {
   const reasoning = {
     reasoning: { type: 'markdown', content: 'Checking the model.' },
   }
+  const activity = {
+    activity: { kind: 'commentary', text: 'Reading the project.' },
+  }
   const final = { end_of_stream: { whole_response: 'Finished.' } }
   const toolOutput = {
     tool_output: {
@@ -3140,6 +3148,7 @@ describe('mirrored conversation messages', () => {
       receive(user('Make it brown'))
       expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
       receive(reasoning)
+      receive(activity)
       const active = actor.getSnapshot().context.conversation?.exchanges.at(-1)
       expect(active?.request).toMatchObject({ content: 'Make it brown' })
       expect(active?.responses).toEqual([reasoning])
@@ -3185,6 +3194,7 @@ describe('mirrored conversation messages', () => {
       const { actor, receive, finishSetup } = await connect(format)
       receive(user('Make it brown'))
       receive(reasoning)
+      receive(activity)
       receive({ delta: { delta: 'Finished.' } })
       receive(final)
       await finishSetup()

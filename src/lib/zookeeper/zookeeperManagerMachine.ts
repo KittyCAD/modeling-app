@@ -867,6 +867,10 @@ function xor(a: boolean, b: boolean): boolean {
 function isMlCopilotServerMessage(
   response: unknown
 ): response is MlCopilotServerMessage {
+  if (isRecord(response) && 'activity' in response) {
+    return false
+  }
+
   if (
     typeof response === 'object' &&
     response !== null &&
