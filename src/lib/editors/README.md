@@ -45,3 +45,27 @@ report `unbound`, `ready`, or `error` to the host.
 
 See [classification and ownership](../../../docs/editor-contributions.md) for the
 contribution contracts, language descriptors, and explicit language choices.
+
+## Atomic document updates
+
+`editor.subscribe` receives an `EditorUpdate`: the final canonical `state`,
+composed document `changes`, `docChanged`, and the ordered source `transactions`.
+Use `state` when reading the resulting document or history. Transactions describe
+presentation changes and effects; their intermediate states are not a replacement
+for the final canonical state. Code surfaces apply the composed changes once.
+Modeling adapters can apply the transaction batch to deliver checkpoint effects
+once to the view that owns them.
+
+A native preview can update text without adding every intermediate position to
+undo history. Its commit supplies `committedDocumentPreview` with the text before
+and after the operation. The document retains the state before the unrecorded
+updates and records the completed preview as one history entry. Cancellation
+restores the earlier history when the text returns to its starting value.
+Ordinary edits end that pending preview history, and configuration changes remain
+installed. Closing the document releases the saved state.
+
+Preview undo and redo work without the native owner. When a history replay needs
+an additional text correction, the document applies it after CodeMirror's own
+history transition, then publishes one update. This keeps earlier undo and redo
+entries mapped to the correct document length and avoids exposing a temporary
+rollback to save, cloud, or view observers.
