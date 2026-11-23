@@ -1,13 +1,7 @@
 import { withHomeProjectActionStatus } from '@src/lib/homeProjectActions'
 import { collectProjectFilesForClone } from '@src/lib/projectSession/projectFiles'
-import { selectCommand } from '@src/lib/commandUtils'
 import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
-import {
-  factory as defineFactory,
-  provide,
-  contribute,
-  type InputOf,
-} from 'plankton'
+import { factory as defineFactory, provide, contribute } from 'plankton'
 import { computed } from '@preact/signals-core'
 import {
   findHomeProjectByPath,
@@ -20,18 +14,16 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { observations as commandsObservations } from '@src/registry/contracts/commands'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   observations as homeProjectsObservations,
   type HomeProjectActionsService,
   type HomeProjectEntry,
   type HomeProjectEntryContribution,
-  type HomeProjectCloneToLibraryTarget,
+  type HomeProjectDuplicateToLibraryTarget,
   homeProjectActionsService,
   homeProjectEntriesFacet,
 } from '@src/registry/contracts/homeProjects'
-import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
 import {
   observations as projectLibrariesObservations,
   getProjectLibraryOperation,
@@ -171,13 +163,12 @@ const homeProjectActions = defineFactory({
           )
         : []
     }
-    const getCloneToLibraryTargets = (
+    const getDuplicateToLibraryTargets = (
       project: HomeProjectEntry
-    ): HomeProjectCloneToLibraryTarget[] => {
-      const projectLibraryIds = new Set(project.libraryIds ?? [])
+    ): HomeProjectDuplicateToLibraryTarget[] => {
       const libraryTypes = projectLibrariesInputs.projectLibraryTypesFacet.value
       const libraries = getConfiguredProjectLibraries()
-      const targets: HomeProjectCloneToLibraryTarget[] = []
+      const targets: HomeProjectDuplicateToLibraryTarget[] = []
       const targetLibraryIds = new Set<string>()
       for (const sourceLibrary of getProjectLibraries(project)) {
         const cloneFrom = getProjectLibraryOperation(
@@ -195,10 +186,7 @@ const homeProjectActions = defineFactory({
           continue
         }
         for (const library of libraries) {
-          if (
-            projectLibraryIds.has(library.id) ||
-            targetLibraryIds.has(library.id)
-          ) {
+          if (targetLibraryIds.has(library.id)) {
             continue
           }
           const cloneTo = getProjectLibraryOperation(
@@ -225,11 +213,11 @@ const homeProjectActions = defineFactory({
       }
       return targets
     }
-    const getCloneToLibraryTarget = (
+    const getDuplicateToLibraryTarget = (
       project: HomeProjectEntry,
       targetLibraryId: string
     ) =>
-      getCloneToLibraryTargets(project).find(
+      getDuplicateToLibraryTargets(project).find(
         (target) => target.library.id === targetLibraryId
       )
     const serviceImpl: Omit<HomeProjectActionsService, 'pendingActions'> = {
@@ -264,8 +252,8 @@ const homeProjectActions = defineFactory({
           project.readWriteAccess &&
             getProjectOperation(project, 'deleteProject')
         ),
-      canCloneToLibrary: (project) =>
-        getCloneToLibraryTargets(project).length > 0,
+      canDuplicateToLibrary: (project) =>
+        getDuplicateToLibraryTargets(project).length > 0,
       canReviewDuplicateRealizations: (project) => false,
       canSeparateProjectCopies: (project) =>
         Boolean(
@@ -342,11 +330,21 @@ const homeProjectActions = defineFactory({
           `Successfully deleted "${getHomeProjectDisplayName(project)}"`
         )
       },
-      getCloneToLibraryTargets,
-      cloneToLibrary: async (project, targetLibraryId, options) => {
-        const target = getCloneToLibraryTarget(project, targetLibraryId)
+      getDuplicateToLibraryTargets,
+      duplicateToLibrary: async (project, targetLibraryId, options) => {
+        const target = getDuplicateToLibraryTarget(project, targetLibraryId)
         if (!target) {
           return undefined
+        }
+        const openProject =
+          projectSessionInputs.projectSession.current.value?.project.peek()
+        if (openProject && findHomeProjectByPath([project], openProject.path)) {
+          const editor = openProject.executingEditor.peek()
+          if (editor && !(await editor.flushWriteToFile())) {
+            return Promise.reject(
+              new Error('Save the project before duplicating it.')
+            )
+          }
         }
         const libraryTypes =
           projectLibrariesInputs.projectLibraryTypesFacet.value
@@ -392,7 +390,7 @@ const homeProjectActions = defineFactory({
           requestedProjectTitle: options?.title,
         })
         toast.success(
-          `Created a clone of "${getHomeProjectDisplayName(project)}" in "${target.library.title}".`
+          `Created a duplicate of "${getHomeProjectDisplayName(project)}" in "${target.library.title}".`
         )
         return result?.defaultFile
           ? {
@@ -463,62 +461,5 @@ const homeProjectEntryViewModels = defineFactory({
     }
   },
 })
-const cloneProjectToLibraryProjectMenuItem = defineFactory({
-  dependencies: {
-    homeProjects: homeProjectsObservations,
-    commands: commandsObservations,
-  },
-  key: 'home-projects.clone-to-library-project-menu-item',
-  create: ({ homeProjects: homeProjectsInputs, commands: commandsInputs }) => {
-    const findProject = (projectPath: string) =>
-      findHomeProjectByPath(
-        homeProjectsInputs.homeProjectEntriesFacet.value,
-        projectPath
-      )
-    const _projectExplorerProjectMenuItemsContribution: InputOf<
-      typeof projectExplorerProjectMenuItemsFacet
-    > = {
-      id: 'home-projects.clone-to-library-project-menu-item',
-      order: 10,
-      label: 'Clone project',
-      dataTestId: 'project-sidebar-clone-to-library',
-      isVisible: ({ projectPath }) => {
-        const project = findProject(projectPath)
-        const actions =
-          homeProjectsInputs.homeProjectActionsService.current.value
-        return Boolean(project && actions?.canCloneToLibrary(project))
-      },
-      onSelect: ({ projectPath }) => {
-        const project = findProject(projectPath)
-        const commandSystem = commandsInputs.commandSystemService.current.value
-        if (!project || !commandSystem) {
-          return
-        }
-        selectCommand(commandSystem, {
-          groupId: 'projects',
-          name: 'Clone project',
-          argDefaultValues: {
-            project: project.id,
-          },
-        })
-      },
-    }
-    return {
-      items: [
-        contribute(
-          projectExplorerProjectMenuItemsFacet,
-          () => _projectExplorerProjectMenuItemsContribution,
-          {
-            key: 'home-projects.clone-to-library-project-menu-item',
-          }
-        ),
-      ],
-    }
-  },
-})
-const homeProjectsExtension = [
-  homeProjectActions,
-  homeProjectEntryViewModels,
-  cloneProjectToLibraryProjectMenuItem,
-]
+const homeProjectsExtension = [homeProjectActions, homeProjectEntryViewModels]
 export default homeProjectsExtension

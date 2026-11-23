@@ -24,7 +24,9 @@ export function SaveStatusHeaderItem({ app }: { app: Pick<App, 'registry'> }) {
   const canCopy =
     project &&
     !project.readWriteAccess &&
-    app.registry.optional(homeProjectActionsService)?.canCloneToLibrary(project)
+    app.registry
+      .optional(homeProjectActionsService)
+      ?.canDuplicateToLibrary(project)
   return (
     <FileSaveStatus
       project={session.project}
@@ -37,7 +39,7 @@ export function SaveStatusHeaderItem({ app }: { app: Pick<App, 'registry'> }) {
             onClick={() =>
               selectCommand(app.registry.required(commandSystemService), {
                 groupId: 'projects',
-                name: 'Clone project',
+                name: 'Duplicate project',
                 argDefaultValues: { project: project.id },
               })
             }
