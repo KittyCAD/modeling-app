@@ -50,7 +50,11 @@ import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { createCameraInputApplier } from '@src/lib/kcl/scene/applyPreferences'
-import { observeViewportSize, observeViewportDensity, resizeSceneCanvas } from '@src/lib/kcl/scene/viewport'
+import {
+  observeViewportSize,
+  observeViewportDensity,
+  resizeSceneCanvas,
+} from '@src/lib/kcl/scene/viewport'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
