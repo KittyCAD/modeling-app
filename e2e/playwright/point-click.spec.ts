@@ -11,6 +11,35 @@ import {
 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+async function clickEndCap(
+  page: Page,
+  scene: SceneFixture,
+  rendererTag: string,
+  stream: { x: number; y: number }
+) {
+  const id =
+    rendererTag === '@localRenderer'
+      ? await page.evaluate(() => {
+          const graph = window.app.singletons.kclManager.artifactGraph
+          const caps = [...graph.values()].filter(
+            (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+          )
+          if (caps.length !== 1) {
+            throw new Error(
+              `Expected one extrusion end cap, found ${caps.length}`
+            )
+          }
+          return caps[0].id
+        })
+      : undefined
+  const [click] = await scene.makeSelectionHelpers({
+    kind: 'bodyFace',
+    id,
+    stream: { ...stream, format: 'pixels' },
+  })
+  await click()
+}
+
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests', { tag: '@web' }, () => {
@@ -1722,10 +1751,6 @@ extrude001 = extrude(region001, length = 30)`
       )
       await resetView(scene)
 
-      // One dumb hardcoded screen pixel value
-      // Any idea here how to select a cap without clicking in the scene?
-      const testPoint = { x: 575, y: 200 }
-
       const shellDeclaration =
         'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
       const editedShellDeclaration =
@@ -1735,12 +1760,7 @@ extrude001 = extrude(region001, length = 30)`
         await editor.closePane()
         await toolbar.shellButton.click()
         await modelingDialog.selection('Faces').click()
-        const [clickOnCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 0,
-          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-        })
-        await clickOnCap()
+        await clickEndCap(page, scene, rendererTag, { x: 575, y: 200 })
         await toolbar.expectSelection('1 face')
 
         await expect(modelingDialog.input('thickness')).toHaveText('5')
@@ -1819,18 +1839,10 @@ extrude001 = extrude(region001, length = 30)`
       )
       await resetView(scene)
 
-      // One dumb hardcoded screen pixel value
-      const testPoint = { x: 575, y: 200 }
-
       await test.step(`Fill the modeling dialog`, async () => {
         await toolbar.selectSurface('delete-face')
         await modelingDialog.selection('Faces').click()
-        const [clickOnCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 0,
-          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-        })
-        await clickOnCap()
+        await clickEndCap(page, scene, rendererTag, { x: 575, y: 200 })
         await toolbar.expectSelection('1 face')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2857,13 +2869,6 @@ extrude001 = extrude(region001, length = 30)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      // Adjusted coordinates to center screen for clicking on cap
-      const testPoint = { x: 500, y: 200 }
-      const [clickOnCap] = await scene.makeSelectionHelpers({
-        kind: 'face',
-        index: 0,
-        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-      })
       await test.step('Add GDT Flatness to the scene', async () => {
         await test.step('Open GDT Flatness command from toolbar', async () => {
           await toolbar.selectGdtFlatness()
@@ -2873,7 +2878,7 @@ extrude001 = extrude(region001, length = 30)`
         await test.step('Select face and configure basic parameters', async () => {
           await test.step('Select face', async () => {
             await modelingDialog.selection('Faces').click()
-            await clickOnCap()
+            await clickEndCap(page, scene, rendererTag, { x: 500, y: 200 })
             await toolbar.expectSelection('1 face')
           })
 
@@ -3073,13 +3078,6 @@ extrude001 = extrude(region001, length = 30)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      // Adjusted coordinates to center screen for clicking on cap
-      const testPoint = { x: 500, y: 200 }
-      const [clickOnCap] = await scene.makeSelectionHelpers({
-        kind: 'face',
-        index: 0,
-        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-      })
       await test.step('Add GDT Datum to the scene', async () => {
         await test.step('Open GDT Datum command from toolbar', async () => {
           await page
@@ -3093,7 +3091,7 @@ extrude001 = extrude(region001, length = 30)`
         await test.step('Select face and configure basic parameters', async () => {
           await test.step('Select face', async () => {
             await modelingDialog.selection('Faces').click()
-            await clickOnCap()
+            await clickEndCap(page, scene, rendererTag, { x: 500, y: 200 })
             await toolbar.expectSelection('1 face')
           })
 
@@ -3269,15 +3267,8 @@ extrude001 = extrude(region001, length = 10)`
 
       await test.step('Add the hole through the command flow', async () => {
         await toolbar.holeButton.click()
-        const testPoint = { x: 600, y: 250 }
-
         await modelingDialog.selection('Face').click()
-        const [clickOnCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 2,
-          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-        })
-        await clickOnCap()
+        await clickEndCap(page, scene, rendererTag, { x: 600, y: 250 })
         await toolbar.expectSelection('1 face')
 
         await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')

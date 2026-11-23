@@ -266,11 +266,12 @@ test.describe(
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
-          const [clickBracketInScene] = test
-            .info()
-            .tags.includes('@localRenderer')
-            ? await scene.findEntity('bodyFace', 0)
-            : scene.makeMouseHelpers(0.75, 0.92, { format: 'ratio' })
+          // This bracket wall stays clear of the dialog after scaling.
+          const [clickBracketInScene] = await scene.makeSelectionHelpers({
+            kind: 'bodyFace',
+            id: 'de06675a-22ea-58f0-8413-18c53d9c17f9',
+            stream: { x: 0.75, y: 0.92, format: 'ratio' },
+          })
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return

@@ -1,3 +1,7 @@
+import {
+  getEndCapId,
+  getImportedEndCapId,
+} from '@e2e/playwright/lib/solidSelection'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -70,8 +74,11 @@ sketch002 = startSketchOn(extrude001, face = seg01)`)
       await test.step('check code highlight works for code define in the file being edited', async () => {
         // The local cap of the body defined in main.kcl.
         const [, hoverOverNonImport] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          id: '55f55573-4a17-5173-9af8-767495822462',
+          kind: 'bodyFace',
+          id:
+            rendererTag === '@localRenderer'
+              ? await getEndCapId(page, 'extrude001')
+              : undefined,
           stream: { x: 611, y: 364, format: 'pixels' },
         })
         await hoverOverNonImport()
@@ -84,12 +91,14 @@ sketch002 = startSketchOn(extrude001, face = seg01)`)
         })
       })
 
-      await test.step('check code does nothing when geometry is defined in an import', async () => {
-        const [, hoverOverImported] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 4,
+      const importedEndCap = async () =>
+        scene.makeSelectionHelpers({
+          kind: 'bodyFace',
+          id: await getImportedEndCapId(page, 'toBeImported.kcl'),
           stream: { x: 940, y: 150, format: 'pixels' },
         })
+      await test.step('check code does nothing when geometry is defined in an import', async () => {
+        const [, hoverOverImported] = await importedEndCap()
         await hoverOverImported()
         await editor.expectState({
           highlightedCode: '',
@@ -106,11 +115,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`)
 
         // Click on a face from the imported model
         // Resolve again after closing the panes and entering plane selection.
-        const [importedFaceClick] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 2,
-          stream: { x: 940, y: 150, format: 'pixels' },
-        })
+        const [importedFaceClick] = await importedEndCap()
         await importedFaceClick()
 
         // Verify toast appears with correct content

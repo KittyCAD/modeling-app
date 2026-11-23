@@ -1,4 +1,20 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+
+function getProfileFaceId(page: Page, profile: string) {
+  return page.evaluate((name) => {
+    const { variables, artifactGraph } = window.app.singletons.kclManager
+    const sketch = variables[name]
+    const path =
+      sketch?.type === 'Sketch'
+        ? artifactGraph.get(sketch.value.artifactId)
+        : undefined
+    if (path?.type !== 'path' || !path.solid2dId) {
+      throw new Error(`Missing face for ${name}`)
+    }
+    return path.solid2dId
+  }, profile)
+}
 
 /**
  * Test KCL code - creates a scene with solid3d, surface, and split edges
@@ -82,8 +98,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
           'true'
         )
         const [clickProfile] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 2,
+          kind: 'sketchFace',
+          id:
+            rendererTag === '@localRenderer'
+              ? await getProfileFaceId(page, 'profile004')
+              : undefined,
           stream: { x: 0.4671, y: 0.75, format: 'ratio' },
         })
         await clickProfile()
@@ -145,26 +164,12 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
           'aria-pressed',
           'true'
         )
-        const code = await editor.getCurrentCode()
-        const profileStart = code.indexOf('profile005 = circle(')
-        expect(profileStart).toBeGreaterThan(-1)
-        const circleFaceId = await page.evaluate((start) => {
-          const graph = window.app.singletons.kclManager.artifactGraph
-          const path = [...graph.values()].find(
-            (artifact) =>
-              artifact.type === 'path' &&
-              artifact.subType === 'sketch' &&
-              artifact.codeRef.range[0] >= start &&
-              artifact.codeRef.range[0] < start + 'profile005 = circle('.length
-          )
-          if (path?.type !== 'path' || !path.solid2dId) {
-            throw new Error('Could not find the profile005 circle face')
-          }
-          return path.solid2dId
-        }, profileStart)
         const [clickProfile2] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          id: circleFaceId,
+          kind: 'sketchFace',
+          id:
+            rendererTag === '@localRenderer'
+              ? await getProfileFaceId(page, 'profile005')
+              : undefined,
           stream: { x: 0.3816, y: 0.4, format: 'ratio' },
         })
         await clickProfile2()

@@ -177,9 +177,23 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
       })
 
       await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
+        let innerFaceId: string | undefined
+        if (rendererTag === '@localRenderer') {
+          const faces = await scene.getProjectedEntities()
+          innerFaceId = await page.evaluate((faces) => {
+            const { artifactGraph } = window.app.singletons.kclManager
+            return faces.find(
+              (face) =>
+                face.visible &&
+                face.kind === 'bodyFace' &&
+                !artifactGraph.has(face.id)
+            )?.id
+          }, faces)
+          if (!innerFaceId) throw new Error('No visible primitive shell face')
+        }
         const [clickOnFace] = await scene.makeSelectionHelpers({
           kind: 'face',
-          index: 0,
+          id: innerFaceId,
           stream: { x: 0.6, y: 0.6, format: 'ratio' },
         })
         await clickOnFace()

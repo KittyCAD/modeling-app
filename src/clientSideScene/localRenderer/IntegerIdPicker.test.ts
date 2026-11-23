@@ -76,6 +76,9 @@ describe('IntegerIdPicker', () => {
       const lines = new LineSegments2(geometry, new Line2NodeMaterial())
       const render = vi.fn()
       const renderer = {
+        domElement: {
+          getBoundingClientRect: () => ({ width: 10, height: 10 }),
+        },
         getDrawingBufferSize: (size: Vector2) => size.set(10, 10),
         getRenderTarget: () => null,
         setRenderTarget: vi.fn(),
