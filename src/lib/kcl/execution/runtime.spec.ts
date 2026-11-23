@@ -552,3 +552,68 @@ it('skips acknowledged machine edits but waits for their owner before executing 
     lease.release()
   }
 })
+
+it('uses a retained configuration when deciding whether an editing owner can reuse its native model', async () => {
+  const settings = createSettings()
+  settings.modeling.defaultUnit.user = 'mm'
+  const configurations: object[] = []
+  class Context extends wasm.Context {
+    async execute(
+      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
+    ) {
+      configurations.push(JSON.parse(args[2]))
+      return super.execute(...args)
+    }
+  }
+  const model = await runtime({ ...wasm, Context }, settings)
+  const source = snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
+  const millimeters = createTestKclExecutionSettings(
+    () => settings
+  ).configuration.peek()
+  await model.execute(source, millimeters)
+  settings.modeling.defaultUnit.user = 'in'
+  let release = () => {}
+  const invalidated = vi.fn(async () => release())
+  const lease = model.borrowModel(invalidated)
+  if (lease instanceof Error) throw lease
+  release = lease.release
+  // A refresh can retain the previous configuration while newer preferences exist.
+  await model.execute(source, millimeters)
+  expect(invalidated).not.toHaveBeenCalled()
+  expect(configurations).toHaveLength(1)
+  const inches = createTestKclExecutionSettings(
+    () => settings
+  ).configuration.peek()
+  await model.execute(source, inches)
+  expect(invalidated).toHaveBeenCalledOnce()
+  expect(configurations).toMatchObject([
+    { settings: { modeling: { base_unit: 'mm' } } },
+    { settings: { modeling: { base_unit: 'in' } } },
+  ])
+})
+
+it('releases a borrowed native context once when disposal is requested concurrently', async () => {
+  const freed = vi.fn()
+  class Context extends wasm.Context {
+    free() {
+      freed()
+      // Keep a broken implementation from passing the same pointer to WASM twice.
+      if (freed.mock.calls.length === 1) super.free()
+    }
+  }
+  const model = await runtime({ ...wasm, Context })
+  const pending = Promise.withResolvers<undefined>()
+  let release = () => {}
+  const lease = model.borrowModel(async () => {
+    await pending.promise
+    release()
+  })
+  if (lease instanceof Error) throw lease
+  release = lease.release
+  const first = model.dispose()
+  const second = model.dispose()
+  expect(freed).not.toHaveBeenCalled()
+  pending.resolve(undefined)
+  await Promise.all([first, second])
+  expect(freed).toHaveBeenCalledOnce()
+})
