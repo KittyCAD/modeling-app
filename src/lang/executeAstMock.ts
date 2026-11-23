@@ -131,7 +131,10 @@ export async function evaluateExpression({
   rustContext,
 }: {
   ast: Node<Program>
-  rustContext: RustContext
+  rustContext: Pick<
+    RustContext,
+    'evaluateExpression' | 'waitForAllEngineModelingCommands'
+  >
 }): Promise<ExecutionResultMock> {
   try {
     const execState = await rustContext.evaluateExpression(ast)

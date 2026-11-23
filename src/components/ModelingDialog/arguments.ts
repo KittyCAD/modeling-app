@@ -5,7 +5,7 @@ import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selecti
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
+import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
@@ -60,7 +60,9 @@ export function hasValue(value: unknown): boolean {
     : value !== undefined && value !== null && value !== ''
 }
 
-export function getDialogFields(context: CommandBarContext): DialogField[] {
+export function getDialogFields(
+  context: Pick<CommandBarContext, 'selectedCommand' | 'argumentsToSubmit'>
+): DialogField[] {
   return Object.entries(context.selectedCommand?.args ?? {}).flatMap(
     ([name, arg]) => {
       const { isHidden, isRequired } = evaluateCommandArgumentFlags(
@@ -111,9 +113,9 @@ export async function initializeArguments(
 
 /** Preserve hidden edit metadata and validate the visible draft before dispatch. */
 export async function resolveArguments(
-  context: CommandBarContext,
+  context: Pick<CommandBarContext, 'selectedCommand' | 'argumentsToSubmit'>,
   values: Record<string, unknown>,
-  rustContext: RustContext,
+  rustContext: KclExpressionRuntime,
   ast: Node<Program>,
   artifactGraph?: ArtifactGraph
 ): Promise<Record<string, unknown> | Error> {

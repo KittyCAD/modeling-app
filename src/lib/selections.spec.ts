@@ -6,7 +6,6 @@ import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { createEdgeRefObjectExpression } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { KclManager } from '@src/lang/KclManager'
 import type {
   ArtifactGraph,
   Artifact,
@@ -1512,7 +1511,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }) as any,
       kclManager: {
         ast,
-      } as any,
+      },
       wasmInstance: instance,
     })
 
@@ -1565,7 +1564,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }) as any,
       kclManager: {
         ast,
-      } as any,
+      },
       wasmInstance: instance,
     })
 
@@ -1646,7 +1645,7 @@ cube = extrude(cubeRegion, length = 10)
       }) as any,
       kclManager: {
         ast,
-      } as any,
+      },
       wasmInstance: instance,
     })
 
@@ -1698,7 +1697,7 @@ cube = extrude(cubeRegion, length = 10)
       }) as any,
       kclManager: {
         ast,
-      } as any,
+      },
       wasmInstance: instance,
     })
 
@@ -1953,7 +1952,7 @@ ${extrude}
       enginePrimitives: [],
       artifactGraph: setupResult.artifactGraph,
       engineCommandManager: null as never,
-      kclManager: { ast: setupResult.ast } as KclManager,
+      kclManager: { ast: setupResult.ast },
       wasmInstance: setupResult.instance,
     })
     const after = recast(setupResult.ast, setupResult.instance)
@@ -3071,7 +3070,7 @@ lowerPlane = offsetPlane(XY, offset = -15)
       enginePrimitives: [],
       artifactGraph: world.artifactGraph,
       engineCommandManager: null as never,
-      kclManager: { ast: world.ast } as KclManager,
+      kclManager: { ast: world.ast },
       wasmInstance: world.instance,
     })
 
