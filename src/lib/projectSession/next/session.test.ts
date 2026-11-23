@@ -154,6 +154,7 @@ describe('project sessions', () => {
   ])('rejects paths outside the scoped project: %s', async (path) => {
     const { storage, service } = setup()
     const owner = service.openProject(project('/first'))
+    await expect(owner.files.readBytes(path)).rejects.toBeInstanceOf(Error)
     await expect(owner.files.read(path)).rejects.toBeInstanceOf(Error)
     await expect(owner.files.write(path, 'edit')).rejects.toBeInstanceOf(Error)
     expect(storage.readFile).not.toHaveBeenCalled()

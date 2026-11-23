@@ -10,7 +10,9 @@ import {
 } from '@src/lib/kcl/scene/executionSettingsContract'
 import kclExtension from '@src/lib/kcl/registry'
 import { editorLanguagesFacet } from '@src/lib/editors/registry/contract'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
+vi.mock('@src/lib/kcl/scene/open', () => ({ openKclScene: vi.fn() }))
+vi.mock('@src/lib/kcl/modeling/KclScene', () => ({ KclScene: () => null }))
 
 it('follows core KCL inputs and effective values rather than hidden overrides', () => {
   const settings = createSettings()
@@ -39,7 +41,7 @@ it.each(['streamed', 'local'] as const)(
     const snapshots = createTestKclExecutionSettings(() => settings)
     const revision = snapshots.revision(() => renderer === 'local')
     const millimeters = revision.peek()
-    const rebuild = snapshots.rebuildRevision.peek()
+    const streamed = snapshots.streamedRevision.peek()
     expect(snapshots.configuration.peek().settings?.modeling?.base_unit).toBe(
       'mm'
     )
@@ -62,7 +64,7 @@ it.each(['streamed', 'local'] as const)(
     expect(snapshots.configuration.peek().settings?.modeling?.base_unit).toBe(
       'ft'
     )
-    expect(snapshots.rebuildRevision.peek()).toBe(rebuild)
+    expect(snapshots.streamedRevision.peek()).toBe(streamed)
   }
 )
 
@@ -80,7 +82,7 @@ it('preserves revisions across equivalent settings replacements and tracks the r
   ).toBe(true)
 })
 
-it('opts backface changes into streamed rebuilds while local rendering updates directly', () => {
+it('refreshes streamed backface settings while local rendering updates directly', () => {
   const settings = createSettings()
   const snapshots = createTestKclExecutionSettings(() => settings)
   const streamed = snapshots.revision(() => false)

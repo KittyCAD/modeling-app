@@ -1,8 +1,14 @@
+import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
+import { REGEXP_UUIDV4 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { homeSidebarItemsFacet } from '@src/registry/contracts/homeSidebar'
 import { projectExplorerProjectMenuItemsFacet } from '@src/registry/contracts/projectExplorer'
-import { contribute, type InputOf } from 'plankton'
-import { HomeGetDesktopApp, ProjectMenuGetDesktopApp } from './GetDesktopApp'
+import { contribute, factory, type InputOf } from 'plankton'
+import {
+  HomeGetDesktopApp,
+  ProjectMenuGetDesktopApp,
+  ProjectMenuOpenInDesktopApp,
+} from './GetDesktopApp'
 
 const isWeb = () => !isDesktop()
 const getDesktopAppExtension = [
@@ -33,5 +39,27 @@ const getDesktopAppExtension = [
       key: 'get-desktop-app.project-menu',
     }
   ),
+  factory({
+    dependencies: { cloud: cloudProjectsObservations },
+    create: ({ cloud: { cloudStorageService } }) => ({
+      items: [
+        contribute(projectExplorerProjectMenuItemsFacet, () => ({
+          id: 'open-desktop-app.project-menu',
+          order: 19,
+          placement: 'footer' as const,
+          isVisible: ({ project, projectPath }) => {
+            const id = project.cloudProjectId
+            return (
+              isWeb() &&
+              !!id &&
+              REGEXP_UUIDV4.test(id) &&
+              cloudStorageService.current.value?.pathFor(id) === projectPath
+            )
+          },
+          Component: ProjectMenuOpenInDesktopApp,
+        })),
+      ],
+    }),
+  }),
 ]
 export default getDesktopAppExtension
