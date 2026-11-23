@@ -1,4 +1,6 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
+import { LocalViewportControls } from '@src/components/LocalViewportControls'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
 import AxisGizmo from '@src/components/gizmo/AxisGizmo'
@@ -6,6 +8,7 @@ import CubeGizmo from '@src/components/gizmo/CubeGizmo'
 import { useApp, useSingletons } from '@src/lib/boot'
 
 export default function Gizmo() {
+  useSignals()
   const { settings } = useApp()
   const { kclManager } = useSingletons()
   const menuItems = useViewControlMenuItems()
@@ -22,6 +25,28 @@ export default function Gizmo() {
         <CubeGizmo key={sceneKey} />
       )}
       <GizmoDropdown items={menuItems} />
+      {settingsValues.modeling.useLocalRenderer.current && (
+        <LocalViewportControls
+          options={kclManager.sceneInfra.localViewportOptions.value}
+          onChange={(options) => {
+            kclManager.sceneInfra.localViewportOptions.value = options
+          }}
+          showEdges={settingsValues.modeling.highlightEdges.current}
+          onShowEdgesChange={(value) =>
+            settings.send({
+              type: 'set.modeling.highlightEdges',
+              data: { level: 'user', value },
+            })
+          }
+          enableSSAO={settingsValues.modeling.enableSSAO.current}
+          onEnableSSAOChange={(value) =>
+            settings.send({
+              type: 'set.modeling.enableSSAO',
+              data: { level: 'user', value },
+            })
+          }
+        />
+      )}
     </div>
   )
 }

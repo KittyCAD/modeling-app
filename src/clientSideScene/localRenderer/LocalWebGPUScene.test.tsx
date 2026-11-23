@@ -12,7 +12,7 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import fsZds from '@src/lib/fs-zds'
 import { createFileOperationsServices } from '@src/registry/extensions/fileOperations'
-import { cleanup, render } from '@testing-library/react'
+import { act, cleanup, render } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 
 const renderer = vi.hoisted(() => ({
@@ -24,6 +24,7 @@ const renderer = vi.hoisted(() => ({
   setEdgeHighlighting: vi.fn(),
   setFixedSizeGrid: vi.fn(),
   setBackfaceColor: vi.fn(),
+  setViewportOptions: vi.fn(),
 }))
 const createRenderer = vi.hoisted(() => vi.fn())
 vi.mock('@src/clientSideScene/localRenderer/LocalRenderer', () => ({
@@ -155,6 +156,16 @@ it('mounts from an explicit host without app providers and releases only its ren
     xz: true,
     yz: false,
   })
+  expect(createRenderer).toHaveBeenCalledTimes(1)
+  act(() => {
+    scene.sceneInfra.localViewportOptions.value = {
+      ...scene.sceneInfra.localViewportOptions.value,
+      showBreps: false,
+    }
+  })
+  expect(renderer.setViewportOptions).toHaveBeenLastCalledWith(
+    expect.objectContaining({ showBreps: false })
+  )
   expect(createRenderer).toHaveBeenCalledTimes(1)
   unmount()
   expect(renderer.dispose).toHaveBeenCalledTimes(1)
