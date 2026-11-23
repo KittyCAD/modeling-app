@@ -1130,13 +1130,27 @@ describe('KclManager storage checks before sketch insertion', () => {
 
   it('executes an external local file update while the sketch is already open', async () => {
     const { app, kclManager } = await setup()
+    vi.useFakeTimers()
     enableSketchSolveEditorExecution(kclManager)
     kclManager.systemDeps.projectPath.value = '/project'
     const update = vi.spyOn(kclManager, 'updateCodeEditor')
+    const execute = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    const delta = createEmptySceneGraphDelta()
+    const setProgram = vi
+      .spyOn(kclManager.rustContext, 'hackSetProgram')
+      .mockResolvedValue({
+        type: 'Success',
+        sceneGraph: delta.new_graph,
+        execOutcome: delta.exec_outcome,
+        checkpointId: null,
+      })
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('width = 2')
     try {
       kclManager.onWatchEvent.at(-1)?.('change', kclManager.path)
-      await vi.waitFor(() => expect(kclManager.code).toBe('width = 2'))
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(kclManager.code).toBe('width = 2')
       expect(update).toHaveBeenCalledWith(
         'width = 2',
         expect.objectContaining({
@@ -1145,6 +1159,8 @@ describe('KclManager storage checks before sketch insertion', () => {
           shouldResetCamera: false,
         })
       )
+      expect(execute).toHaveBeenCalledExactlyOnceWith('width = 2', {})
+      expect(setProgram).toHaveBeenCalledOnce()
     } finally {
       await app.dispose()
     }
