@@ -7,9 +7,11 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { escapeRegExp } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+test.use({ useTestSettings: true })
+
 test.describe(
   'Can create sketches on all planes and their back sides',
-  { tag: '@desktop' },
+  { tag: '@web' },
   () => {
     const sketchOnPlaneAndBackSideTest = async (
       page: Page,
@@ -23,6 +25,7 @@ test.describe(
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
       const local = await page.evaluate(
         () => window.engineCommandManager.geometryOnly
       )
@@ -43,6 +46,12 @@ test.describe(
           { x: coord, y: coord, z: coord },
           { x: 0, y: 0, z: 0 }
         )
+
+        if (local) {
+          await expect
+            .poll(async () => (await scene.getCameraInfo()).position)
+            .toEqual([coord, coord, coord])
+        }
 
         const resolvedCoords = await scene.convertPagePositionToStream(
           clickCoords.x,
@@ -113,7 +122,7 @@ test.describe(
 )
 test.describe(
   'Can create sketches on offset planes and their back sides',
-  { tag: '@desktop' },
+  { tag: '@web' },
   () => {
     const sketchOnPlaneAndBackSideTest = async (
       page: Page,
@@ -124,18 +133,17 @@ test.describe(
       plane: string,
       clickCoords: { x: number; y: number }
     ) => {
-      await page.addInitScript(() => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+      const initialCode = `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 xyPlane = offsetPlane(XY, offset = 0.05)
 xzPlane = offsetPlane(XZ, offset = 0.05)
 yzPlane = offsetPlane(YZ, offset = 0.05)
 `
-        )
-      })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
 
       const coord =
         plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
