@@ -52,6 +52,12 @@ export function createTestSettings() {
 
 export function createTestKclRuntime() {
   return {
+    nativeContextHost: {
+      create: () =>
+        Promise.reject(new Error('No native context in this fixture')),
+      run: <T>(work: () => Promise<T>) => work(),
+      deliverResponse: <T>(work: () => Promise<T>) => work(),
+    },
     ast: signal<KclRuntime['ast']['value']>(null),
     fileSettings: signal<KclRuntime['fileSettings']['value']>({}),
     executionRevision: signal(0),

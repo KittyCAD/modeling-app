@@ -10,7 +10,7 @@ import {
   bindModelingMachine,
   type ModelingMachineStateHost,
 } from '@src/machines/modelingMachineBinding'
-import type { ModelingMachineInput } from '@src/machines/modelingSharedTypes'
+import { buildModelingMachineInput } from '@src/unitTestUtils'
 
 // Scene startup is outside these binding tests; transitions and context creation use the real machine.
 const machine = modelingMachine.provide({
@@ -21,8 +21,10 @@ const machine = modelingMachine.provide({
     'hide default planes': () => {},
   },
 })
-function start() {
-  return createActor(machine, { input: {} as ModelingMachineInput }).start()
+async function start() {
+  return createActor(machine, {
+    input: await buildModelingMachineInput(),
+  }).start()
 }
 function host(): ModelingMachineStateHost {
   return {
@@ -32,9 +34,9 @@ function host(): ModelingMachineStateHost {
   }
 }
 
-it('allocates mutable selection, visibility, overlays and native sketch defaults separately for each actor', () => {
-  const first = start(),
-    second = start()
+it('allocates mutable selection, visibility, overlays and native sketch defaults separately for each actor', async () => {
+  const first = await start(),
+    second = await start()
   try {
     const a = first.getSnapshot().context,
       b = second.getSnapshot().context
@@ -46,7 +48,7 @@ it('allocates mutable selection, visibility, overlays and native sketch defaults
     expect(b.savedDefaultPlaneVisibility.xy).toBe(true)
     expect(b.segmentHoverMap).toEqual({})
     expect(b.initialSceneGraphDelta.new_graph.settings.show_grid).toBe(false)
-    const third = start()
+    const third = await start()
     expect(third.getSnapshot().context.selectionRanges.otherSelections).toEqual(
       []
     )
@@ -57,9 +59,9 @@ it('allocates mutable selection, visibility, overlays and native sketch defaults
   }
 })
 
-it('publishes to the supplied owner and disconnects without stopping a borrowed actor', () => {
-  const first = start(),
-    second = start()
+it('publishes to the supplied owner and disconnects without stopping a borrowed actor', async () => {
+  const first = await start(),
+    second = await start()
   const a = host(),
     b = host()
   const detach = bindModelingMachine(first, a),
@@ -97,9 +99,9 @@ it('publishes to the supplied owner and disconnects without stopping a borrowed 
   }
 })
 
-it('does not let an old binding cleanup disconnect its replacement and releases state when that actor stops', () => {
-  const first = start(),
-    second = start(),
+it('does not let an old binding cleanup disconnect its replacement and releases state when that actor stops', async () => {
+  const first = await start(),
+    second = await start(),
     target = host()
   const old = bindModelingMachine(first, target)
   const current = bindModelingMachine(second, target)
