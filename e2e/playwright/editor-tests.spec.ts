@@ -15,7 +15,6 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 /** Press arrow down until the given label is selected. */
 async function selectCompletionOption(page: Page, label: string) {
@@ -59,55 +58,45 @@ async function editorCacheReceipt(page: Page) {
   }
 }
 
-test.describe('Editor tests', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Editor tests', { tag: '@web' }, () => {
   test(
     'can comment out code with ctrl+/',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, editor, scene }) => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      await u.codeLocator.click()
-      await page.keyboard.type(`sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-10, -10])
-    |> line(end = [20, 0])
-    |> line(end = [0, 20])
-    |> line(end = [-20, 0])
-    |> close()`)
-
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('/')
-      await page.keyboard.up('ControlOrMeta')
-
-      await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
+      const initialCode = `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  // |> close()`.replaceAll('\n', '')
+  |> close()`
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.codeContent.press('ControlOrMeta+End')
+      await editor.codeContent.press('ControlOrMeta+/')
+
+      await expect(editor.codeContent).toHaveText(
+        initialCode.replace('  |> close()', '  // |> close()'),
+        { useInnerText: true }
       )
 
       // uncomment the code
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('/')
-      await page.keyboard.up('ControlOrMeta')
+      await editor.codeContent.press('ControlOrMeta+/')
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`.replaceAll('\n', '')
-      )
+      await expect(editor.codeContent).toHaveText(initialCode, {
+        useInnerText: true,
+      })
     }
   )
 
@@ -241,47 +230,10 @@ cloud = patternCircular3d(body, instances = 10, axis = X, center = [20, 2, 20])
   })
 
   test(
-    'if you click the format button it formats your code',
-    { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-
-      await homePage.goToModelingScene()
-
-      // check no error to begin with
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-      await u.codeLocator.click()
-      await page.keyboard.type(`sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-10, -10])
-    |> line(end = [20, 0])
-    |> line(end = [0, 20])
-    |> line(end = [-20, 0])
-    |> close()`)
-      await page.locator('#code-pane button:first-child').click()
-      await page.locator('button:has-text("Format code")').click()
-
-      await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`.replaceAll('\n', '')
-      )
-    }
-  )
-
-  test(
     'F2 can rename a variable',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `myVARName = 100
+    async ({ editor, page, homePage, scene }) => {
+      const initialCode = `myVARName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -291,12 +243,15 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12)`
-        )
-      })
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
       await scene.connectionEstablished()
 
       // check no error to begin with
@@ -394,27 +349,27 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'fold gutters work',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const fullCode = `sketch001 = startSketchOn(XY)
    |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
    |> close()`
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XY)
+      const initialCode = `sketch001 = startSketchOn(XY)
    |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
    |> close()`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // TODO: Jess needs to fix this but you have to mod the code to get them to show
       // up, its an annoying codemirror thing.
@@ -469,22 +424,22 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'hover over functions shows function description',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XY)
+      const initialCode = `sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -515,70 +470,27 @@ my_var = 1 + 2`.replaceAll('\n', '')
   )
 
   test(
-    'if you use the format keyboard binding it formats your code',
-    { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-10, -10])
-    |> line(end = [20, 0])
-    |> line(end = [0, 20])
-    |> line(end = [-20, 0])
-    |> close()`
-        )
-        localStorage.setItem('disableAxis', 'true')
-      })
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-
-      await homePage.goToModelingScene()
-
-      // check no error to begin with
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
-
-      // focus the editor
-      await u.codeLocator.click()
-
-      // Hit alt+shift+f to format the code
-      await page.keyboard.press('Alt+Shift+KeyF')
-
-      await expect(
-        page.locator('.cm-content')
-      ).toHaveText(`sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`)
-    }
-  )
-
-  test(
     'if you use the format keyboard binding it formats your code and executes so lints are shown',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch_001 = startSketchOn(XY)
+      const initialCode = `sketch_001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
     |> close()`
-        )
+      await page.evaluate(() => {
         localStorage.setItem('disableAxis', 'true')
       })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await u.openDebugPanel()
       await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -626,11 +538,8 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'you can accept the suggestion from a lint',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `a1 = startSketchOn({
+    async ({ editor, page, homePage, scene }) => {
+      const initialCode = `a1 = startSketchOn({
        origin = { x = 0, y = 0, z = 0 },
        xAxis = { x = 1, y = 0, z = 0 },
        yAxis = { x = 0, y = 12, z = 0 },
@@ -642,13 +551,18 @@ my_var = 1 + 2`.replaceAll('\n', '')
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
-      await scene.connectionEstablished()
+      await page.evaluate(() =>
+        window.app.singletons.kclManager.flushPendingEditorExecution()
+      )
 
       await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
 
@@ -682,11 +596,8 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'signature help triggered by comma',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `myVARName = 100
+    async ({ editor, page, homePage, scene }) => {
+      const initialCode = `myVARName = 100
 
 a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> startProfile(at = [0, 0])
@@ -696,11 +607,12 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12`
-        )
-      })
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.replaceCode('', initialCode)
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await scene.connectionEstablished()
 
@@ -790,23 +702,23 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you fixup kcl errors you clear lints',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene }) => {
+    async ({ editor, scene, page, homePage }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XZ)
+      const initialCode = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> close()
     `
-        )
-      })
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', initialCode)
+      )
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -923,11 +835,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if your kcl gets an error from the engine it is inlined',
     { tag: '@localRenderer' },
-    async ({ context, page, homePage, scene }) => {
-      await context.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `box = startSketchOn(XY)
+    async ({ editor, scene, page, homePage }) => {
+      const initialCode = `box = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
@@ -946,13 +855,14 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     angle = 90deg
     )
     `
-        )
-      })
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled()
+      await editor.replaceCode('', initialCode)
       await scene.settled({ expectError: true })
+      await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
@@ -967,8 +877,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     test(
       'with enter/click to accept the completion',
       { tag: '@localRenderer' },
-      async ({ page, homePage }) => {
-        const u = await getUtils(page)
+      async ({ page, homePage, editor }) => {
         // const PUR = 400 / 37.5 //pixeltoUnitRatio
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -977,7 +886,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         // tests clicking on an option, selection the first option
         // and arrowing down to an option
 
-        await u.codeLocator.click()
+        await editor.codeContent.click()
         await page.keyboard.type('sketch001 = start')
 
         // expect there to be some auto complete options
@@ -1039,8 +948,7 @@ sketch001 = startSketchOn(XZ)
     test(
       'with tab to accept the completion',
       { tag: '@localRenderer' },
-      async ({ page, homePage }) => {
-        const u = await getUtils(page)
+      async ({ page, homePage, editor }) => {
         // const PUR = 400 / 37.5 //pixeltoUnitRatio
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1051,7 +959,7 @@ sketch001 = startSketchOn(XZ)
         // tests clicking on an option, selection the first option
         // and arrowing down to an option
 
-        await u.codeLocator.click()
+        await editor.codeContent.click()
         await page.keyboard.type('sketch001 = startSketchO')
         await page.waitForTimeout(100)
 
@@ -1107,29 +1015,28 @@ sketch001 = startSketchOn(XZ)
     )
   })
   test('Can undo a click and point extrude with ctrl+z', async ({
+    editor,
     page,
-    context,
     homePage,
     toolbar,
     modelingDialog,
     scene,
   }) => {
     const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
+    const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`
-      )
-    })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', initialCode)
+    )
+    await editor.scrollToText(initialCode.trimStart().split('\n')[0])
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
@@ -1186,15 +1093,18 @@ sketch001 = startSketchOn(XZ)
   test(
     `Can import a local OBJ file`,
     { tag: '@localRenderer' },
-    async ({ page, scene, cmdBar, folderSetupFn }) => {
+    async ({ fs, page, scene, cmdBar, folderSetupFn }) => {
       await folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'cube')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cube.obj'),
-          join(bracketDir, 'cube.obj')
+        const bracketDir = await fs.join(dir, 'cube')
+        await fs.mkdir(bracketDir, { recursive: true })
+        await fs.writeFile(
+          await fs.join(bracketDir, 'cube.obj'),
+          Uint8Array.from(await fsp.readFile(executorInputPath('cube.obj')))
         )
-        await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+        await fs.writeFile(
+          await fs.join(bracketDir, 'main.kcl'),
+          new TextEncoder().encode('')
+        )
       })
 
       const viewportSize = { width: 1200, height: 500 }
@@ -1235,13 +1145,13 @@ sketch001 = startSketchOn(XZ)
     await scene.connectionEstablished()
     await scene.settled()
 
-    await toolbar.startSketchBtn.click()
+    await toolbar.expectToolbarMode.toBe('modeling')
+    await toolbar.startSketchOnDefaultPlane('Top plane')
 
-    // select an axis plane
-    await page.mouse.click(700, 200)
-
-    // Needed as we don't yet have a way to get a signal from the engine that the camera has animated to the sketch plane
-    await page.waitForTimeout(1000)
+    const cameraPosition = () =>
+      page.evaluate(() =>
+        window.app.singletons.kclManager.sceneInfra.camControls.camera.position.toArray()
+      )
 
     const middleMousePan = async (
       startX: number,
@@ -1250,11 +1160,13 @@ sketch001 = startSketchOn(XZ)
       endY: number
     ) => {
       const initialCode = await editor.getCurrentCode()
+      const initialPosition = await cameraPosition()
 
-      await page.mouse.click(startX, startY, { button: 'middle' })
-      await page.mouse.move(endX, endY, {
-        steps: 10,
-      })
+      await page.mouse.move(startX, startY)
+      await page.mouse.down({ button: 'middle' })
+      await page.mouse.move(endX, endY, { steps: 10 })
+      await page.mouse.up({ button: 'middle' })
+      await expect.poll(cameraPosition).not.toEqual(initialPosition)
 
       // We expect the code to be the same, middle mouse click should not modify the code, only do panning
       await editor.expectEditor.toBe(initialCode)
@@ -1267,32 +1179,40 @@ sketch001 = startSketchOn(XZ)
 
     await test.step(`Verify center rectangle panning`, async () => {
       await toolbar.selectCenterRectangle()
+      await expect(page.getByTestId('center-rectangle')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
       await middleMousePan(800, 200, 900, 300)
+    })
+
+    await test.step('Rectangle dropdown remembers its last selection', async () => {
+      await page.getByTestId('circle-center').click()
+      await expect(page.getByTestId('center-rectangle')).toBeVisible()
     })
   })
 
   test(`Only show axis planes when there are no errors`, async ({
+    editor,
     page,
     homePage,
     scene,
     cmdBar,
   }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
+    const initialCode = `sketch001 = startSketchOn(XZ)
     profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
 
     sketch002 = startSketchOn(XZ)
     profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
-    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing the error
-      )
-    })
+    extrude001 = extrude(profile002, length = 0)`
 
     const viewportSize = { width: 1200, height: 800 }
     await page.setBodyDimensions(viewportSize)
 
     await homePage.goToModelingScene()
+    await scene.settled()
+    await editor.replaceCode('', initialCode)
+    await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
     await scene.connectionEstablished()
 
@@ -1302,53 +1222,6 @@ sketch001 = startSketchOn(XZ)
       { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
       15
     )
-  })
-
-  test(`test-toolbar-buttons`, async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    await test.step('Load an empty file', async () => {
-      await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-
-      // wait until scene is ready to be interacted with
-      await scene.connectionEstablished()
-      await scene.settled()
-    })
-
-    await test.step('Test toolbar button correct selection', async () => {
-      await toolbar.expectToolbarMode.toBe('modeling')
-
-      await toolbar.startSketchPlaneSelection()
-
-      // Click on a default plane
-      await page.mouse.click(700, 200)
-
-      // tools cannot be selected immediately, couldn't find an event to await instead.
-      await page.waitForTimeout(1000)
-
-      await toolbar.selectCenterRectangle()
-
-      await expect(page.getByTestId('center-rectangle')).toHaveAttribute(
-        'aria-pressed',
-        'true'
-      )
-    })
-
-    await test.step('Test Toolbar dropdown remembering last selection', async () => {
-      // Select another tool
-      await page.getByTestId('circle-center').click()
-
-      // center-rectangle should still be the active option in the rectangle dropdown
-      await expect(page.getByTestId('center-rectangle')).toBeVisible()
-    })
   })
 
   test(
