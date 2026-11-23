@@ -1,3 +1,7 @@
+export {
+  importFileExtensions,
+  relevantFileExtensions,
+} from '@src/lang/wasmFileExtensions'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -50,15 +54,4 @@ export const initialiseWasm = async (): Promise<ModuleType> => {
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
   }
-}
-
-export function importFileExtensions(wasmInstance: ModuleType): string[] {
-  return wasmInstance.import_file_extensions()
-}
-
-/**
- * All of these file extensions will be lowercase
- */
-export function relevantFileExtensions(wasmInstance: ModuleType): string[] {
-  return wasmInstance.relevant_file_extensions()
 }

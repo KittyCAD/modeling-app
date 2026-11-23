@@ -1532,6 +1532,108 @@ export default {
       }
     ]
   },
+  "drawing::customSheet": {
+    "name": "customSheet",
+    "preferredName": "drawing::customSheet",
+    "qualName": "std::drawing::customSheet",
+    "moduleName": "drawing",
+    "returnType": "Sheet",
+    "addedIn": "4.0",
+    "summary": "Create a drawing sheet from two side lengths and a name.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "width",
+        "ty": "number(Length)",
+        "docs": "The width of the paper before applying the orientation.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "height",
+        "ty": "number(Length)",
+        "docs": "The height of the paper before applying the orientation.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "orientation",
+        "ty": "SheetOrientation",
+        "docs": "The orientation of the sheet.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "name",
+        "ty": "string",
+        "docs": "A human-readable name that must be nonblank after trimming whitespace.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "drawing::standardSheet": {
+    "name": "standardSheet",
+    "preferredName": "drawing::standardSheet",
+    "qualName": "std::drawing::standardSheet",
+    "moduleName": "drawing",
+    "returnType": "Sheet",
+    "addedIn": "4.0",
+    "summary": "Create a drawing sheet from a standard paper size.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "size",
+        "ty": "SheetSize",
+        "docs": "The standard paper size.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "orientation",
+        "ty": "SheetOrientation",
+        "docs": "The orientation of the sheet.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "edgeId": {
     "name": "edgeId",
     "preferredName": "edgeId",
@@ -6872,56 +6974,6 @@ export default {
       }
     ]
   },
-  "operation::facing": {
-    "name": "facing",
-    "preferredName": "operation::facing",
-    "qualName": "std::operation::facing",
-    "moduleName": "operation",
-    "returnType": "number(_)",
-    "addedIn": null,
-    "deprecated": false,
-    "deprecatedSince": null,
-    "experimental": true,
-    "docHidden": false,
-    "args": [
-      {
-        "name": "solid",
-        "ty": "Solid",
-        "docs": null,
-        "required": true,
-        "special": true,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      },
-      {
-        "name": "toolDiameter",
-        "ty": "number(Length)",
-        "docs": null,
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      },
-      {
-        "name": "stepOver",
-        "ty": "number",
-        "docs": null,
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      }
-    ]
-  },
   "parabolic": {
     "name": "parabolic",
     "preferredName": "parabolic",
@@ -11470,6 +11522,22 @@ export default {
 } as const
 
 export const STD_LIB_ENUMS = {
+  "drawing::SheetOrientation": [
+    "Landscape",
+    "Portrait"
+  ],
+  "drawing::SheetSize": [
+    "AnsiA",
+    "AnsiB",
+    "AnsiC",
+    "AnsiD",
+    "AnsiE",
+    "IsoA0",
+    "IsoA1",
+    "IsoA2",
+    "IsoA3",
+    "IsoA4"
+  ],
   "view::Orientation": [
     "Front",
     "Back",

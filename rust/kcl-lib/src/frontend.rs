@@ -7311,6 +7311,60 @@ mod tests {
     use crate::engine::engine_manager::EngineManager;
     use crate::execution::cache::SketchModeState;
 
+    // Simulation test inputs cannot set the editor's edit marker. Selecting a
+    // sketch must leave the program's JSON and source unchanged. A JSON round
+    // trip must clear the marker.
+    #[test]
+    fn sketch_edit_marker_is_transient_across_serialization() {
+        let source = r#"@settings(kclVersion = "3.0")
+first = sketch(on = XY) {}
+// Keep this comment while selecting the second sketch.
+second = sketch(on = XZ) {
+  edge = line(start = [var 0mm, 0mm], end = [var 5mm, 0mm])
+}
+"#;
+        let mut program = Program::parse_no_errs(source).unwrap();
+        let start = source.find("sketch(on = XZ)").unwrap();
+        let range = SourceRange::new(start, source.trim_end().len(), crate::ModuleId::default());
+        let node_path = ast::NodePath::from_body(&program.ast.body, 0, range, Default::default()).unwrap();
+        let serialized_before = serde_json::to_value(&program).unwrap();
+        let formatted_before = program.recast_with_options(&Default::default());
+        only_sketch_block(
+            &mut program.ast,
+            &AstNodeRef {
+                range,
+                node_path: Some(node_path),
+            },
+            ChangeKind::None,
+        )
+        .unwrap();
+
+        let marked = std::cell::Cell::new(0);
+        crate::walk::walk(&program.ast, |node| {
+            if let crate::walk::Node::SketchBlock(sketch) = node
+                && sketch.is_being_edited
+            {
+                marked.set(marked.get() + 1);
+                assert_eq!(SourceRange::from(sketch), range);
+            }
+            Ok::<_, anyhow::Error>(true)
+        })
+        .unwrap();
+        assert_eq!(marked.get(), 1);
+        assert_eq!(serde_json::to_value(&program).unwrap(), serialized_before);
+        assert_eq!(program.recast_with_options(&Default::default()), formatted_before);
+
+        let restored: Program = serde_json::from_value(serialized_before).unwrap();
+        crate::walk::walk(&restored.ast, |node| {
+            if let crate::walk::Node::SketchBlock(sketch) = node {
+                assert!(!sketch.is_being_edited);
+            }
+            Ok::<_, anyhow::Error>(true)
+        })
+        .unwrap();
+        assert_eq!(restored.recast_with_options(&Default::default()), formatted_before);
+    }
+
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
             if let ObjectKind::Sketch(_) = &object.kind {
@@ -9264,6 +9318,154 @@ sketch(on = XY) {
         assert_eq!(mock_source.text, preview_source.text);
 
         mock_ctx.close().await;
+    }
+
+    // Simulation tests cannot preview edits, commit them, or restore
+    // checkpoints. Use the same mock execution as the editor for these
+    // operations. The simulation fixtures test KCL execution with the modeling
+    // engine.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_preview_commit_restore_preserves_tangent_arc() {
+        let source = r#"@settings(kclVersion = "3.0", experimentalFeatures = allow)
+
+first = sketch(on = XY) {
+  // Keep this tangent pair through preview, commit, and undo.
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc1 = arc(start = [var 10mm, var 0mm], end = [var 15mm, var 5mm], center = [var 10mm, var 5mm])
+  fixed([line1.start, [0mm, 0mm]])
+  horizontal(line1)
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+}
+second = sketch(on = XZ) {
+  marker = point(at = [var 3mm, var 4mm])
+}
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_mock(None).await;
+        seed_frontend_with_mock(&mut frontend, &ctx, &program).await;
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        let line = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Line(line),
+                } => Some(line.clone()),
+                _ => None,
+            })
+            .unwrap();
+        let arc = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Arc(arc),
+                } => Some(arc.clone()),
+                _ => None,
+            })
+            .unwrap();
+
+        let assert_tangent = |graph: &SceneGraph| {
+            let start = point_position(graph, line.start);
+            let end = point_position(graph, line.end);
+            let arc_start = point_position(graph, arc.start);
+            let center = point_position(graph, arc.center);
+            assert_point_position_close(end.clone(), arc_start.clone());
+            let direction = [end.x.value - start.x.value, end.y.value - start.y.value];
+            let radius = [arc_start.x.value - center.x.value, arc_start.y.value - center.y.value];
+            let line_length = libm::hypot(direction[0], direction[1]);
+            let arc_radius = libm::hypot(radius[0], radius[1]);
+            assert!(line_length > 0.0 && arc_radius > 0.0);
+            // Use the distance residual from ezpz's LineTangentToCircle. An angle
+            // check at the shared endpoint magnifies small solver residuals near
+            // tangency. Coordinates are in mm. Match assert_point_position_close's
+            // 1e-6 mm tolerance.
+            let center_distance = (direction[0] * (center.y.value - start.y.value)
+                - direction[1] * (center.x.value - start.x.value))
+                .abs()
+                / line_length;
+            assert!(
+                (center_distance - arc_radius).abs() < 1e-6,
+                "tangency was lost: center distance {center_distance}, radius {arc_radius}"
+            );
+        };
+        let version = Version(0);
+        let entered = frontend
+            .edit_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_tangent(&entered.new_graph);
+        let original_source = source_from_ast(&frontend.program.ast);
+        let original_graph = frontend.scene_graph.clone();
+        let checkpoint = frontend
+            .create_sketch_checkpoint(&ctx.cache, entered.exec_outcome)
+            .await
+            .unwrap();
+
+        // The drag anchors only the arc endpoint. The solver must adjust the other
+        // sketch variables while keeping the line and arc coincident and tangent.
+        let drag = ExistingSegmentCtor {
+            id: arc.end,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: point_expr_mm(20.0, 10.0),
+            }),
+        };
+        let (preview_source, preview) = frontend
+            .edit_segments_with_options(
+                &ctx,
+                version,
+                sketch_id,
+                vec![drag.clone()],
+                EditSegmentsOptions {
+                    anchor_segment_ids: Some(vec![arc.end]),
+                    drag_anchors: Vec::new(),
+                    constraint_label_edits: Vec::new(),
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert!(!preview.exec_outcome.var_solutions.is_empty());
+        assert_ne!(preview_source.text, original_source);
+        assert_tangent(&preview.new_graph);
+        assert_point_position_close(point_position(&preview.new_graph, arc.end), point_number_mm(20.0, 10.0));
+        let sibling_source = "second = sketch(on = XZ) {\n  marker = point(at = [var 3mm, var 4mm])\n}";
+        assert!(preview_source.text.contains(sibling_source));
+        assert!(
+            preview_source
+                .text
+                .contains("// Keep this tangent pair through preview, commit, and undo.")
+        );
+
+        // Commit the drag through edit_segments. execute_mock leaves the preview
+        // source unchanged and does not write solved initial guesses.
+        let (committed, committed_delta) = frontend
+            .edit_segments(&ctx, version, sketch_id, vec![drag])
+            .await
+            .unwrap();
+        assert_ne!(committed.text, preview_source.text);
+        assert_tangent(&committed_delta.new_graph);
+        assert!(committed.text.contains(sibling_source));
+        let (repeated, repeated_delta) = frontend.execute_mock(&ctx, version, sketch_id).await.unwrap();
+        assert_eq!(repeated.text, committed.text);
+        assert_tangent(&repeated_delta.new_graph);
+
+        // Restore the execution cache along with the checkpoint. The next solve
+        // must agree with the restored source and scene graph.
+        let restored = frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint)
+            .await
+            .unwrap();
+        assert_eq!(restored.source_delta.text, original_source);
+        assert_eq!(frontend.scene_graph, original_graph);
+        let (after_restore, restored_delta) = frontend.execute_mock(&ctx, version, sketch_id).await.unwrap();
+        assert_eq!(after_restore.text, original_source);
+        assert_tangent(&restored_delta.new_graph);
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

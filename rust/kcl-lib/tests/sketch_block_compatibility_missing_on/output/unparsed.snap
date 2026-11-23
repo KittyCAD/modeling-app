@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_compatibility_missing_on.kcl
+---
+// This input must parse, then fail on the missing `on` argument.
+// The body assertion catches execution before argument validation.
+
+before = 17
+profile = sketch() {
+  assert(false, error = "The sketch body ran without its required on argument")
+}
