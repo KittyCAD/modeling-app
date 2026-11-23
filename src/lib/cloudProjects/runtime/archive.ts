@@ -158,23 +158,6 @@ function getProjectTomlDefaultFile(files: ProjectArchiveFile[]) {
   )
 }
 
-export function getMimeType(fileName: string) {
-  const extension = archivePaths.extname(fileName).toLowerCase()
-  if (extension === '.kcl' || extension === '.toml') {
-    return 'text/plain'
-  }
-  if (extension === '.png') {
-    return 'image/png'
-  }
-  if (extension === '.jpg' || extension === '.jpeg') {
-    return 'image/jpeg'
-  }
-  if (extension === '.webp') {
-    return 'image/webp'
-  }
-  return 'application/octet-stream'
-}
-
 export function withProjectTitleInArchiveFiles(
   files: ProjectArchiveFile[],
   title?: string
