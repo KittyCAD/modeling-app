@@ -19,11 +19,8 @@ import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibrari
 import { routerService } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import type { Registry } from 'plankton'
-import { type ReactNode, useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import toast from 'react-hot-toast'
-
-const organizationLibraryHint =
-  'To share with your organization, duplicate this project into an organization library.'
 
 export function ShareProjectButton({ app }: AppHeaderItemProps) {
   useSignals()
@@ -44,20 +41,14 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
     .value
   const project = app.projectSignal.value?.projectIORefSignal.value
   let projectId: string | undefined
-  let localProjectPath: string | undefined
   if (onProjectRoute && nextProject?.storage?.type === 'cloud') {
     projectId = nextProject.storage.projectId
-  } else if (onLocalRoute && !nextProject?.storage) {
-    localProjectPath = nextProject?.contents.path
-  } else if (onFileRoute && project) {
-    if (
-      project.cloudProjectId &&
-      project.path === cloud?.pathFor(project.cloudProjectId)
-    ) {
-      projectId = project.cloudProjectId
-    } else {
-      localProjectPath = project.path
-    }
+  } else if (
+    onFileRoute &&
+    project?.cloudProjectId &&
+    project.path === cloud?.pathFor(project.cloudProjectId)
+  ) {
+    projectId = project.cloudProjectId
   }
 
   const sharing =
@@ -71,17 +62,17 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
           cloud,
         }
       : undefined
-  const dialogKey = sharing?.url ?? localProjectPath
   return (
     <Popover
       className="flex"
-      key={dialogKey ? `${dialogKey}:${auth.user.value?.id ?? ''}` : undefined}
+      key={sharing ? `${sharing.url}:${auth.user.value?.id ?? ''}` : undefined}
     >
       {({ open }) => (
         <>
           <Popover.Button
             type="button"
-            disabled={!dialogKey}
+            disabled={!sharing}
+            title={sharing ? undefined : 'Open a cloud project to share.'}
             className={`${getProjectHeaderButtonClasses()} disabled:cursor-default disabled:opacity-50`}
           >
             <CustomIcon name="link" className="h-5 w-5" aria-hidden="true" />
@@ -90,72 +81,9 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
           {open && sharing && (
             <ShareProjectDialog {...sharing} registry={registry} />
           )}
-          {open && localProjectPath && (
-            <ShareProjectPanel>
-              <div className="px-4 py-4">
-                <ShareProjectLibrary ownership="Local" />
-                <p className="mt-2 text-xs leading-5 text-2">
-                  {organizationLibraryHint}
-                </p>
-              </div>
-            </ShareProjectPanel>
-          )}
         </>
       )}
     </Popover>
-  )
-}
-
-function ShareProjectPanel({ children }: { children: ReactNode }) {
-  const id = useId()
-  return (
-    <Popover.Panel
-      focus
-      role="dialog"
-      aria-labelledby={id}
-      className="fixed right-4 top-16 z-20 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border b-4 bg-2 text-sm text-default shadow-2xl"
-    >
-      <div className="shrink-0 border-b b-4 bg-3 px-4 py-4">
-        <h2 id={id} className="text-base font-medium leading-none">
-          Share project
-        </h2>
-        <p className="mt-2 text-xs leading-5 text-2">
-          Grant read-only access to other users in your organization.
-        </p>
-      </div>
-      {children}
-    </Popover.Panel>
-  )
-}
-
-function ShareProjectLibrary({
-  name,
-  ownership,
-}: {
-  name?: string
-  ownership?: string
-}) {
-  const id = useId()
-  return (
-    <section aria-labelledby={id}>
-      <h3 id={id} className="text-sm font-medium">
-        Library
-      </h3>
-      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-        {name && (
-          <>
-            <dt className="text-2">Name</dt>
-            <dd className="min-w-0 break-words">{name}</dd>
-          </>
-        )}
-        {ownership && (
-          <>
-            <dt className="text-2">Ownership</dt>
-            <dd className="min-w-0 break-words">{ownership}</dd>
-          </>
-        )}
-      </dl>
-    </section>
   )
 }
 
@@ -229,7 +157,20 @@ function ShareProjectDialog({
   }
 
   return (
-    <ShareProjectPanel>
+    <Popover.Panel
+      focus
+      role="dialog"
+      aria-labelledby={`${id}-title`}
+      className="fixed right-4 top-16 z-20 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border b-4 bg-2 text-sm text-default shadow-2xl"
+    >
+      <div className="shrink-0 border-b b-4 bg-3 px-4 py-4">
+        <h2 id={`${id}-title`} className="text-base font-medium leading-none">
+          Share project
+        </h2>
+        <p className="mt-2 text-xs leading-5 text-2">
+          Grant read-only access to other users in your organization.
+        </p>
+      </div>
       <div className="flex min-h-0 flex-col gap-4 overflow-y-auto px-4 py-4">
         <div>
           <label htmlFor={`${id}-link`} className="text-xs font-medium text-2">
@@ -260,14 +201,25 @@ function ShareProjectDialog({
           </div>
         </div>
         {(libraryName || ownership) && (
-          <div>
-            <ShareProjectLibrary name={libraryName} ownership={ownership} />
-            {isPersonal && (
-              <p className="mt-2 text-xs leading-5 text-2">
-                {organizationLibraryHint}
-              </p>
-            )}
-          </div>
+          <section aria-labelledby={`${id}-library`}>
+            <h3 id={`${id}-library`} className="text-sm font-medium">
+              Library
+            </h3>
+            <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+              {libraryName && (
+                <>
+                  <dt className="text-2">Name</dt>
+                  <dd className="min-w-0 break-words">{libraryName}</dd>
+                </>
+              )}
+              {ownership && (
+                <>
+                  <dt className="text-2">Ownership</dt>
+                  <dd className="min-w-0 break-words">{ownership}</dd>
+                </>
+              )}
+            </dl>
+          </section>
         )}
         <section aria-labelledby={`${id}-permissions`}>
           <h3 id={`${id}-permissions`} className="text-sm font-medium">
@@ -293,6 +245,6 @@ function ShareProjectDialog({
           )}
         </section>
       </div>
-    </ShareProjectPanel>
+    </Popover.Panel>
   )
 }
