@@ -1,4 +1,5 @@
 import { Switch } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import {
   ContextMenu,
   ContextMenuDivider,
@@ -629,6 +630,7 @@ function ResolvedActionButton({
   side: Side
   resolvedAction: ActionTypeDefinition
 }) {
+  useSignals()
   const platform = usePlatform()
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()

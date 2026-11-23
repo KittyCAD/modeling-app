@@ -29,15 +29,6 @@ export const useDefaultActionLibrary = () => {
   const registeredActionLibrary = registry.observe(
     layoutActionLibraryFacet
   ).value
-  const keymap = registry.optional(keymapService)
-  const projectArchiveKeystrokes =
-    keymap &&
-    findKeymapItemForCommand(
-      keymap.keymap.value,
-      commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
-      keymap.getCurrentScopes(),
-      registry.observe(keymapScopesFacet).value
-    )?.keystrokes
 
   return useMemo(
     () =>
@@ -61,7 +52,18 @@ export const useDefaultActionLibrary = () => {
         [ActionType.ExportProjectArchive]: {
           label: EXPORT_PROJECT_ARCHIVE_LABEL,
           icon: EXPORT_PROJECT_ARCHIVE_ICON,
-          shortcutKeystrokes: projectArchiveKeystrokes,
+          get shortcutKeystrokes() {
+            const keymap = registry.optional(keymapService)
+            return (
+              keymap &&
+              findKeymapItemForCommand(
+                keymap.keymap.value,
+                commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
+                keymap.getCurrentScopes(),
+                registry.observe(keymapScopesFacet).value
+              )?.keystrokes
+            )
+          },
           execute: () =>
             selectCommand(commands, EXPORT_PROJECT_ARCHIVE_COMMAND),
         },
@@ -97,8 +99,8 @@ export const useDefaultActionLibrary = () => {
       commands,
       kclManager,
       machineApiEnabled,
-      projectArchiveKeystrokes,
       registeredActionLibrary,
+      registry,
       settings.actor,
     ]
   )
