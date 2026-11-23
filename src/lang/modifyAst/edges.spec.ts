@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { KclManager } from '@src/lang/KclManager'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -45,39 +46,20 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let rustContextInThisFile: RustContext = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  rustContextInThisFile = rustContext
-  engineCommandManagerInThisFile = engineCommandManager
-})
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, kclManager, rustContext }) => {
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+    rustContextInThisFile = rustContext
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 describe('edges.spec.ts', () => {
   const extrudedTriangle = `sketch001 = startSketchOn(XY)

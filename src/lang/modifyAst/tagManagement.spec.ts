@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { KclManager } from '@src/lang/KclManager'
 import { createLocalName } from '@src/lang/create'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -8,37 +9,18 @@ import type {
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, kclManager, engineCommandManager } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-})
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, kclManager }) => {
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 const executeCode = async (
   code: string,
