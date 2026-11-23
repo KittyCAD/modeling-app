@@ -579,3 +579,25 @@ describe('borrowed native context hosts', () => {
     }
   })
 })
+
+it('adopts an executed project without reopening it and ignores adoption after destruction', async () => {
+  const native = runtime('adopted')
+  const context = owner(Promise.resolve(native.module))
+  const published = vi.fn()
+  context.planesCreated.add(published)
+  try {
+    await context.adoptExecutedProject(planes, 1)
+    expect(context.hasOpenedProject).toBe(true)
+    expect(context.defaultPlanes).toEqual(planes)
+    expect(native.instances[0].open_project).not.toHaveBeenCalled()
+    published.mockClear()
+    const pending = context.adoptExecutedProject({ ...planes, xy: 'late' }, 2)
+    context.destroy()
+    await pending
+    expect(context.hasOpenedProject).toBe(false)
+    expect(context.defaultPlanes).toBeNull()
+    expect(published).not.toHaveBeenCalled()
+  } finally {
+    context.destroy()
+  }
+})
