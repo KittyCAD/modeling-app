@@ -64,6 +64,7 @@ export interface ExecutionInput {
 
 /** Last completed attempt remains visible while another request runs or inputs change. */
 export interface ExecutionResult<T = Record<string, unknown>> {
+  /** Active or latest completed request's input; each new request has a distinct object. */
   readonly requested?: ExecutionInput
   readonly input?: ExecutionInput
   readonly completed?: symbol

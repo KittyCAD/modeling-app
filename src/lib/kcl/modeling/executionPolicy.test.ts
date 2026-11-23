@@ -204,3 +204,48 @@ it('retains older geometry as stale when an explicit replacement fails', async (
     })
   )
 })
+
+it('keeps the requested settings when source preparation finishes after a preference change', async () => {
+  const f = fixture()
+  await vi.waitFor(() =>
+    expect(f.views.every(({ view }) => view.state.peek().result)).toBe(true)
+  )
+  const initialSources = await f.capture.mock.results[0].value
+  const pending = Promise.withResolvers<typeof initialSources>()
+  f.capture.mockReturnValueOnce(pending.promise)
+  const requested = f.executor.run(f.capability)
+  f.settings.value = 2
+  pending.resolve(initialSources)
+  await requested
+  await vi.waitFor(() => {
+    for (const { session } of f.views)
+      expect(session.execute).toHaveBeenCalledTimes(2)
+  })
+  for (const { view, session } of f.views) {
+    expect(session.execute.mock.calls[1][2]).toEqual({ unit: 1 })
+    expect(view.state.peek().stale).toBe(true)
+  }
+})
+
+it("keeps a newer request's settings while the previous native execution finishes", async () => {
+  const f = fixture()
+  await vi.waitFor(() =>
+    expect(f.views.every(({ view }) => view.state.peek().result)).toBe(true)
+  )
+  const pending =
+    Promise.withResolvers<Awaited<ReturnType<KclSession['execute']>>>()
+  f.views[0].session.execute.mockReturnValueOnce(pending.promise)
+  await f.executor.run(f.capability)
+  await vi.waitFor(() =>
+    expect(f.views[0].session.execute).toHaveBeenCalledTimes(2)
+  )
+  f.settings.value = 2
+  await f.executor.run(f.capability)
+  f.settings.value = 3
+  pending.resolve({ result: emptyExecState() })
+  await vi.waitFor(() =>
+    expect(f.views[0].session.execute).toHaveBeenCalledTimes(3)
+  )
+  expect(f.views[0].session.execute.mock.calls[2][2]).toEqual({ unit: 2 })
+  expect(f.views[0].view.state.peek().stale).toBe(true)
+})

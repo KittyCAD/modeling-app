@@ -122,8 +122,11 @@ export function createExecutor(
     result,
     run: async (capability) => {
       if (disposed || editor.signal.aborted) return
-      const captured = input(capability).peek()
-      if (!captured) return
+      const currentInput = input(capability).peek()
+      if (!currentInput) return
+      // A repeated request for unchanged text still has its own identity.
+      // Consumers can capture additional inputs once for each `requested` value.
+      const captured = { ...currentInput }
       active.get(capability)?.controller.abort()
       const attempt: Attempt = {
         input: captured,
