@@ -1000,7 +1000,7 @@ export function addRevolve({
 
 // Utilities
 
-function addHideCallsForRegionSketches({
+export function addHideCallsForRegionSketches({
   engineRegions,
   modifiedAst,
   artifactGraph,

@@ -781,6 +781,9 @@ export function buildToolbarConfig(
         {
           id: 'surface',
           array: [
+            modelingCommand('Planar Surface', {
+              id: 'planar-surface',
+            }),
             modelingCommand('Blend', {
               id: 'blend-surface',
             }),
