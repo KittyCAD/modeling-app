@@ -154,8 +154,6 @@ export default defineConfig([
   ]),
   {
     files: ['**/*.ts', '**/*.tsx'],
-    // Lit owns listener binding and public validation; use its package parser and performance policy below.
-    ignores: ['packages/ui-components/src/web-components/**'],
     linterOptions: {
       reportUnusedDisableDirectives: false,
     },
