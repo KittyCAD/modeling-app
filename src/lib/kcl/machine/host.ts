@@ -21,7 +21,7 @@ import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { createModelingDocumentAdapter } from '@src/lib/kcl/machine/document'
 import type { ModelingViewRuntime } from '@src/lib/kcl/registry/contract'
 import type { ModelingInteractionSession } from '@src/lib/kcl/interactions'
-import type { KclSceneResource } from '@src/lib/kcl/scene'
+import { hasMachineInput, type KclSceneResource } from '@src/lib/kcl/scene/open'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { bindModelingMachine } from '@src/machines/modelingMachineBinding'
 import { modelingCommandsForMachineApi } from '@src/lib/commandBarConfigs/modelingCommandConfig'
@@ -34,7 +34,7 @@ import {
   toolbarModeNameToKeymapScope,
   isSketchToolbarTransitioning,
 } from '@src/lib/toolbar'
-import { bindEngineConnectionSubscriptions } from '@src/lib/scene/modelingMachineSubscriptions'
+import { bindEngineConnectionSubscriptions } from '@src/lib/kcl/scene/modelingMachineSubscriptions'
 import RustContext from '@src/lib/rustContext'
 import {
   refreshSketchSolveScale,
@@ -72,6 +72,8 @@ export async function openMachineModelingOwner(
   deps: Dependencies,
   invalidate: () => Promise<void>
 ) {
+  if (!hasMachineInput(scene))
+    return new Error('The scene has no modeling machine inputs')
   const wasm = await context.wasm
   const ast = scene.runtime.ast.peek()
   const snapshot = scene.runtime.sources.peek()
@@ -337,7 +339,7 @@ export async function openMachineModelingOwner(
       stopModifiers()
       // Stop document publication first. The legacy exit flow may finish native
       // draft cleanup, but cannot overwrite a newer canonical source snapshot.
-      model.close()
+      document.suspend()
       scene.sceneInfra.resetMouseListeners()
       try {
         await waitFor(
@@ -346,10 +348,19 @@ export async function openMachineModelingOwner(
             snapshot.status !== 'active' ||
             snapshot.matches('idle') ||
             snapshot.matches('Sketch no face') ||
-            snapshot.matches('sketchSolveMode')
+            snapshot.matches('sketchSolveMode') ||
+            (snapshot.matches('Sketch') &&
+              Object.values(snapshot.children).every(
+                (child) => child?.getSnapshot().status !== 'active'
+              ))
         )
-        if (actor.getSnapshot().matches('sketchSolveMode')) {
-          actor.send({ type: 'Exit sketch' })
+        const snapshot = actor.getSnapshot()
+        if (snapshot.matches('sketchSolveMode') || snapshot.matches('Sketch')) {
+          actor.send({
+            type: snapshot.matches('sketchSolveMode')
+              ? 'Exit sketch'
+              : 'Cancel',
+          })
           await waitFor(
             actor,
             (snapshot) =>
@@ -363,6 +374,7 @@ export async function openMachineModelingOwner(
       subscription.unsubscribe()
       unbind()
       actor.stop()
+      model.close()
       document.dispose()
       cleanupSketchSolveGroup(scene.sceneInfra)
       model.sceneEntitiesManager.dispose()
