@@ -17,6 +17,14 @@ import type { Vector2 } from 'three'
 
 export const DUMMY_VARIABLE_NAME = '__result__'
 
+/** Command input evaluation needs model memory and WASM, not ownership of the modeling runtime. */
+export type KclExpressionRuntime = Pick<
+  RustContext,
+  | 'wasmInstancePromise'
+  | 'evaluateExpression'
+  | 'waitForAllEngineModelingCommands'
+>
+
 // Type guard for number value items
 type KclNumber<T = KclValueView> = T extends { type: 'Number' } ? T : never
 function isNumberValueItem(item: KclValueView): item is KclNumber {
@@ -37,7 +45,7 @@ function isStringValueItem(item: KclValueView): item is KclString {
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
-  rustContext: RustContext,
+  rustContext: KclExpressionRuntime,
   options?: {
     allowArrays?: boolean
     allowStringArrays?: boolean
@@ -152,7 +160,7 @@ export async function getCalculatedKclExpressionValue(
 
 export async function stringToKclExpression(
   value: string,
-  providedRustContext: RustContext,
+  providedRustContext: KclExpressionRuntime,
   options?: {
     allowArrays?: boolean
     allowStringArrays?: boolean

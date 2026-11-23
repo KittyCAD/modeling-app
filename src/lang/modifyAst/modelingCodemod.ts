@@ -1,3 +1,15 @@
+import {
+  prepareModelingCodemodAst,
+  type ModelingCodemod,
+  type ModelingCodemodSuccess,
+} from '@src/lang/modifyAst/modelingCodemodDefinition'
+export {
+  defineModelingCodemod,
+  prepareModelingCodemodAst,
+  type ModelingCodemod,
+  type ModelingCodemodResult,
+  type ModelingCodemodSuccess,
+} from '@src/lang/modifyAst/modelingCodemodDefinition'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { KclManager } from '@src/lang/KclManager'
@@ -5,7 +17,6 @@ import {
   mockExecAstAndReportErrors,
   updateModelingState,
 } from '@src/lang/modelingWorkflows'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { recast, type PathToNode, type Program } from '@src/lang/wasm'
 import type { CommandReviewValidationError } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
@@ -16,47 +27,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
-
-type ModelingCodemodRunContext<CommandArgs> = {
-  args: CommandArgs
-  ast: Node<Program>
-  kclManager: KclManager
-  wasmInstance: ModuleType
-}
-
-export type ModelingCodemodSuccess = {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode | PathToNode[]
-}
-
-export type ModelingCodemodResult = ModelingCodemodSuccess | Error
-
-type MaybePromise<T> = T | Promise<T>
-
-export type ModelingCodemod<CommandArgs> = {
-  run: (
-    context: ModelingCodemodRunContext<CommandArgs>
-  ) => MaybePromise<ModelingCodemodResult>
-  enableExperimentalFeatures?: boolean | ((commandArgs: CommandArgs) => boolean)
-  focusPath?:
-    | false
-    | ((
-        result: ModelingCodemodSuccess,
-        commandArgs: CommandArgs
-      ) => PathToNode[] | undefined)
-}
-
-export const defineModelingCodemod = <CommandArgs>(
-  codemod: ModelingCodemod<CommandArgs>
-) => codemod
-
-const shouldEnableExperimentalFeatures = <CommandArgs>(
-  codemod: ModelingCodemod<CommandArgs>,
-  commandArgs: CommandArgs
-) =>
-  typeof codemod.enableExperimentalFeatures === 'function'
-    ? codemod.enableExperimentalFeatures(commandArgs)
-    : Boolean(codemod.enableExperimentalFeatures)
 
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
@@ -103,25 +73,15 @@ export async function runModelingCodemod<CommandArgs>({
 }) {
   const resolvedWasmInstance =
     wasmInstance ?? (await kclManager.wasmInstancePromise)
-  let ast = sourceSnapshot?.ast ?? kclManager.ast
-
-  if (
-    shouldEnableExperimentalFeatures(codemod, commandArgs) &&
-    kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-  ) {
-    const astWithNewSetting = setExperimentalFeatures(
-      sourceSnapshot?.code ?? kclManager.code,
-      {
-        type: 'Allow',
-      },
-      resolvedWasmInstance
-    )
-    if (err(astWithNewSetting)) {
-      return astWithNewSetting
-    }
-
-    ast = astWithNewSetting
-  }
+  const ast = prepareModelingCodemodAst({
+    codemod,
+    commandArgs,
+    source: sourceSnapshot ?? { ast: kclManager.ast, code: kclManager.code },
+    experimentalFeaturesAllowed:
+      kclManager.fileSettings.experimentalFeatures?.type === 'Allow',
+    wasmInstance: resolvedWasmInstance,
+  })
+  if (err(ast)) return ast
 
   return await codemod.run({
     args: commandArgs,

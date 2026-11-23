@@ -217,6 +217,31 @@ The footer works without a modeling-machine host. Its assembly lives in
 [`ModelingStatusBar`](modeling/ModelingStatusBar.tsx), and the default contributions
 are listed in [`statusItems`](modeling/statusItems.ts).
 
+## Shared modeling control views
+
+The file route's toolbar and form dialog have explicit presentation interfaces.
+[`ToolbarView`](../../components/Toolbar/ToolbarView.tsx) renders resolved actions,
+help, dividers, and dropdown history. The legacy [`Toolbar`](../../Toolbar.tsx)
+continues to resolve machine state, command eligibility, and the effective keymap
+labels before supplying those actions. A new host must supply registered command
+actions and their current shortcut labels; the view installs no application
+shortcuts of its own. The host also decides whether a modeling operation can
+use the displayed execution when working text is newer; these views neither
+request Render nor treat retained geometry as permission to change the document.
+
+[`ModelingDialogView`](../../components/ModelingDialog/ModelingDialogView.tsx)
+provides the dialog frame, submission controls, validation message, and optional
+footer accessory. [`ModelingArgumentFields`](../../components/ModelingDialog/ModelingArgumentFields.tsx)
+renders the existing field widgets using supplied model memory, settings,
+selection accessors, and callbacks. The legacy dialog retains argument
+initialization, validation, command submission, and machine picking handoff.
+First-field focus, selection-row removal, Advanced fields, and Escape dismissal
+remain in the shared presentation path.
+
+These extractions keep the file route as an active consumer. They do not install
+a modeling toolbar or operation commands in the new Modeling view; connecting
+that view to its interaction host is a separate change.
+
 ## Code map
 
 - `execution/`: source capture, native execution, and native input metadata.

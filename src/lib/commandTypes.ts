@@ -267,7 +267,7 @@ export type CommandArgumentConfig<
       variableName?:
         | string
         | ((
-            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> },
             machineContext?: C
           ) => string)
       defaultValue?:
@@ -453,7 +453,7 @@ export type CommandArgument<
       variableName?:
         | string
         | ((
-            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> },
             machineContext?: ContextFrom<T>
           ) => string)
       defaultValue?:
