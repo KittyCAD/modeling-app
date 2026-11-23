@@ -26,7 +26,8 @@ export function SettingsSectionsList({
     ([_, categorySettings]) =>
       // Filter out categories that don't have any non-hidden settings
       Object.values(categorySettings).some(
-        (setting) => !shouldHideSetting(setting, searchParamTab, hasFeature)
+        (setting) =>
+          !shouldHideSetting(setting, searchParamTab, context, hasFeature)
       )
   )
 
@@ -40,7 +41,7 @@ export function SettingsSectionsList({
               ?.querySelector(`#category-${category}`)
               ?.scrollIntoView({
                 block: 'center',
-                behavior: 'smooth',
+                behavior: 'instant',
               })
           }
           className="capitalize text-left border-none px-1"
@@ -52,7 +53,7 @@ export function SettingsSectionsList({
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-resets`)?.scrollIntoView({
             block: 'center',
-            behavior: 'smooth',
+            behavior: 'instant',
           })
         }
         className="capitalize text-left border-none px-1"
@@ -63,7 +64,7 @@ export function SettingsSectionsList({
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-about`)?.scrollIntoView({
             block: 'center',
-            behavior: 'smooth',
+            behavior: 'instant',
           })
         }
         className="capitalize text-left border-none px-1"

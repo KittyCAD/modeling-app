@@ -6,15 +6,15 @@ import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   FILE_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
-  HOME_COMMAND_SCOPE,
-  MODE_MODELING_COMMAND_SCOPE,
-  SETTINGS_COMMAND_SCOPE,
   getCommandPaletteScopes,
   getEffectiveCommandScopeSet,
   getEffectiveCommandScopes,
+  HOME_COMMAND_SCOPE,
   isCommandAvailable,
   isCommandSearchable,
+  MODE_MODELING_COMMAND_SCOPE,
   normalizeCommandScopeIds,
+  SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import { describe, expect, it } from 'vitest'
 

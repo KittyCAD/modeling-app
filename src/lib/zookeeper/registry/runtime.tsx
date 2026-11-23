@@ -1,4 +1,3 @@
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
   effect,
@@ -8,12 +7,13 @@ import {
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Spinner } from '@src/components/Spinner'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import type { KclManager } from '@src/lang/KclManager'
-import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
 import { getOpenPanes } from '@src/lib/layout/utils'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
@@ -21,57 +21,52 @@ import type {
 import { makeProjectZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
+  observations as authObservations,
   type AuthRegistryService,
-  authService,
 } from '@src/registry/contracts/auth'
-import { billingService } from '@src/registry/contracts/billing'
+
 import {
+  observations as fileOperationsObservations,
   type FileOperationsRegistryService,
-  fileOperationsService,
+  type ProjectOperationsService,
 } from '@src/registry/contracts/fileOperations'
+import { layoutAreaLibraryFacet } from '@src/registry/contracts/layout'
 import {
-  layoutAreaLibraryValueSpec,
-  layoutService,
-} from '@src/registry/contracts/layout'
-import {
+  observations as projectSessionObservations,
   type ProjectSessionService,
-  projectSession,
 } from '@src/registry/contracts/projectSession'
 import {
+  observations as settingsObservations,
   type SettingsRegistryService,
-  settingsService,
 } from '@src/registry/contracts/settings'
-import {
-  type SystemIORegistryService,
-  systemIOService,
-} from '@src/registry/contracts/systemIO'
+import { factory as defineFactory, contribute, type Factory } from 'plankton'
 import { lazy, Suspense } from 'react'
-import env, { getEnvironmentNameFromEnv } from '@src/env'
+import { observations as billingObservations } from '@src/lib/billing/registry/contract'
+
+import { observations as layoutObservations } from '@src/lib/layout/registry/contract'
 
 const ZookeeperConversationPaneWrapper = lazy(async () => {
   const { ZookeeperConversationPaneWrapper } = await import(
     '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
   )
-  return { default: ZookeeperConversationPaneWrapper }
+  return {
+    default: ZookeeperConversationPaneWrapper,
+  }
 })
-
 type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
-
 type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
   fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
-  systemIO: ReadonlySignal<SystemIORegistryService | undefined>
+  projectOperations: ReadonlySignal<ProjectOperationsService | undefined>
 }
-
 type ZookeeperSessionControllerModule = {
   createZookeeperSessionController: (
     deps: ZookeeperSessionControllerDependencies
   ) => ZookeeperSessionController
 }
-
 type ZookeeperActivation = {
   apiToken: string
   controller?: ZookeeperSessionController
@@ -80,15 +75,11 @@ type ZookeeperActivation = {
   projectId: string | undefined
   projectPath: string
 }
-
 const loadZookeeperSessionController = () =>
   import('@src/lib/zookeeper/registry/controller')
-
 const CONTROLLER_LOAD_RETRY_DELAY_MS = 1_000
-
 const pendingSessionDisposals = new Map<string, Promise<void>>()
 const pendingEditorDisposals = new WeakMap<KclManager, Promise<void>>()
-
 function trackSessionDisposal(
   projectPath: string,
   kclManager: KclManager,
@@ -109,7 +100,6 @@ function trackSessionDisposal(
     finish()
   })
 }
-
 async function waitForDisposals(disposals: readonly Promise<void>[]) {
   const failures = (await Promise.allSettled(disposals)).flatMap((result) =>
     result.status === 'rejected' ? [result.reason] : []
@@ -126,7 +116,6 @@ async function waitForDisposals(disposals: readonly Promise<void>[]) {
     )
   }
 }
-
 export function createZookeeperRuntime(
   services: ZookeeperRuntimeServices,
   loadController: () => Promise<ZookeeperSessionControllerModule> = loadZookeeperSessionController
@@ -145,7 +134,6 @@ export function createZookeeperRuntime(
   let controllerLoadRetry: ReturnType<typeof setTimeout> | undefined
   let runtimeDisposal: Promise<void> | undefined
   const controllerDisposals = new Set<Promise<void>>()
-
   const disposeController = (
     controller: ZookeeperSessionController,
     projectPath: string,
@@ -157,7 +145,6 @@ export function createZookeeperRuntime(
     const finish = () => controllerDisposals.delete(disposal)
     void disposal.then(finish, finish)
   }
-
   const scheduleControllerLoadRetry = () => {
     if (controllerLoadRetry !== undefined) {
       return
@@ -167,7 +154,6 @@ export function createZookeeperRuntime(
       reconcile()
     }, CONTROLLER_LOAD_RETRY_DELAY_MS)
   }
-
   const deactivate = () => {
     const previous = activation
     activation = undefined
@@ -180,7 +166,6 @@ export function createZookeeperRuntime(
       )
     }
   }
-
   const waitForSessionDisposal = (
     projectPath: string,
     kclManager: KclManager | null | undefined
@@ -204,17 +189,16 @@ export function createZookeeperRuntime(
     }
     return true
   }
-
   const reconcile = () => {
     if (disposed) {
       return
     }
-
     const auth = services.auth.value
     const billing = services.billing.value
     const fileOperations = services.fileOperations.value
     const settings = services.settings.value
-    const systemIO = services.systemIO.value
+    const projectOperations = services.projectOperations.value
+    const projectSession = services.projectSession.value
     const project = currentZdsProject.value
     const projectRef = project?.projectIORefSignal?.value
     const projectPath = projectRef?.path
@@ -238,7 +222,6 @@ export function createZookeeperRuntime(
       kclManager.path === executingFile?.path
     const apiToken = auth?.token.value ?? ''
     const isLoggedIn = auth?.isLoggedIn.value ?? false
-
     if (
       activation &&
       (activation.projectPath !== projectPath ||
@@ -265,11 +248,9 @@ export function createZookeeperRuntime(
       }
       return
     }
-
     if (projectPath && waitForSessionDisposal(projectPath, kclManager)) {
       return
     }
-
     if (
       !projectPath ||
       !kclManager ||
@@ -279,11 +260,11 @@ export function createZookeeperRuntime(
       !apiToken.trim() ||
       !billing ||
       !fileOperations ||
-      !systemIO
+      !projectOperations ||
+      !projectSession
     ) {
       return
     }
-
     const next: ZookeeperActivation = {
       apiToken,
       kclManager,
@@ -297,7 +278,6 @@ export function createZookeeperRuntime(
         if (disposed || activation !== next) {
           return
         }
-
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
@@ -311,7 +291,8 @@ export function createZookeeperRuntime(
           project: next.project,
           projectId: next.projectId,
           projectPath: next.projectPath,
-          systemIO,
+          projectOperations,
+          session: projectSession,
         })
         if (disposed || activation !== next) {
           disposeController(controller, next.projectPath, next.kclManager)
@@ -329,7 +310,6 @@ export function createZookeeperRuntime(
         scheduleControllerLoadRetry()
       })
   }
-
   const observe = () => {
     if (disposed || stopObserver) {
       return
@@ -339,7 +319,6 @@ export function createZookeeperRuntime(
 
   // Runtime services are installed after registry items are flattened.
   queueMicrotask(observe)
-
   return {
     currentProject,
     session,
@@ -359,7 +338,6 @@ export function createZookeeperRuntime(
     },
   }
 }
-
 function ZookeeperPaneLoading({
   layout,
   onClose,
@@ -383,21 +361,20 @@ function ZookeeperPaneLoading({
     </LayoutPanel>
   )
 }
-
 export function ZookeeperPaneOutlet({
   layout,
   onClose,
   runtime,
-}: AreaTypeComponentProps & { runtime: ZookeeperRuntime }) {
+}: AreaTypeComponentProps & {
+  runtime: ZookeeperRuntime
+}) {
   useSignals()
   const project = runtime.currentProject.value
   const controller = runtime.session.value
   const projectPath = project?.path
-
   if (!project || !controller || controller.projectPath !== projectPath) {
     return <ZookeeperPaneLoading layout={layout} onClose={onClose} />
   }
-
   return (
     <Suspense
       fallback={<ZookeeperPaneLoading layout={layout} onClose={onClose} />}
@@ -410,49 +387,68 @@ export function ZookeeperPaneOutlet({
     </Suspense>
   )
 }
-
-export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
-  const layout = ctx.services.signal(layoutService)
-  const runtime = createZookeeperRuntime({
-    auth: ctx.services.signal(authService),
-    billing: ctx.services.signal(billingService),
-    fileOperations: ctx.services.signal(fileOperationsService),
-    projectSession: ctx.services.signal(projectSession),
-    settings: ctx.services.signal(settingsService),
-    systemIO: ctx.services.signal(systemIOService),
-  })
-
-  const PaneOutlet = (props: AreaTypeComponentProps) => (
-    <ZookeeperPaneOutlet {...props} runtime={runtime} />
-  )
-  const areaLibrary = computed(() => {
-    const layoutSystem = layout.value
-    const isOpen =
-      layoutSystem !== undefined &&
-      getOpenPanes({ rootLayout: layoutSystem.signal.value }).includes(
-        DefaultLayoutPaneID.Zookeeper
-      )
-
-    return {
-      [AreaType.Zookeeper]: {
-        hide: () => false,
-        shortcut: 'Ctrl + T',
-        cssClassOverrides: {
-          button:
-            'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+export const zookeeperRuntimeRegistryItem: Factory = defineFactory({
+  dependencies: {
+    layout: layoutObservations,
+    auth: authObservations,
+    billing: billingObservations,
+    fileOperations: fileOperationsObservations,
+    projectSession: projectSessionObservations,
+    settings: settingsObservations,
+  },
+  key: 'zookeeper.runtime',
+  create: ({
+    layout: layoutInputs,
+    auth: authInputs,
+    billing: billingInputs,
+    fileOperations: fileOperationsInputs,
+    projectSession: projectSessionInputs,
+    settings: settingsInputs,
+  }) => {
+    const layout = computed(() => layoutInputs.layoutService.current.value)
+    const runtime = createZookeeperRuntime({
+      auth: computed(() => authInputs.authService.current.value),
+      billing: computed(() => billingInputs.billingService.current.value),
+      fileOperations: computed(
+        () => fileOperationsInputs.fileOperationsService.current.value
+      ),
+      projectSession: computed(
+        () => projectSessionInputs.projectSession.current.value
+      ),
+      settings: computed(() => settingsInputs.settingsService.current.value),
+      projectOperations: computed(
+        () => fileOperationsInputs.projectOperationsService.current.value
+      ),
+    })
+    const PaneOutlet = (props: AreaTypeComponentProps) => (
+      <ZookeeperPaneOutlet {...props} runtime={runtime} />
+    )
+    const areaLibrary = computed(() => {
+      const layoutSystem = layout.value
+      const isOpen =
+        layoutSystem !== undefined &&
+        getOpenPanes({
+          rootLayout: layoutSystem.signal.value,
+        }).includes(DefaultLayoutPaneID.Zookeeper)
+      return {
+        [AreaType.Zookeeper]: {
+          hide: () => false,
+          shortcut: 'Ctrl + T',
+          cssClassOverrides: {
+            button:
+              'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+          },
+          icon:
+            !isOpen && zookeeperPromptRunningSignal.value
+              ? ('loading' as const)
+              : undefined,
+          Component: PaneOutlet,
         },
-        icon:
-          !isOpen && zookeeperPromptRunningSignal.value
-            ? ('loading' as const)
-            : undefined,
-        Component: PaneOutlet,
-      },
+      }
+    })
+    return {
+      items: [contribute(layoutAreaLibraryFacet, () => areaLibrary.value)],
+      dispose: () => runtime.dispose(),
     }
-  })
-
-  return {
-    id: 'zookeeper.runtime',
-    provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
-    dispose: () => runtime.dispose(),
-  }
-}, 'zookeeper.runtime')
+  },
+})

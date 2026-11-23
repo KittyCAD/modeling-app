@@ -119,6 +119,7 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         // reaches here only as an argument to a user-defined function. Adding
         // a dedicated representation later is additive.
         KclValue::NamedView { .. } => OpKclValue::KclNone {},
+        KclValue::Sheet { .. } => OpKclValue::KclNone {},
         KclValue::ImportedGeometry(imported_geometry) => OpKclValue::ImportedGeometry {
             artifact_id: ArtifactId::new(imported_geometry.id),
         },

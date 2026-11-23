@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_compatibility_scoped_exit.kcl
+---
+@settings(experimentalFeatures = allow)
+
+// exit() must stop the sketch, branch, and function without a diagnostic.
+// The assertions fail if execution continues inside or after the call.
+
+before = 17
+fn fromBranch() {
+  branch = if true {
+    profile = sketch(on = XY) {
+      local = 18
+      edge = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      e = exit()
+      assert(false, error = "Execution continued after exit inside the sketch")
+    }
+    9
+  } else {
+    8
+  }
+  return branch
+}
+
+result = fromBranch()
+assert(false, error = "Execution continued after exit outside the function")

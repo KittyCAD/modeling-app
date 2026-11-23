@@ -15,6 +15,7 @@ use crate::exec::IdGenerator;
 use crate::exec::KclValue;
 use crate::execution::EntityCloneInfo;
 use crate::execution::FaceParentSolid;
+use crate::execution::KclVersion;
 use crate::execution::Solid;
 use crate::std::Args;
 
@@ -122,6 +123,21 @@ impl ExecState {
             .await
     }
 
+    /// Add a modeling command to the artifact graph without sending it, for
+    /// commands this engine session can't run. Only used for PlaneSetColor on
+    /// geometry-only engines: delete once
+    /// https://github.com/KittyCAD/engine/pull/5127 is merged.
+    pub(crate) fn record_modeling_cmd(&mut self, mut meta: ModelingCmdMeta<'_>, cmd: ModelingCmd) {
+        let id = meta.id(self.id_generator());
+        self.push_command(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd,
+            entity_clone_info: None,
+            omit_from_graph: false,
+        });
+    }
+
     /// Add multiple modeling commands to the batch but don't fire them right
     /// away.
     pub(crate) async fn batch_modeling_cmds(
@@ -155,7 +171,7 @@ impl ExecState {
     /// within a single execution because it is keyed on the entry point's
     /// declared version.
     pub(crate) fn edge_cuts_are_immediate(&self) -> bool {
-        IMMEDIATE_EDGE_CUTS_IN_V3 && self.entry_point_version_is_v3_or_higher()
+        IMMEDIATE_EDGE_CUTS_IN_V3 && self.entry_point_version_at_least(KclVersion::V3Preview)
     }
 
     /// Add an edge cut (fillet or chamfer) modeling command to the batch.
@@ -285,7 +301,10 @@ impl ExecState {
             entity_clone_info: None,
             omit_from_graph: false,
         });
-        meta.ctx.engine.async_modeling_cmd(id, meta.source_range, cmd).await
+        meta.ctx
+            .engine
+            .async_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, cmd)
+            .await
     }
 
     /// Force flush the batch queue.

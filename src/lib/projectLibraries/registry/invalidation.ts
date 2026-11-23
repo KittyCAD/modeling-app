@@ -1,3 +1,4 @@
+import { incrementMapCounter } from '@src/lib/utils'
 import { signal } from '@preact/signals-core'
 
 export type ProjectLibraryRealizationsInvalidationInput = {
@@ -33,7 +34,7 @@ export function invalidateProjectLibraryRealizations(
   }
 
   const byLibraryId = new Map(current.byLibraryId)
-  byLibraryId.set(input.libraryId, (byLibraryId.get(input.libraryId) ?? 0) + 1)
+  incrementMapCounter(byLibraryId, input.libraryId)
   projectLibraryRealizationsInvalidation.value = {
     global: current.global,
     byLibraryId,

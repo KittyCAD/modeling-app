@@ -10,7 +10,7 @@ import {
   projectLibraryTypeOptionsFromContributions,
 } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import type { SettingComponentProps } from '@src/lib/settings/settingsTypes'
-import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 
 export function ProjectLibrariesSetting({
   value,
@@ -20,7 +20,7 @@ export function ProjectLibrariesSetting({
   useSignals()
   const canManageLibraries = isDesktop()
   const libraryTypeOptions = projectLibraryTypeOptionsFromContributions(
-    registry.signal(projectLibraryTypesValueSpec).value
+    registry.observe(projectLibraryTypesFacet).value
   )
   const selectableLibraryTypeOptions =
     filterProjectLibraryTypeOptionsForSettings(libraryTypeOptions, {

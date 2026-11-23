@@ -1,8 +1,11 @@
-use bevy_math::Vec3;
 use gltf::kittycad_boundary_representation::Endpoints;
+use gltf::kittycad_boundary_representation::curve::Circle3d;
 use gltf::kittycad_boundary_representation::curve::Curve3d;
 use gltf::kittycad_boundary_representation::curve::Geometry3d;
 use gltf::kittycad_boundary_representation::curve::Nurbs3d;
+use nalgebra::Vector3;
+
+use crate::Vec3;
 
 /// Zoo exports geometry in metres. One displayed millimetre occupies one world unit.
 const WORLD_SCALE: f32 = 1_000.0;
@@ -31,8 +34,8 @@ impl BrepRenderData {
 }
 
 fn world_point(point: [f64; 3]) -> Result<Vec3, String> {
-    let point = Vec3::from_array(point.map(|coordinate| coordinate as f32)) * WORLD_SCALE;
-    if point.is_finite() {
+    let point = Vec3::from(point.map(|coordinate| coordinate as f32)) * WORLD_SCALE;
+    if point.iter().all(|coordinate| coordinate.is_finite()) {
         Ok(point)
     } else {
         Err("curve produced a non-finite position".into())
@@ -59,16 +62,26 @@ fn sample_edge(edge: &gltf::Edge<'_>) -> Result<Vec<Vec3>, String> {
         }
         Geometry3d::Circle(circle) => {
             let count = circle_segment_count(circle.radius(), domain.1 - domain.0);
-            sample_uniformly(&curve, domain, count)?
+            sample_circle(&circle, domain, count)?
         }
         Geometry3d::Nurbs(nurbs) => {
             validate_nurbs(&nurbs, domain)?;
-            let start = evaluate(domain.0)?;
-            let end = evaluate(domain.1)?;
-            let mut samples = vec![start];
-            subdivide_nurbs(&curve, (domain.0, start), (domain.1, end), 0, &mut samples)?;
-            if samples.len() > MAX_CURVE_SEGMENTS + 1 {
-                samples = sample_uniformly(&curve, domain, MAX_CURVE_SEGMENTS)?;
+            let mut start = (domain.0, evaluate(domain.0)?);
+            let mut samples = vec![start.1];
+            // Refine each knot span independently so complete turns cannot hide between probes.
+            for t in nurbs
+                .knot_vector()
+                .iter()
+                .copied()
+                .filter(|t| *t > domain.0 && *t < domain.1)
+                .chain(std::iter::once(domain.1))
+            {
+                if t <= start.0 {
+                    continue;
+                }
+                let end = (t, evaluate(t)?);
+                subdivide_nurbs(&curve, start, end, 0, &mut samples)?;
+                start = end;
             }
             samples
         }
@@ -79,9 +92,17 @@ fn sample_edge(edge: &gltf::Edge<'_>) -> Result<Vec<Vec3>, String> {
     Ok(samples)
 }
 
-fn sample_uniformly(curve: &Curve3d<'_>, domain: (f64, f64), count: usize) -> Result<Vec<Vec3>, String> {
+fn sample_circle(circle: &Circle3d<'_>, domain: (f64, f64), count: usize) -> Result<Vec<Vec3>, String> {
+    let origin = Vector3::from(circle.origin());
+    let xaxis = Vector3::from(circle.xaxis());
+    let yaxis = Vector3::from(circle.yaxis());
     (0..=count)
-        .map(|step| world_point(curve.evaluate(lerp(domain.0, domain.1, step as f64 / count as f64))))
+        .map(|step| {
+            let t = lerp(domain.0, domain.1, step as f64 / count as f64);
+            // The glTF circle evaluator uses platform trigonometry.
+            let (sine, cosine) = libm::sincos(t);
+            world_point((origin + (xaxis * cosine + yaxis * sine) * circle.radius()).into())
+        })
         .collect()
 }
 
@@ -90,8 +111,8 @@ fn lerp(start: f64, end: f64, t: f64) -> f64 {
 }
 
 fn circle_segment_count(radius: f64, sweep: f64) -> usize {
-    let radius = radius.abs();
-    let sweep = sweep.abs();
+    let radius = libm::fabs(radius);
+    let sweep = libm::fabs(sweep);
     if radius <= f64::EPSILON || sweep <= f64::EPSILON {
         return MIN_CURVE_SEGMENTS;
     }
@@ -99,14 +120,14 @@ fn circle_segment_count(radius: f64, sweep: f64) -> usize {
     let max_angle = if raw_error >= radius {
         std::f64::consts::PI
     } else {
-        2.0 * (1.0 - raw_error / radius).clamp(-1.0, 1.0).acos()
+        2.0 * libm::acos((1.0 - raw_error / radius).clamp(-1.0, 1.0))
     };
     let minimum = if sweep >= std::f64::consts::TAU * 0.99 {
         MIN_CLOSED_CURVE_SEGMENTS
     } else {
         MIN_CURVE_SEGMENTS
     };
-    ((sweep / max_angle.max(1.0e-6)).ceil() as usize).clamp(minimum, MAX_CURVE_SEGMENTS)
+    (libm::ceil(sweep / libm::fmax(max_angle, 1.0e-6)) as usize).clamp(minimum, MAX_CURVE_SEGMENTS)
 }
 
 fn validate_nurbs(nurbs: &Nurbs3d<'_>, domain: (f64, f64)) -> Result<(), String> {
@@ -123,7 +144,7 @@ fn validate_nurbs(nurbs: &Nurbs3d<'_>, domain: (f64, f64)) -> Result<(), String>
     }
     let minimum = knots[order - 1];
     let maximum = knots[points.len()];
-    if minimum >= maximum || domain.0.min(domain.1) < minimum || domain.0.max(domain.1) > maximum {
+    if minimum >= maximum || libm::fmin(domain.0, domain.1) < minimum || libm::fmax(domain.0, domain.1) > maximum {
         return Err("curve parameter interval is outside the NURBS knot domain".into());
     }
     Ok(())
@@ -145,7 +166,7 @@ fn subdivide_nurbs(
     let chord_error = [quarter, midpoint, three_quarter]
         .into_iter()
         .map(|point| distance_to_segment(point, start_point, end_point))
-        .fold(0.0, f32::max);
+        .fold(0.0, libm::fmaxf);
     if chord_error <= CURVE_CHORD_ERROR || depth >= MAX_NURBS_SUBDIVISION_DEPTH {
         samples.push(end_point);
         return Ok(());
@@ -156,12 +177,12 @@ fn subdivide_nurbs(
 
 fn distance_to_segment(point: Vec3, start: Vec3, end: Vec3) -> f32 {
     let segment = end - start;
-    let length_squared = segment.length_squared();
+    let length_squared = segment.norm_squared();
     if length_squared <= f32::MIN_POSITIVE {
-        return point.distance(start);
+        return point.metric_distance(&start);
     }
-    let t = ((point - start).dot(segment) / length_squared).clamp(0.0, 1.0);
-    point.distance(start + segment * t)
+    let t = ((point - start).dot(&segment) / length_squared).clamp(0.0, 1.0);
+    point.metric_distance(&(start + segment * t))
 }
 
 #[cfg(test)]
@@ -195,7 +216,7 @@ mod tests {
     fn scales_line_endpoints() {
         assert_eq!(
             sample(line()).unwrap().edge_polylines,
-            vec![vec![Vec3::ZERO, Vec3::X * 5.0]]
+            vec![vec![Vec3::zeros(), Vec3::x() * 5.0]]
         );
     }
 
@@ -222,16 +243,32 @@ mod tests {
         let points = &data.edge_polylines[0];
         assert!(points.len() > MIN_CLOSED_CURVE_SEGMENTS);
         assert!(points.len() <= MAX_CURVE_SEGMENTS + 1);
-        assert!(points.first().unwrap().distance(*points.last().unwrap()) < 1.0e-5);
+        assert!(points.first().unwrap().metric_distance(points.last().unwrap()) < 1.0e-5);
         for pair in points.windows(2) {
-            assert!(10.0 - ((pair[0] + pair[1]) * 0.5).length() <= CURVE_CHORD_ERROR * 1.01);
+            assert!(10.0 - ((pair[0] + pair[1]) * 0.5).norm() <= CURVE_CHORD_ERROR * 1.01);
         }
         extension["edges"][0] = json!({"curve": [0, -1], "start": 0, "end": 1, "t": [0, std::f64::consts::FRAC_PI_2]});
         extension["vertices"] = json!([[0, 0.01, 0], [0.01, 0, 0]]);
         let data = sample(extension).unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.first().unwrap().distance(Vec3::Y * 10.0) < 1.0e-5);
-        assert!(points.last().unwrap().distance(Vec3::X * 10.0) < 1.0e-5);
+        assert!(points.first().unwrap().metric_distance(&(Vec3::y() * 10.0)) < 1.0e-5);
+        assert!(points.last().unwrap().metric_distance(&(Vec3::x() * 10.0)) < 1.0e-5);
+    }
+
+    #[test]
+    fn samples_circle_with_origin_and_axes() {
+        let data = sample(json!({
+            "vertices": [[0.02, 0.03, 0.05], [0.02, 0.04, 0.04]],
+            "edges": [{"curve": [0, 1], "start": 0, "end": 1, "t": [0, std::f64::consts::FRAC_PI_2]}],
+            "curves3D": [{"type": "circle", "circle": {
+                "radius": 0.01, "origin": [0.02, 0.03, 0.04],
+                "xAxis": [0, 0, 1], "yAxis": [0, 1, 0]
+            }}]
+        }))
+        .unwrap();
+        let points = &data.edge_polylines[0];
+        assert!(points.first().unwrap().metric_distance(&Vec3::new(20.0, 30.0, 50.0)) < 1.0e-5);
+        assert!(points.last().unwrap().metric_distance(&Vec3::new(20.0, 40.0, 40.0)) < 1.0e-5);
     }
 
     fn nurbs() -> Value {
@@ -251,13 +288,81 @@ mod tests {
         let mut extension = nurbs();
         let data = sample(extension.clone()).unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.len() > 2 && points.len() <= MAX_CURVE_SEGMENTS + 1);
-        assert!(points.iter().all(|point| (point.length() - 10.0).abs() < 1.0e-5));
+        assert!(points.len() > 2);
+        assert!(points.iter().all(|point| libm::fabsf(point.norm() - 10.0) < 1.0e-5));
         extension["edges"][0]["t"] = json!([0.25, 0.75]);
         let data = sample(extension).unwrap();
         let points = &data.edge_polylines[0];
-        assert!(points.first().unwrap().distance(Vec3::new(9.297883, 3.680947, 0.0)) < 1.0e-4);
-        assert!(points.last().unwrap().distance(Vec3::new(3.680947, 9.297883, 0.0)) < 1.0e-4);
+        assert!(
+            points
+                .first()
+                .unwrap()
+                .metric_distance(&Vec3::new(9.297883, 3.680947, 0.0))
+                < 1.0e-4
+        );
+        assert!(
+            points
+                .last()
+                .unwrap()
+                .metric_distance(&Vec3::new(3.680947, 9.297883, 0.0))
+                < 1.0e-4
+        );
+    }
+
+    #[test]
+    fn preserves_short_and_long_exported_helices() {
+        let fixture: Value = serde_json::from_str(include_str!(
+            "../../../src/clientSideScene/localRenderer/helix-four-turn.fixture.json"
+        ))
+        .unwrap();
+        for repeats in [1, 32] {
+            let mut curve = fixture["curve"].clone();
+            let original = curve["nurbs"]["controlPoints"].as_array().unwrap().clone();
+            let mut controls = Vec::new();
+            for repeat in 0..repeats {
+                for point in &original[..original.len() - 1] {
+                    controls.push(json!([
+                        point[0].as_f64().unwrap() + f64::from(repeat) * 0.01,
+                        point[1],
+                        point[2]
+                    ]));
+                }
+            }
+            let last = original.last().unwrap();
+            controls.push(json!([
+                last[0].as_f64().unwrap() + f64::from(repeats - 1) * 0.01,
+                last[1],
+                last[2]
+            ]));
+            let spans = 16 * repeats;
+            let knots: Vec<_> = std::iter::once(0)
+                .chain((0..=spans).flat_map(|i| [i, i, i]))
+                .chain(std::iter::once(spans))
+                .collect();
+            curve["nurbs"]["controlPoints"] = json!(controls);
+            curve["nurbs"]["knotVector"] = json!(knots);
+            let mut edge = fixture["edge"].clone();
+            edge["t"] = json!([0, spans]);
+            let data = sample(json!({
+                "vertices": [fixture["vertices"][0], controls.last().unwrap()], "edges": [edge], "curves3D": [curve]
+            }))
+            .unwrap();
+            let points = &data.edge_polylines[0];
+            assert!(points.len() > 2);
+            assert!(points.first().unwrap().metric_distance(&Vec3::new(20.0, 35.0, -30.0)) < 1.0e-4);
+            assert!(
+                points
+                    .last()
+                    .unwrap()
+                    .metric_distance(&Vec3::new(20.0 + 10.0 * repeats as f32, 35.0, -30.0))
+                    < 1.0e-4
+            );
+            for pair in points.windows(2) {
+                let middle = (pair[0] + pair[1]) * 0.5;
+                let radius = libm::hypotf(middle.y - 40.0, middle.z + 30.0);
+                assert!(5.0 - radius <= CURVE_CHORD_ERROR + 1.0e-4);
+            }
+        }
     }
 
     #[test]

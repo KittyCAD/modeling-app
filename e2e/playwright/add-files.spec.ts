@@ -1,10 +1,11 @@
-import { writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
+import { testsInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test(
   'Home: creates a sample project from the command palette',
-  { tag: ['@web'] },
+  { tag: ['@web', '@localRenderer'] },
   async ({ page, homePage, cmdBar, editor, toolbar }) => {
     await homePage.projectsLoaded()
     await page.keyboard.press('ControlOrMeta+k')
@@ -14,30 +15,31 @@ test(
     await cmdBar.chooseCommand('Create a sample')
     await cmdBar.selectOption({ name: 'Angle Gauge', exact: true }).click()
     await cmdBar.toBeClosed()
-    await expect(page).toHaveURL(/angle-gauge/)
+    await expect(page).toHaveURL(/\/file\/.*main\.kcl$/)
+    await expect(
+      page.getByRole('button', { name: /Angle Gauge \/ main\.kcl/ })
+    ).toBeVisible()
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain('Angle Gauge')
   }
 )
 
-test.describe('Local Drive picker', () => {
+test.describe('Local Drive picker', { tag: '@localRenderer' }, () => {
   test(
     'Web: opens the picker and adds a local file',
-    { tag: '@web' },
-    async ({ page, homePage, toolbar, cmdBar, fs }) => {
+    { tag: ['@web', '@browsers'] },
+    async ({ page, homePage, toolbar, cmdBar }) => {
       await homePage.createAndGoToProject('local-drive')
       await page.waitForFunction(() =>
-        window.app.systemIOActor
-          .getSnapshot()
-          .context.folders?.some(
-            (project) => project.name === window.app.project?.name
-          )
+        window.app.projectOperations.projects.value.some(
+          (project) => project.name === window.app.project?.name
+        )
       )
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-      const fileName = 'notes.txt'
-      const content = 'Imported local file'
+      const fileName = 'cube.obj'
+      const content = await readFile(testsInputPath(fileName), 'utf8')
       await cmdBar.openCmdBar()
       await cmdBar.chooseCommand('Add file to project')
       const chooserPromise = page.waitForEvent('filechooser')
@@ -51,28 +53,46 @@ test.describe('Local Drive picker', () => {
       await expect(cmdBar.currentArgumentInput).toHaveValue(fileName)
       await cmdBar.progressCmdBar()
       await cmdBar.toBeClosed()
+      await page.waitForFunction(
+        () => window.app.projectOperations.pending.value === 0,
+        undefined,
+        { timeout: 30_000 }
+      )
 
       await expect(
         page.getByRole('treeitem', { name: fileName, exact: true })
       ).toBeVisible()
       const projectPath = await page.evaluate(() => window.app.project?.path)
       if (!projectPath) throw new Error('No project is open')
-      const filePath = await fs.join(projectPath, fileName)
-      await expect.poll(() => fs.readFile(filePath, 'utf8')).toBe(content)
+      await expect
+        .poll(() =>
+          page.evaluate(async (fileName) => {
+            const app = window.app
+            return new TextDecoder().decode(
+              await app.fileOperations.readFile(
+                `${app.project!.path}/${fileName}`
+              )
+            )
+          }, fileName)
+        )
+        .toBe(content)
+
+      await toolbar.insertButton.click()
+      await expect(
+        cmdBar.selectOption({ name: fileName, exact: true })
+      ).toBeVisible()
     }
   )
 
   test(
     'Web: opens a local KCL file in the editor',
-    { tag: '@web' },
+    { tag: ['@web', '@browsers'] },
     async ({ page, homePage, toolbar, cmdBar, editor }) => {
       await homePage.createAndGoToProject('local-kcl')
       await page.waitForFunction(() =>
-        window.app.systemIOActor
-          .getSnapshot()
-          .context.folders?.some(
-            (project) => project.name === window.app.project?.name
-          )
+        window.app.projectOperations.projects.value.some(
+          (project) => project.name === window.app.project?.name
+        )
       )
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       const code = '@settings(kclVersion = 3.0)\n// Selected from Local Drive\n'
@@ -98,8 +118,8 @@ test.describe('Local Drive picker', () => {
     { tag: '@desktop' },
     async ({ page, homePage, toolbar, cmdBar, fs, tronApp }, testInfo) => {
       if (!tronApp) throw new Error('Desktop app is required')
-      const fileName = 'notes.txt'
-      const content = 'Imported local file'
+      const fileName = 'cube.obj'
+      const content = await readFile(testsInputPath(fileName), 'utf8')
       const sourcePath = testInfo.outputPath(fileName)
       await writeFile(sourcePath, content)
       await homePage.createAndGoToProject('local-drive')
@@ -128,6 +148,11 @@ test.describe('Local Drive picker', () => {
       if (!projectPath) throw new Error('No project is open')
       const filePath = await fs.join(projectPath, fileName)
       await expect.poll(() => fs.readFile(filePath, 'utf8')).toBe(content)
+
+      await toolbar.insertButton.click()
+      await expect(
+        cmdBar.selectOption({ name: fileName, exact: true })
+      ).toBeVisible()
     }
   )
 })
