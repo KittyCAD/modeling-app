@@ -55,7 +55,9 @@ export async function createKclRuntime(
   const wasm = await wasmPromise
   let files: ReadonlyMap<string, Uint8Array> = new Map()
   let entrypoint: string | undefined
+  let executedConfiguration: string | undefined
   let disposed = false
+  let disposing: Promise<void> | undefined
   let nativeFreed = false
   const pendingResponses = new Set<Promise<unknown>>()
   let queue: Promise<unknown> = Promise.resolve()
@@ -97,10 +99,13 @@ export async function createKclRuntime(
   let sketch:
     | { configuration: string; invalidate: () => Promise<void> }
     | undefined
-  const matchesSketch = (snapshot: KclSourceSnapshot) => {
+  const matchesSketch = (
+    snapshot: KclSourceSnapshot,
+    configuration: object
+  ) => {
     if (
       !sketch ||
-      sketch.configuration !== settings() ||
+      sketch.configuration !== JSON.stringify(configuration) ||
       snapshot.files.size !== files.size
     )
       return false
@@ -159,6 +164,7 @@ export async function createKclRuntime(
       yield* fromPromise(() => engine.waitForAllModelingCommands())
       const result = execStateFromRust(delta.exec_outcome)
       if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
+      executedConfiguration = configuration
       batch(() => {
         state.value = result
         program.value = ast.program
@@ -266,9 +272,12 @@ export async function createKclRuntime(
     nativeContextHost,
     /** The machine owns native edits until external source/settings changes require a full executor run. */
     borrowModel: (invalidate: () => Promise<void>) => {
-      if (disposed || sketch)
+      if (disposed || disposing || sketch)
         return new Error('The native model already has an editing owner')
-      const owner = { configuration: settings(), invalidate }
+      const owner = {
+        configuration: executedConfiguration ?? settings(),
+        invalidate,
+      }
       sketch = owner
       const current = () => sketch === owner && !disposed
       return {
@@ -308,13 +317,21 @@ export async function createKclRuntime(
     executing,
     failed,
     events,
-    execute: async (snapshot: KclSourceSnapshot) => {
+    execute: async (
+      snapshot: KclSourceSnapshot,
+      configuration: object = getSettings()
+    ) => {
+      if (disposed || disposing)
+        return Promise.reject(new Error('The KCL scene closed'))
       if (sketch) {
-        if (matchesSketch(snapshot) && fsZds.join(snapshot.src) === entrypoint)
+        if (
+          matchesSketch(snapshot, configuration) &&
+          fsZds.join(snapshot.src) === entrypoint
+        )
           return state.peek()
         await sketch.invalidate()
       }
-      return execute(snapshot)
+      return execute(snapshot, configuration)
     },
     exportModel: (
       format: Parameters<LocalRendererHost['exportModel']>[0]
@@ -323,22 +340,25 @@ export async function createKclRuntime(
     endSketch: async () => {
       await sketch?.invalidate()
     },
-    async dispose() {
-      if (disposed) return
-      try {
-        await sketch?.invalidate()
-      } finally {
-        disposed = true
-        sources.value = undefined
-        clearInterval(elapsedTimer)
-        await queue
-        // A reply must remain deliverable while queued native work is draining.
-        // Once both paths settle, reject new replies before releasing memory.
-        while (pendingResponses.size)
-          await Promise.allSettled([...pendingResponses])
-        nativeFreed = true
-        native.free()
-      }
+    dispose() {
+      if (disposing) return disposing
+      disposing = (async () => {
+        try {
+          await sketch?.invalidate()
+        } finally {
+          disposed = true
+          sources.value = undefined
+          clearInterval(elapsedTimer)
+          await queue
+          // A reply must remain deliverable while queued native work is draining.
+          // Once both paths settle, reject new replies before releasing memory.
+          while (pendingResponses.size)
+            await Promise.allSettled([...pendingResponses])
+          nativeFreed = true
+          native.free()
+        }
+      })()
+      return disposing
     },
   }
 }
