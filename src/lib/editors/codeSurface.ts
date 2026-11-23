@@ -104,11 +104,11 @@ export function createCodeSurface(
   )
   view.dom.dataset.editorCode = ''
   host.onDispose(
-    editor.subscribe((transaction) => {
-      if (sending || !transaction.docChanged) return
+    editor.subscribe((update) => {
+      if (sending || !update.docChanged) return
       view.update([
         view.state.update({
-          changes: transaction.changes,
+          changes: update.changes,
           filter: false,
           annotations: Transaction.userEvent.of('sync'),
         }),

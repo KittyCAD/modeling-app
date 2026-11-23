@@ -21,7 +21,11 @@ function fixture() {
     classification: signal({ languageId: 'kcl' }),
     readOnly,
   }
-  const create = () => {
+  const create = (
+    previewText?: Parameters<
+      ReturnType<typeof createModelingDocumentAdapter>['createView']
+    >[2]
+  ) => {
     const restored: number[] = [],
       external = vi.fn(),
       publish = vi.fn()
@@ -48,7 +52,8 @@ function fixture() {
           }
         }),
       ],
-      (effect) => effect.is(checkpoint)
+      (effect) => effect.is(checkpoint),
+      previewText
     )
     return { adapter, view, restored, external, publish }
   }
@@ -128,6 +133,89 @@ it('publishes source before document observers run and rejects edits when read o
     expect(first.publish).toHaveBeenCalledOnce()
   } finally {
     stop()
+    first.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('publishes a committed preview and its checkpoint once per history operation', () => {
+  const document = fixture()
+  const first = document.create((effect, transaction) =>
+    effect.is(checkpoint)
+      ? { before: 'before', after: transaction.state.doc.toString() }
+      : undefined
+  )
+  const second = document.create()
+  try {
+    first.view.dispatch({
+      changes: { from: 0, to: 6, insert: 'intermediate' },
+      annotations: Transaction.addToHistory.of(false),
+    })
+    first.view.dispatch({
+      changes: { from: 0, to: 12, insert: 'after' },
+      effects: checkpoint.of({ undo: 10, redo: 11 }),
+      annotations: isolateHistory.of('full'),
+    })
+    const observed: string[] = []
+    const stop = document.editor.subscribe((update) =>
+      observed.push(update.state.doc.toString())
+    )
+    try {
+      expect(document.editor.undo()).toBe(true)
+      expect(first.view.state.doc.toString()).toBe('before')
+      expect(second.view.state.doc.toString()).toBe('before')
+      expect(first.restored).toEqual([10])
+      expect(second.restored).toEqual([])
+      expect(document.editor.redo()).toBe(true)
+      expect(first.view.state.doc.toString()).toBe('after')
+      expect(second.view.state.doc.toString()).toBe('after')
+      expect(first.restored).toEqual([10, 11])
+      expect(observed).toEqual(['before', 'after'])
+      first.adapter.dispose()
+      expect(document.editor.undo()).toBe(true)
+      expect(second.view.state.doc.toString()).toBe('before')
+      expect(second.restored).toEqual([])
+    } finally {
+      stop()
+    }
+  } finally {
+    first.adapter.dispose()
+    second.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('rejects edits after the backing editor closes before adapter cleanup', () => {
+  const document = fixture(),
+    first = document.create()
+  try {
+    document.dispose()
+    first.view.dispatch({ changes: { from: 0, to: 6, insert: 'late' } })
+    expect(document.editor.contents.peek()).toBe('before')
+    expect(first.view.state.doc.toString()).toBe('before')
+    expect(first.publish).not.toHaveBeenCalled()
+  } finally {
+    first.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('restores the editing view cursor when its text change is undone from Code', () => {
+  const document = fixture(),
+    first = document.create()
+  try {
+    first.view.dispatch({ selection: { anchor: 3 } })
+    first.view.dispatch({
+      changes: { from: 3, insert: 'X' },
+      selection: { anchor: 4 },
+    })
+    expect(document.editor.contents.peek()).toBe('befXore')
+    expect(document.editor.undo()).toBe(true)
+    expect(document.editor.contents.peek()).toBe('before')
+    expect(document.editor.state.selection.main.head).toBe(3)
+    expect(document.editor.redo()).toBe(true)
+    expect(document.editor.state.selection.main.head).toBe(4)
+  } finally {
     first.adapter.dispose()
     document.dispose()
   }

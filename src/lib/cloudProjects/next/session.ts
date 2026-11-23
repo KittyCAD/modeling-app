@@ -113,8 +113,8 @@ export function watchCloudEditorSession({
       if (!subscriptions.has(editor.id))
         subscriptions.set(
           editor.id,
-          editor.subscribe((transaction) => {
-            if (!transaction.docChanged || !current()) return
+          editor.subscribe((update) => {
+            if (!update.docChanged || !current()) return
             const src = editor.src.peek()
             if (src && belongs(src)) cloud.editorChanged(src)
             poller.activity()
