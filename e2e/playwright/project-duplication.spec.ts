@@ -17,10 +17,12 @@ import {
   waitForAppLoad,
 } from '@e2e/playwright/test-utils'
 import { getDefaultCloudProjectLibrarySetting } from '@src/lib/projectLibraries'
+import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import type { BrowserContext, Page, TestInfo } from '@playwright/test'
 
 const web = process.env.TARGET === 'web'
 const test = web ? browserTest : appTest
+if (!web) appTest.use({ userFeatures: [PROJECT_SHELL_FEATURE] })
 
 type Kind = 'local' | 'cloud'
 const originalId = '12902000-0000-4000-8000-000000000099'
@@ -47,7 +49,7 @@ async function prepare(
     'parts/note.md': 'nested bytes',
   }
   remote.project.files = sourceFiles
-  if (web) await setup(context, page, info)
+  if (web) await setup(context, page, info, [PROJECT_SHELL_FEATURE])
   const navigate = (route: string) => navigateToAppRoute(page, route)
   await navigate('/home')
   await waitForAppLoad(page)
@@ -393,3 +395,107 @@ test(
     }
   }
 )
+
+for (const [source, destination] of [
+  ['cloud', 'cloud'],
+  ['cloud', 'local'],
+  ['local', 'local'],
+] as const) {
+  appTest(
+    `duplicates ${source} to ${destination} through the native File menu`,
+    { tag: ['@desktop'] },
+    async ({ context, page, nativeMenu }, info) => {
+      const storage = await prepare(
+        source,
+        destination,
+        context,
+        page,
+        info,
+        source === destination
+      )
+      await storage.openProject(storage.root)
+      await expect(page.getByTestId('app-header')).toHaveAttribute(
+        'data-native-file-menu',
+        'true'
+      )
+      await page.waitForFunction(() => {
+        const context = window.app.commands.actor.getSnapshot().context
+        const command = context.commands.find(
+          (command) =>
+            command.groupId === 'projects' &&
+            command.name === 'Duplicate project'
+        )
+        const argument = command?.args?.project
+        if (!argument || !('options' in argument)) return false
+        const options =
+          typeof argument.options === 'function'
+            ? argument.options(context)
+            : argument.options
+        return options.some((option) => option.isCurrent)
+      })
+      await nativeMenu.click('File.Duplicate project', page)
+      await expect(page.getByTestId('command-bar-wrapper')).toBeVisible()
+      const projectOption = page.getByRole('option', {
+        name: 'Original',
+        exact: true,
+      })
+      const libraryTitle =
+        destination === 'cloud'
+          ? 'Personal Cloud'
+          : source === 'local'
+            ? 'Source'
+            : 'Destination'
+      const libraryOption = page.getByRole('option', {
+        name: libraryTitle,
+        exact: true,
+      })
+      await expect(projectOption.or(libraryOption)).toBeVisible()
+      if (source === 'local' && (await projectOption.isVisible()))
+        await projectOption.click()
+      await libraryOption.click()
+      await expect(page.getByTestId('header-arg-value')).toHaveText([
+        'Original',
+        libraryTitle,
+      ])
+      await page.getByTestId('command-bar-submit').click()
+      await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
+      await expect(page.locator('.cm-content').first()).toContainText(
+        '// original'
+      )
+      await expect
+        .poll(() =>
+          page.evaluate((sourceRoot) => {
+            const root = window.app.project?.projectIORefSignal.value?.path
+            return Boolean(root && root !== sourceRoot)
+          }, storage.root)
+        )
+        .toBe(true)
+      const copy = await page.evaluate(async () => {
+        const root = window.app.project?.projectIORefSignal.value?.path
+        if (!root) throw new Error('No duplicated project is open')
+        const read = async (path: string) =>
+          new TextDecoder().decode(
+            await window.app.fileOperations.readFile(
+              window.fsZds.join(root, path)
+            )
+          )
+        return {
+          root,
+          toml: await read('project.toml'),
+          note: await read('parts/note.md'),
+        }
+      })
+      expect(copy.root).not.toBe(storage.root)
+      expect(copy.note).toBe('nested bytes')
+      expect(copy.toml).not.toContain(originalId)
+      expect(copy.toml).not.toContain('previous-conversation')
+      expect(copy.toml).toContain('keep = "yes"')
+      expect(await storage.readSource('main.kcl')).toBe(originalCode)
+      expect(await storage.readSource('project.toml')).toBe(originalToml)
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      await expect(page.locator('.cm-content').first()).toContainText(
+        '// original'
+      )
+    }
+  )
+}
