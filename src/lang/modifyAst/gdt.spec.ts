@@ -106,6 +106,28 @@ function selectionFromSideFaces(sideFaceGroups: Artifact[][]): Selections {
   }
 }
 
+function faceAndEdgeSelections(
+  artifactGraph: ArtifactGraph
+): Selections | null {
+  const sweepFaces = getSweepCapAndWalls(artifactGraph)
+  if (!sweepFaces) return null
+
+  const faceSelection = createSelectionFromArtifacts(
+    [sweepFaces.endCap],
+    artifactGraph
+  )
+  const edgeSelection = selectionFromSideFaces([
+    [sweepFaces.walls[0], sweepFaces.endCap],
+  ])
+  return {
+    graphSelections: [
+      ...faceSelection.graphSelections,
+      ...edgeSelection.graphSelections,
+    ],
+    otherSelections: [],
+  }
+}
+
 function getEndCapsFromMultipleBodies(artifactGraph: ArtifactGraph) {
   const endCaps = [...artifactGraph.values()].filter(
     (a) => a.type === 'cap' && a.subType === 'end'
@@ -698,14 +720,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -716,7 +733,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addStraightnessGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -741,11 +758,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!edge) {
-        throw new Error('Expected a sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -756,17 +771,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addStraightnessGdt({
         ast,
         artifactGraph,
-        objects: {
-          graphSelections: [
-            {
-              entityRef: {
-                type: 'edge',
-                side_faces: edge.commonSurfaceIds ?? [],
-              },
-            },
-          ],
-          otherSelections: [],
-        },
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+        ]),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -924,14 +931,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -942,7 +944,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addCircularityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1098,14 +1100,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1116,7 +1113,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addCylindricityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1367,14 +1364,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1385,7 +1377,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addProfileGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1727,14 +1719,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1750,7 +1737,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addAngularityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1781,14 +1768,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1804,7 +1786,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addConcentricityGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1835,14 +1817,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1858,7 +1835,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addSymmetryGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
@@ -1889,14 +1866,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+      const objects = faceAndEdgeSelections(artifactGraph)
+      if (!objects) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1912,7 +1884,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addRunoutGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects,
         datums,
         tolerance,
         wasmInstance: instanceInThisFile,
