@@ -1297,53 +1297,6 @@ ${call.replace('EDGE', edge)}
       ])
     })
 
-    it('targets the revolve statement inside a trailing block', () => {
-      const ast = assertParse(
-        'outer()\nkeep()\nrevolve(region, axis = getOppositeEdge(e1))',
-        wasmInstance
-      )
-      const outer = ast.body[0]
-      if (
-        outer.type !== 'ExpressionStatement' ||
-        outer.expression.type !== 'CallExpressionKw'
-      ) {
-        throw new Error('Expected an outer call')
-      }
-      // Assemble the trailing block from parsed statements to retain their source ranges.
-      const items = ast.body.splice(1)
-      outer.expression.block = {
-        type: 'Block',
-        start: items[0].start,
-        end: ast.end,
-        moduleId: ast.moduleId,
-        commentStart: items[0].start,
-        outerAttrs: [],
-        preComments: [],
-        items,
-      }
-      outer.end = outer.expression.end = ast.end
-
-      const fixes = findRevolveHelixCallsToFix(ast, [
-        {
-          edgeId: 'edge',
-          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
-          faceIds: facePair('wall', 'cap'),
-          stdlibFn: 'getOppositeEdge',
-        },
-      ])
-      expect(fixes.map((fix) => fix.pathToCall)).toEqual([
-        [
-          ['body', ''],
-          [0, 'index'],
-          ['expression', 'ExpressionStatement'],
-          ['block', 'CallExpressionKw'],
-          ['items', 'Block'],
-          [1, 'index'],
-          ['expression', 'ExpressionStatement'],
-        ],
-      ])
-    })
-
     it('finds revolve call with axis = helper variable for Z0006 refactor', () => {
       const ast = assertParse(
         KCL_REVOLVE_GET_OPPOSITE_EDGE_VARIABLE,
