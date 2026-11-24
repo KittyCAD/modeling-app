@@ -24,6 +24,6 @@ description: Physical properties multi_target_csg.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.23463716300168713
+    "value": 0.23463716300168708
   }
 }

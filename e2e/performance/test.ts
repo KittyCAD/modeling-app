@@ -57,7 +57,19 @@ export const test = zooTest.extend<PerformanceOptions>({
       const { ElectronZoo } = await import(
         '@e2e/playwright/fixtures/fixtureSetup'
       )
-      const app = new ElectronZoo({ appDirectory, executablePath })
+      // Playwright only injects its Electron loader when executablePath is
+      // omitted. We select each variant's runtime explicitly, so provide the
+      // harness loader as well to defer startup until automation is attached.
+      const harnessRequire = createRequire(path.resolve('package.json'))
+      const loader = path.join(
+        path.dirname(harnessRequire.resolve('playwright-core/package.json')),
+        'lib/server/electron/loader.js'
+      )
+      const app = new ElectronZoo({
+        appDirectory,
+        executablePath,
+        args: ['-r', loader],
+      })
       let timeoutId: NodeJS.Timeout | undefined
       let fixtureFailed = false
       let fixtureError: unknown

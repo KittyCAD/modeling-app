@@ -1,32 +1,49 @@
-import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
-import { createProjectLibraries } from '@src/lib/projectLibraries/service'
-import { projectLibrariesService } from '@src/registry/contracts/projectLibraries'
-import { projectOperationsService } from '@src/registry/contracts/fileOperations'
-import { projectSession } from '@src/registry/contracts/projectSession'
-import { settingsService } from '@src/registry/contracts/settings'
-import { routerService } from '@src/registry/contracts/router'
 import { PATHS } from '@src/lib/paths'
+import { createProjectLibraries } from '@src/lib/projectLibraries/service'
+import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
+import { projectLibrariesService } from '@src/registry/contracts/projectLibraries'
+import { observations as projectSessionObservations } from '@src/registry/contracts/projectSession'
+import { observations as routerObservations } from '@src/registry/contracts/router'
+import { observations as settingsObservations } from '@src/registry/contracts/settings'
+import { factory as defineFactory, provide, type Factory } from 'plankton'
 
 /** Resolve dependencies when used so library discovery does not eagerly open a session. */
-export default defineRegistryItemFactory(
-  ({ services }) => ({
-    providesServices: [
-      provideService(
+export default defineFactory({
+  dependencies: {
+    projectSession: projectSessionObservations,
+    settings: settingsObservations,
+    fileOperations: fileOperationsObservations,
+    router: routerObservations,
+  },
+  key: 'project-libraries.service',
+  create: ({
+    projectSession: projectSessionInputs,
+    settings: settingsInputs,
+    fileOperations: fileOperationsInputs,
+    router: routerInputs,
+  }) => ({
+    items: [
+      provide(
         projectLibrariesService,
         createProjectLibraries({
-          getProject: () => services.get(projectSession).getProject(),
+          getProject: () =>
+            projectSessionInputs.projectSession.required().getProject(),
           getLibraries: () =>
-            services.get(settingsService).get().app.libraries.current,
-          getDefaultProjectName: () =>
-            services.get(settingsService).get().projects.defaultProjectName
+            settingsInputs.settingsService.required().get().app.libraries
               .current,
+          getDefaultProjectName: () =>
+            settingsInputs.settingsService.required().get().projects
+              .defaultProjectName.current,
           listProjects: (directory) =>
-            services.get(projectOperationsService).listProjects(directory),
-          refreshProject: () => services.get(projectSession).refreshProject(),
-          navigateHome: () => services.get(routerService).navigate(PATHS.HOME),
+            fileOperationsInputs.projectOperationsService
+              .required()
+              .listProjects(directory),
+          refreshProject: () =>
+            projectSessionInputs.projectSession.required().refreshProject(),
+          navigateHome: () =>
+            routerInputs.routerService.required().navigate(PATHS.HOME),
         })
       ),
     ],
   }),
-  'project-libraries.service'
-)
+}) satisfies Factory

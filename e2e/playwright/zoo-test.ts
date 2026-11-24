@@ -35,9 +35,11 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
   userFeatures: Feature[]
   mockApiRoutes: boolean
+  useTestSettings: boolean
 }>({
   userFeatures: [[], { option: true }],
   mockApiRoutes: [true, { option: true }],
+  useTestSettings: [false, { option: true }],
   tronApp: [
     async ({ userFeatures, mockApiRoutes, launchOptions }, use, testInfo) => {
       if (process.env.TARGET === 'web') {

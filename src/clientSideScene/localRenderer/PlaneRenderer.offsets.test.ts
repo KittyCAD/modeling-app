@@ -59,7 +59,7 @@ describe('PlaneRenderer offset planes', () => {
     expect(x.distanceTo(new Vector3(1, 0, 0))).toBeLessThan(1e-12)
     expect(y.distanceTo(new Vector3(0, 1, 0))).toBeLessThan(1e-12)
     expect(offsetPlane.name).toBe('plane')
-    expect(offsetPlane.children).toHaveLength(2)
+    expect(offsetPlane.children).toHaveLength(5)
     planes.dispose()
   })
 
@@ -71,8 +71,8 @@ describe('PlaneRenderer offset planes', () => {
         ['b', plane('b')],
       ])
     )
-    const [fill, border] = root.children[0].children
-    const [secondFill, secondBorder] = root.children[1].children
+    const [fill, , , , border] = root.children[0].children
+    const [secondFill, , , , secondBorder] = root.children[1].children
     if (
       !(fill instanceof Mesh) ||
       !(fill.material instanceof MeshBasicNodeMaterial) ||
@@ -102,8 +102,8 @@ describe('PlaneRenderer offset planes', () => {
     const { planes, root, scene } = fixture()
     const offsetPlane = root.children[0]
     const cases: [number, number | undefined, number][] = [
-      [100, undefined, 0.1],
-      [1000, undefined, 1],
+      [100, undefined, 0.03],
+      [1000, undefined, 0.3],
       [1000, 0.1, 0.01],
       [100, 0.1, 0.01],
     ]
@@ -118,7 +118,7 @@ describe('PlaneRenderer offset planes', () => {
       expect(
         offsetPlane.children[0].getWorldScale(new Vector3()).x * 100
       ).toBeCloseTo(expectedSizeMeters, 12)
-      expect(offsetPlane.children[1].scale).toEqual(
+      expect(offsetPlane.children[4].scale).toEqual(
         offsetPlane.children[0].scale
       )
     }

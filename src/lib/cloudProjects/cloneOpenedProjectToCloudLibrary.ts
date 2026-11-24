@@ -22,7 +22,7 @@ export async function cloneOpenedProjectToCloudLibrary({
   actions:
     | Pick<
         HomeProjectActionsService,
-        'getCloneToLibraryTargets' | 'cloneToLibrary'
+        'getDuplicateToLibraryTargets' | 'duplicateToLibrary'
       >
     | undefined
   entries: readonly HomeProjectEntry[]
@@ -33,7 +33,7 @@ export async function cloneOpenedProjectToCloudLibrary({
   const homeProject = findHomeProjectByPath(entries, projectPath)
   const cloudLibraryTarget = homeProject
     ? actions
-        ?.getCloneToLibraryTargets(homeProject)
+        ?.getDuplicateToLibraryTargets(homeProject)
         .find((target) => target.library.type === CLOUD_PROJECT_LIBRARY_TYPE)
     : undefined
 
@@ -42,7 +42,7 @@ export async function cloneOpenedProjectToCloudLibrary({
   }
 
   try {
-    const created = await actions.cloneToLibrary(
+    const created = await actions.duplicateToLibrary(
       homeProject,
       cloudLibraryTarget.library.id,
       { title }

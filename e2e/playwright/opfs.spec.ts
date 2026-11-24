@@ -1,4 +1,12 @@
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { expect, test as appTest } from '@e2e/playwright/zoo-test'
+import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
+
+const test = appTest.extend({
+  context: async ({ context }, provide) => {
+    await mockCloudStorage(context, { startEmpty: true })
+    await provide(context)
+  },
+})
 
 test.describe(
   'browser filesystem path resolution',

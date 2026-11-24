@@ -1,3 +1,4 @@
+import { validateProjectUpload } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { collectApiPages } from '@src/lib/apiPagination'
 import { ApiError, type Client, projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
@@ -7,7 +8,6 @@ import {
   withCloudFailureContextSync,
 } from '@src/lib/cloudProjects/runtime/failureContext'
 import {
-  getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
 } from '@src/lib/cloudProjects/runtime/archive'
@@ -76,11 +76,14 @@ function isRemoteProjectSummary(value: unknown): value is RemoteProjectSummary {
 
 export async function listRemoteProjects(
   config: CloudApiConfig,
-  beforeRequest: () => Promise<void> = async () => undefined
+  beforeRequest: () => Promise<void> = async () => undefined,
+  signal?: AbortSignal
 ): Promise<RemoteProjectSummary[]> {
   await beforeRequest()
-  const response: unknown = await cloudCall(config, (client) =>
-    collectApiPages(projects.list_projects_pager({ client }))
+  const response: unknown = await cloudCall(
+    config,
+    (client) => collectApiPages(projects.list_projects_pager({ client })),
+    signal
   )
   if (!isArray(response) || !response.every(isRemoteProjectSummary)) {
     return Promise.reject(
@@ -91,6 +94,39 @@ export async function listRemoteProjects(
     )
   }
   return [...response]
+}
+
+export interface RemoteProjectLibrary {
+  id: string
+  name: string
+  source?: string
+}
+
+export async function listRemoteProjectLibraries(
+  config: CloudApiConfig,
+  signal?: AbortSignal
+): Promise<RemoteProjectLibrary[]> {
+  const libraries = await cloudCall(
+    config,
+    (client) =>
+      collectApiPages(projects.list_project_libraries_pager({ client })),
+    signal
+  )
+  if (
+    !libraries.every(
+      (library) =>
+        library !== null &&
+        typeof library === 'object' &&
+        typeof library.id === 'string' &&
+        library.id.trim().length > 0 &&
+        typeof library.name === 'string' &&
+        (library.source === undefined || typeof library.source === 'string')
+    )
+  )
+    return Promise.reject(new Error('Invalid remote project library list.'))
+  return [
+    ...new Map(libraries.map((library) => [library.id, library])).values(),
+  ]
 }
 
 export async function getRemoteProject(
@@ -238,6 +274,7 @@ export async function updateRemoteProject({
 
   const uploadFiles = buildProjectUploadFiles(projectPath, files, {
     expectedRevision,
+    fallbackTitle: project.title,
     entrypointPath,
     publicationMetadata,
     deletedPaths,
@@ -248,6 +285,7 @@ export async function updateRemoteProject({
 }
 
 type BuildProjectFormDataOptions = {
+  fallbackTitle?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
@@ -262,6 +300,11 @@ function buildProjectUploadFiles(
   return withCloudFailureContextSync(
     { stage: 'archive', point: 'prepare-project-upload' },
     () => {
+      const error = validateProjectUpload(files)
+      if (error) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
       const upload = prepareProjectFilesForCloudUpload(
         projectPath,
         files,
@@ -277,7 +320,7 @@ function buildProjectUploadFiles(
         ...upload.files.map((file) => ({
           name: file.relativePath,
           data: new Blob([toArrayBuffer(file.data)], {
-            type: getMimeType(file.relativePath),
+            type: 'application/octet-stream',
           }),
         })),
       ]

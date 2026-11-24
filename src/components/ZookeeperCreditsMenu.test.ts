@@ -10,7 +10,6 @@ const BILLING_CONTEXT_DEFAULTS: BillingContext = {
   userPaymentBalance: undefined,
   payAsYouGoApiCreditPrice: undefined,
   error: undefined,
-  isOrg: undefined,
   hasSubscription: undefined,
   urlUserService: () => '',
   lastFetch: undefined,

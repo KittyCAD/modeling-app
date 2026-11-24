@@ -1,5 +1,3 @@
-import { selectCommand } from '@src/lib/commandUtils'
-import { reportRejection } from '@src/lib/trap'
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -10,6 +8,7 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { selectCommand } from '@src/lib/commandUtils'
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -20,7 +19,7 @@ import type { IndexLoaderData } from '@src/lib/types'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import {
@@ -28,8 +27,8 @@ import {
   type ProjectExplorerProjectBreadcrumbBadgeContext,
   type ProjectExplorerProjectMenuItem,
   type ProjectExplorerProjectMenuItemContext,
-  projectExplorerProjectBreadcrumbBadgesValueSpec,
-  projectExplorerProjectMenuItemsValueSpec,
+  projectExplorerProjectBreadcrumbBadgesFacet,
+  projectExplorerProjectMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -71,7 +70,12 @@ type ProjectBreadcrumbBadgeItem = {
 
 function isContributedProjectMenuItem(
   item: Exclude<ProjectMenuItem, null>
-): item is Extract<Exclude<ProjectMenuItem, null>, { kind: 'contributed' }> {
+): item is Extract<
+  Exclude<ProjectMenuItem, null>,
+  {
+    kind: 'contributed'
+  }
+> {
   return (
     typeof item === 'object' && 'kind' in item && item.kind === 'contributed'
   )
@@ -79,7 +83,12 @@ function isContributedProjectMenuItem(
 
 function isProjectMenuBreak(
   item: Exclude<ProjectMenuItem, null>
-): item is Extract<Exclude<ProjectMenuItem, null>, { kind: 'break' }> {
+): item is Extract<
+  Exclude<ProjectMenuItem, null>,
+  {
+    kind: 'break'
+  }
+> {
   return typeof item === 'object' && 'kind' in item && item.kind === 'break'
 }
 
@@ -195,7 +204,7 @@ function ProjectMenuPopover({
           keymap.keymap.value,
           'zds.settings.open',
           keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
+          app.registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
     platform
@@ -204,11 +213,11 @@ function ProjectMenuPopover({
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
   const projectPath = project?.path
-  const contributedProjectMenuItems = app.registry.signal(
-    projectExplorerProjectMenuItemsValueSpec
+  const contributedProjectMenuItems = app.registry.observe(
+    projectExplorerProjectMenuItemsFacet
   ).value
-  const contributedProjectBreadcrumbBadges = app.registry.signal(
-    projectExplorerProjectBreadcrumbBadgesValueSpec
+  const contributedProjectBreadcrumbBadges = app.registry.observe(
+    projectExplorerProjectBreadcrumbBadgesFacet
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -227,14 +236,6 @@ function ProjectMenuPopover({
     [commandList]
   )
   const machineCount = machineManager.machines.length
-  const getCurrentFileForDuplicate = useCallback(
-    () => ({
-      currentFilePath: app?.project?.executingPath,
-      currentFileContents: app?.project?.executingEditor.value?.code,
-    }),
-    [app]
-  )
-
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
@@ -266,40 +267,6 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
-        project
-          ? {
-              id: 'duplicate-project',
-              Element: 'button' as const,
-              children: (
-                <span
-                  className={projectMenuItemLabelClassName}
-                  data-testid="project-sidebar-duplicate-project"
-                >
-                  Duplicate project
-                </span>
-              ),
-              onClick: () => {
-                const editor = getCurrentFileForDuplicate()
-                app.projectOperations
-                  .duplicateProject(
-                    project,
-                    getProjectDisplayName(project),
-                    editor.currentFilePath
-                      ? {
-                          path: editor.currentFilePath,
-                          contents: editor.currentFileContents ?? '',
-                        }
-                      : undefined
-                  )
-                  .then((created) =>
-                    app.projectSession.openFile(created.path, {
-                      projectPath: created.path,
-                    })
-                  )
-                  .catch(reportRejection)
-              },
-            }
-          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []
@@ -487,7 +454,6 @@ function ProjectMenuPopover({
       onProjectClose,
       projectPath,
       project,
-      getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
       app.projectOperations,
