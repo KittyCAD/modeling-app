@@ -1,151 +1,203 @@
 # Application architecture
 
-Zoo Design Studio composes services and contributed behavior into a reactive application, with React rendering its interfaces. The web application also runs inside Electron for desktop filesystem access and other native interactions. The goal is to let the same building blocks support a full modeling workspace, a viewer, or a code editor without each interface having to assemble its own application runtime.
+Zoo Design Studio assembles features with [Plankton](../../packages/plankton/README.md). Features contribute commands, settings, editor modes, and other behavior through shared contracts. React renders those contributions; factories own the resources behind them. The browser and Electron shells use the same composition system, with different implementations for capabilities such as file access.
 
-This document describes the architecture being developed across several stacks, rather than everything available on `main` today:
+## The composition algebra
 
-- [Plankton and the application migration (#15039)](https://github.com/KittyCAD/modeling-app/pull/15039) supply the composition and resource-lifetime primitives used below.
-- [Editor documents and modes (#15031)](https://github.com/KittyCAD/modeling-app/pull/15031) and [their project-shell integration (#15032)](https://github.com/KittyCAD/modeling-app/pull/15032) separate a document from its presentations.
-- Execution, saving, modeling tools, and editor dialogs build on those editor contracts in downstream branches. They illustrate how the pieces fit together; they are not all part of those PRs.
+Plankton builds an application from a small set of types:
 
-The editor stack still uses the earlier registry API, including identifiers ending in `ValueSpec`. Its integration with Plankton remains work to do. The new project shell and editor contributions are gated by `zds_project_shell_refactor`. Plankton names in this document describe the target composition API; they do not imply that the stacks have already been merged together.
-
-## Principles
-
-- **Keep user-authored source authoritative.** KCL expresses models; Markdown, DOT, TOML, and other formats express their own documents. A visual edit should produce a document transaction that other views can observe and undo. Execution results are derived from a particular source snapshot.
-- **Separate a working document from storage.** A buffer can be unnamed or contain unsaved changes. Reading and writing files are explicit operations, not prerequisites for every edit or execution.
-- **Make ownership explicit.** A project session owns its working documents. Views, document behavior, and engine connections each need a defined owner and cleanup point. Hiding a React component need not end the resource's lifetime.
-- **Extend through contracts.** Subsystems publish services and contribution points. Other extensions add commands, modes, settings, tools, and interfaces through those contracts instead of reaching into an unrelated singleton.
-- **Compose features as well as interfaces.** A format extension can provide its language support, execution behavior, and visual mode together. The host supplies the project, document, and layout machinery.
-
-User and project settings remain TOML-based configuration. They are distinct from document contents, execution results, and extension-owned metadata such as collaboration history. A project session must also be useful for projects without a KCL file; its editor model does not require every document to be a saved file.
-
-## Application composition with Plankton
-
-Plankton is the composition package. A `Registry` installs a graph of items, exposes live observations of their contributions, and owns acquired resources. Its Facets are inspired by [CodeMirror's facets](https://marijnhaverbeke.nl/blog/facets.html); application reactivity uses Preact Signals.
-
-| Term | Role |
+| Type | Purpose |
 | --- | --- |
-| **Facet** | Combines an ordered list of contributed inputs into an output. Its pure combiner also defines the output when there are no inputs. |
-| **Service** | A singleton capability exposed through a specialized Facet. There may be no provider, one provider, or a conflict; provider order does not resolve a conflict. |
-| **Contract** | A named collection of Facet and Service tokens that consumers and contributors share. |
-| **Binding** | A typed registration that contributes a source callback to a Facet, with optional ordering and key information. |
-| **Subtree** | An owner with declared dependencies, synchronous acquisition, replaceable children, and cleanup that may be asynchronous. |
-| **Item** | A Binding, a group of Items, or a Subtree. Static groups are ordinary arrays; they do not need an extra resource owner. |
-| **Signal** | A live value that records reactive dependencies when read. `observe` exposes a Facet's live output; `get` reads its current output. |
-| **Extension** | An application feature assembled from these items, such as Markdown support. This describes a role, not another Plankton primitive. |
-| **Plugin** | A toggleable group built from a Subtree. Its metadata and controller remain installed while its feature contents are disabled. |
+| `Facet<Input, Output>` | Combine an ordered collection of contributions into one value. The combiner must also handle an empty collection. |
+| `Binding` | Contribute a value to a Facet through a source function. |
+| `Factory<Exports>` | Create an instance with declared dependencies, exported values, and optional startup and cleanup. |
+| `Signal<T>` | Observe a changing value. Reading `.value` in a reactive computation tracks that dependency. |
 
-“Capability” describes an ability supplied to the application, such as reading files or executing KCL. It is not a synonym for every node in the graph. In particular, an **editor capability** is a specific document-behavior contribution described below.
-
-```mermaid
-flowchart LR
-    Extensions["Feature extensions and plugins"] --> Bindings["Contributions"]
-    Extensions --> Owners["Subtrees: resources and children"]
-    Bindings --> Facets["Facets: commands, settings, modes, tools"]
-    Owners --> Services["Services: methods and reactive state"]
-    Facets --> Consumers["Services and React interfaces"]
-    Services --> Consumers
-    Consumers -->|"user actions"| Services
-```
-
-For example, this small composition installs one panel contribution, then replaces it without replacing its owner:
+These combine as:
 
 ```ts
-import { Facet, Registry, contribute, slot } from 'plankton'
+type Extension = Binding | Factory | readonly Extension[]
+```
 
-const panels = new Facet('panels', (values: readonly string[]) => values)
-const sidebar = slot([contribute(panels, () => 'outline')], 'sidebar')
+An array groups Extensions without creating another resource owner. A `Registry` installs them, exposes Facet outputs, and manages Factory instances. An application feature can export one Binding, an array, or a Factory according to what it needs.
+
+### Contribute a value
+
+A Facet defines how contributions combine. This example collects panel names:
+
+```ts
+import { signal } from '@preact/signals-core'
+import { Facet, Registry, contribute } from 'plankton'
+
+const panels = new Facet('panels', (names: readonly string[]) => names)
+const title = signal('Outline')
 const registry = new Registry()
 
-await registry.configure([sidebar])
-await registry.replace(sidebar, [contribute(panels, () => 'search')])
-registry.get(panels) // ['search']
+await registry.configure([
+  contribute(panels, () => 'Files'),
+  contribute(panels, () => title.value),
+])
+registry.get(panels) // ['Files', 'Outline']
+
+title.value = 'Search'
+registry.get(panels) // ['Files', 'Search']
 await registry.dispose()
 ```
 
-A contribution's source is explicitly a callback. It can return a constant or read signals; a reactive source changing does not require rebuilding the whole graph. Replacing a Subtree's children is a different operation, used when installed behavior changes. The old registry's ValueSpecs and Compartments are replaced by Facets and Subtrees respectively, but the new API also makes sources and ownership explicit.
+The source callback can return a constant or read Signals. Changing `title` updates the output without reinstalling the contribution. `registry.observe(panels)` supplies a live Signal for consumers; `get` reads its value at that moment. Facet combiners and source callbacks must be pure: they calculate values without starting work or changing application state.
 
-Dependencies are planned before acquisition. A factory can obtain a service observation during construction, but must defer reading it until construction finishes. This lets the graph be assembled before consumers evaluate it, instead of recursively constructing services from inside a Facet computation.
+### Extend an application contract
 
-Application graph changes are serialized and awaited. In the migration, `App.registryReady` waits for queued updates, including nested changes. Removing an owner releases its children before the owner and its consumers before their dependencies; shutdown awaits finalizers. A failed acquisition leaves the previously published graph usable. Cleanup failure after a successful publication is reported without pretending that publication was rolled back.
+Most features contribute to an existing Facet. For example, this declaration tells the editor system how to classify Markdown files:
 
-The [Plankton package guide](https://github.com/KittyCAD/modeling-app/blob/codex/plankton-migration/packages/plankton/README.md) specifies identity, precedence, service resolution, and failure behavior in detail.
+```ts
+import { contribute } from 'plankton'
+import { editorLanguagesFacet } from '@src/lib/editors/registry/contract'
 
-## Documents, presentations, and modes
+export const markdownLanguage = contribute(editorLanguagesFacet, () => ({
+  id: 'markdown',
+  matches: '.md',
+  mediaType: 'text/markdown',
+}))
+```
 
-An **Editor** is one live working document: identity, optional source location (`src`), contents, classification, transactions, and undo history. It is not the React component or the native CodeMirror view displaying that text.
+Installing the Binding makes it available to the editor system. The declaration needs no Factory because it creates no instance or cleanup work. The full [Markdown extension](../../src/lib/markdown/registry/index.ts) also contributes syntax support, a computation, and a preview mode.
 
-An **EditorViewInstance** presents an Editor. Each instance chooses a **mode**, a contributed interface for that document. Code is the universal base mode. Markdown preview, Modeling, and Drawings are examples of other modes, which can receive typed context from a provider. Execution-backed interfaces use this same mode contract, with execution providing their additional context.
+### Share a constructed dependency
+
+Use a Factory when a feature creates state or resources, needs another Factory's exports, or owns replaceable contributions:
+
+```ts
+import { signal } from '@preact/signals-core'
+import { factory } from 'plankton'
+
+const documentModel = factory({
+  create: () => ({ exports: { title: signal('Untitled') } }),
+})
+
+const outline = factory({
+  dependencies: { document: documentModel },
+  create: ({ document }) => ({
+    items: [contribute(panels, () => document.title.value)],
+  }),
+})
+```
+
+This uses the `panels` Facet from the first example. Configuring `outline` creates `documentModel` first and passes its exports as `document`. Other Factories depending on that same Factory receive the same instance within the Registry. Removing one consumer keeps the model alive while another consumer still needs it.
+
+## Consume contributions through contracts
+
+The Markdown example contributes to `editorLanguagesFacet`, which the editor system uses to discover language descriptors from installed features. Both import the same token. A Contract groups these shared tokens under names, giving producers and consumers a common set of contribution points.
+
+Facets can collect many contributions, as `panels` does above. A contract can also declare a Service when consumers need one implementation of a capability, such as file access. A Service is a specialized Facet that reports an absent provider, selects one provider, or reports a conflict. `service<T>(name)` declares the token and `provide(token, implementation)` supplies a provider. After configuration, `registry.required(token)` requires one provider; `registry.optional(token)` permits absence. Both report conflicts rather than choosing by registration order.
+
+### Read live inputs after construction
+
+A consumer can follow a contract's contributions as features are installed, removed, or replaced. This differs from the `outline` example, where construction depends on a particular Factory's instance:
+
+- Declare a concrete Factory dependency when construction needs that instance's exports. Those exports are available inside `create`, and can themselves contain changing Signals.
+- Observe a Facet or Service when the consumer must follow contributions being added, removed, or replaced. Creating an observation is allowed during `create`; reading its value must wait until the configuration is published.
+
+The Registry makes a complete configuration visible after construction. This is publication. Waiting until then lets an observer read the assembled contributions, including Service providers, rather than an incomplete configuration.
+
+The application's [input helpers](../../src/registry/inputs.ts) declare observations through the same Factory dependency map. Contracts export an `observations` Factory so consumers can name their live inputs. For example, this Factory reports theme changes:
+
+```ts
+import { effect } from '@preact/signals-core'
+import { factory } from 'plankton'
+import { observations } from '@src/registry/contracts/settings'
+
+const reportTheme = factory({
+  dependencies: { settings: observations },
+  create: ({ settings }) => ({
+    start: () => effect(() => {
+      // Note: we still have work to do to clean up the settings system!
+      const service = settings.settingsService.current.value
+      if (!service) return
+      console.info(service.current.value.app.theme.currentSignal.value)
+    }),
+  }),
+})
+```
+
+`start` runs after publication, when the observation can be read. The effect handles an absent provider because live inputs can disappear. Its returned cleanup stops the effect when the Factory is removed. A lazy `computed` can also be created during construction, provided its first read happens after publication. This keeps graph construction separate from computations that depend on the assembled graph.
+
+## Replacement and resource lifetime
+
+Changing a source Signal changes a contributed value. Changing which Extensions are installed is a separate operation. `configure` replaces the Registry's roots; `replace` changes a mounted Factory's children while retaining its instance and dependencies. A `slot` is a Factory that owns replaceable children without other resources:
+
+```ts
+import { slot } from 'plankton'
+
+const sidebar = slot([contribute(panels, () => 'Outline')], 'sidebar')
+const shell = new Registry()
+await shell.configure([sidebar])
+await shell.replace(sidebar, [contribute(panels, () => 'Search')])
+await shell.dispose()
+```
+### Plugins
+Plugins build on these primitives. A plugin keeps metadata and enable/disable controls installed while a Slot contains its toggleable features. Disabling it removes those features and releases resources no longer needed elsewhere. The [application plugin helper](../../src/registry/createZdsPlugin.ts) adds ZDS settings and feature controls around Plankton's plugin support.
+
+### Identity
+Factories are shared by object identity, or by an explicit `key`. A retained Factory keeps its instance and captured dependencies. Replacing its children does not rerun `create`; changing its constructor dependencies requires removing and reacquiring it. A Binding's optional key instead identifies a contribution within its Facet. Precedence and declaration order determine which duplicate contribution key wins. Service conflicts remain errors.
+
+### Acquisition & publication
+The Registry creates dependencies before their consumers and publishes the resulting contributions together. If creation fails, it releases newly returned instances and keeps the previous configuration available. Code that allocates resources and throws before returning an instance must release those resources itself.
+
+### Clean-up
+After publication, removed instances finish cleanup before new instances start. Cleanup releases children before their owners and consumers before their dependencies. A Factory's startup cleanup runs before its `dispose` callback. Cleanup can be asynchronous; failures are collected while the remaining cleanup continues. A failure after publication does not restore the previous graph.
+
+### Graph operations are async
+Await `configure`, `replace`, and `dispose` before starting another graph mutation. Plankton rejects overlapping mutations; the [application host](../../src/lib/app.ts) queues application updates. React unmounting ends a Factory's lifetime only if its owner removes it from the graph.
+
+See the [package guide](../../packages/plankton/README.md) for the full identity, startup, and failure contracts.
+
+## Working documents and their views
+
+An Editor owns working text and undo history. Its source location is optional, so editing and execution can work before a file is saved. A project session owns its open documents; file operations supply storage access.
+
+An editor view instance presents one Editor in a chosen mode, such as Code, KCL Modeling, or Markdown preview. Several views can share the same document while keeping separate mode choices, Code cursors, and scroll positions. Opening an already-open source creates another presentation of its document. The lower-level editor API can deliberately create independent documents for the same source.
 
 ```mermaid
 flowchart TB
-    Project["Project session"] --> Document["Editor: contents, source, history"]
-    Document --> A["View instance A: Code"]
-    Document --> B["View instance B: Modeling"]
-    Document --> Behavior["Document capabilities: saving, collaboration"]
-    A --> Surface["Code surface: cursor, scroll, CodeMirror extensions"]
-    B --> Context["Mode context: execution and scene resources"]
+    Project["Project session"] --> Editor["Editor: text and undo history"]
+    Editor --> Code["View A: Code"]
+    Editor --> Preview["View B: preview mode"]
+    Editor --> Behavior["Document capabilities"]
+    Code --> Surface["CodeMirror view: cursor and scroll"]
+    Preview --> Context["Mode context: resources for this view"]
 ```
 
-Two tabs can therefore edit the same document in different modes. Their text and undo history are shared, while their Code cursors, scroll positions, and mode choices are independent. Cross-view geometry highlighting and command argument selection can consume explicit selection events and execution mappings; sharing a document does not automatically synchronize every cursor.
+The editor contracts separate contributions by responsibility:
 
-The Open editor command reuses an already-open document for that source and creates another presentation. The lower-level API can still create independent documents with the same source when a caller deliberately needs them. New editor creates an unnamed buffer with a Code presentation; assigning a source later preserves the buffer and history.
+| Contribution | Responsibility and lifetime |
+| --- | --- |
+| Language descriptor | Infer language and optional media type from source and contents, independently of a mounted view. An explicit language choice can classify an unnamed buffer. |
+| Editor capability | Add document behavior, such as saving, once per matching Editor. |
+| Code extension | Install CodeMirror behavior separately in each matching Code surface. |
+| Mode | Supply a component and optional context owned by a particular view/mode pair. |
+| Tab indicator | Show document status beside a view's name. |
 
-Classification describes a language ID and an optional media type. Language contributions infer it from source and contents before matching CodeMirror extensions, avoiding a cycle in which installed syntax determines which syntax to install. An explicit language choice can classify an unnamed buffer. A filename extension is a useful matching shorthand, not itself a language or MIME type; unknown media types remain unknown.
+Matching can use a filename extension, a wildcard, or a predicate over source, contents, and classification. A mode's priority determines the default; an explicit choice remains selected while it matches. Context setup and cleanup belong to the view/mode pair, so switching modes or remounting React preserves that context. Closing a view releases its contexts; closing the last view releases its Editor. Project shutdown releases the remaining documents and views.
 
-Contributions can match a file extension, `*`, or a predicate over source, contents, language ID, and media type. Changes to those inputs or registered contributions reevaluate matching. A mode's priority determines the default among matches; an explicit matching choice takes precedence. This lets Modeling be the default for KCL while Code remains available. Availability should describe which documents a mode supports: a Drawings mode can handle a KCL document with no sheets through its own empty state.
+Keep behavior at its owning layer. A component can invoke a command and display its result, while document transactions, storage operations, and resource cleanup remain usable without that component mounted. The [editors guide](../../src/lib/editors/README.md) describes these contracts and lifetimes.
 
-### Contribution ownership
+## Execution and saving
 
-| Contribution | What it supplies | Lifetime |
-| --- | --- | --- |
-| Language descriptor | Inferred language and optional media type | Registered classification rule; no mounted Code surface required. |
-| Editor capability | Document behavior through `setup({ editor, onDispose })` | Once per matching Editor. Saving and collaboration belong here. |
-| Code extension | Native CodeMirror syntax, keymaps, decorations, or selection listeners | Per matching Code surface. Its factory receives the document, view instance, native view, and cleanup registration. |
-| Mode | A component and optional typed context provider | Context belongs to a view/mode pair and survives mode switches and React remounts. It ends when that view closes, the contribution is withdrawn, or it stops matching. |
-| Tab indicator | A component observing document status | Rendered beside each view's document name; views of one document observe the same dirty state, for example. |
-
-The separate document and Code-surface contracts establish ownership that CodeMirror's broad `Extension` type does not express. A save shortcut can be installed on every Code surface while the save service and dirty baseline belong to the shared document.
-
-Closing one view releases that view's resources. Closing the last view releases its document and associated behavior, including executors bound to it. Closing the project releases all remaining documents and views. Merely hiding or remounting the pane does none of those things.
-
-## Execution and persistence
-
-An **executor** binds explicitly to an Editor and watches its source, contents, and matching executor capabilities. It is independent of which editor has focus. An **executor capability** runs against the captured contents and receives the bound editor context; it returns typed data or an error. The executor runs matching capabilities and coalesces their outputs, retaining each capability's result type for consumers.
+An executor runs matching computations against captured document input and publishes typed results and errors. It is bound to an Editor independently of focus. Consumers can lease a shared executor for that document or deliberately create a separate one. Additional inputs, such as imported buffers, can contribute revisions that make a result stale or require another computation.
 
 ```mermaid
 flowchart LR
-    Code["Code edits"] --> Doc["Shared document transactions"]
-    Visual["Visual or form edits"] --> Doc
-    Doc --> Input["Execution input snapshot"]
-    Input --> Run["Matching executor capabilities"]
-    Run --> Results["Typed results and errors"]
-    Results --> Modes["Modes consuming execution context"]
-    Doc -->|"explicit Save"| Write["fileOperations: write source"]
+    Code["Code edits"] --> Document["Shared document transactions"]
+    Visual["Visual edits"] --> Document
+    Document --> Capture["Captured execution input"]
+    Capture --> Compute["Executor capabilities"]
+    Compute --> Results["Results consumed by modes"]
+    Document --> Save["Save captured text through file operations"]
 ```
 
-Edits trigger execution without waiting for Save. New input interrupts superseded work through Effect-managed execution scopes; one capability's expected failure becomes a collected result rather than hiding its siblings. Interruption cannot undo commands already sent to an external engine, so engine adapters still need to sequence operations and forward cancellation where supported.
+Execution consumes working contents independently of saving. A project source snapshot can include unsaved imported buffers, with stored files supplying the remaining bytes. Consumers must preserve the relationship between a result and the input that produced it. Cancellation can stop superseded computation, but cannot undo commands already sent to an external engine; native adapters still need their own sequencing and cleanup.
 
-A mode can acquire a shared executor lease for its document, or own a separate executor when its resources require that. This is an ownership choice, not a consequence of editor focus or a requirement that every document have exactly one executor. KCL scene resources include an engine session and stream element; a DOM element cannot be mounted into two presentations at once.
+Saving captures the document's source and contents, writes that snapshot, and records the successful checkpoint. Edits made during the write remain dirty. Views of the same Editor share that checkpoint. Save timing, storage access, execution, and persistence of collaboration history are separate responsibilities. See the [executor](../../src/lib/executors/README.md) and [save](../../src/lib/save/README.md) guides for their contracts.
 
-Saving passes the document's source and a captured buffer snapshot through `fileOperations`, then records the successful checkpoint. Edits made during a pending write must remain dirty. All views of the document see the same checkpoint; another view's execution already reacts to the shared edits. Plain-text saving and preserving CRDT history are separate persistence responsibilities.
-
-Project loading and Open perform asynchronous reads before synchronous document creation. The project session supplies project identity and file discovery; `fileOperations` supplies reads and writes. Execution adapters that need imports assemble a project source snapshot, with open buffers taking precedence over disk contents, rather than submitting only the active file or reading through an unrelated editor singleton.
-
-## Building domain workflows
-
-A format extension can contribute several complementary pieces through the same application contracts:
-
-| Extension | Editing | Execution and modes |
-| --- | --- | --- |
-| Markdown | Language classification and Code syntax | Parse the buffer and show a Markdown preview mode. |
-| KCL | Language classification and Code syntax | Execute a project snapshot, expose engine results, and show Modeling. |
-| Drawings | KCL's existing editing support | Consume drawing data and present sheets in a Drawings mode. |
-| DOT | Graph-language editing support | Present a graph mode whose drag operations write node positions back to the document. |
-
-Commands own user actions. A modeling tool contribution can describe a command's toolbar placement and availability, while the command uses the existing stdlib argument definitions, evaluator, and codemod. The final edit should apply precise document changes in one transaction so selections and history survive; the toolbar should not contain a second implementation of Extrude.
-
-Editor dialogs apply the same model to a temporary document rather than a project tab. A compact host provides Submit and Cancel; Code and a domain-specific Form edit the same draft. A semantic document descriptor identifies a command draft independently of its language, while a schema describes its arguments and typed context carries runtime resources. Submission consumes a current successful result and applies the prepared edit to the target document. Cancel disposes the draft. This is a downstream extension of the editor model, not a prerequisite for ordinary project editors.
-
-First-party features use the same document, command, execution, mode, and layout contracts that third-party extensions would consume. An extension adds its interface together with its behavior; the host owns the project and supplies the resource lifetimes.
+A domain feature can bundle these contributions without becoming their owner. Markdown combines language support, parsing, and preview. A Modeling mode can combine KCL execution with scene controls; a drawing interface can consume derived drawing data. Visual tools should apply document transactions through the editor so other views and undo history observe the edit. Application shortcuts belong to registered commands and scoped keymap contributions, alongside the feature that supplies the action.
