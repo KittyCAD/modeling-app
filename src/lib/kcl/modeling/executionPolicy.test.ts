@@ -1,4 +1,7 @@
-import { signal } from '@preact/signals-core'
+import type { Editor } from '@src/lib/editors/registry/contract'
+import { createProjectSources } from '@src/lib/projectSession/next/sources'
+import { createProjectSessionService } from '@src/lib/projectSession/next/session'
+import { effect, signal } from '@preact/signals-core'
 import { createEditorDocument } from '@src/lib/editors/document'
 import { createExecutor } from '@src/lib/executors/executor'
 import { createKclExecution } from '@src/lib/kcl/execution/executor'
@@ -249,3 +252,124 @@ it("keeps a newer request's settings while the previous native execution finishe
   expect(f.views[0].session.execute.mock.calls[2][2]).toEqual({ unit: 2 })
   expect(f.views[0].view.state.peek().stale).toBe(true)
 })
+
+it.each([false, true])(
+  'opening an unchanged imported buffer preserves model freshness (automatic: %s)',
+  async (automatic) => {
+    const encode = (text: string) => new TextEncoder().encode(text)
+    const projects = createProjectSessionService({
+      readFile: async () =>
+        encode('@settings(kclVersion = 3.0)\nexport width = 10'),
+      writeFile: async () => {},
+    })
+    projects.openProject({
+      contents: {
+        name: 'Model',
+        path: '/model',
+        children: ['main.kcl', 'module.kcl'].map((name) => ({
+          name,
+          path: `/model/${name}`,
+          children: null,
+        })),
+      },
+      metadata: { title: 'Model', readWriteAccess: true },
+    })
+    const document = createEditorDocument(
+      '@settings(kclVersion = 3.0)\nimport width from "module.kcl"\nanswer = width'
+    )
+    const editor = {
+      ...document.document,
+      id: Symbol(),
+      src: signal('/model/main.kcl'),
+      classification: signal({ languageId: 'kcl' }),
+      readOnly: signal(false),
+    }
+    const documents = signal<readonly Pick<Editor, 'src' | 'contents'>[]>([
+      editor,
+    ])
+    const sources = createProjectSources(
+      () => projects,
+      () => documents.value
+    )
+    const execution = createKclExecution(
+      (contents, context) =>
+        sources.capture({
+          document: { src: context.src, contents },
+          unnamedPath: 'main.kcl',
+          signal: context.signal,
+        }),
+      sources.revision
+    )
+    const owned = createExecutor(
+      editor,
+      signal([execution.capability]),
+      () => {}
+    )
+    const session = {
+      execute: vi.fn<KclSession['execute']>(async () => ({
+        result: emptyExecState(),
+      })),
+      dispose: vi.fn(),
+    }
+    const view = createKclViewExecution(
+      owned.executor,
+      execution.capability,
+      session
+    )
+    const release = acquireKclExecutionPolicy(
+      owned.executor,
+      execution.capability,
+      view,
+      () => automatic,
+      () => undefined
+    )
+    const freshness: boolean[] = []
+    let stop = () => {}
+    try {
+      await vi.waitFor(() =>
+        expect(view.state.peek()).toMatchObject({
+          running: false,
+          stale: false,
+        })
+      )
+      expect(session.execute).toHaveBeenCalledOnce()
+      stop = effect(() => {
+        freshness.push(view.state.value.stale)
+      })
+      const imported = signal('@settings(kclVersion = 3.0)\nexport width = 10')
+      documents.value = [
+        editor,
+        { src: signal('/model/module.kcl'), contents: imported },
+      ]
+      expect(view.state.peek().stale).toBe(false)
+      expect(freshness).not.toContain(true)
+      await Promise.resolve()
+      expect(session.execute).toHaveBeenCalledOnce()
+      imported.value = '@settings(kclVersion = 3.0)\nexport width = 20'
+      expect(view.state.peek().stale).toBe(true)
+      if (!automatic) {
+        expect(session.execute).toHaveBeenCalledOnce()
+        await owned.executor.run(execution.capability)
+      }
+      await vi.waitFor(() => {
+        expect(session.execute).toHaveBeenCalledTimes(2)
+        expect(view.state.peek()).toMatchObject({
+          running: false,
+          stale: false,
+        })
+      })
+      expect(
+        new TextDecoder().decode(
+          session.execute.mock.calls[1][0].files.get('/model/module.kcl')
+        )
+      ).toContain('width = 20')
+    } finally {
+      stop()
+      release()
+      view.dispose()
+      owned.dispose()
+      document.dispose()
+      projects.closeProject()
+    }
+  }
+)
