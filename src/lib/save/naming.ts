@@ -149,6 +149,9 @@ export function createEditorNaming(
       }
       const root = current.session.project.peek().contents.path
       const path = value.trim()
+      // Windows accepts both slash styles, and pasted Windows roots must also
+      // be rejected on POSIX. `fsZds.sep` below checks `fsZds.relative` output;
+      // the input checks need to recognize both styles regardless of backing.
       if (
         !path ||
         path.endsWith('/') ||
@@ -203,6 +206,8 @@ export function createEditorNaming(
       entry.state.value = { ...state, pending: true }
       try {
         const mutate = async (): Promise<undefined | Error> => {
+          // `withSourceLock` may wait for earlier saves. The captured editor and
+          // project must still be writable when this storage operation starts.
           if (!active()) return new Error('The editor changed while naming')
           if (
             editor.readOnly.peek() ||
@@ -215,6 +220,8 @@ export function createEditorNaming(
             : root
           if (parent !== existingParent) {
             await ensureDirectory(files, parent)
+            // The editor or project can close or become read-only while
+            // `ensureDirectory` runs. Recheck before creating or moving a file.
             if (!active()) return new Error('The editor changed while naming')
             if (
               editor.readOnly.peek() ||
@@ -228,6 +235,8 @@ export function createEditorNaming(
               .peek()
               .filter((candidate) => candidate.src.peek() === current.source)
             await files.rename(current.source, destination)
+            // Publish the confirmed move and buffer paths in one `batch` so
+            // Open Editor and the open views observe the same file location.
             return batch(() => {
               trap(
                 current.projects.applyFileMutation(current.session, {
@@ -250,6 +259,8 @@ export function createEditorNaming(
               }
             })
           } else {
+            // `saving.adopt` must use the text actually passed to `createFile`;
+            // edits made while creation is pending must remain unsaved.
             const contents = editor.state.doc.toString()
             await files.createFile(destination, contents)
             return batch(() => {
