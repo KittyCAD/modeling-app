@@ -94,7 +94,6 @@ part001 = startSketchOn(XZ)
 
       await homePage.goToModelingScene()
       await scene.settled()
-      await editor.closePane()
       await scene.waitForExecutionDoneAfter(() =>
         editor.replaceCode('', bracket)
       )
@@ -102,6 +101,9 @@ part001 = startSketchOn(XZ)
       await editor.scrollToText(bracket.trimStart().split('\n')[0])
 
       const laterCode = page.getByText('finalBracket = hole::holes(')
+      await expect(laterCode).not.toBeInViewport()
+      await editor.closePane()
+
       const menuItems = page.locator(
         '[data-testid="view-controls-menu"] button'
       )
@@ -118,7 +120,6 @@ part001 = startSketchOn(XZ)
       })
 
       await test.step('Right click on bracket navigates to its source', async () => {
-        await expect(laterCode).not.toBeInViewport()
         {
           const [clickBracket] = await scene.makeSelectionHelpers({
             kind: 'face',
