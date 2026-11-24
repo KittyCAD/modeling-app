@@ -279,8 +279,9 @@ impl Backend {
     fn is_in_sketch_block(ast: &crate::Program, position: usize) -> bool {
         let in_sketch_block = Cell::new(false);
         let _ = crate::walk::walk(&ast.ast, |node| {
-            if let crate::walk::Node::SketchBlock(sketch_block) = node
-                && SourceRange::from(&sketch_block.body).contains(position)
+            if let crate::walk::Node::CallExpressionKw(call) = node
+                && let Some(block) = call.sketch_block()
+                && SourceRange::from(block).contains(position)
             {
                 in_sketch_block.set(true);
                 return Ok::<bool, anyhow::Error>(false);
@@ -770,7 +771,7 @@ impl Backend {
                                 }
                                 return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
                             }
-                            crate::walk::Node::CallExpressionKw(call_expr) => {
+                            crate::walk::Node::CallExpressionKw(call_expr) if call_expr.sketch_block().is_none() => {
                                 let sr: SourceRange = (&call_expr.callee).into();
                                 if sr.contains(source_range.start()) {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;

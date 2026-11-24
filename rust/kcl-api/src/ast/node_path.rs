@@ -59,8 +59,5 @@ pub enum Step {
     LabeledExpressionExpr,
     LabeledExpressionLabel,
     AscribedExpressionExpr,
-    SketchBlockArgs,
-    SketchBlockBody,
-    SketchBlockBodyItem { index: usize },
     SketchVar,
 }

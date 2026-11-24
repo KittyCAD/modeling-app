@@ -14,6 +14,7 @@ import { isArray, isOverlap } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 export function forceSuffix(unitStr: string): NumericSuffix {
@@ -136,6 +137,18 @@ export function isCursorInSketchCommandRange(
     : [...overlappingEntries].find(
         ([, artifact]) => artifact.type === 'path'
       )?.[0] || false
+}
+
+export function isSketchBlock(expr: Expr): expr is Node<CallExpressionKw> & {
+  block: NonNullable<CallExpressionKw['block']>
+} {
+  return (
+    expr.type === 'CallExpressionKw' &&
+    expr.block !== undefined &&
+    expr.callee.name.name === 'sketch' &&
+    !expr.callee.abs_path &&
+    expr.callee.path.length === 0
+  )
 }
 
 export function isCallExpressionKw(e: any): e is CallExpressionKw {

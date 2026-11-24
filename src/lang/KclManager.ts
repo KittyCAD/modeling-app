@@ -35,7 +35,7 @@ import {
   traverse,
 } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
-import { isTopLevelModule, topLevelRange } from '@src/lang/util'
+import { isSketchBlock, isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   ExecCallbacks,
@@ -1471,7 +1471,7 @@ export class KclManager extends File {
             enter: (node) => {
               if (
                 node.type === 'VariableDeclaration' &&
-                node.declaration.init.type === 'SketchBlock'
+                isSketchBlock(node.declaration.init)
               )
                 sketchNames.push(node.declaration.id.name)
             },

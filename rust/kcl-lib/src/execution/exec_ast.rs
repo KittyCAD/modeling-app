@@ -107,6 +107,7 @@ use crate::parsing::ast::types::ArrayRangeExpression;
 use crate::parsing::ast::types::BinaryExpression;
 use crate::parsing::ast::types::BinaryOperator;
 use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::Identifier;
@@ -119,7 +120,6 @@ use crate::parsing::ast::types::Name;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::ReturnStatement;
-use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
@@ -2294,7 +2294,9 @@ fn reject_glob_import_clash(
 /// expression.
 pub(super) fn sketch_mode_should_skip(expr: &Expr) -> bool {
     fn contains_edited_sketch_block(node: crate::walk::Node<'_>) -> bool {
-        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+        if let crate::walk::Node::CallExpressionKw(call) = node
+            && let Some(sketch_block) = call.sketch_block()
+        {
             return sketch_block.is_being_edited;
         }
         node.children().into_iter().any(contains_edited_sketch_block)
@@ -2322,7 +2324,7 @@ fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError 
     KclError::UndefinedValue { details, name }
 }
 
-impl Node<SketchBlock> {
+impl Node<CallExpressionKw> {
     pub(super) async fn finish_arguments_after_eval(
         &self,
         labeled: IndexMap<String, Arg>,
@@ -2334,7 +2336,7 @@ impl Node<SketchBlock> {
             range,
             self.node_path.clone(),
             ctx.clone(),
-            Some(SketchBlock::CALLEE_NAME.to_owned()),
+            Some(CallExpressionKw::SKETCH_NAME.to_owned()),
         );
         args.labeled = labeled;
 
@@ -2859,7 +2861,7 @@ impl Node<SketchBlock> {
             }
             exec_state.err(CompilationIssue::err(
                 arg.source_range,
-                unexpected_kw_arg_message(label, Some(SketchBlock::CALLEE_NAME)),
+                unexpected_kw_arg_message(label, Some(CallExpressionKw::SKETCH_NAME)),
             ));
         }
         Ok(())
@@ -2925,12 +2927,6 @@ impl Node<SketchBlock> {
         properties.insert(SKETCH_OBJECT_META.to_owned(), meta_value);
 
         properties
-    }
-}
-
-impl SketchBlock {
-    pub(super) fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
-        exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
 

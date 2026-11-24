@@ -21,7 +21,6 @@ use crate::parsing::ast::types::EnumDeclaration;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::FormatOptions;
 use crate::parsing::ast::types::FunctionExpression;
-use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::ImportStatement;
@@ -41,7 +40,6 @@ use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::Parameter;
 use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
-use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TypeDeclaration;
@@ -434,7 +432,6 @@ impl Expr {
                 buf.push_str(&e.label.name);
             }
             Expr::AscribedExpression(e) => e.recast(buf, options, indentation_level, ctxt),
-            Expr::SketchBlock(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::SketchVar(e) => e.recast(buf),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
@@ -1371,47 +1368,6 @@ impl Parameter {
             buf.push_str(" = ");
             literal.recast(buf);
         };
-    }
-}
-
-impl SketchBlock {
-    pub(crate) fn recast(
-        &self,
-        buf: &mut String,
-        options: &FormatOptions,
-        indentation_level: usize,
-        ctxt: ExprContext,
-    ) {
-        let name = Name {
-            name: Node {
-                inner: Identifier {
-                    name: SketchBlock::CALLEE_NAME.to_owned(),
-                    digest: None,
-                },
-                start: Default::default(),
-                end: Default::default(),
-                module_id: Default::default(),
-                node_path: None,
-                outer_attrs: Default::default(),
-                pre_comments: Default::default(),
-                comment_start: Default::default(),
-            },
-            path: Vec::new(),
-            abs_path: false,
-            digest: None,
-        };
-        recast_call(
-            &name,
-            None,
-            &self.arguments,
-            &self.non_code_meta,
-            buf,
-            options,
-            indentation_level,
-            ctxt,
-        );
-
-        self.body.recast_trailing(buf, options, indentation_level);
     }
 }
 

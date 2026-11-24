@@ -2,7 +2,7 @@ import { join } from 'path'
 import { getNodeFromPath, traverse } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { topLevelRange } from '@src/lang/util'
+import { isSketchBlock, topLevelRange } from '@src/lang/util'
 import {
   type Name,
   type Parameter,
@@ -27,7 +27,7 @@ describe('getNodePathFromSourceRange', () => {
       const statement = ast.body[0]
       if (
         sketch?.type !== 'ExpressionStatement' ||
-        sketch.expression.type !== 'SketchBlock' ||
+        !isSketchBlock(sketch.expression) ||
         statement.type !== 'ExpressionStatement' ||
         statement.expression.type !== 'CallExpressionKw'
       ) {
@@ -35,7 +35,7 @@ describe('getNodePathFromSourceRange', () => {
       }
       statement.end = sketch.end
       statement.expression.end = sketch.end
-      statement.expression.block = sketch.expression.body
+      statement.expression.block = sketch.expression.block
 
       const start = code.indexOf('4mm')
       const range = topLevelRange(start, start + 3)

@@ -273,28 +273,6 @@ function moreNodePathFromSourceRange(
     return path
   }
 
-  if (_node.type === 'SketchBlock' && isInRange) {
-    const { arguments: args, body } = _node
-    // Handle arguments (similar to CallExpressionKw)
-    if (args && args.length > 0) {
-      for (let argIndex = 0; argIndex < args.length; argIndex++) {
-        const arg = args[argIndex].arg
-        if (arg.start <= start && arg.end >= end) {
-          path.push(['arguments', 'SketchBlock'])
-          path.push([argIndex, ARG_INDEX_FIELD])
-          path.push(['arg', LABELED_ARG_FIELD])
-          return moreNodePathFromSourceRange(arg, sourceRange, path)
-        }
-      }
-    }
-    // Handle body (similar to FunctionExpression)
-    if (body.start <= start && body.end >= end) {
-      path.push(['body', 'SketchBlock'])
-      return moreNodePathFromSourceRange(body, sourceRange, path)
-    }
-    return path
-  }
-
   if (_node.type === 'Block') {
     for (const [index, item] of _node.items.entries()) {
       if (item.start <= start && item.end >= end) {

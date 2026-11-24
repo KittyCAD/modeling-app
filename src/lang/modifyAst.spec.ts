@@ -1730,7 +1730,11 @@ sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
         instanceInThisFile
       )
       if (err(insertedSketchBlock)) throw insertedSketchBlock
-      expect(insertedSketchBlock.node.type).toBe('SketchBlock')
+      expect(insertedSketchBlock.node).toMatchObject({
+        type: 'CallExpressionKw',
+        callee: { name: { name: 'sketch' } },
+        block: { type: 'Block' },
+      })
     })
   })
 })

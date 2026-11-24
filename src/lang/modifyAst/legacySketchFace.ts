@@ -76,15 +76,10 @@ export function sketchBlockOnExtrudedFace(
     createLabeledArg('face', facesExpr),
   ])
   const newSketchBlock = createVariableDeclaration(newSketchName, {
-    type: 'SketchBlock',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    arguments: [createLabeledArg('on', onExpr)],
-    body: {
+    ...createCallExpressionStdLibKw('sketch', null, [
+      createLabeledArg('on', onExpr),
+    ]),
+    block: {
       type: 'Block',
       start: 0,
       end: 0,

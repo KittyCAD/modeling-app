@@ -590,7 +590,6 @@ fn parse_test(test: &Test) {
             match node {
                 Node::Program(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
                 Node::PipeExpression(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
-                Node::SketchBlock(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
                 Node::Block(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
                 Node::CallExpressionKw(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),
                 Node::ArrayExpression(node) => assert!(node.non_code_meta.comment_start_is_accurate(input)),

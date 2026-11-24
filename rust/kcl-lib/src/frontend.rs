@@ -770,25 +770,21 @@ impl SketchApi for FrontendState {
             defined_names.insert(face_name.clone());
             plane_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(&face_name)));
         }
-        let sketch_ast = ast::SketchBlock {
-            arguments: vec![ast::LabeledArg {
+        let mut sketch_ast = CallExpressionKw::new(
+            CallExpressionKw::SKETCH_NAME,
+            None,
+            vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(SKETCH_BLOCK_PARAM_ON)),
                 arg: plane_ast,
             }],
-            body: Default::default(),
-            is_being_edited: false,
-            non_code_meta: Default::default(),
-            digest: None,
-        };
+        );
+        sketch_ast.block = Some(BoxNode::new(Default::default()));
         // Add a sketch block as a variable declaration directly, avoiding
         // source-range mutation on a no-src node.
         let sketch_name = next_free_name_with_padding("sketch", &defined_names)
             .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.msg)))?;
         let sketch_decl = ast::VariableDeclaration::new(
-            ast::VariableDeclarator::new(
-                &sketch_name,
-                ast::Expr::SketchBlock(BoxNode::new(ast::Node::no_src(sketch_ast))),
-            ),
+            ast::VariableDeclarator::new(&sketch_name, sketch_ast.into()),
             ast::ItemVisibility::Default,
             ast::VariableKind::Const,
         );
@@ -5138,7 +5134,8 @@ fn only_sketch_block_from_range(
             ast::BodyItem::ImportStatement(_) => {}
             ast::BodyItem::ExpressionStatement(node) => {
                 if matches_range(SourceRange::from(&*node))
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+                    && let ast::Expr::CallExpressionKw(call) = &mut node.expression
+                    && let Some(sketch_block) = call.sketch_block_mut()
                 {
                     sketch_block.is_being_edited = true;
                     found = true;
@@ -5147,7 +5144,8 @@ fn only_sketch_block_from_range(
             }
             ast::BodyItem::VariableDeclaration(node) => {
                 if matches_range(SourceRange::from(&node.declaration.init))
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
+                    && let ast::Expr::CallExpressionKw(call) = &mut node.declaration.init
+                    && let Some(sketch_block) = call.sketch_block_mut()
                 {
                     sketch_block.is_being_edited = true;
                     found = true;
@@ -5157,7 +5155,8 @@ fn only_sketch_block_from_range(
             ast::BodyItem::TypeDeclaration(_) => {}
             ast::BodyItem::ReturnStatement(node) => {
                 if matches_range(SourceRange::from(&node.argument))
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
+                    && let ast::Expr::CallExpressionKw(call) = &mut node.argument
+                    && let Some(sketch_block) = call.sketch_block_mut()
                 {
                     sketch_block.is_being_edited = true;
                     found = true;
@@ -5200,8 +5199,9 @@ fn only_sketch_block(
         type Continue = ();
 
         fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
-            if let NodeMut::SketchBlock(sketch_block) = node
-                && sketch_block.node_path.as_ref() == Some(self.target_node_path)
+            if let NodeMut::CallExpressionKw(call) = node
+                && call.node_path.as_ref() == Some(self.target_node_path)
+                && let Some(sketch_block) = call.sketch_block_mut()
             {
                 sketch_block.is_being_edited = true;
                 return TraversalReturn::new_break(());
@@ -5796,7 +5796,7 @@ fn variable_name_containing_source_ref(ast: &ast::Node<ast::Program>, source_ref
         let source_is_inside_init = init_range.module_id() == source_range.module_id()
             && init_range.start() <= source_range.start()
             && source_range.end() <= init_range.end();
-        if matches!(&var_decl.declaration.init, ast::Expr::SketchBlock(_))
+        if matches!(&var_decl.declaration.init, ast::Expr::CallExpressionKw(call) if call.sketch_block().is_some())
             && init_range != source_range
             && source_is_inside_init
         {
@@ -5910,10 +5910,7 @@ enum AstMutateCommand {
 
 impl AstMutateCommand {
     fn needs_defined_names_stack(&self) -> bool {
-        matches!(
-            self,
-            AstMutateCommand::AddSketchBlockVarDecl { .. } | AstMutateCommand::AddVariableDeclaration { .. }
-        )
+        matches!(self, AstMutateCommand::AddVariableDeclaration { .. })
     }
 }
 
@@ -6010,7 +6007,7 @@ impl Visitor for AstMutateContext {
 
     fn finish(&mut self, node: NodeMut<'_>) {
         match &node {
-            NodeMut::Program(_) | NodeMut::SketchBlock(_) | NodeMut::Block(_) => {
+            NodeMut::Program(_) | NodeMut::Block(_) => {
                 self.defined_names_stack.pop();
             }
             _ => {}
@@ -6080,8 +6077,6 @@ fn filter_and_process(
     if ctx.command.needs_defined_names_stack() {
         if let NodeMut::Program(program) = &node {
             ctx.defined_names_stack.push(find_defined_names(*program));
-        } else if let NodeMut::SketchBlock(block) = &node {
-            ctx.defined_names_stack.push(find_defined_names(&block.body));
         } else if let NodeMut::Block(block) = &node {
             ctx.defined_names_stack.push(find_defined_names(*block));
         }
@@ -6139,35 +6134,34 @@ fn constraint_supports_label_position(part: &mut ast::BinaryPart) -> Option<&mut
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
     match &ctx.command {
         AstMutateCommand::AddSketchBlockExprStmt { expr } => {
-            if let NodeMut::SketchBlock(sketch_block) = node {
-                sketch_block
-                    .body
-                    .items
-                    .push(ast::BodyItem::ExpressionStatement(ast::Node {
-                        inner: ast::ExpressionStatement {
-                            expression: expr.clone(),
-                            digest: None,
-                        },
-                        start: Default::default(),
-                        end: Default::default(),
-                        module_id: Default::default(),
-                        node_path: None,
-                        outer_attrs: Default::default(),
-                        pre_comments: Default::default(),
-                        comment_start: Default::default(),
-                    }));
+            if let NodeMut::CallExpressionKw(call) = node
+                && let Some(block) = call.sketch_block_mut()
+            {
+                block.items.push(ast::BodyItem::ExpressionStatement(ast::Node {
+                    inner: ast::ExpressionStatement {
+                        expression: expr.clone(),
+                        digest: None,
+                    },
+                    start: Default::default(),
+                    end: Default::default(),
+                    module_id: Default::default(),
+                    node_path: None,
+                    outer_attrs: Default::default(),
+                    pre_comments: Default::default(),
+                    comment_start: Default::default(),
+                }));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
         AstMutateCommand::AddSketchBlockVarDecl { prefix, expr } => {
-            if let NodeMut::SketchBlock(sketch_block) = node {
-                let empty_defined_names = HashSet::new();
-                let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
-                let Ok(name) = next_free_name(prefix, defined_names) else {
+            if let NodeMut::CallExpressionKw(call) = node
+                && let Some(block) = call.sketch_block_mut()
+            {
+                let defined_names = find_defined_names(block);
+                let Ok(name) = next_free_name(prefix, &defined_names) else {
                     return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
-                sketch_block
-                    .body
+                block
                     .items
                     .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                         ast::VariableDeclaration::new(
@@ -6568,7 +6562,9 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::EditCallUnlabeled { arg } => {
-            if let NodeMut::CallExpressionKw(call) = node {
+            if let NodeMut::CallExpressionKw(call) = node
+                && call.sketch_block().is_none()
+            {
                 call.unlabeled = Some(arg.clone());
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
@@ -6615,13 +6611,15 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
             return Ok(true);
         };
 
-        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+        if let crate::walk::Node::CallExpressionKw(call) = node
+            && let Some(block) = call.sketch_block()
+        {
             if node_range.module_id() == self.target_before_mutation.module_id()
                 && node_range.start() == self.target_before_mutation.start()
                 // End shouldn't match since we added something.
                 && node_range.end() >= self.target_before_mutation.end()
             {
-                self.found.set(sketch_block.body.items.last().map(|item| match item {
+                self.found.set(block.items.last().map(|item| match item {
                     // For declarations like `circle1 = circle(...)`, use
                     // the init expression range so lookup in source_range_to_object
                     // matches the segment source range.
@@ -6663,11 +6661,13 @@ impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockByNodePath {
             return Ok(true);
         };
 
-        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+        if let crate::walk::Node::CallExpressionKw(call) = node
+            && let Some(block) = call.sketch_block()
+        {
             if let Some(node_path) = node_path
                 && node_path == self.target_node_path
             {
-                self.found.set(sketch_block.body.items.last().map(|item| match item {
+                self.found.set(block.items.last().map(|item| match item {
                     // For declarations like `circle1 = circle(...)`, use
                     // the init expression range so lookup in source_range_to_object
                     // matches the segment source range.
@@ -7364,8 +7364,8 @@ second = sketch(on = XZ) {
 
         let marked = std::cell::Cell::new(0);
         crate::walk::walk(&program.ast, |node| {
-            if let crate::walk::Node::SketchBlock(sketch) = node
-                && sketch.is_being_edited
+            if let crate::walk::Node::CallExpressionKw(sketch) = node
+                && sketch.sketch_block().is_some_and(|block| block.is_being_edited)
             {
                 marked.set(marked.get() + 1);
                 assert_eq!(SourceRange::from(sketch), range);
@@ -7379,8 +7379,8 @@ second = sketch(on = XZ) {
 
         let restored: Program = serde_json::from_value(serialized_before).unwrap();
         crate::walk::walk(&restored.ast, |node| {
-            if let crate::walk::Node::SketchBlock(sketch) = node {
-                assert!(!sketch.is_being_edited);
+            if let crate::walk::Node::Block(block) = node {
+                assert!(!block.is_being_edited);
             }
             Ok::<_, anyhow::Error>(true)
         })

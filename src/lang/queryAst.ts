@@ -42,7 +42,7 @@ import {
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
 import type { ToolTip } from '@src/lang/toolTips'
-import { findKwArg, topLevelRange } from '@src/lang/util'
+import { findKwArg, isSketchBlock, topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
   Artifact,
@@ -79,7 +79,6 @@ import {
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -175,9 +174,15 @@ export function getNodeFromPath<T>(
     if (!stopAtNode) {
       pathsExplored.push(pathItem)
     }
+    // A sketch encloses its argument and segment calls. Stop at those calls when editing inside it.
+    const nextField = path[successfulPaths.length]?.[0]
     if (
       typeof stopAt !== 'undefined' &&
       currentNode &&
+      !(
+        (nextField === 'block' || nextField === 'arguments') &&
+        isSketchBlock(currentNode)
+      ) &&
       (isArray(stopAt)
         ? stopAt.includes(currentNode.type)
         : currentNode.type === stopAt)
@@ -412,19 +417,6 @@ export function traverse(
     _traverse(node.label, [...pathToNode, ['label', 'LabelledExpression']])
   } else if (node.type === 'AscribedExpression') {
     _traverse(node.expr, [...pathToNode, ['expr', 'AscribedExpression']])
-  } else if (node.type === 'SketchBlock') {
-    node.arguments.forEach((arg, index) =>
-      _traverse(arg.arg, [
-        ...pathToNode,
-        ['arguments', 'SketchBlock'],
-        [index, ARG_INDEX_FIELD],
-        ['arg', LABELED_ARG_FIELD],
-      ])
-    )
-    // The Block branch below emits the same item paths this branch used to
-    // build inline, and visitors additionally get enter/leave for the body's
-    // Block node itself.
-    _traverse(node.body, [...pathToNode, ['body', 'SketchBlock']])
   } else if (node.type === 'SketchVar') {
     if (node.initial) {
       _traverse(node.initial, [...pathToNode, ['initial', 'SketchVar']])
@@ -1267,16 +1259,13 @@ export function getVariableNameFromNodePath(
     return undefined
   }
 
-  const call = getNodeFromPath<CallExpressionKw | SketchBlock>(
+  const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,
     wasmInstance,
-    ['CallExpressionKw', 'SketchBlock']
+    'CallExpressionKw'
   )
-  if (
-    err(call) ||
-    !(call.node.type === 'CallExpressionKw' || call.node.type === 'SketchBlock')
-  ) {
+  if (err(call) || call.node.type !== 'CallExpressionKw') {
     return undefined
   }
   // Find the var name from the variable declaration.
@@ -1982,7 +1971,7 @@ export function getSketchVariableNameForSegment(
   if (
     err(sketchVarDec) ||
     sketchVarDec.node.type !== 'VariableDeclaration' ||
-    sketchVarDec.node.declaration.init.type !== 'SketchBlock'
+    !isSketchBlock(sketchVarDec.node.declaration.init)
   ) {
     return null
   }

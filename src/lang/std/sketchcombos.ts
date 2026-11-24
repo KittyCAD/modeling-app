@@ -66,6 +66,7 @@ import {
   findKwArgAny,
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
+  isSketchBlock,
 } from '@src/lang/util'
 import type {
   BinaryPart,
@@ -2371,10 +2372,11 @@ export function getConstraintLevelFromSourceRange(
 
 export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   switch (expr.type) {
+    case 'CallExpressionKw':
+      return !isSketchBlock(expr)
     case 'Literal':
     case 'Name':
     case 'BinaryExpression':
-    case 'CallExpressionKw':
     case 'UnaryExpression':
     case 'MemberExpression':
     case 'IfExpression':
@@ -2389,7 +2391,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'ArrayRangeExpression':
     case 'LabelledExpression':
     case 'AscribedExpression':
-    case 'SketchBlock':
       return false
     default:
       return false // unreachable

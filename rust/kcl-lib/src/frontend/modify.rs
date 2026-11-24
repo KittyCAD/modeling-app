@@ -111,11 +111,6 @@ fn find_defined_names_expr(expr: &Expr, defined_names: &mut HashSet<String>) {
         Expr::AscribedExpression(expr) => {
             find_defined_names_expr(&expr.expr, defined_names);
         }
-        Expr::SketchBlock(sketch_block) => {
-            for labeled_arg in &sketch_block.arguments {
-                find_defined_names_expr(&labeled_arg.arg, defined_names);
-            }
-        }
         Expr::SketchVar(_) => {}
         Expr::None(_) => {}
     }
