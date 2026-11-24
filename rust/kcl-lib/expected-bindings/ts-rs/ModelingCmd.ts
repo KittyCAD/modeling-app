@@ -70,12 +70,13 @@ from_entity_pos?: Point2d<number> | null,
  */
 to_entity_id?: string | null, 
 /**
- * Edge reference to use to measure the dimension from
+ * Edge reference to use to measure the dimension to
  * If both `to_entity_id` and `to_edge_reference` are provided, `to_edge_reference` takes precedence.
+ * Note - If no "to" entity is provided, then a single leader is used to annotate the dimension.
  */
 to_edge_reference?: EdgeSpecifier | null, 
 /**
- * Position within the entity to position the dimension leader from
+ * Position within the entity to position the dimension leader to
  */
 to_entity_leader_pos?: AnnotationMbdLeaderPosition | null, 
 /**
@@ -4362,7 +4363,7 @@ export type TessellationOptions = {
 /**
  * Tessellation mode. Defaults to accurate.
  */
-mode: TessellationMode, };
+mode?: TessellationMode, };
 
 /**
  * Enable or disable graphics.
