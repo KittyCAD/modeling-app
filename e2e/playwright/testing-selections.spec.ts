@@ -101,6 +101,9 @@ part001 = startSketchOn(XZ)
       await editor.scrollToText(bracket.trimStart().split('\n')[0])
 
       const laterCode = page.getByText('finalBracket = hole::holes(')
+      await expect(laterCode).not.toBeInViewport()
+      await editor.closePane()
+
       const menuItems = page.locator(
         '[data-testid="view-controls-menu"] button'
       )
@@ -117,7 +120,6 @@ part001 = startSketchOn(XZ)
       })
 
       await test.step('Right click on bracket navigates to its source', async () => {
-        await expect(laterCode).not.toBeInViewport()
         {
           const [clickBracket] = await scene.makeSelectionHelpers({
             kind: 'face',
@@ -137,7 +139,9 @@ part001 = startSketchOn(XZ)
         }
         await expect(viewKclSourceCodeOption).toBeVisible()
         await expect(viewKclSourceCodeOption).toBeEnabled()
+        await expect(editor.codeContent).not.toBeVisible()
         await viewKclSourceCodeOption.click()
+        await expect(editor.codeContent).toBeVisible()
         await expect(page.locator('.cm-activeLine')).toBeVisible()
         await expect(page.locator('.cm-activeLine')).not.toContainText(
           'Shelf Bracket'
