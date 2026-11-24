@@ -13,14 +13,14 @@ import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 
 /**
  * Creates selection for one KCL scene. Picks use this scene's connection and
- * input canvas; execution signals and events from `model` determine when that
+ * input canvas; execution signals and events from `runtime` determine when that
  * geometry can be selected. The returned `dispose` removes the input and runtime
  * listeners and releases the selection controller when the scene closes.
  */
 export function createKclSceneSelection(
   manager: ConnectionManager,
   sceneInfra: SceneInfra,
-  model: KclRuntime
+  runtime: KclRuntime
 ) {
   const sceneId = Symbol('scene')
   const selection = createSceneSelection(
@@ -35,7 +35,7 @@ export function createKclSceneSelection(
   // Stop using references as soon as execution starts. `invalidate` clears the
   // view selection and dialog fields and prevents pending picks from updating them.
   const stopExecuting = effect(() => {
-    if (model.executing.value) selection.invalidate()
+    if (runtime.executing.value) selection.invalidate()
   })
   const executionDone = (event: Event) => {
     if (!(event instanceof CustomEvent)) return
@@ -44,11 +44,15 @@ export function createKclSceneSelection(
     // `createKclRuntime` emits `ExecutionDone` after clearing `executing`.
     // A successful result gets a fresh identity so earlier references remain
     // invalid even when native execution reused cached geometry.
-    if (!model.executing.peek() && detail.successful && !model.failed.peek())
+    if (
+      !runtime.executing.peek() &&
+      detail.successful &&
+      !runtime.failed.peek()
+    )
       selection.setModel({ sceneId, executionId: Symbol('execution') })
     else selection.invalidate()
   }
-  model.events.addEventListener(
+  runtime.events.addEventListener(
     SceneExecutionEvents.ExecutionDone,
     executionDone
   )
@@ -57,7 +61,7 @@ export function createKclSceneSelection(
     dispose: () => {
       stopInput()
       stopExecuting()
-      model.events.removeEventListener(
+      runtime.events.removeEventListener(
         SceneExecutionEvents.ExecutionDone,
         executionDone
       )
