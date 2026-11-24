@@ -201,3 +201,38 @@ it('reports source preparation separately while displayed geometry stays queryab
     view.dispose()
   }
 })
+
+it.each(['Measure', 'Physical analysis'])(
+  'opens %s in the view whose status control was clicked',
+  async (name) => {
+    const first = modelingTestContext()
+    const second = modelingTestContext()
+    try {
+      const mounted = render(
+        <>
+          <KclScene context={first.context} />
+          <KclScene context={second.context} />
+        </>
+      )
+      const buttons = await screen.findAllByRole('button', {
+        name,
+      })
+      fireEvent.click(buttons[0])
+      const service = name === 'Measure' ? 'measurement' : 'physicalAnalysis'
+      expect(first.context[service].isOpen.peek()).toBe(true)
+      expect(second.context[service].isOpen.peek()).toBe(false)
+      const panel =
+        name === 'Measure'
+          ? 'measurement-draggable-panel'
+          : 'physical-analysis-draggable-panel'
+      expect(
+        await within(first.resource.element).findByTestId(panel)
+      ).toBeVisible()
+      expect(within(second.resource.element).queryByTestId(panel)).toBeNull()
+      mounted.unmount()
+    } finally {
+      first.dispose()
+      second.dispose()
+    }
+  }
+)
