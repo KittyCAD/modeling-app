@@ -7,6 +7,7 @@ import type {
 } from '@src/lib/editors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import type {
   OpenProjectSession,
   ProjectSessionService,
@@ -123,6 +124,133 @@ export function createEditorNaming(
     }
     return result
   }
+  function parseDestination(
+    current: PathRequest,
+    value: string
+  ): string | Error {
+    const root = current.session.project.peek().contents.path
+    const path = value.trim()
+    // Windows accepts both slash styles, and pasted Windows roots must also
+    // be rejected on POSIX. `getContainedRelativePath` uses the backing's separator;
+    // the input checks need to recognize both styles regardless of backing.
+    if (
+      !path ||
+      path.endsWith('/') ||
+      path.endsWith('\\') ||
+      path.startsWith('/') ||
+      path.startsWith('\\') ||
+      /^[a-zA-Z]:/.test(path) ||
+      /[\u0000-\u001f]/.test(path)
+    ) {
+      return new Error('Enter a relative file path, including a file name')
+    }
+    let destination = fsZds.resolve(root, path)
+    if (!getContainedRelativePath(fsZds, root, destination))
+      return new Error('File path must stay within its project')
+    if (!current.source && !fsZds.extname(destination))
+      destination += options.defaultExtension ?? ''
+    return destination
+  }
+  function isActive(editor: Editor, current: PathRequest) {
+    return (
+      entryFor(editor).request === current &&
+      !editor.signal.aborted &&
+      !current.session.signal.aborted &&
+      editor.src.peek() === current.source
+    )
+  }
+  function writableError(editor: Editor, current: PathRequest) {
+    if (!isActive(editor, current))
+      return new Error('The editor changed while naming')
+    if (
+      editor.readOnly.peek() ||
+      !current.session.project.peek().metadata.readWriteAccess
+    )
+      return new Error('This editor is read-only')
+  }
+  async function persistPath(
+    editor: Editor,
+    current: PathRequest,
+    destination: string,
+    editors: EditorsService,
+    files: FileOperationsRegistryService
+  ): Promise<undefined | Error> {
+    // `withSourceLock` may wait for earlier saves. The captured editor and
+    // project must still be writable when this storage operation starts.
+    const before = writableError(editor, current)
+    if (before) return before
+    const parent = fsZds.dirname(destination)
+    const existingParent = current.source
+      ? fsZds.dirname(current.source)
+      : current.session.project.peek().contents.path
+    if (parent !== existingParent) {
+      await ensureDirectory(files, parent)
+      // The editor or project can close or become read-only while
+      // `ensureDirectory` runs. Recheck before creating or moving a file.
+      const after = writableError(editor, current)
+      if (after) return after
+    }
+    return current.source
+      ? renameFile(current, current.source, destination, editors, files)
+      : createFile(editor, current, destination, editors, files)
+  }
+  async function renameFile(
+    current: PathRequest,
+    source: string,
+    destination: string,
+    editors: EditorsService,
+    files: FileOperationsRegistryService
+  ): Promise<undefined | Error> {
+    const affected = editors.editors
+      .peek()
+      .filter((candidate) => candidate.src.peek() === source)
+    await files.rename(source, destination)
+    // Publish the confirmed move and buffer paths in one `batch` so
+    // Open Editor and the open views observe the same file location.
+    return batch(() => {
+      trap(
+        current.projects.applyFileMutation(current.session, {
+          type: 'renamed',
+          source,
+          destination,
+        })
+      )
+      if (current.session.signal.aborted)
+        return new Error('The project closed while renaming')
+      // Closing the initiating buffer must not strand other buffers at the old path.
+      for (const candidate of affected) {
+        if (!candidate.signal.aborted && candidate.src.peek() === source) {
+          const result = editors.setSource(candidate.id, destination)
+          if (isErr(result)) return result
+        }
+      }
+    })
+  }
+  async function createFile(
+    editor: Editor,
+    current: PathRequest,
+    destination: string,
+    editors: EditorsService,
+    files: FileOperationsRegistryService
+  ): Promise<undefined | Error> {
+    // `saving.adopt` must use the text actually passed to `files.createFile`;
+    // edits made while creation is pending must remain unsaved.
+    const contents = editor.state.doc.toString()
+    await files.createFile(destination, contents)
+    return batch(() => {
+      trap(
+        current.projects.applyFileMutation(current.session, {
+          type: 'created',
+          path: destination,
+        })
+      )
+      if (!isActive(editor, current))
+        return new Error('The editor changed while saving')
+      const result = editors.setSource(editor.id, destination)
+      if (isErr(result)) return result
+      return saving.adopt(editor, contents)
+    })
+  }
   const service: EditorNaming = {
     focus: (editor, viewId) => {
       focusEditor(editor)
@@ -147,47 +275,18 @@ export function createEditorNaming(
         if (entry.request === current)
           entry.state.value = { ...state, pending: false, error: message }
       }
-      const root = current.session.project.peek().contents.path
-      const path = value.trim()
-      // Windows accepts both slash styles, and pasted Windows roots must also
-      // be rejected on POSIX. `fsZds.sep` below checks `fsZds.relative` output;
-      // the input checks need to recognize both styles regardless of backing.
-      if (
-        !path ||
-        path.endsWith('/') ||
-        path.endsWith('\\') ||
-        path.startsWith('/') ||
-        path.startsWith('\\') ||
-        /^[a-zA-Z]:/.test(path) ||
-        /[\u0000-\u001f]/.test(path)
-      ) {
-        fail('Enter a relative file path, including a file name')
+      const destination = parseDestination(current, value)
+      if (isErr(destination)) {
+        fail(destination.message)
         return
       }
-      let destination = fsZds.resolve(root, path)
-      const relative = fsZds.relative(root, destination)
-      if (
-        !relative ||
-        relative === '..' ||
-        relative.startsWith(`..${fsZds.sep}`)
-      ) {
-        fail('File path must stay within its project')
-        return
-      }
-      if (!current.source && !fsZds.extname(destination))
-        destination += options.defaultExtension ?? ''
       const editors = getEditors()
       const files = getFiles()
       if (!editors || !files) {
         fail('File operations are unavailable')
         return
       }
-      const active = () =>
-        entry.request === current &&
-        !editor.signal.aborted &&
-        !current.session.signal.aborted &&
-        editor.src.peek() === current.source
-      if (!active()) {
+      if (!isActive(editor, current)) {
         complete(editor, new Error('The editor changed while naming'))
         return
       }
@@ -205,78 +304,8 @@ export function createEditorNaming(
       }
       entry.state.value = { ...state, pending: true }
       try {
-        const mutate = async (): Promise<undefined | Error> => {
-          // `withSourceLock` may wait for earlier saves. The captured editor and
-          // project must still be writable when this storage operation starts.
-          if (!active()) return new Error('The editor changed while naming')
-          if (
-            editor.readOnly.peek() ||
-            !current.session.project.peek().metadata.readWriteAccess
-          )
-            return new Error('This editor is read-only')
-          const parent = fsZds.dirname(destination)
-          const existingParent = current.source
-            ? fsZds.dirname(current.source)
-            : root
-          if (parent !== existingParent) {
-            await ensureDirectory(files, parent)
-            // The editor or project can close or become read-only while
-            // `ensureDirectory` runs. Recheck before creating or moving a file.
-            if (!active()) return new Error('The editor changed while naming')
-            if (
-              editor.readOnly.peek() ||
-              !current.session.project.peek().metadata.readWriteAccess
-            )
-              return new Error('This editor is read-only')
-          }
-          if (current.source) {
-            const source = current.source
-            const affected = editors.editors
-              .peek()
-              .filter((candidate) => candidate.src.peek() === current.source)
-            await files.rename(current.source, destination)
-            // Publish the confirmed move and buffer paths in one `batch` so
-            // Open Editor and the open views observe the same file location.
-            return batch(() => {
-              trap(
-                current.projects.applyFileMutation(current.session, {
-                  type: 'renamed',
-                  source,
-                  destination,
-                })
-              )
-              if (current.session.signal.aborted)
-                return new Error('The project closed while renaming')
-              // Closing the initiating buffer must not strand other buffers at the old path.
-              for (const candidate of affected) {
-                if (
-                  !candidate.signal.aborted &&
-                  candidate.src.peek() === current.source
-                ) {
-                  const result = editors.setSource(candidate.id, destination)
-                  if (isErr(result)) return result
-                }
-              }
-            })
-          } else {
-            // `saving.adopt` must use the text actually passed to `createFile`;
-            // edits made while creation is pending must remain unsaved.
-            const contents = editor.state.doc.toString()
-            await files.createFile(destination, contents)
-            return batch(() => {
-              trap(
-                current.projects.applyFileMutation(current.session, {
-                  type: 'created',
-                  path: destination,
-                })
-              )
-              if (!active()) return new Error('The editor changed while saving')
-              const result = editors.setSource(editor.id, destination)
-              if (isErr(result)) return result
-              return saving.adopt(editor, contents)
-            })
-          }
-        }
+        const mutate = () =>
+          persistPath(editor, current, destination, editors, files)
         const result = current.source
           ? await withSourceLock(current.source, mutate)
           : await mutate()
