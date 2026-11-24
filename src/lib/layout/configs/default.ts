@@ -1,3 +1,9 @@
+import {
+  EXPORT_MODEL_ICON,
+  EXPORT_MODEL_LABEL,
+  EXPORT_PROJECT_ARCHIVE_ICON,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import {
@@ -9,6 +15,20 @@ import {
   type PaneChild,
   type PaneLayout,
 } from '@src/lib/layout/types'
+
+export const exportModelAction: Action = {
+  id: 'export',
+  label: EXPORT_MODEL_LABEL,
+  icon: EXPORT_MODEL_ICON,
+  actionType: ActionType.Export,
+}
+
+export const exportProjectArchiveAction: Action = {
+  id: 'export-project-archive',
+  label: EXPORT_PROJECT_ARCHIVE_LABEL,
+  icon: EXPORT_PROJECT_ARCHIVE_ICON,
+  actionType: ActionType.ExportProjectArchive,
+}
 
 /** Temporary ID for getting the left toolbar of the layout */
 export enum DefaultLayoutToolbarID {
@@ -155,12 +175,8 @@ const primaryPane: Layout = {
       icon: 'importFile',
       actionType: ActionType.AddFile,
     },
-    {
-      id: 'export',
-      label: 'Export',
-      icon: 'floppyDiskArrow',
-      actionType: ActionType.Export,
-    },
+    exportModelAction,
+    exportProjectArchiveAction,
     {
       id: 'make',
       label: 'Make part',

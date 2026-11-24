@@ -1,3 +1,4 @@
+import { isArray } from '@src/lib/utils'
 import {
   type Camera,
   Color,
@@ -95,34 +96,49 @@ export class IntegerIdPicker {
     sketchLines?: LineTargets
   ) {
     this.clearModel()
-    // All meshes share two materials (with and without the region offset), so
-    // the ID shader is built once, not per face. The ID is set per proxy mesh,
+    // Share materials by depth bias. The ID is set per proxy mesh,
     // as it is drawn.
     const pickId = uniform(0, 'uint').onObjectUpdate(
       ({ object }) => object?.userData.pickId
     )
-    const createMaterial = (isSketchRegion: boolean) => {
+    const createMaterial = (factor: number, units: number) => {
       const material = new NodeMaterial()
       material.fragmentNode = this.idOutput(pickId)
       material.side = DoubleSide
       material.blending = NoBlending
       material.toneMapped = false
-      if (isSketchRegion) {
-        // A region is on the same plane as the face or plane it was sketched on, so
-        // without an offset the two z-fight and hover flickers between them.
-        material.polygonOffset = true
-        material.polygonOffsetFactor = -1
-        material.polygonOffsetUnits = -1
-      }
+      material.polygonOffset = true
+      material.polygonOffsetFactor = factor
+      material.polygonOffsetUnits = units
       this.materials.add(material)
       return material
     }
-    const meshMaterial = createMaterial(false)
-    const regionMaterial = createMaterial(true)
+    const materialsByBias = new Map<string, NodeMaterial>()
     const addMesh = (source: Mesh, id: number) => {
       const proxy = source.clone(false)
-      proxy.material =
-        source.userData.isSketchRegion === true ? regionMaterial : meshMaterial
+      const sourceMaterial = isArray(source.material)
+        ? source.material[0]
+        : source.material
+      // Reference planes use -1. Keep regions ahead of their support planes,
+      // and lines ahead of regions, even when the source offsets are copied.
+      const region = source.userData.isSketchRegion === true
+      const factor = region
+        ? -2
+        : sourceMaterial.polygonOffset
+          ? sourceMaterial.polygonOffsetFactor
+          : 0
+      const units = region
+        ? -2
+        : sourceMaterial.polygonOffset
+          ? sourceMaterial.polygonOffsetUnits
+          : 0
+      const key = `${factor}:${units}`
+      let material = materialsByBias.get(key)
+      if (!material) {
+        material = createMaterial(factor, units)
+        materialsByBias.set(key, material)
+      }
+      proxy.material = material
       proxy.userData.pickId = id
       proxy.matrixAutoUpdate = false
       this.sourceByProxy.set(proxy, source)
@@ -186,8 +202,8 @@ export class IntegerIdPicker {
     material.toneMapped = false
     // In front of sketch regions too, which are offset in front of faces.
     material.polygonOffset = true
-    material.polygonOffsetFactor = -2
-    material.polygonOffsetUnits = -2
+    material.polygonOffsetFactor = -3
+    material.polygonOffsetUnits = -3
     const selectionIndex = attribute(
       SELECTION_INDEX_ATTRIBUTE,
       'uint'

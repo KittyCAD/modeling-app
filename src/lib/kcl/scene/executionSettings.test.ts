@@ -106,9 +106,11 @@ it('composes added and removed KCL inputs for every consumer without changing se
   const first = createSceneExecutionSettings(() => settings, inputs)
   const second = createSceneExecutionSettings(() => settings, inputs)
   const baseline = first.executeRevision.peek()
+  const legacyBaseline = first.legacyExecuteRevision.peek()
   try {
     settings.modeling.enableTouchControls.user = false
     expect(first.executeRevision.peek()).toBe(baseline)
+    expect(first.legacyExecuteRevision.peek()).toBe(legacyBaseline)
     await registry.replace(extra, [
       [
         provideKclExecutionInput({
@@ -119,15 +121,24 @@ it('composes added and removed KCL inputs for every consumer without changing se
       ],
     ])
     const registered = first.executeRevision.peek()
+    const legacyRegistered = first.legacyExecuteRevision.peek()
     expect(registered).not.toBe(baseline)
+    expect(legacyRegistered).not.toBe(legacyBaseline)
     settings.modeling.enableTouchControls.user = true
     expect(first.executeRevision.peek()).not.toBe(registered)
     expect(second.executeRevision.peek()).toBe(first.executeRevision.peek())
+    expect(first.legacyExecuteRevision.peek()).not.toBe(legacyRegistered)
+    expect(second.legacyExecuteRevision.peek()).toBe(
+      first.legacyExecuteRevision.peek()
+    )
     await registry.replace(extra, [])
     expect(first.executeRevision.peek()).toBe(baseline)
+    expect(first.legacyExecuteRevision.peek()).toBe(legacyBaseline)
     settings.modeling.enableTouchControls.user = false
     expect(first.executeRevision.peek()).toBe(baseline)
     expect(second.executeRevision.peek()).toBe(baseline)
+    expect(first.legacyExecuteRevision.peek()).toBe(legacyBaseline)
+    expect(second.legacyExecuteRevision.peek()).toBe(legacyBaseline)
   } finally {
     await registry.dispose()
   }

@@ -66,16 +66,22 @@ provideKclExecutionInput({
   id: 'modeling.highlightEdges',
   read: (settings) => settings.modeling.highlightEdges.currentSignal.value,
   refresh: 'execute',
+  legacyRefresh: 'direct',
 })
 ```
 
-The two rules select which presentations request execution:
+The two rules select which Modeling views request execution:
 
 - `execute` reruns KCL with the existing native cache. Default units, edge
   highlighting, and scale-grid visibility and size use this rule.
 - `execute-streamed` requests execution only for streamed scenes. Backface color
   uses this rule. Rust reapplies the color to existing streamed geometry without
   clearing the scene or cache. The local renderer applies it directly.
+
+The legacy file route uses `legacyRefresh: 'direct'` for edge highlighting,
+scale-grid visibility and size, and backface color. `KclManager` applies these
+through engine APIs without executing KCL. Default units and contributed inputs
+without this override retain their execution rules in both hosts.
 
 `createSceneExecutionSettings` in `executionSettings.ts` reads the registry's live contribution signal and
 the effective preferences. It provides native configuration through the existing
@@ -91,11 +97,11 @@ because the file route also needs them.
 ## Applying changes to the active scene
 
 `observeLegacySceneExecutionSettings` in `legacyExecutionSettings.ts` watches the
-comparison keys.
+legacy comparison keys, which exclude inputs applied directly.
 `KclManager.watchSettings` supplies callbacks bound to the active file, project,
 and connection: execute the model and check whether those resources are still
-current. Rust owns cache invalidation and graphics-setting application; the
-observer does not clear scenes before requesting execution.
+current. Rust owns cache invalidation; the observer does not clear scenes before
+requesting execution.
 
 The observer records preference changes while inactive or disconnected without
 executing. File opening and reconnecting own their initial execution, so simply
