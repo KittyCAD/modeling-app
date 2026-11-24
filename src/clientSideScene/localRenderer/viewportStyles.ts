@@ -2,7 +2,7 @@ import { Color } from 'three'
 import {
   abs,
   color,
-  dot,
+  diffuseColor,
   float,
   floor,
   fract,
@@ -17,7 +17,6 @@ import {
   select,
   smoothstep,
   step,
-  vec3,
   vec4,
 } from 'three/tsl'
 import type { Node, UniformNode } from 'three/webgpu'
@@ -67,17 +66,30 @@ export function retroCadOutput(
 const PHOSPHOR_COLUMN_WIDTH = 3
 /** Every this many rows of device pixels, one row is drawn dimmer. */
 const PHOSPHOR_ROW_PERIOD = 6
-/** Linear gain that brings the average face brightness to the engine's. */
-const PHOSPHOR_GAIN = 1.25
+/**
+ * Linear gain for the grille, so a face in the default (near white) model colour
+ * comes out at about the streamed brightness, which averages 104/255.
+ */
+const PHOSPHOR_GAIN = 1.2
 
 /**
- * Phosphor post-process: geometry shown as an evenly lit CRT aperture grille of
- * magenta, teal and olive columns, with a dim gap between columns and a faintly
- * darker row every few rows. Edges are drawn black, so they stay dark lines.
+ * The material output for Phosphor: each face's own colour, unlit, as the
+ * engine shows it. Without Phosphor, `base` passes through unchanged.
+ */
+export function phosphorMaterialOutput(
+  amount: UniformNode<'float', number>,
+  base: Node<'vec4'>
+) {
+  return mix(base, vec4(diffuseColor.rgb, 1), amount)
+}
+
+/**
+ * Phosphor post-process: the scene seen through a CRT aperture grille of
+ * magenta, teal and olive columns, with a dim gap between columns and a
+ * faintly darker row every few rows. It keeps each face's colour, and black
+ * edges and background stay black.
  */
 export function phosphorOutput(sceneColor: Node<'vec4'>) {
-  const brightness = dot(sceneColor.rgb, vec3(0.299, 0.587, 0.114))
-  const coverage = smoothstep(0.02, 0.1, brightness).mul(PHOSPHOR_GAIN)
   const columnPosition = screenCoordinate.x.div(PHOSPHOR_COLUMN_WIDTH)
   const column = mod(floor(columnPosition), 3)
   const grille = select(
@@ -91,5 +103,8 @@ export function phosphorOutput(sceneColor: Node<'vec4'>) {
     float(0.85),
     float(1)
   )
-  return vec4(grille.mul(coverage).mul(gap).mul(row), 1)
+  return vec4(
+    sceneColor.rgb.mul(grille).mul(PHOSPHOR_GAIN).mul(gap).mul(row),
+    1
+  )
 }

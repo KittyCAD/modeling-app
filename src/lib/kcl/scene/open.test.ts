@@ -297,11 +297,9 @@ it.each(['local', 'streamed'] as const)(
       infra.resumeRendering.mockClear()
       settings.modeling.viewportRendering.user = 'retrocad'
       await scene.applySettings()
-      expect(infra.theme).toBe(
-        presentation === 'local' ? Themes.Dark : Themes.Light
-      )
-      if (presentation === 'streamed')
-        expect(infra.resumeRendering).toHaveBeenCalled()
+      // Both renderers draw Retro CAD on black, so overlays switch to light foregrounds.
+      expect(infra.theme).toBe(Themes.Light)
+      expect(infra.resumeRendering).toHaveBeenCalled()
       settings.app.theme.user = Themes.Dark
       await scene.applySettings()
       expect(infra.theme).toBe(Themes.Light)

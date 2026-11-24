@@ -42,7 +42,11 @@ import { artifactToEntityRef } from '@src/lang/queryAst'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
+import {
+  type ResolvedTheme,
+  Themes,
+  getThemeBackgroundColor,
+} from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
@@ -105,6 +109,7 @@ import type {
 import {
   PHOSPHOR_EDGE_COLOR,
   RETRO_CAD_EDGE_COLOR,
+  phosphorMaterialOutput,
   phosphorOutput,
   retroCadOutput,
 } from '@src/clientSideScene/localRenderer/viewportStyles'
@@ -268,6 +273,7 @@ export class LocalRenderer {
   private readonly backfaceColor = uniform(new Color())
   // Shared by all model materials, so switching styles doesn't rebuild their shaders.
   private readonly retroCadAmount = uniform(0)
+  private readonly phosphorAmount = uniform(0)
   private readonly retroCadGridSpacing = uniform(0.01)
   private phosphorPipeline: {
     camera: PerspectiveCamera | OrthographicCamera
@@ -326,10 +332,13 @@ export class LocalRenderer {
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
-    this.retroCadAmount.value = props.viewportRendering === 'retrocad' ? 1 : 0
+    this.setStyleAmounts(props.viewportRendering)
     const backfacePlugin = backfaceColorPlugin(
       this.backfaceColor,
-      retroCadOutput(this.retroCadAmount, this.retroCadGridSpacing)
+      phosphorMaterialOutput(
+        this.phosphorAmount,
+        retroCadOutput(this.retroCadAmount, this.retroCadGridSpacing)
+      )
     )
     this.gltfLoader.register(() => backfacePlugin)
 
@@ -708,6 +717,27 @@ export class LocalRenderer {
       : 'rgb(0, 0, 0)'
   }
 
+  /** Retro CAD and Phosphor always draw on black, so they use the dark theme's foregrounds. */
+  private get viewportTheme(): ResolvedTheme {
+    return this.settings.viewportRendering === 'default'
+      ? this.settings.theme
+      : Themes.Dark
+  }
+
+  private applyTheme() {
+    const theme = this.viewportTheme
+    this.gpu?.selectionHighlightRenderer.setBackgroundColor(
+      this.backgroundColor
+    )
+    this.gpu?.planeRenderer.setTheme(theme)
+    this.gpu?.sketchLineRenderer.setColor(getSketchLineColor(theme))
+  }
+
+  private setStyleAmounts(viewportRendering: ViewportRendering) {
+    this.retroCadAmount.value = viewportRendering === 'retrocad' ? 1 : 0
+    this.phosphorAmount.value = viewportRendering === 'phosphor' ? 1 : 0
+  }
+
   // Edges always show in the stylized modes, which draw them in their own color.
   private applyEdgeStyle() {
     const { viewportRendering, shouldHighlightEdges } = this.settings
@@ -728,10 +758,8 @@ export class LocalRenderer {
   setViewportRendering(viewportRendering: ViewportRendering) {
     if (this.settings.viewportRendering === viewportRendering) return
     this.settings.viewportRendering = viewportRendering
-    this.retroCadAmount.value = viewportRendering === 'retrocad' ? 1 : 0
-    this.gpu?.selectionHighlightRenderer.setBackgroundColor(
-      this.backgroundColor
-    )
+    this.setStyleAmounts(viewportRendering)
+    this.applyTheme()
     this.applyEdgeStyle()
     this.disposeAmbientOcclusionPipeline()
     this.disposePhosphorPipeline()
@@ -753,11 +781,7 @@ export class LocalRenderer {
   setTheme(theme: ResolvedTheme) {
     if (this.settings.theme === theme) return
     this.settings.theme = theme
-    this.gpu?.selectionHighlightRenderer.setBackgroundColor(
-      this.backgroundColor
-    )
-    this.gpu?.planeRenderer.setTheme(theme)
-    this.gpu?.sketchLineRenderer.setColor(getSketchLineColor(theme))
+    this.applyTheme()
     this.invalidateBaseRender()
   }
 
@@ -1446,7 +1470,8 @@ export class LocalRenderer {
       return
     }
 
-    const { theme, shouldHighlightEdges } = this.settings
+    const { shouldHighlightEdges } = this.settings
+    const theme = this.viewportTheme
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
     const planeRenderer = new PlaneRenderer(theme)
     planeRenderer.addTo(scene)
