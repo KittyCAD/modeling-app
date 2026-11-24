@@ -41,7 +41,10 @@ function modelingResponse(type: string, data: unknown) {
   }
 }
 
-function setupModelingContext(defaultLengthUnit: string | undefined) {
+function setupModelingContext(
+  defaultLengthUnit: string | undefined,
+  isIdle = true
+) {
   const sentCommands: Record<string, unknown>[] = []
   const sendSceneCommand = vi.fn((request: SceneCommand) => {
     const cmd = request.cmd
@@ -68,7 +71,7 @@ function setupModelingContext(defaultLengthUnit: string | undefined) {
 
   useModelingContext.mockReturnValue({
     state: {
-      matches: (value: string) => value === 'idle',
+      matches: (value: string) => value === 'idle' && isIdle,
       context: {
         engineCommandManager: { sendSceneCommand },
         kclManager: {
@@ -262,6 +265,19 @@ describe('physical analysis tool', () => {
     })
     expect(screen.queryByText('1,000')).not.toBeInTheDocument()
     expect(screen.queryByText('7.85')).not.toBeInTheDocument()
+  })
+
+  it('explains why analysis is unavailable outside idle modeling', () => {
+    const { sendSceneCommand } = setupModelingContext('mm', false)
+
+    render(<PhysicalAnalysisTool />)
+
+    expect(
+      screen.getByText(
+        'Physical analysis is unavailable during an active modeling operation. Exit sketch mode or finish the current operation to analyze the model.'
+      )
+    ).toBeInTheDocument()
+    expect(sendSceneCommand).not.toHaveBeenCalled()
   })
 
   it('only offsets the panel when the measurement panel is open', () => {
