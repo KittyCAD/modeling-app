@@ -49,7 +49,7 @@ pub fn engine_id_for_artifact(id: ArtifactId, artifact: &Artifact, artifact_grap
 
 fn engine_id_for_sweep(sweep: &Sweep, artifact_graph: &ArtifactGraph) -> ArtifactId {
     match sweep.sub_type {
-        SweepSubType::Loft | SweepSubType::Blend => sweep.id,
+        SweepSubType::Loft | SweepSubType::Blend | SweepSubType::PlanarSurface => sweep.id,
         SweepSubType::Extrusion
         | SweepSubType::ExtrusionTwist
         | SweepSubType::Revolve
