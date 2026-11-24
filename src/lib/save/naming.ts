@@ -145,7 +145,13 @@ export function createEditorNaming(
       return new Error('Enter a relative file path, including a file name')
     }
     let destination = fsZds.resolve(root, path)
-    if (!getContainedRelativePath(fsZds, root, destination))
+    if (
+      !getContainedRelativePath(
+        { relative: fsZds.relative, sep: fsZds.sep },
+        root,
+        destination
+      )
+    )
       return new Error('File path must stay within its project')
     if (!current.source && !fsZds.extname(destination))
       destination += options.defaultExtension ?? ''
