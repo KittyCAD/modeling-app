@@ -36,6 +36,8 @@ export async function prepareStorage(
     creationGate?: Promise<void>
   } = {}
 ) {
+  if (kind === 'local' && process.env.TARGET === 'web')
+    throw new Error('Directory-library workflows require desktop')
   await mockClientErrorReports(context)
   // Intercept Projects even for local cases: unexpected cloud mutations are observable.
   const remote = await mockCloudStorage(context, {
@@ -51,11 +53,8 @@ export async function prepareStorage(
   const home = new HomePageFixture(page)
   await expect(page.getByTestId('home-header')).toBeVisible()
   const fs = FsFixture(page)
-  const localDirectory =
-    process.env.TARGET === 'web'
-      ? '/documents/project-workflows'
-      : testInfo.outputPath('projects')
-  await fs.mkdir(localDirectory, { recursive: true })
+  const localDirectory = testInfo.outputPath('projects')
+  if (kind === 'local') await fs.mkdir(localDirectory, { recursive: true })
   const library: ProjectLibrarySetting =
     kind === 'cloud'
       ? getDefaultCloudProjectLibrarySetting()

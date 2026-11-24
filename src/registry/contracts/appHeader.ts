@@ -16,10 +16,15 @@ export interface AppHeaderItem {
 const sortByOrderProperty = (inputs: readonly AppHeaderItem[]) =>
   inputs.toSorted((a, b) => (a.order || 0) - (b.order || 0))
 export const appHeaderContract = contract({
+  appHeaderLeftItemsFacet: new Facet<AppHeaderItem, AppHeaderItem[]>(
+    'app-header-left-items',
+    (inputs) => sortByOrderProperty(inputs)
+  ),
   appHeaderItemsFacet: new Facet<AppHeaderItem, AppHeaderItem[]>(
     'app-header-items',
     (inputs) => (inputs.length ? sortByOrderProperty(inputs) : [])
   ),
 })
 
-export const { appHeaderItemsFacet } = appHeaderContract
+export const { appHeaderItemsFacet, appHeaderLeftItemsFacet } =
+  appHeaderContract

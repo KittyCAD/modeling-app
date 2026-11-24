@@ -6,6 +6,8 @@ import {
 } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
+import { appHeaderLeftItemsFacet } from '@src/registry/contracts/appHeader'
+import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
 import {
   factory as defineFactory,
   provide,
@@ -40,6 +42,16 @@ describe('project session extension', () => {
   afterEach(async () => {
     await registry?.dispose()
     registry = undefined
+  })
+  it('contributes save status beside the project title instead of the status bar', async () => {
+    registry = new Registry()
+    await registry.configure([projectSessionRegistryItem])
+    expect(
+      registry.get(appHeaderLeftItemsFacet).map((item) => item.id)
+    ).toContain('file-save-status')
+    expect(
+      registry.get(statusBarLocalItemsFacet).map((item) => item.id)
+    ).not.toContain('file-save-status')
   })
   it('provides the opened project session through registry signals', async () => {
     registry = new Registry()

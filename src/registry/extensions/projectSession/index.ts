@@ -1,5 +1,4 @@
-import { statusBarLocalItemsFacet } from '@src/registry/contracts/statusBar'
-import { createElement, lazy, Suspense } from 'react'
+import saveStatusHeaderItem from '@src/lib/projectSession/registry/saveStatus'
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import { readTextFile } from '@src/lib/fileSystem/readTextFile'
 import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
@@ -29,12 +28,7 @@ import {
   flushActiveTextFileWrite,
   adoptStorageTextSnapshot,
 } from '@src/lib/activeTextFile'
-import {
-  factory as defineFactory,
-  contribute,
-  provide,
-  type InputOf,
-} from 'plankton'
+import { factory as defineFactory, provide } from 'plankton'
 import { computed, signal } from '@preact/signals-core'
 import {
   observations as projectStorageObservations,
@@ -57,13 +51,6 @@ import {
 } from '@src/registry/contracts/projectSession'
 import { observations as engineConnectionObservations } from '@src/lib/engineConnection/registry/contract'
 
-// Save status reads app context, so load it after App has initialized.
-const FileSaveStatus = lazy(async () => {
-  const { FileSaveStatus } = await import('@src/components/FileSaveStatus')
-  return {
-    default: FileSaveStatus,
-  }
-})
 export const projectSessionExtension = defineFactory({
   dependencies: {
     projectStorage: projectStorageObservations,
@@ -426,28 +413,8 @@ export const projectSessionExtension = defineFactory({
         currentProjectLibraryId.value = libraryId
       },
     }
-    const _statusBarLocalItemsContribution: InputOf<
-      typeof statusBarLocalItemsFacet
-    > = {
-      id: 'file-save-status',
-      order: 20,
-      component: () =>
-        createElement(
-          Suspense,
-          {
-            fallback: null,
-          },
-          createElement(FileSaveStatus)
-        ),
-    }
     return {
-      items: [
-        contribute(
-          statusBarLocalItemsFacet,
-          () => _statusBarLocalItemsContribution
-        ),
-        provide(projectSession, serviceImpl),
-      ],
+      items: [provide(projectSession, serviceImpl)],
       dispose: () => {
         for (const stop of watchers.values()) stop()
         watchers.clear()
@@ -455,4 +422,8 @@ export const projectSessionExtension = defineFactory({
     }
   },
 })
-export default [projectSessionExtension, projectStorageWatcher]
+export default [
+  projectSessionExtension,
+  projectStorageWatcher,
+  saveStatusHeaderItem,
+]

@@ -13,7 +13,10 @@ import {
   authSessionExpiredListenersFacet,
 } from '@src/registry/contracts/auth'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { runtimeService } from '@src/registry/contracts/runtime'
+import { createAuthOrganizationState } from '@src/registry/extensions/auth/organization'
 import { fileOperationsExtension } from '@src/registry/extensions/fileOperations'
+import { observeService } from '@src/registry/inputs'
 import { useSelector } from '@xstate/react'
 import {
   factory as defineFactory,
@@ -39,9 +42,10 @@ export const createAuthExtension = (
     dependencies: {
       files,
       auth: authObservations,
+      runtime: observeService(runtimeService),
     },
     key: 'auth-extension',
-    create: ({ files, auth: authInputs }) => {
+    create: ({ files, auth: authInputs, runtime }) => {
       const fileOperations = Promise.resolve(files.operations)
       const authActor = createActor(authMachine, {
         input: { fileOperations },
@@ -53,6 +57,10 @@ export const createAuthExtension = (
       const token = computed(() => authState.value.context.token)
       const user = computed(() => authState.value.context.user)
       const isLoggedIn = computed(() => authState.value.matches('loggedIn'))
+      const organization = createAuthOrganizationState(
+        { user, token, isLoggedIn },
+        runtime.current
+      )
 
       const serviceImpl: AuthRegistryService = {
         actor: authActor,
@@ -62,6 +70,7 @@ export const createAuthExtension = (
         token,
         user,
         isLoggedIn,
+        organization: organization.state,
         sessionExpiredNotice,
         clearSessionExpiredNotice,
         useAuthState: () => useSelector(authActor, (state) => state),
@@ -88,6 +97,7 @@ export const createAuthExtension = (
 
       return {
         exports: serviceImpl,
+        start: organization.start,
         items: [
           contribute(
             authSessionExpiredListenersFacet,

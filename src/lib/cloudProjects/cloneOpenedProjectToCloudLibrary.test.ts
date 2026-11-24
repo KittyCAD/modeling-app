@@ -8,7 +8,7 @@ import {
 } from '@src/lib/cloudProjects/cloneOpenedProjectToCloudLibrary'
 import type {
   HomeProjectEntry,
-  HomeProjectCloneToLibraryTarget,
+  HomeProjectDuplicateToLibraryTarget,
 } from '@src/registry/contracts/homeProjects'
 import { expect, test, vi } from 'vitest'
 
@@ -21,7 +21,7 @@ const source: HomeProjectEntry = Object.freeze({
   localProjectPath: '/projects/example',
   readWriteAccess: true,
 })
-const cloudTarget: HomeProjectCloneToLibraryTarget = {
+const cloudTarget: HomeProjectDuplicateToLibraryTarget = {
   library: {
     id: 'personal-cloud',
     title: 'Personal Cloud',
@@ -39,8 +39,8 @@ const cloudTarget: HomeProjectCloneToLibraryTarget = {
 function setup() {
   return {
     actions: {
-      getCloneToLibraryTargets: () => [cloudTarget],
-      cloneToLibrary: vi.fn(async () => ({
+      getDuplicateToLibraryTargets: () => [cloudTarget],
+      duplicateToLibrary: vi.fn(async () => ({
         defaultFile: '/cloud/example/main.kcl',
         localProjectPath: '/cloud/example',
       })),
@@ -62,7 +62,7 @@ test('clones and opens a cloud copy without retitling the source', async () => {
       projectPath: '/cloud/example',
     }
   )
-  expect(dependencies.actions.cloneToLibrary).toHaveBeenCalledWith(
+  expect(dependencies.actions.duplicateToLibrary).toHaveBeenCalledWith(
     source,
     'personal-cloud',
     { title: 'Published example' }
@@ -72,7 +72,7 @@ test('clones and opens a cloud copy without retitling the source', async () => {
   expect(dependencies.navigate).toHaveBeenCalledWith(
     '/file/%2Fcloud%2Fexample%2Fmain.kcl'
   )
-  expect(dependencies.actions.cloneToLibrary).toHaveBeenCalledBefore(
+  expect(dependencies.actions.duplicateToLibrary).toHaveBeenCalledBefore(
     dependencies.navigate
   )
 })
@@ -80,7 +80,7 @@ test('clones and opens a cloud copy without retitling the source', async () => {
 test('keeps the source open when cloning fails', async () => {
   const dependencies = setup()
   const failure = new Error('Upload failed')
-  dependencies.actions.cloneToLibrary.mockRejectedValue(failure)
+  dependencies.actions.duplicateToLibrary.mockRejectedValue(failure)
   await expect(cloneOpenedProjectToCloudLibrary(dependencies)).resolves.toBe(
     failure
   )

@@ -5,16 +5,18 @@ use std::path::PathBuf;
 use std::time::Duration;
 use std::time::Instant;
 
-use bevy_math::Mat4;
-use bevy_math::Vec3;
 use image::DynamicImage;
 use image::ImageFormat;
 use image::Rgba;
 use image::RgbaImage;
+use nalgebra::Point3;
 
 mod sampling;
 
 use sampling::BrepRenderData;
+
+type Mat4 = nalgebra::Matrix4<f32>;
+type Vec3 = nalgebra::Vector3<f32>;
 
 pub const HELP: &str = r#"Usage:
   kcl-render <MODEL.glb>
@@ -26,7 +28,7 @@ The renderer reads one local Zoo GLB and writes edges.png (x-ray B-rep edges)
 and faces.png (flat-colored faces with green mesh silhouettes and blue B-rep
 edges) in the current directory. Both passes fit within 1024x1024, trimming
 unused space to leave five percent margins. Rasterization runs directly on
-the CPU without initializing Bevy's renderer or using a GPU."#;
+the CPU without using a GPU."#;
 
 const BACKGROUND: Rgba<u8> = Rgba([255, 255, 255, 0]);
 const EDGE_COLOR: Rgba<u8> = Rgba([0, 107, 184, 255]);
@@ -128,9 +130,8 @@ struct FacePass {
 type PositionKey = [u32; 3];
 
 fn position_key(position: Vec3) -> PositionKey {
-    position
-        .to_array()
-        .map(|value| if value == 0.0 { 0 } else { value.to_bits() })
+    let position: [f32; 3] = position.into();
+    position.map(|value| if value == 0.0 { 0 } else { value.to_bits() })
 }
 
 struct MeshEdge {
@@ -148,8 +149,8 @@ struct MeshEdges {
 impl MeshEdges {
     fn add_triangle(&mut self, positions: [Vec3; 3], points: [ScreenPoint; 3]) {
         if (positions[1] - positions[0])
-            .cross(positions[2] - positions[0])
-            .length_squared()
+            .cross(&(positions[2] - positions[0]))
+            .norm_squared()
             == 0.0
         {
             return;
@@ -216,7 +217,7 @@ impl ViewProjection {
             .ok_or_else(|| "exported GLB has no scene".to_string())?;
         let mut points = Vec::new();
         for node in scene.nodes() {
-            collect_mesh_positions(node, Mat4::IDENTITY, blob, &mut points)?;
+            collect_mesh_positions(node, Mat4::identity(), blob, &mut points)?;
         }
         Self::from_points(
             edges.edge_polylines.iter().flatten().copied().chain(points),
@@ -230,41 +231,44 @@ impl ViewProjection {
             return Err("render dimensions must be nonzero".into());
         }
         // Match the interactive three-quarter view, but fit the visible bounds.
-        let forward = -Vec3::new(1.0, 0.8, 1.5).normalize();
-        let right = forward.cross(Vec3::Y).normalize();
-        let up = right.cross(forward).normalize();
+        // Multiplying by the reciprocal preserves the camera's existing rounding.
+        let normalize = |direction: Vec3| direction * (1.0 / direction.norm());
+        let forward = -normalize(Vec3::new(1.0, 0.8, 1.5));
+        let right = normalize(forward.cross(&Vec3::y()));
+        let up = normalize(right.cross(&forward));
         let mut points = points.into_iter();
         let origin = points
             .next()
             .ok_or_else(|| "model contains no renderable geometry".to_string())?;
-        let mut minimum = Vec3::ZERO;
-        let mut maximum = Vec3::ZERO;
-        if !origin.is_finite() {
+        let mut minimum = Vec3::zeros();
+        let mut maximum = Vec3::zeros();
+        if !origin.iter().all(|coordinate| coordinate.is_finite()) {
             return Err("model contains non-finite geometry".into());
         }
         for point in points {
             // Relative coordinates reduce cancellation for translated models.
             let relative = point - origin;
-            let projected = Vec3::new(relative.dot(right), relative.dot(up), relative.dot(forward));
-            if !projected.is_finite() {
+            let projected = Vec3::new(relative.dot(&right), relative.dot(&up), relative.dot(&forward));
+            if !projected.iter().all(|coordinate| coordinate.is_finite()) {
                 return Err("model contains non-finite geometry".into());
             }
-            minimum = minimum.min(projected);
-            maximum = maximum.max(projected);
+            minimum = minimum.inf(&projected);
+            maximum = maximum.sup(&projected);
         }
         let midpoint = minimum * 0.5 + maximum * 0.5;
         let extent = maximum - minimum;
         // Reserve five percent on each side, plus half a stroke so its outside
         // edge stays within the padded rectangle. Degenerate axes do not limit fit.
-        let available_width = (width as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH).max(1.0);
-        let available_height = (height as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH).max(1.0);
-        let scale = (available_width / extent.x.max(f32::EPSILON)).min(available_height / extent.y.max(f32::EPSILON));
+        let available_width = libm::fmaxf(width as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH, 1.0);
+        let available_height = libm::fmaxf(height as f32 * (1.0 - 2.0 * FRAME_PADDING) - LINE_WIDTH, 1.0);
+        let scale = libm::fminf(
+            available_width / libm::fmaxf(extent.x, f32::EPSILON),
+            available_height / libm::fmaxf(extent.y, f32::EPSILON),
+        );
         // Keep the fitted scale, then trim each axis to the geometry plus its
         // stroke and proportional padding. Round up to avoid clipping a margin.
         let trimmed_size = |extent: f32, maximum: u32| {
-            ((extent * scale + LINE_WIDTH) / (1.0 - 2.0 * FRAME_PADDING))
-                .ceil()
-                .clamp(1.0, maximum as f32) as u32
+            libm::ceilf((extent * scale + LINE_WIDTH) / (1.0 - 2.0 * FRAME_PADDING)).clamp(1.0, maximum as f32) as u32
         };
         let width = trimmed_size(extent.x, width);
         let height = trimmed_size(extent.y, height);
@@ -282,9 +286,9 @@ impl ViewProjection {
     fn project(self, point: Vec3) -> ScreenPoint {
         let relative = point - self.center;
         ScreenPoint {
-            x: self.width as f32 * 0.5 + relative.dot(self.right) * self.scale,
-            y: self.height as f32 * 0.5 - relative.dot(self.up) * self.scale,
-            depth: relative.dot(self.forward),
+            x: self.width as f32 * 0.5 + relative.dot(&self.right) * self.scale,
+            y: self.height as f32 * 0.5 - relative.dot(&self.up) * self.scale,
+            depth: relative.dot(&self.forward),
         }
     }
 }
@@ -297,7 +301,7 @@ fn collect_mesh_positions(
     blob: &[u8],
     points: &mut Vec<Vec3>,
 ) -> Result<(), String> {
-    let world_transform = parent_transform * Mat4::from_cols_array_2d(&node.transform().matrix());
+    let world_transform = parent_transform * Mat4::from_column_slice(node.transform().matrix().as_flattened());
     if let Some(mesh) = node.mesh() {
         for primitive in mesh.primitives() {
             if primitive.mode() != gltf::mesh::Mode::Triangles || material_color(primitive.material())[3] == 0 {
@@ -311,7 +315,12 @@ fn collect_mesh_positions(
                 .read_positions()
                 .ok_or_else(|| "GLB mesh primitive has no positions".to_string())?
                 .collect::<Vec<_>>();
-            let transform = |position| world_transform.transform_point3(Vec3::from(position)) * 1_000.0;
+            let transform = |position| {
+                world_transform
+                    .transform_point(&Point3::from(Vec3::from(position)))
+                    .coords
+                    * 1_000.0
+            };
             if let Some(indices) = reader.read_indices() {
                 for index in indices.into_u32() {
                     let position = positions
@@ -381,7 +390,7 @@ fn render_faces(bytes: &[u8], view: ViewProjection) -> Result<FacePass, String> 
         .or_else(|| gltf.scenes().next())
         .ok_or_else(|| "exported GLB has no scene".to_string())?;
     for node in scene.nodes() {
-        rasterize_node(node, Mat4::IDENTITY, blob, view, &mut pass)?;
+        rasterize_node(node, Mat4::identity(), blob, view, &mut pass)?;
     }
     Ok(pass)
 }
@@ -393,7 +402,7 @@ fn rasterize_node(
     view: ViewProjection,
     pass: &mut FacePass,
 ) -> Result<(), String> {
-    let local_transform = Mat4::from_cols_array_2d(&node.transform().matrix());
+    let local_transform = Mat4::from_column_slice(node.transform().matrix().as_flattened());
     let world_transform = parent_transform * local_transform;
     if let Some(mesh) = node.mesh() {
         let mut mesh_edges = MeshEdges::default();
@@ -413,7 +422,9 @@ fn rasterize_node(
             // Match the millimetre-sized world units used by B-rep geometry.
             let projected = positions
                 .iter()
-                .map(|&position| view.project(world_transform.transform_point3(position) * 1_000.0))
+                .map(|&position| {
+                    view.project(world_transform.transform_point(&Point3::from(position)).coords * 1_000.0)
+                })
                 .collect::<Vec<_>>();
             let indices = reader
                 .read_indices()
@@ -458,7 +469,7 @@ fn material_color(material: gltf::Material<'_>) -> Rgba<u8> {
         linear_to_srgb_u8(red),
         linear_to_srgb_u8(green),
         linear_to_srgb_u8(blue),
-        (alpha.clamp(0.0, 1.0) * 255.0).round() as u8,
+        libm::roundf(alpha.clamp(0.0, 1.0) * 255.0) as u8,
     ])
 }
 
@@ -467,9 +478,9 @@ fn linear_to_srgb_u8(linear: f32) -> u8 {
     let srgb = if linear <= 0.003_130_8 {
         linear * 12.92
     } else {
-        1.055 * linear.powf(1.0 / 2.4) - 0.055
+        1.055 * libm::powf(linear, 1.0 / 2.4) - 0.055
     };
-    (srgb * 255.0).round() as u8
+    libm::roundf(srgb * 255.0) as u8
 }
 
 fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [ScreenPoint; 3], color: Rgba<u8>) {
@@ -479,7 +490,7 @@ fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [Scree
     }
     let edge = |a: ScreenPoint, b: ScreenPoint, x: f32, y: f32| (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x);
     let area = triangle_area(points);
-    if area.abs() <= f32::EPSILON {
+    if libm::fabsf(area) <= f32::EPSILON {
         return;
     }
     // glTF front faces wind counterclockwise. Projection flips Y, so this
@@ -487,31 +498,15 @@ fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [Scree
     let color = if area < 0.0 { Rgba([0, 213, 255, 255]) } else { color };
     let max_pixel_x = image.width().saturating_sub(1) as f32;
     let max_pixel_y = image.height().saturating_sub(1) as f32;
-    let min_x = points
-        .iter()
-        .map(|point| point.x)
-        .fold(f32::INFINITY, f32::min)
-        .floor()
+    let min_x = libm::floorf(points.iter().map(|point| point.x).fold(f32::INFINITY, libm::fminf))
         .clamp(0.0, max_pixel_x) as u32;
-    let max_x = points
-        .iter()
-        .map(|point| point.x)
-        .fold(f32::NEG_INFINITY, f32::max)
-        .ceil()
+    let max_x = libm::ceilf(points.iter().map(|point| point.x).fold(f32::NEG_INFINITY, libm::fmaxf))
         .clamp(0.0, max_pixel_x) as u32;
-    let min_y = points
-        .iter()
-        .map(|point| point.y)
-        .fold(f32::INFINITY, f32::min)
-        .floor()
+    let min_y = libm::floorf(points.iter().map(|point| point.y).fold(f32::INFINITY, libm::fminf))
         .clamp(0.0, max_pixel_y) as u32;
-    let max_y = points
-        .iter()
-        .map(|point| point.y)
-        .fold(f32::NEG_INFINITY, f32::max)
-        .ceil()
+    let max_y = libm::ceilf(points.iter().map(|point| point.y).fold(f32::NEG_INFINITY, libm::fmaxf))
         .clamp(0.0, max_pixel_y) as u32;
-    let sign = area.signum();
+    let sign = libm::copysignf(1.0, area);
     let inverse_area = 1.0 / area;
 
     for y in min_y..=max_y {
@@ -539,14 +534,16 @@ fn draw_line(image: &mut RgbaImage, start: (f32, f32), end: (f32, f32), line_wid
     let dy = end.1 - start.1;
     let length_squared = dx * dx + dy * dy;
     let radius = line_width * 0.5;
-    let min_x = (start.0.min(end.0) - radius).floor().max(0.0) as u32;
-    let max_x = (start.0.max(end.0) + radius)
-        .ceil()
-        .min(image.width().saturating_sub(1) as f32) as u32;
-    let min_y = (start.1.min(end.1) - radius).floor().max(0.0) as u32;
-    let max_y = (start.1.max(end.1) + radius)
-        .ceil()
-        .min(image.height().saturating_sub(1) as f32) as u32;
+    let min_x = libm::fmaxf(libm::floorf(libm::fminf(start.0, end.0) - radius), 0.0) as u32;
+    let max_x = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.0, end.0) + radius),
+        image.width().saturating_sub(1) as f32,
+    ) as u32;
+    let min_y = libm::fmaxf(libm::floorf(libm::fminf(start.1, end.1) - radius), 0.0) as u32;
+    let max_y = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.1, end.1) + radius),
+        image.height().saturating_sub(1) as f32,
+    ) as u32;
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -559,7 +556,9 @@ fn draw_line(image: &mut RgbaImage, start: (f32, f32), end: (f32, f32), line_wid
             };
             let closest_x = start.0 + t * dx;
             let closest_y = start.1 + t * dy;
-            let distance_squared = (px - closest_x).powi(2) + (py - closest_y).powi(2);
+            let offset_x = px - closest_x;
+            let offset_y = py - closest_y;
+            let distance_squared = offset_x * offset_x + offset_y * offset_y;
             if distance_squared > radius * radius {
                 continue;
             }
@@ -581,14 +580,16 @@ fn draw_depth_tested_line(
     let dy = end.y - start.y;
     let length_squared = dx * dx + dy * dy;
     let radius = line_width * 0.5;
-    let min_x = (start.x.min(end.x) - radius).floor().max(0.0) as u32;
-    let max_x = (start.x.max(end.x) + radius)
-        .ceil()
-        .min(image.width().saturating_sub(1) as f32) as u32;
-    let min_y = (start.y.min(end.y) - radius).floor().max(0.0) as u32;
-    let max_y = (start.y.max(end.y) + radius)
-        .ceil()
-        .min(image.height().saturating_sub(1) as f32) as u32;
+    let min_x = libm::fmaxf(libm::floorf(libm::fminf(start.x, end.x) - radius), 0.0) as u32;
+    let max_x = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.x, end.x) + radius),
+        image.width().saturating_sub(1) as f32,
+    ) as u32;
+    let min_y = libm::fmaxf(libm::floorf(libm::fminf(start.y, end.y) - radius), 0.0) as u32;
+    let max_y = libm::fminf(
+        libm::ceilf(libm::fmaxf(start.y, end.y) + radius),
+        image.height().saturating_sub(1) as f32,
+    ) as u32;
 
     for y in min_y..=max_y {
         for x in min_x..=max_x {
@@ -606,7 +607,9 @@ fn draw_depth_tested_line(
             }
             let closest_x = start.x + t * dx;
             let closest_y = start.y + t * dy;
-            let distance_squared = (px - closest_x).powi(2) + (py - closest_y).powi(2);
+            let offset_x = px - closest_x;
+            let offset_y = py - closest_y;
+            let distance_squared = offset_x * offset_x + offset_y * offset_y;
             if distance_squared > radius * radius {
                 continue;
             }
@@ -643,10 +646,10 @@ mod tests {
 
     fn silhouette_view() -> ViewProjection {
         ViewProjection {
-            center: Vec3::ZERO,
-            forward: -Vec3::Z,
-            right: Vec3::X,
-            up: Vec3::Y,
+            center: Vec3::zeros(),
+            forward: -Vec3::z(),
+            right: Vec3::x(),
+            up: Vec3::y(),
             scale: 1.0,
             width: 32,
             height: 32,
@@ -658,7 +661,7 @@ mod tests {
         let bin: Vec<u8> = triangles
             .iter()
             .flatten()
-            .flat_map(|point| point.to_array().into_iter().flat_map(f32::to_le_bytes))
+            .flat_map(|point| point.iter().copied().flat_map(f32::to_le_bytes))
             .collect();
         let accessors = (0..triangles.len()).map(|i| format!(
             r#"{{"bufferView":0,"byteOffset":{},"componentType":5126,"count":3,"type":"VEC3","min":[-1,-1,-1],"max":[1,1,1]}}"#, i * 36
@@ -700,18 +703,24 @@ mod tests {
         let mut max_y = f32::NEG_INFINITY;
         for &point in points {
             let point = view.project(point);
-            min_x = min_x.min(point.x);
-            max_x = max_x.max(point.x);
-            min_y = min_y.min(point.y);
-            max_y = max_y.max(point.y);
+            min_x = libm::fminf(min_x, point.x);
+            max_x = libm::fmaxf(max_x, point.x);
+            min_y = libm::fminf(min_y, point.y);
+            max_y = libm::fmaxf(max_y, point.y);
         }
         let padding_x = view.width as f32 * FRAME_PADDING + LINE_WIDTH * 0.5;
         let padding_y = view.height as f32 * FRAME_PADDING + LINE_WIDTH * 0.5;
-        assert!((min_x + max_x - view.width as f32).abs() < 0.1, "horizontal centering");
-        assert!((min_y + max_y - view.height as f32).abs() < 0.1, "vertical centering");
+        assert!(
+            libm::fabsf(min_x + max_x - view.width as f32) < 0.1,
+            "horizontal centering"
+        );
+        assert!(
+            libm::fabsf(min_y + max_y - view.height as f32) < 0.1,
+            "vertical centering"
+        );
         assert!(min_x >= padding_x - 0.1 && min_y >= padding_y - 0.1, "minimum padding");
         assert!(
-            (min_x - padding_x).abs() < 0.6 && (min_y - padding_y).abs() < 0.6,
+            libm::fabsf(min_x - padding_x) < 0.6 && libm::fabsf(min_y - padding_y) < 0.6,
             "five percent margins on both axes, allowing pixel rounding"
         );
     }
@@ -719,12 +728,17 @@ mod tests {
     #[test]
     fn framing_fits_projected_bounds_at_different_aspect_ratios() {
         // Asymmetric shapes expose the difference between 3D and screen centering.
-        let shape = [Vec3::ZERO, Vec3::X, Vec3::Y * 0.4, Vec3::new(0.2, 0.1, 1.5)];
+        let shape = [Vec3::zeros(), Vec3::x(), Vec3::y() * 0.4, Vec3::new(0.2, 0.1, 1.5)];
         for (width, height) in [(1280, 720), (720, 1280), (512, 512)] {
-            for stretch in [Vec3::ONE, Vec3::new(20.0, 1.0, 1.0), Vec3::new(1.0, 20.0, 1.0)] {
+            for stretch in [Vec3::repeat(1.0), Vec3::new(20.0, 1.0, 1.0), Vec3::new(1.0, 20.0, 1.0)] {
                 for angle in [0.0, 0.7, 1.5] {
-                    let transform = Mat4::from_rotation_y(angle);
-                    let points = shape.map(|p| transform.transform_point3(p * stretch) + Vec3::new(100.0, -20.0, 7.0));
+                    let transform = Mat4::new_rotation(Vec3::y() * angle);
+                    let points = shape.map(|p| {
+                        transform
+                            .transform_point(&Point3::from(p.component_mul(&stretch)))
+                            .coords
+                            + Vec3::new(100.0, -20.0, 7.0)
+                    });
                     let view = ViewProjection::from_points(points, width, height).unwrap();
                     assert_padded_fit(view, &points);
                     assert!(view.width <= width && view.height <= height);
@@ -736,7 +750,7 @@ mod tests {
 
     #[test]
     fn framing_trims_wide_tall_and_square_views_within_default_size() {
-        let basis = ViewProjection::from_points([Vec3::ZERO, Vec3::ONE], 1024, 1024).unwrap();
+        let basis = ViewProjection::from_points([Vec3::zeros(), Vec3::repeat(1.0)], 1024, 1024).unwrap();
         for (horizontal, vertical) in [(4.0, 1.0), (1.0, 4.0), (1.0, 1.0), (1000.0, 0.01)] {
             let points = [
                 -basis.right * horizontal - basis.up * vertical,
@@ -757,7 +771,7 @@ mod tests {
 
     #[test]
     fn framing_is_independent_of_camera_depth_extent() {
-        let basis = ViewProjection::from_points([Vec3::ZERO, Vec3::ONE], 1280, 720).unwrap();
+        let basis = ViewProjection::from_points([Vec3::zeros(), Vec3::repeat(1.0)], 1280, 720).unwrap();
         for depth in [0.0, 10.0, 100.0] {
             let points = [
                 -basis.right - basis.up,
@@ -766,7 +780,7 @@ mod tests {
             ];
             let view = ViewProjection::from_points(points, 1280, 720).unwrap();
             assert_padded_fit(view, &points);
-            assert!((view.scale - (720.0 * 0.9 - LINE_WIDTH) * 0.5).abs() < 0.1);
+            assert!(libm::fabsf(view.scale - (720.0 * 0.9 - LINE_WIDTH) * 0.5) < 0.1);
         }
     }
 
@@ -776,14 +790,14 @@ mod tests {
         let nodes = r#"{"translation":[0.04,0,0],"children":[1]},{"mesh":0,"translation":[0,0,0.02],"scale":[2,1,1]}"#;
         let glb = triangle_glb(&triangles, 1.0, nodes);
         let edges = BrepRenderData {
-            edge_polylines: vec![vec![Vec3::ZERO, Vec3::new(0.0, 30.0, 0.0)]],
+            edge_polylines: vec![vec![Vec3::zeros(), Vec3::new(0.0, 30.0, 0.0)]],
         };
         let mut points = edges.edge_polylines[0].clone();
         points.extend(
             triangles
                 .into_iter()
                 .flatten()
-                .map(|p| (p * Vec3::new(2.0, 1.0, 1.0) + Vec3::new(0.04, 0.0, 0.02)) * 1_000.0),
+                .map(|p| (p.component_mul(&Vec3::new(2.0, 1.0, 1.0)) + Vec3::new(0.04, 0.0, 0.02)) * 1_000.0),
         );
         let view = ViewProjection::from_model(&glb, &edges, 1280, 720).unwrap();
         assert_padded_fit(view, &points);
@@ -796,8 +810,8 @@ mod tests {
     #[test]
     fn framing_handles_points_lines_and_empty_geometry() {
         assert!(ViewProjection::from_points([], 1280, 720).is_err());
-        assert!(ViewProjection::from_points([Vec3::NAN], 1280, 720).is_err());
-        assert!(ViewProjection::from_points([Vec3::ZERO], 0, 720).is_err());
+        assert!(ViewProjection::from_points([Vec3::repeat(f32::NAN)], 1280, 720).is_err());
+        assert!(ViewProjection::from_points([Vec3::zeros()], 0, 720).is_err());
         let point = Vec3::new(10.0, -4.0, 2.0);
         let view = ViewProjection::from_points([point], 1280, 720).unwrap();
         assert!(view.scale.is_finite());
@@ -838,7 +852,7 @@ mod tests {
                 }
                 mesh.add_triangle(triangle, triangle.map(|p| view.project(p * 1_000.0)));
             }
-            mesh.add_triangle([Vec3::ZERO; 3], [view.project(Vec3::ZERO); 3]);
+            mesh.add_triangle([Vec3::zeros(); 3], [view.project(Vec3::zeros()); 3]);
             assert_eq!(mesh.into_silhouettes().count(), expected);
         }
     }
@@ -963,7 +977,7 @@ mod tests {
     #[test]
     fn backfaces_use_opaque_cyan() {
         let data = BrepRenderData {
-            edge_polylines: vec![vec![-Vec3::ONE, Vec3::ONE]],
+            edge_polylines: vec![vec![-Vec3::repeat(1.0), Vec3::repeat(1.0)]],
         };
         let view = ViewProjection::from_points(data.edge_polylines.iter().flatten().copied(), 32, 32).unwrap();
         // This counterclockwise triangle has a normal pointing toward the camera.

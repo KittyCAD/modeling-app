@@ -39,7 +39,7 @@ jobs:
     # Keep host-user Cargo outputs separate from the root-run MUSL build.
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
-      - uses: runs-on/action@v2.6.0
+      - uses: runs-on/action@v2.7.1
       - uses: actions/create-github-app-token@v3
         id: app-token
         with:
@@ -63,7 +63,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -183,14 +183,14 @@ jobs:
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     needs: build-test-artifacts
     steps:
-      - uses: runs-on/action@v2.6.0
+      - uses: runs-on/action@v2.7.1
       - uses: actions/checkout@v7.0.1
       - name: Use correct Rust toolchain
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -222,7 +222,7 @@ jobs:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
     steps:
-      - uses: runs-on/action@v2.6.0
+      - uses: runs-on/action@v2.7.1
       - uses: actions/create-github-app-token@v3
         id: app-token
         with:
@@ -237,7 +237,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml

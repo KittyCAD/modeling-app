@@ -1269,7 +1269,8 @@ export function getChangedSettingsAtLevel(
 }
 
 export function getAllCurrentSettings(
-  allSettings: SettingsType
+  allSettings: SettingsType,
+  { reactive = false }: { reactive?: boolean } = {}
 ): SaveSettingsPayload {
   const currentSettings = {} as SaveSettingsPayload
   const currentSettingsRecord = currentSettings as Record<
@@ -1283,7 +1284,9 @@ export function getAllCurrentSettings(
       }
       currentSettingsRecord[category] = {
         ...currentSettingsRecord[category],
-        [setting]: settingValue.current,
+        [setting]: reactive
+          ? settingValue.currentSignal.value
+          : settingValue.current,
       }
     }
   }
@@ -1424,15 +1427,20 @@ export function getSettingsFromActorContext(
   return settings
 }
 
-export function jsAppSettings(s: SettingsType | SettingsActorType) {
+export function jsAppSettings(
+  s: SettingsType | SettingsActorType,
+  options: { reactive?: boolean } = {}
+) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
-  const payload = getAllCurrentSettings(settings)
+  const payload = getAllCurrentSettings(settings, options)
   // Rust uses SSAO for streaming only. The local renderer reads the saved
   // preference directly, including while a renderer restart is pending.
+  const read = <T>(setting: Setting<T>): T =>
+    options.reactive ? setting.currentSignal.value : setting.current
   payload.modeling.enableSSAO =
     getViewportPostEffect(
-      settings.modeling.viewportRendering.current,
-      settings.modeling.enableSSAO.current
+      read(settings.modeling.viewportRendering),
+      read(settings.modeling.enableSSAO)
     ) === 'ssao'
   return settingsPayloadToConfiguration(payload)
 }
