@@ -91,7 +91,11 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
     })
   }, [sceneInfra.camControls])
 
-  if (sceneInfra.localRenderer !== null || DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
+  if (
+    sceneInfra.localRenderer !== null ||
+    DEBUG_SHOW_BOTH_SCENES ||
+    !isCamMoving
+  )
     return { hideClient: false, hideServer: false }
   const hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
 
