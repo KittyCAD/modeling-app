@@ -936,7 +936,13 @@ impl Backend {
         // Use run_mock for mock contexts, run_with_caching for live contexts
         let result = if executor_ctx.is_mock() {
             executor_ctx
-                .run_mock(ast, &crate::execution::MockConfig::default())
+                .run_mock(
+                    ast,
+                    &crate::execution::MockConfig {
+                        use_prev_memory: false,
+                        ..Default::default()
+                    },
+                )
                 .await
         } else {
             executor_ctx.run_with_caching(ast.clone()).await
