@@ -178,6 +178,31 @@ export function createCloudProjectsServices(
     batch: cloud.batch,
     operations: {
       ...scheduler.operations,
+      // Naming requires an acknowledged mutation. Unlike text saves, a conflict
+      // must reject rather than adopt a different snapshot as a successful move.
+      createFile: (path, contents) => {
+        const owned =
+          typeof contents === 'string' ? contents : new Uint8Array(contents)
+        return fileSystem.batch(
+          path,
+          (memory) =>
+            withFileOperations(memory, (operations) =>
+              operations.createFile(path, owned)
+            ),
+          { rollbackOnFailure: true }
+        )
+      },
+      rename: (source, destination) =>
+        fileSystem.idFor(source) !== fileSystem.idFor(destination)
+          ? Promise.reject(new Error('Rename cannot cross cloud projects.'))
+          : fileSystem.batch(
+              source,
+              (memory) =>
+                withFileOperations(memory, (operations) =>
+                  operations.rename(source, destination)
+                ),
+              { rollbackOnFailure: true }
+            ),
       // Move may issue mkdir, rename, or copy/remove. Persist the whole operation
       // once so a failed acknowledgement cannot be mistaken for rename failure.
       move: (source: string, destination: string) =>

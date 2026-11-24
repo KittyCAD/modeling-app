@@ -337,7 +337,8 @@ export function createCloudProjectRuntime(
   const commit = async (
     id: string,
     snapshot?: ProjectArchiveFile[],
-    requestConfig = config()
+    requestConfig = config(),
+    reconcileOnConflict = true
   ) => {
     const project = opened.get(id)
     if (!project) return Promise.reject(new Error('Cloud project is not open.'))
@@ -373,7 +374,11 @@ export function createCloudProjectRuntime(
         ),
       })
     } catch (error) {
-      if (error instanceof api.CloudApiError && error.status === 409)
+      if (
+        reconcileOnConflict &&
+        error instanceof api.CloudApiError &&
+        error.status === 409
+      )
         return reconcile(id, requestConfig, archive)
       return Promise.reject(error)
     }
@@ -395,10 +400,12 @@ export function createCloudProjectRuntime(
       persist = true,
       reportSaveFailure = true,
       allowReconciliation = false,
+      rollbackOnFailure = false,
     }: {
       persist?: boolean
       reportSaveFailure?: boolean
       allowReconciliation?: boolean
+      rollbackOnFailure?: boolean
     } = {}
   ): Promise<T> => {
     if (isOffline()) return Promise.reject(offlineError())
@@ -434,16 +441,16 @@ export function createCloudProjectRuntime(
           )
         const previousState = saves.peek().get(id)
         if (reportSaveFailure) state(id, { state: 'saving' })
+        let rollback: ProjectArchiveFile[] | undefined
         try {
           if (config().accountId !== requestConfig.accountId) {
             // eslint-disable-next-line suggest-no-throw/suggest-no-throw
             throw new Error('Cloud account changed before save.')
           }
+          const snapshot = await collect(pathFor(id))
+          if (rollbackOnFailure) rollback = snapshot
           const before = new Map(
-            (await collect(pathFor(id))).map((file) => [
-              file.relativePath,
-              file.data,
-            ])
+            snapshot.map((file) => [file.relativePath, file.data])
           )
           if (isOffline()) {
             state(id, previousState ?? { state: 'saved' })
@@ -476,12 +483,21 @@ export function createCloudProjectRuntime(
               pendingThumbnails.has(id) ||
               previousState?.state === 'failed')
           )
-            await commit(id, after, requestConfig)
+            await commit(id, after, requestConfig, !rollbackOnFailure)
+          rollback = undefined
           if (opened.get(id)?.generation === generation) notify(changes)
           if (saves.peek().get(id)?.state === 'saving')
             state(id, previousState ?? { state: 'saved' })
           return value
         } catch (error) {
+          // Strict creates and renames must remain retryable with their original
+          // source. A rejected upload must not leave their local move applied.
+          if (
+            rollback &&
+            opened.get(id) === project &&
+            project.generation === generation
+          )
+            await hydrate(id, rollback)
           state(
             id,
             reportSaveFailure
@@ -1106,11 +1122,12 @@ export function createCloudProjectRuntime(
     },
     batch: <T>(
       path: string,
-      run: (backing: IZooDesignStudioFS) => Promise<T>
+      run: (backing: IZooDesignStudioFS) => Promise<T>,
+      options: { rollbackOnFailure?: boolean } = {}
     ) => {
       const id = idFor(path)
       recordProjectChange(id)
-      return enqueue(id, () => run(memory))
+      return enqueue(id, () => run(memory), options)
     },
     retry: (id: string) =>
       enqueue(
