@@ -1374,6 +1374,7 @@ export class KclManager extends File {
   })
 
   private editorOwnershipVersion = 0
+  private scenePreferencesChangedDuringExecution = false
   private scheduleEditorExecution(request: EditorExecutionRequest) {
     if (this.closed) return
     if (
@@ -2398,8 +2399,10 @@ export class KclManager extends File {
       this.executionGeneration === generation &&
       this.path === pathThatExecuted
     const connection = this.engineCommandManager.connection
+    const path = this.path
     let completion: ExecutionCompletionStatus = 'cleanup'
     let completedExecution: KclExecutionDoneDetail | undefined
+    this.scenePreferencesChangedDuringExecution = false
 
     try {
       const ast = args.ast || this.ast
@@ -2574,29 +2577,69 @@ export class KclManager extends File {
         hasErrors: errors.length > 0,
       }
     } finally {
-      this._cancelTokens.delete(currentExecutionId)
-      // Only this run may release its status; an old run must not stop a new one.
-      if (isCurrent()) {
-        if (
-          this.engineCommandManager.connection === connection &&
-          !this.executeIsStale
-        ) {
-          this.engineCommandManager.executionIsStale = false
+      try {
+        if (isCurrent() && this.scenePreferencesChangedDuringExecution) {
+          this.scenePreferencesChangedDuringExecution = false
+          const ownsSettings = () =>
+            isCurrent() &&
+            !this.closed &&
+            this.sceneSettingsActive.peek() &&
+            this.path === path &&
+            this.engineCommandManager.connection === connection
+          if (ownsSettings()) {
+            const settings = getSettingsFromActorContext(
+              this.systemDeps.settings
+            )
+            // A Rust run may have applied the preferences captured before its
+            // import I/O. Restore the latest preferences, never reexecute KCL.
+            await Promise.all([
+              this.engineCommandManager.setTheme(
+                settings.app.theme.current,
+                ownsSettings
+              ),
+              this.engineCommandManager.setHighlightEdges(
+                settings.modeling.highlightEdges.current,
+                ownsSettings
+              ),
+              this.engineCommandManager.setDefaultSystemProperties(
+                settings.modeling.backfaceColor.current,
+                ownsSettings
+              ),
+              this.engineCommandManager.setShowScaleGrid(
+                settings.modeling.showScaleGrid.current,
+                settings.modeling.fixedSizeGrid.current,
+                this._fileSettingsSignal.peek().defaultLengthUnit ||
+                  DEFAULT_DEFAULT_LENGTH_UNIT,
+                ownsSettings
+              ),
+            ]).catch(reportRejection)
+          }
         }
-        this.isExecuting = false
-      }
-      this.notifyExecutionCompletion(completion)
-      finishExecution()
-      if (completedExecution && isCurrent()) {
-        // The local renderer only loads a completed scene while execution is idle.
-        this.dispatchEvent(
-          new CustomEvent<KclExecutionDoneDetail>(
-            KclManagerEvents.ExecutionDone,
-            {
-              detail: completedExecution,
-            }
+      } finally {
+        this._cancelTokens.delete(currentExecutionId)
+        if (isCurrent()) {
+          if (
+            this.engineCommandManager.connection === connection &&
+            !this.executeIsStale
+          ) {
+            // Invalid new code may never reach executeAst to clear this flag.
+            this.engineCommandManager.executionIsStale = false
+          }
+          this.isExecuting = false
+        }
+        this.notifyExecutionCompletion(completion)
+        finishExecution()
+        if (completedExecution && isCurrent()) {
+          // The local renderer only loads a completed scene while execution is idle.
+          this.dispatchEvent(
+            new CustomEvent<KclExecutionDoneDetail>(
+              KclManagerEvents.ExecutionDone,
+              {
+                detail: completedExecution,
+              }
+            )
           )
-        )
+        }
       }
     }
   }
@@ -3086,7 +3129,7 @@ export class KclManager extends File {
     const disposers: Array<() => void> = []
     const watchValue = <T>(
       read: () => T,
-      apply: (value: T) => void,
+      apply: (value: T, isCurrent: () => boolean) => void,
       scene = false
     ) => {
       const value = computed(read)
@@ -3094,7 +3137,25 @@ export class KclManager extends File {
         effect(() => {
           if (scene && !this.sceneSettingsActive.value) return
           const current = value.value
-          untracked(() => apply(current))
+          const ownershipVersion = this.editorOwnershipVersion
+          const path = untracked(() => this.path)
+          const projectPath = this.systemDeps.projectPath.peek()
+          let cancelled = false
+          const isCurrent = () =>
+            !cancelled &&
+            !this.closed &&
+            this.editorOwnershipVersion === ownershipVersion &&
+            (!scene || this.sceneSettingsActive.peek()) &&
+            this.path === path &&
+            this.systemDeps.projectPath.peek() === projectPath
+          untracked(() => {
+            if (scene && this._isExecuting.peek())
+              this.scenePreferencesChangedDuringExecution = true
+            apply(current, isCurrent)
+          })
+          return () => {
+            cancelled = true
+          }
         })
       )
     }
@@ -3132,9 +3193,11 @@ export class KclManager extends File {
     )
     watchValue(
       () => theme.value,
-      (value) => {
+      (value, isCurrent) => {
         if (this.engineCommandManager.connection) {
-          this.engineCommandManager.setTheme(value).catch(reportRejection)
+          this.engineCommandManager
+            .setTheme(value, isCurrent)
+            .catch(reportRejection)
         }
       },
       true
@@ -3167,10 +3230,10 @@ export class KclManager extends File {
     )
     watchValue(
       () => highlightEdges.value,
-      (value) => {
+      (value, isCurrent) => {
         if (this.engineCommandManager.connection) {
           this.engineCommandManager
-            .setHighlightEdges(value)
+            .setHighlightEdges(value, isCurrent)
             .catch(reportRejection)
         }
       },
@@ -3178,10 +3241,10 @@ export class KclManager extends File {
     )
     watchValue(
       () => backfaceColor.value,
-      (value) => {
+      (value, isCurrent) => {
         if (this.engineCommandManager.connection?.connected) {
           this.engineCommandManager
-            .setDefaultSystemProperties(value)
+            .setDefaultSystemProperties(value, isCurrent)
             .catch(reportRejection)
         }
       },
@@ -3234,6 +3297,30 @@ export class KclManager extends File {
           }
         },
       })
+    )
+
+    const showScaleGrid = computed(
+      () => settings.value.modeling.showScaleGrid.currentSignal.value
+    )
+    const modelLengthUnit = computed(
+      () =>
+        this._fileSettingsSignal.value.defaultLengthUnit ||
+        DEFAULT_DEFAULT_LENGTH_UNIT
+    )
+    watchValue(
+      () => ({
+        visible: showScaleGrid.value,
+        fixedSize: fixedSizeGrid.value,
+        unit: modelLengthUnit.value,
+      }),
+      ({ visible, fixedSize, unit }, isCurrent) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager
+            .setShowScaleGrid(visible, fixedSize, unit, isCurrent)
+            .catch(reportRejection)
+        }
+      },
+      true
     )
     return () => {
       subscription.unsubscribe()
