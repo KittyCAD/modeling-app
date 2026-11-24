@@ -8,5 +8,6 @@ Only contexts with recorded terminology are indexed here. Add entries as other c
 | --- | --- | --- | --- | --- |
 | Design Studio application | Application terminology, navigation, workspaces, modeling interfaces, and Zookeeper | `src/`, `packages/ui-components/` | [Glossary](src/GLOSSARY.md) | `src/dev-docs/adr/` |
 | KCL language | Language and interpreter terminology for sketches, constraints, modeling operations, and geometry | `rust/` | [Glossary](rust/GLOSSARY.md) | `rust/dev-docs/adr/` |
+| Plankton | Extension composition, contracts, and resource lifetimes | `packages/plankton/`, `packages/plankton-rust/` | [Glossary](packages/plankton/GLOSSARY.md) | |
 
 System-wide decisions belong in `dev-docs/adr/`. Context ADR directories are created when decisions need to be recorded.
