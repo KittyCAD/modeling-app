@@ -3,6 +3,7 @@ pub use kcl_api::Step;
 
 use super::BinaryPart;
 use super::BodyItem;
+use super::CallExpressionKw;
 use super::Expr;
 use crate::SourceRange;
 use crate::execution::ProgramLookup;
@@ -195,6 +196,18 @@ impl NodePathExt for NodePath {
                         path.push(Step::CallKwArg { index: i });
                         return Self::from_expr(&arg.arg, range, path);
                     }
+                }
+                if let Some(block) = &node.block
+                    && block.contains_range(&range)
+                {
+                    path.push(Step::CallKwBlock);
+                    for (i, item) in block.items.iter().enumerate() {
+                        if item.contains_range(&range) {
+                            path.push(Step::BlockItem { index: i });
+                            return Self::from_body_item(item, range, path);
+                        }
+                    }
+                    return Some(path);
                 }
             }
             Expr::PipeExpression(node) => {
@@ -420,22 +433,7 @@ fn fill_node_paths_expr(expr: &mut Expr, mut path: NodePath) {
                 fill_node_paths_body_item(item, item_path);
             }
         }
-        Expr::CallExpressionKw(node) => {
-            node.node_path = Some(path.clone());
-            let mut callee_path = path.clone();
-            callee_path.push(Step::CallKwCallee);
-            node.callee.node_path = Some(callee_path);
-            if let Some(unlabeled) = &mut node.unlabeled {
-                let mut unlabeled_path = path.clone();
-                unlabeled_path.push(Step::CallKwUnlabeledArg);
-                fill_node_paths_expr(unlabeled, unlabeled_path);
-            }
-            for (i, arg) in node.arguments.iter_mut().enumerate() {
-                let mut arg_path = path.clone();
-                arg_path.push(Step::CallKwArg { index: i });
-                fill_node_paths_expr(&mut arg.arg, arg_path);
-            }
-        }
+        Expr::CallExpressionKw(node) => fill_node_paths_call(node, path),
         Expr::PipeExpression(node) => {
             node.node_path = Some(path.clone());
             for (i, item) in node.body.iter_mut().enumerate() {
@@ -562,6 +560,34 @@ fn fill_node_paths_body(body: &mut [BodyItem], path: NodePath) {
     }
 }
 
+// Keep these steps in sync with NodePath::from_expr so a visitor and a source
+// selection identify the same node, including inside a call used as a binary operand.
+fn fill_node_paths_call(node: &mut Node<CallExpressionKw>, mut path: NodePath) {
+    node.node_path = Some(path.clone());
+    let mut callee_path = path.clone();
+    callee_path.push(Step::CallKwCallee);
+    node.callee.node_path = Some(callee_path);
+    if let Some(unlabeled) = &mut node.unlabeled {
+        let mut unlabeled_path = path.clone();
+        unlabeled_path.push(Step::CallKwUnlabeledArg);
+        fill_node_paths_expr(unlabeled, unlabeled_path);
+    }
+    for (i, arg) in node.arguments.iter_mut().enumerate() {
+        let mut arg_path = path.clone();
+        arg_path.push(Step::CallKwArg { index: i });
+        fill_node_paths_expr(&mut arg.arg, arg_path);
+    }
+    if let Some(block) = &mut node.block {
+        path.push(Step::CallKwBlock);
+        block.node_path = Some(path.clone());
+        for (i, item) in block.items.iter_mut().enumerate() {
+            let mut item_path = path.clone();
+            item_path.push(Step::BlockItem { index: i });
+            fill_node_paths_body_item(item, item_path);
+        }
+    }
+}
+
 fn fill_node_paths_binary_part(part: &mut BinaryPart, mut path: NodePath) {
     match part {
         BinaryPart::Literal(node) => {
@@ -578,22 +604,7 @@ fn fill_node_paths_binary_part(part: &mut BinaryPart, mut path: NodePath) {
             path.push(Step::BinaryRight);
             fill_node_paths_binary_part(&mut node.right, path);
         }
-        BinaryPart::CallExpressionKw(node) => {
-            node.node_path = Some(path.clone());
-            let mut callee_path = path.clone();
-            callee_path.push(Step::CallKwCallee);
-            node.callee.node_path = Some(callee_path);
-            if let Some(unlabeled) = &mut node.unlabeled {
-                let mut unlabeled_path = path.clone();
-                unlabeled_path.push(Step::CallKwUnlabeledArg);
-                fill_node_paths_expr(unlabeled, unlabeled_path);
-            }
-            for (i, arg) in node.arguments.iter_mut().enumerate() {
-                let mut arg_path = path.clone();
-                arg_path.push(Step::CallKwArg { index: i });
-                fill_node_paths_expr(&mut arg.arg, arg_path);
-            }
-        }
+        BinaryPart::CallExpressionKw(node) => fill_node_paths_call(node, path),
         BinaryPart::UnaryExpression(node) => {
             node.node_path = Some(path.clone());
             path.push(Step::UnaryArg);
@@ -740,6 +751,66 @@ sketch(on = YZ) {
             );
             paths.push(resolved);
         }
+    }
+
+    #[test]
+    fn trailing_block_survives_transport_and_source_lookup() {
+        use crate::parsing::ast::types::Block;
+        use crate::parsing::ast::types::BoxNode;
+
+        // Assemble the block from parsed statements so its children retain real source locations.
+        let code = "1 + shapes::draw(2, scale = 3)\nwidth = 4mm";
+        let module = ModuleId::from_usize(7);
+        let mut ast = crate::parsing::parse_str(code, module).parse_errs_as_err().unwrap().ast;
+        let items = ast.body.split_off(1);
+        let block = Node::new(
+            Block {
+                items,
+                ..Default::default()
+            },
+            code.find("width").unwrap(),
+            code.len(),
+            module,
+        );
+        let BodyItem::ExpressionStatement(stmt) = &mut ast.body[0] else {
+            panic!("expected expression statement");
+        };
+        stmt.end = code.len();
+        let Expr::BinaryExpression(binary) = &mut stmt.expression else {
+            panic!("expected binary expression");
+        };
+        binary.end = code.len();
+        let BinaryPart::CallExpressionKw(call) = &mut binary.right else {
+            panic!("expected call operand");
+        };
+        let ordinary_digest = call.clone().compute_digest();
+        call.end = code.len();
+        call.block = Some(BoxNode::new(block));
+        assert_ne!(call.compute_digest(), ordinary_digest);
+
+        let mut restored: Node<Program> = serde_json::from_value(serde_json::to_value(&ast).unwrap()).unwrap();
+        fill_node_paths(&mut restored);
+        assert_eq!(
+            restored.recast_top(&Default::default(), 0).trim_end(),
+            "1 + shapes::draw(2, scale = 3) {\n  width = 4mm\n}"
+        );
+
+        let literal = SourceRange::new(code.find("4mm").unwrap(), code.len(), module);
+        let path = NodePath::from_body(&restored.body, 0, literal, NodePath::default()).unwrap();
+        assert!(path.steps.contains(&Step::BinaryRight));
+        assert!(path.steps.contains(&Step::CallKwBlock));
+        let visited = std::cell::Cell::new(false);
+        crate::walk::walk(&restored, |node| {
+            if let crate::walk::Node::Literal(node) = node
+                && SourceRange::from(node) == literal
+            {
+                assert_eq!(node.node_path.as_ref(), Some(&path));
+                visited.set(true);
+            }
+            Ok::<_, anyhow::Error>(true)
+        })
+        .unwrap();
+        assert!(visited.get());
     }
 
     #[test]

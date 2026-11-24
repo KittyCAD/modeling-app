@@ -514,6 +514,9 @@ impl CallExpressionKw {
             indentation_level,
             ctxt,
         );
+        if let Some(block) = &self.block {
+            block.recast_trailing(buf, options, indentation_level);
+        }
     }
 }
 
@@ -1408,19 +1411,24 @@ impl SketchBlock {
             ctxt,
         );
 
-        // We don't want to end with a new line inside nested blocks.
-        let mut new_options = options.clone();
-        new_options.insert_final_newline = false;
-
-        writeln!(buf, " {{").no_fail();
-        self.body.recast(buf, &new_options, indentation_level + 1);
-        buf.push('\n');
-        options.write_indentation(buf, indentation_level);
-        buf.push('}');
+        self.body.recast_trailing(buf, options, indentation_level);
     }
 }
 
 impl Block {
+    fn recast_trailing(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        // This formatter supplies the newline before the closing brace. Applying
+        // the file's final-newline option to the body would add a blank line.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
+
+        writeln!(buf, " {{").no_fail();
+        self.recast(buf, &new_options, indentation_level + 1);
+        buf.push('\n');
+        options.write_indentation(buf, indentation_level);
+        buf.push('}');
+    }
+
     pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
         recast_body(
             &self.items,
