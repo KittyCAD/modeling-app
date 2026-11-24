@@ -2,7 +2,7 @@ use std::{cell::Cell, rc::Rc};
 
 use plankton_rust::{
     Binding, BindingOptions, Dependencies, Facet, Factory, Instance, Precedence, Registry,
-    Resolution, Service, slot,
+    Resolution, Service, ServiceResolutionError, slot,
 };
 
 struct Panels;
@@ -147,6 +147,11 @@ fn services_with_the_same_trait_resolve_independently_and_report_conflicts() {
     let mut registry = Registry::new();
     let observed = registry.observe_service::<Files>();
     assert!(matches!(observed.get().unwrap(), Resolution::Missing));
+    assert!(registry.optional::<Files>().unwrap().is_none());
+    assert!(matches!(
+        registry.required::<Files>(),
+        Err(ServiceResolutionError::Missing { service }) if service == std::any::type_name::<Files>()
+    ));
 
     registry
         .configure(vec![local.clone().into(), cloud.into()])
@@ -161,15 +166,25 @@ fn services_with_the_same_trait_resolve_independently_and_report_conflicts() {
             .collect::<Vec<_>>(),
         ["local files", "cloud files"]
     );
-    let Resolution::Ready(backup) = registry.resolve::<BackupFiles>() else {
-        panic!("the backup service should resolve independently");
-    };
+    for result in [
+        registry.optional::<Files>(),
+        registry.required::<Files>().map(Some),
+    ] {
+        assert!(matches!(
+            result,
+            Err(ServiceResolutionError::Conflict { service, providers })
+                if service == std::any::type_name::<Files>() && providers == origins
+        ));
+    }
+    let backup = registry.required::<BackupFiles>().unwrap();
     assert_eq!(backup.read(), "backup");
 
     registry.configure(vec![local.into()]).unwrap();
     let Resolution::Ready(files) = observed.get().unwrap() else {
         panic!("the remaining provider should resolve");
     };
+    let optional = registry.optional::<Files>().unwrap().unwrap();
+    assert!(Rc::ptr_eq(&files, &optional));
     registry.configure(Vec::new()).unwrap();
     assert_eq!(files.read(), "local");
     assert!(matches!(observed.get().unwrap(), Resolution::Missing));

@@ -1,8 +1,7 @@
 use std::rc::Rc;
 
 use plankton_rust::{
-    Binding, Dependencies, Facet, Factory, HookResult, Instance, Registry, Resolution, Service,
-    Signal, slot,
+    Binding, Dependencies, Facet, Factory, HookResult, Instance, Registry, Service, Signal, slot,
 };
 
 struct Panels;
@@ -32,13 +31,12 @@ fn main() -> HookResult {
             title: Signal::new("sketch.kcl".into()),
         });
         let service = Binding::provide::<ActiveDocument>(document.clone());
-        // Export the signal for constructor injection and provide the document
-        // service so the host can edit it after publication.
-        Ok(Instance::new(document.title.clone()).with_children(vec![service.into()]))
+        // The editor reads the title. The host edits it through the service.
+        Ok(Instance::new(document.title.read_only()).with_children(vec![service.into()]))
     });
     let editor = Factory::new(document.dependency("title"), |title, _| {
         let source = {
-            let title = title.clone();
+            let title = title.as_ref().clone();
             move || title.get()
         };
         let panel = Binding::new::<Panels>(source).depending_on(&title);
@@ -52,9 +50,7 @@ fn main() -> HookResult {
     let panels = registry.observe::<Panels>();
     println!("Initial panels: {:?}", panels.get()?);
     let subscription = panels.subscribe(|panels| println!("Panels changed: {panels:?}"))?;
-    let Resolution::Ready(document) = registry.resolve::<ActiveDocument>() else {
-        return Err("expected one active document".into());
-    };
+    let document = registry.required::<ActiveDocument>()?;
     document.title.set("assembly.kcl".into());
     registry.replace(
         &sidebar,

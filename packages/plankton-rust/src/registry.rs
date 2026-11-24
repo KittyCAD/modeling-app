@@ -9,7 +9,7 @@ use std::{
 
 use crate::{
     Binding, ContributionInfo, Extension, Facet, Factory, HookError, Resolution, Scope, Service,
-    Snapshot, Subscription,
+    ServiceResolutionError, Snapshot, Subscription,
     contract::Providers,
     factory::{Cleanup, ExtensionKind, FactoryItem, FactoryKey, Start},
     planner::{Planned, cycle, plan},
@@ -386,6 +386,16 @@ impl Registry {
 
     pub fn resolve<S: Service>(&self) -> Resolution<S::Capability> {
         self.snapshot().resolve::<S>()
+    }
+
+    pub fn required<S: Service>(&self) -> Result<Rc<S::Capability>, ServiceResolutionError> {
+        self.snapshot().required::<S>()
+    }
+
+    pub fn optional<S: Service>(
+        &self,
+    ) -> Result<Option<Rc<S::Capability>>, ServiceResolutionError> {
+        self.snapshot().optional::<S>()
     }
 
     pub fn observe<F: Facet>(&self) -> Observation<F::Output> {

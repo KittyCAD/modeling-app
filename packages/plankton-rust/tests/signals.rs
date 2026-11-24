@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use plankton_rust::{
     Binding, BindingOptions, Dependencies, Facet, Factory, Instance, Precedence, Registry,
-    RegistryError, Signal, slot,
+    RegistryError, Signal, Source, slot,
 };
 
 struct Labels;
@@ -19,11 +19,12 @@ impl Facet for Labels {
 #[test]
 fn one_subscription_sees_document_edits_and_the_replaced_sidebar() {
     let title = Signal::new("draft");
-    let panel = Binding::new::<Labels>({
-        let title = title.clone();
-        move || title.get()
-    })
-    .depending_on(&title);
+    let view = title.read_only();
+    let source: Box<dyn Source<&'static str>> = Box::new({
+        let view = view.clone();
+        move || view.get()
+    });
+    let panel = Binding::new::<Labels>(source).depending_on(&view);
     let sidebar = slot(vec![Binding::new::<Labels>(|| "outline").into()]);
     let mut registry = Registry::new();
     registry

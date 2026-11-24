@@ -1,11 +1,12 @@
 use std::{
-    any::{Any, TypeId},
+    any::{Any, TypeId, type_name},
     collections::{HashMap, HashSet},
+    fmt,
     marker::PhantomData,
     rc::Rc,
 };
 
-use crate::{Origin, Signal, signal::Notifier};
+use crate::{Origin, ReadSignal, signal::Notifier};
 
 /// A marker type identifies one contract. Its associated types pair the input
 /// accepted by a binding with the output returned to readers.
@@ -70,12 +71,46 @@ pub struct ContributionInfo {
     pub precedence: Precedence,
 }
 
+/// A value read by a binding each time its Facet is evaluated.
+pub trait Source<T>: Fn() -> T {}
+
+impl<T, F: Fn() -> T + ?Sized> Source<T> for F {}
+
 #[derive(Debug)]
 pub enum Resolution<T: ?Sized> {
     Missing,
     Ready(Rc<T>),
     Conflict(Vec<Origin>),
 }
+
+/// A service lookup failed because a provider is absent or several providers conflict.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ServiceResolutionError {
+    Missing {
+        service: &'static str,
+    },
+    Conflict {
+        service: &'static str,
+        providers: Vec<Origin>,
+    },
+}
+
+impl fmt::Display for ServiceResolutionError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Missing { service } => write!(f, "{service} has no provider"),
+            Self::Conflict { service, providers } => {
+                write!(f, "{service} has conflicting providers")?;
+                for origin in providers {
+                    write!(f, " [{}, {}]", origin.name, origin.path)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+impl std::error::Error for ServiceResolutionError {}
 
 type Install = dyn Fn(&Binding, &mut Snapshot, ContributionInfo);
 
@@ -89,12 +124,12 @@ pub struct Binding {
 }
 
 impl Binding {
-    pub fn new<F: Facet>(source: impl Fn() -> F::Input + 'static) -> Self {
+    pub fn new<F: Facet>(source: impl Source<F::Input> + 'static) -> Self {
         Self::with_options::<F>(source, BindingOptions::default())
     }
 
     pub fn with_options<F: Facet>(
-        source: impl Fn() -> F::Input + 'static,
+        source: impl Source<F::Input> + 'static,
         options: BindingOptions,
     ) -> Self {
         Self::for_facet::<F>(move |_| source(), options)
@@ -102,7 +137,7 @@ impl Binding {
 
     /// Invalidate this binding's Facet when the signal is written.
     /// The source reads the signal explicitly when it needs the value.
-    pub fn depending_on<T>(mut self, signal: &Signal<T>) -> Self {
+    pub fn depending_on<T>(mut self, signal: &ReadSignal<T>) -> Self {
         let notifier = signal.notifier();
         if !self.signals.iter().any(|other| Rc::ptr_eq(notifier, other)) {
             self.signals.push(notifier.clone());
@@ -220,6 +255,28 @@ impl Snapshot {
 
     pub fn resolve<S: Service>(&self) -> Resolution<S::Capability> {
         self.get::<Providers<S>>()
+    }
+
+    /// Resolve a service and require exactly one provider.
+    pub fn required<S: Service>(&self) -> Result<Rc<S::Capability>, ServiceResolutionError> {
+        self.optional::<S>()?
+            .ok_or(ServiceResolutionError::Missing {
+                service: type_name::<S>(),
+            })
+    }
+
+    /// Resolve a service while permitting an empty provider list.
+    pub fn optional<S: Service>(
+        &self,
+    ) -> Result<Option<Rc<S::Capability>>, ServiceResolutionError> {
+        match self.resolve::<S>() {
+            Resolution::Missing => Ok(None),
+            Resolution::Ready(capability) => Ok(Some(capability)),
+            Resolution::Conflict(providers) => Err(ServiceResolutionError::Conflict {
+                service: type_name::<S>(),
+                providers,
+            }),
+        }
     }
 
     pub fn debug<F: Facet>(&self) -> impl Iterator<Item = &ContributionInfo> {

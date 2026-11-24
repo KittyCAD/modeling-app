@@ -17,13 +17,16 @@ stay mounted through both changes. See the [example](examples/document_workspace
 ## Contracts
 
 A `Facet` marker type declares its `Input`, `Output`, and combiner.
-`Binding::new::<Panels>` accepts a source returning `Panels::Input`, and
-`registry.get::<Panels>()` returns `Panels::Output`. Use a distinct marker for
-each contract, even when two contracts have the same input and output types.
+`Binding::new::<Panels>` accepts a `Source<Panels::Input>`, which any matching
+zero-argument function or closure implements. `registry.get::<Panels>()` returns
+`Panels::Output`. Use a distinct marker for each contract and group related
+markers in a module. Adapter types can refer to `<Panels as Facet>::Input` and
+the other associated types directly.
 
 A `Service` marker declares a capability, which can be a trait object such as
 `dyn FileAccess`. Register an implementation with `Binding::provide::<Files>`.
-Resolution returns `Missing`, `Ready(Rc<_>)`, or `Conflict` with provider origins.
+`resolve` returns `Missing`, `Ready(Rc<_>)`, or `Conflict` with provider origins.
+`required` requires one provider. `optional` allows absence and reports conflicts.
 
 Bevy's reflection registry also uses types to identify registrations. Here the
 marker selects a contribution list through `TypeId`, and `Any` lets the registry
@@ -35,13 +38,15 @@ independent lifetimes. [Bevy TypeRegistry](https://docs.rs/bevy_reflect/latest/b
 
 ## Signals and subscriptions
 
-Declare which signals can invalidate a binding with `depending_on`. Clone the
-signal handle into the source so it can read the current value.
+Declare which signals can invalidate a binding with `depending_on`. Share a
+`ReadSignal<T>` with consumers that need to read or declare a dependency on the
+value. Keep the writable `Signal<T>` with the code that owns updates.
 
 ```rust
 let title = Signal::new(String::from("sketch.kcl"));
-let source = title.clone();
-let panel = Binding::new::<Panels>(move || source.get()).depending_on(&title);
+let view = title.read_only();
+let source = view.clone();
+let panel = Binding::new::<Panels>(move || source.get()).depending_on(&view);
 ```
 
 `Observation::subscribe` calls the listener with a fresh output when an effective
