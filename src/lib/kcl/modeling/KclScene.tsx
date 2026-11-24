@@ -1,4 +1,5 @@
 import type { KclViewExecution } from '@src/lib/kcl/modeling/viewExecution'
+import { KclViewControls } from '@src/lib/kcl/modeling/KclViewControls'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUSceneView'
 import type { Executor } from '@src/lib/executors/registry/contract'
@@ -23,18 +24,20 @@ export function KclScene({
   }
 }) {
   useSignals()
+  const viewport = useRef<HTMLDivElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const { session, viewExecution } = context
   const state = session.state.value
   const resource = session.resource.value
   const preferences = resource?.preferences.localRenderer.value
+  const selection = resource?.selection
   const output = viewExecution.state.value
-  const error = output.error
+  const error = selection?.error.value ?? output.error
   useEffect(() => {
     if (container.current) return session.attach(container.current)
   }, [session])
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div ref={viewport} className="relative h-full w-full overflow-hidden">
       <div ref={container} className="absolute inset-0" />
       {resource?.localHost && preferences && (
         <LocalWebGPUSceneView
@@ -44,10 +47,11 @@ export function KclScene({
           shouldHighlightEdges={preferences.highlightEdges}
           fixedSizeGrid={preferences.fixedSizeGrid}
           backfaceColor={preferences.backfaceColor}
-          pickingEnabled={false}
+          pickingEnabled={selection?.pickingEnabled.value ?? false}
           defaultPlaneVisibility={hiddenPlanes}
         />
       )}
+      {resource && <KclViewControls resource={resource} target={viewport} />}
       <KclConnectionStatus session={session} />
       {state.type === 'ready' && error ? (
         <p

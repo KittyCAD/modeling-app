@@ -201,3 +201,16 @@ The current activity within a Modeling presentation, such as inspecting a model 
 ## Sketch editing session
 
 A period of editing one selected sketch, including its sketch plane, geometry, constraints, and active sketch tools. Entering or leaving sketch editing changes the modeling interaction state while retaining the same document.
+
+
+## View selection
+
+Geometry selected in one Modeling view, independently of other views of the same document. It refers to that view's displayed execution.
+
+## Dialog picking session
+
+Temporary ownership of geometry picking by an open command dialog. Picks populate the active selection argument while the underlying view selection stays unchanged; cancelling ends the session.
+
+## Model target
+
+The particular model view and completed execution bound to a command. A new execution invalidates that target and requires binding and picking again.
