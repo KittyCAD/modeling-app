@@ -3,15 +3,14 @@ import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames, EXPORT_PROJECT_ARCHIVE_COMMAND } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { findHomeProjectByPath } from '@src/lib/homeProjects'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
-import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
@@ -25,8 +24,7 @@ export function modelingMenuCallbackMostActions({
   currentProject,
   kclManager,
   settingsActor,
-  projectOperations,
-  projectSession,
+  getHomeProjectEntries,
 }: {
   settings: SettingsType
   navigate: NavigateFunction
@@ -36,8 +34,7 @@ export function modelingMenuCallbackMostActions({
   currentProject?: Project
   kclManager: KclManager
   settingsActor: SettingsActorType
-  projectOperations: ProjectOperationsService
-  projectSession: ProjectSessionService
+  getHomeProjectEntries: () => readonly HomeProjectEntry[]
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -53,16 +50,15 @@ export function modelingMenuCallbackMostActions({
       if (!currentProject) {
         return
       }
-      projectOperations
-        .duplicateProject(
-          currentProject,
-          getProjectDisplayName(currentProject),
-          filePath ? { path: filePath, contents: kclManager.code } : undefined
-        )
-        .then((project) =>
-          projectSession.openFile(project.path, { projectPath: project.path })
-        )
-        .catch(reportRejection)
+      const project = findHomeProjectByPath(
+        getHomeProjectEntries(),
+        currentProject.path
+      )
+      selectCommand(commandBarActor, {
+        groupId: 'projects',
+        name: 'Duplicate project',
+        argDefaultValues: project ? { project: project.id } : undefined,
+      })
     } else if (data.menuLabel === 'File.Open project') {
       selectCommand(commandBarActor, {
         groupId: 'projects',
