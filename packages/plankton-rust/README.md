@@ -9,10 +9,10 @@ Run the document workspace example from the repository root.
 cargo run --manifest-path packages/plankton-rust/Cargo.toml --example document_workspace
 ```
 
-The editor receives a shared document at construction. It contributes the
-document title to the panel list and reads the complete list at startup.
-Replacing the sidebar changes its panels while the editor and document stay
-mounted. See the [example](examples/document_workspace.rs).
+The editor receives the document's title signal at construction and contributes
+the title to the panel list. A single subscriber prints the list after a
+document edit and again after the sidebar is replaced. The editor and document
+stay mounted through both changes. See the [example](examples/document_workspace.rs).
 
 ## Contracts
 
@@ -32,6 +32,30 @@ element type at both insertion and lookup. Factories use definition identity or
 an explicit key, so two Factories can export the same type and still have
 independent lifetimes. [Bevy TypeRegistry](https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistry.html)
 · [Rust std::any](https://doc.rust-lang.org/std/any/)
+
+## Signals and subscriptions
+
+Declare which signals can invalidate a binding with `depending_on`. Clone the
+signal handle into the source so it can read the current value.
+
+```rust
+let title = Signal::new(String::from("sketch.kcl"));
+let source = title.clone();
+let panel = Binding::new::<Panels>(move || source.get()).depending_on(&title);
+```
+
+`Observation::subscribe` calls the listener with a fresh output when an effective
+binding changes or a declared signal is written. Use `get` to read the current
+value on demand. Keep the returned guard for as long as the listener should run.
+Each `set` invalidates dependents, including writes of equal values. A source
+can read any state, and callers declare explicitly which reads should trigger
+notifications.
+
+Notifications run synchronously. During reconciliation the registry queues
+invalidations and delivers them after cleanup and startup finish. If acquisition
+fails, writes to shared signals still take effect and subscribers read the
+previously published graph. Facet sources and combiners should remain pure.
+Subscriptions installed by an instance can be dropped in its startup cleanup.
 
 ## Ownership and lifecycle
 
@@ -59,8 +83,6 @@ run at removal. Keep resources that need a deterministic shutdown boundary
 behind an explicit cleanup hook. Lifecycle failure reporting covers errors
 returned from hooks. Panics follow ordinary Rust unwinding.
 
-This prototype uses a single-threaded registry, synchronous hooks, and pull-based
-observations. A host integration would need to decide when change notifications
-are delivered and how async cleanup is awaited or canceled. Slots are available
-for composing toggles. The TypeScript plugin controller and service facade are
-outside this prototype's scope.
+This prototype uses a single-threaded registry and synchronous hooks. Slots are
+available for composing toggles. The TypeScript plugin controller, service
+facade, and async cleanup are outside this prototype's scope.

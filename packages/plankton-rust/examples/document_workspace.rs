@@ -1,6 +1,9 @@
-use std::cell::RefCell;
+use std::rc::Rc;
 
-use plankton_rust::{Binding, Dependencies, Facet, Factory, HookResult, Instance, Registry, slot};
+use plankton_rust::{
+    Binding, Dependencies, Facet, Factory, HookResult, Instance, Registry, Resolution, Service,
+    Signal, slot,
+};
 
 struct Panels;
 
@@ -14,25 +17,32 @@ impl Facet for Panels {
 }
 
 struct Document {
-    title: RefCell<String>,
+    title: Signal<String>,
+}
+
+struct ActiveDocument;
+
+impl Service for ActiveDocument {
+    type Capability = Document;
 }
 
 fn main() -> HookResult {
     let document = Factory::new(Dependencies::none(), |(), _| {
-        Ok(Instance::new(Document {
-            title: RefCell::new("sketch.kcl".into()),
-        }))
+        let document = Rc::new(Document {
+            title: Signal::new("sketch.kcl".into()),
+        });
+        let service = Binding::provide::<ActiveDocument>(document.clone());
+        // Export the signal for constructor injection and provide the document
+        // service so the host can edit it after publication.
+        Ok(Instance::new(document.title.clone()).with_children(vec![service.into()]))
     });
-    let editor = Factory::new(document.dependency("document"), |document, scope| {
-        let panels = scope.observe::<Panels>();
-        Ok(Instance::new(())
-            .with_children(vec![
-                Binding::new::<Panels>(move || document.title.borrow().clone()).into(),
-            ])
-            .on_start(move || {
-                println!("After startup: {:?}", panels.get()?);
-                Ok(())
-            }))
+    let editor = Factory::new(document.dependency("title"), |title, _| {
+        let source = {
+            let title = title.clone();
+            move || title.get()
+        };
+        let panel = Binding::new::<Panels>(source).depending_on(&title);
+        Ok(Instance::new(()).with_children(vec![panel.into()]))
     });
 
     let sidebar = slot(vec![Binding::new::<Panels>(|| "outline".into()).into()]);
@@ -40,12 +50,18 @@ fn main() -> HookResult {
     registry.configure(vec![editor.into(), sidebar.clone().into()])?;
 
     let panels = registry.observe::<Panels>();
+    println!("Initial panels: {:?}", panels.get()?);
+    let subscription = panels.subscribe(|panels| println!("Panels changed: {panels:?}"))?;
+    let Resolution::Ready(document) = registry.resolve::<ActiveDocument>() else {
+        return Err("expected one active document".into());
+    };
+    document.title.set("assembly.kcl".into());
     registry.replace(
         &sidebar,
         vec![Binding::new::<Panels>(|| "search".into()).into()],
     )?;
-    println!("After replacement: {:?}", panels.get()?);
 
+    drop(subscription);
     registry.dispose()?;
     Ok(())
 }
