@@ -71,22 +71,15 @@ function fixture(
       return []
     }
   )
-  const stat = vi.fn(
-    async (
-      path: string
-    ): Promise<{
-      kind: 'directory' | 'file' | 'symlink'
-      size: number
-    }> => ({
-      kind:
-        path.endsWith('/assets') || path.endsWith('/parts')
-          ? ('directory' as const)
-          : path === '/private/library/TRUCK'
-            ? ('directory' as const)
-            : ('file' as const),
-      size: 20,
-    })
-  )
+  const stat = vi.fn(async (path: string) => ({
+    kind:
+      path === '/private/library/TRUCK' ||
+      path.endsWith('/assets') ||
+      path.endsWith('/parts')
+        ? 'directory'
+        : 'file',
+    size: 20,
+  }))
   const fileOperations = {
     readDirectory,
     readFile,
@@ -297,6 +290,9 @@ describe('Zookeeper project reference commands', () => {
 
   it('lists and reads nested KCL without opening or writing the source', async () => {
     const { fileOperations, readFile, request } = fixture()
+    const absolutePath = '/private/library/TRUCK/parts/wheel.kcl'
+    const content = 'wheel = circle(12)'
+    readFile.mockResolvedValueOnce(new TextEncoder().encode(content))
     const projectId = await searchProjectId(request, 'TRUCK')
     const listing = await request('projects.list_files', {
       project_id: projectId,
@@ -308,14 +304,14 @@ describe('Zookeeper project reference commands', () => {
     ])
     const read = await request('projects.read_file', {
       project_id: projectId,
-      path: 'main.kcl',
+      path: 'parts/wheel.kcl',
     })
-    expect(read.result?.content).toBe('wheel = circle(10)')
-    expect(readFile).toHaveBeenCalledWith('/private/library/TRUCK/main.kcl')
-    expect(fileOperations.stat).toHaveBeenCalledWith(
-      '/private/library/TRUCK/main.kcl',
-      { followSymlinks: false, readOnly: true }
-    )
+    expect(read.result?.content).toBe(content)
+    expect(readFile).toHaveBeenCalledWith(absolutePath)
+    expect(fileOperations.stat).toHaveBeenCalledWith(absolutePath, {
+      followSymlinks: false,
+      readOnly: true,
+    })
     expect(fileOperations.writeFile).not.toHaveBeenCalled()
   })
 
@@ -349,40 +345,6 @@ describe('Zookeeper project reference commands', () => {
     })
     expect(response.status).toBe('rejected')
     expect(readFile).not.toHaveBeenCalled()
-  })
-
-  it('does not follow a project symlink outside its root', async () => {
-    const { readDirectory, readFile, request, stat } = fixture()
-    readDirectory.mockImplementation(async (path) => {
-      if (path === '/private/library/TRUCK') {
-        return ['linked']
-      }
-      if (path === '/private/outside') {
-        return ['secret.kcl']
-      }
-      return []
-    })
-    stat.mockImplementation(async (path) => ({
-      kind: path.endsWith('/linked')
-        ? 'symlink'
-        : path === '/private/library/TRUCK'
-          ? 'directory'
-          : 'file',
-      size: 20,
-    }))
-    const projectId = await searchProjectId(request, 'TRUCK')
-
-    const listing = await request('projects.list_files', {
-      project_id: projectId,
-    })
-    expect(listing.result?.files).toEqual([])
-    const read = await request('projects.read_file', {
-      project_id: projectId,
-      path: 'linked/secret.kcl',
-    })
-    expect(read.status).toBe('rejected')
-    expect(readFile).not.toHaveBeenCalled()
-    expect(readDirectory).not.toHaveBeenCalledWith('/private/outside')
   })
 
   it('blocks real desktop file and directory symlinks outside the project', async () => {

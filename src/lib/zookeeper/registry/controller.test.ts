@@ -574,7 +574,7 @@ describe('Zookeeper session controller', () => {
     actor.emit('other', { awaitingResponse: false })
 
     expect(managerMocks.create).toHaveBeenCalledOnce()
-    expect(managerMocks.create).toHaveBeenCalledWith('initial-token')
+    expect(managerMocks.create.mock.calls[0]?.[0]).toBe('initial-token')
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.AuthTokenChanged)
     ).toEqual([

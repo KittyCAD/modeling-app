@@ -9,10 +9,7 @@ import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
-import {
-  createProjectReferenceCommands,
-  type ProjectReferenceCommandTransport,
-} from '@src/lib/zookeeper/projectReferenceCommands'
+import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory'
@@ -137,7 +134,6 @@ class SessionController implements ZookeeperSessionController {
     `zookeeper-file-write:${crypto.randomUUID()}`
   private wasPromptRunning = false
 
-  private readonly clientCommands: ProjectReferenceCommandTransport | undefined
   private cloudRefreshQueue: Promise<void> = Promise.resolve()
   private pendingCloudRefreshes = 0
   private cloudChangeGeneration = 0
@@ -151,16 +147,14 @@ class SessionController implements ZookeeperSessionController {
     this.apiToken = deps.apiToken
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
-    this.clientCommands = deps.libraryProjects
+    const clientCommands = deps.libraryProjects
       ? createProjectReferenceCommands({
           entries: deps.libraryProjects,
           fileOperations: deps.fileOperations,
           getApiToken: () => this.apiToken,
         })
       : undefined
-    this.actor = this.clientCommands
-      ? createZookeeperManagerActor(deps.apiToken, this.clientCommands)
-      : createZookeeperManagerActor(deps.apiToken)
+    this.actor = createZookeeperManagerActor(deps.apiToken, clientCommands)
     this.legacyHistory = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations
