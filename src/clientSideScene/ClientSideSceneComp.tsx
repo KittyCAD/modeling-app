@@ -26,11 +26,12 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import {
   ARROWHEAD,
-  DEBUG_SHOW_BOTH_SCENES,
+  DEFAULT_SKETCH_SOLVE_DIMMING,
 } from '@src/clientSideScene/sceneUtils'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useShouldHideScene } from '@src/hooks/useShouldHideScene'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -57,43 +58,20 @@ import { toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 
-function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
-  const [isCamMoving, setIsCamMoving] = useState(false)
-
-  const { state } = useModelingContext()
-  const {
-    kclManager: { sceneInfra },
-  } = useSingletons()
-
-  useEffect(() => {
-    sceneInfra.camControls.setIsCamMovingCallback((isMoving: boolean) => {
-      setIsCamMoving(isMoving)
-    })
-  }, [sceneInfra.camControls])
-
-  if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
-    return { hideClient: false, hideServer: false }
-  const hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
-
-  return { hideClient: !hideServer, hideServer }
-}
-
-export const DEFAULT_SKETCH_SOLVE_STREAM_DIMMING = 0.8
-
 export const ClientSideScene = ({
   cameraControls,
   enableTouchControls,
-  sketchSolveStreamDimming = DEFAULT_SKETCH_SOLVE_STREAM_DIMMING,
+  sketchSolveDimming,
 }: {
   cameraControls: CameraSystem
   enableTouchControls: boolean
-  sketchSolveStreamDimming?: number
+  sketchSolveDimming?: number
 }) => {
   const {
     kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
   } = useSingletons()
   const { state, send, context } = useModelingContext()
-  const { hideClient, hideServer } = useShouldHideScene()
+  const { hideClient, hideRender } = useShouldHideScene()
 
   const applyCameraInput = useMemo(
     () => createCameraInputApplier(sceneInfra.camControls),
@@ -179,19 +157,20 @@ export const ClientSideScene = ({
 
   const inSketchMode = state.matches('Sketch')
   const inSketchSolveMode = state.matches('sketchSolveMode')
-  const shouldApplyStreamDimming =
-    !hideClient && !hideServer && (inSketchMode || inSketchSolveMode)
-  const streamDimmingOpacity = hideServer
+  const shouldApplyDimming =
+    !hideClient && !hideRender && (inSketchMode || inSketchSolveMode)
+
+  const dimmingOpacity = hideRender
     ? 1
-    : shouldApplyStreamDimming
+    : shouldApplyDimming
       ? inSketchSolveMode
-        ? sketchSolveStreamDimming
-        : DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
+        ? sketchSolveDimming
+        : DEFAULT_SKETCH_SOLVE_DIMMING
       : null
 
   const sceneStyle: CSSProperties & { '--tw-bg-opacity'?: number } = { cursor }
-  if (streamDimmingOpacity !== null) {
-    sceneStyle['--tw-bg-opacity'] = streamDimmingOpacity
+  if (dimmingOpacity !== null) {
+    sceneStyle['--tw-bg-opacity'] = dimmingOpacity
   }
 
   return (
@@ -203,7 +182,7 @@ export const ClientSideScene = ({
         className={`absolute inset-0 h-full w-full ${
           hideClient ? 'opacity-0' : 'opacity-100'
         } ${
-          hideServer || shouldApplyStreamDimming
+          dimmingOpacity !== null
             ? 'bg-chalkboard-10 dark:bg-chalkboard-100'
             : ''
         }`}

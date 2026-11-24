@@ -1049,10 +1049,12 @@ describe('ConnectionManager', () => {
     addConnectedState(manager).send = vi.fn()
     const currentBatch = { ...sceneCameraBatch(), batch_id: 'new-scene-batch' }
     const current = manager.sendSceneCommand(currentBatch)
+    const receiveCurrent = manager.createMessageHandler()
     receive(message(sceneCameraBatchResponse))
+    receiveCurrent(message(sceneCameraBatchResponse))
     expect(callback).not.toHaveBeenCalled()
     expect(Object.keys(manager.pendingCommands)).toEqual(['new-scene-batch'])
-    receive(
+    receiveCurrent(
       message({
         ...sceneCameraBatchResponse,
         request_id: currentBatch.batch_id,
@@ -1061,6 +1063,63 @@ describe('ConnectionManager', () => {
     await current
     expect(callback).toHaveBeenCalledOnce()
     expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('recovers from a decode failure by sending subsequent exports uncompressed', async () => {
+    vi.stubGlobal(
+      'Worker',
+      class {
+        onmessage: ((event: MessageEvent) => void) | null = null
+        terminate = vi.fn()
+        postMessage() {
+          queueMicrotask(() =>
+            this.onmessage?.({
+              data: { error: 'Invalid Zstd frame' },
+            } as MessageEvent)
+          )
+        }
+      }
+    )
+    const manager = createConnectionManager()
+    addConnectedState(manager).send = vi.fn()
+    const pending = manager.sendSceneCommand(sceneCameraBatch())
+    const rejected = expect(pending).rejects.toMatchObject([
+      { errors: [{ error_code: 'connection_problem' }] },
+    ])
+    manager.createMessageHandler()(
+      new MessageEvent('message', {
+        data: new Uint8Array([0x28, 0xb5, 0x2f, 0xfd, 0xff]).buffer,
+      })
+    )
+    await rejected
+    expect(manager.pendingCommands).toEqual({})
+    expect(manager.connection).toBeUndefined()
+
+    const send = vi.fn()
+    addConnectedState(manager).send = send
+    const id = '00000000-0000-4000-8000-000000000014'
+    const cmd = { type: 'export3d', format: { type: 'stl' }, entity_ids: [] }
+    const request = { type: 'modeling_cmd_req', cmd_id: id, cmd }
+    const result = manager.sendModelingCommandFromWasm(
+      id,
+      '[0,0,0]',
+      JSON.stringify({ ...request, cmd: { ...cmd, compression: 'zstd' } }),
+      '{}'
+    )
+    expect(send).toHaveBeenCalledWith(request)
+    manager.createMessageHandler()(
+      message({
+        success: true,
+        request_id: id,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: { type: 'export3d', data: { files: [] } },
+          },
+        },
+      })
+    )
+    await expect(result).resolves.toBeInstanceOf(Uint8Array)
   })
 
   it('settles modeling responses before the WebRTC readiness handoff', async () => {
