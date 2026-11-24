@@ -42,7 +42,6 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   userPaymentBalance: undefined,
   payAsYouGoApiCreditPrice: undefined,
   error: undefined,
-  isOrg: undefined,
   hasSubscription: undefined,
   urlUserService: () => '',
   lastFetch: undefined,
@@ -120,7 +119,6 @@ export const billingMachine = setup({
           allowance: billing.allowance,
           userPaymentBalance: billing.userPaymentBalance,
           payAsYouGoApiCreditPrice: billing.payAsYouGoApiCreditPrice,
-          isOrg: billing.isOrg,
           hasSubscription: billing.hasSubscription,
           lastFetch: new Date(),
         }

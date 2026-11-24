@@ -82,7 +82,6 @@ export interface IBillingInfo {
   allowance?: number
   userPaymentBalance?: CustomerBalance
   payAsYouGoApiCreditPrice?: number
-  isOrg: boolean
   hasSubscription: boolean
 }
 
@@ -165,7 +164,6 @@ export async function getBillingInfo(
   }
 
   const plan = subscriptions.modeling_app
-  const isOrg = plan.type.type === 'organization'
   const tier = plan.name
   const ratioSec = plan.pay_as_you_go_api_credit_price
   const hasUnlimitedCredits = Boolean(
@@ -178,7 +176,6 @@ export async function getBillingInfo(
       balance: Number.POSITIVE_INFINITY,
       userPaymentBalance: billing,
       payAsYouGoApiCreditPrice: ratioSec,
-      isOrg,
       hasSubscription: true,
     }
   }
@@ -206,6 +203,5 @@ export async function getBillingInfo(
     userPaymentBalance: billing,
     payAsYouGoApiCreditPrice: ratioSec,
     hasSubscription,
-    isOrg,
   }
 }

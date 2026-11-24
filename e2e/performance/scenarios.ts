@@ -167,8 +167,8 @@ export function scenarioActions(
           verify: async () => {
             const control = page.getByTestId('operation-group-caret').first()
             await expect(control).toHaveAttribute('aria-expanded', 'true')
+            await expect(control).toHaveAttribute('aria-controls', /\S+/)
             const panelId = await control.getAttribute('aria-controls')
-            expect(panelId).toBeTruthy()
             await expect(
               page
                 .locator(`[id="${panelId}"]`)

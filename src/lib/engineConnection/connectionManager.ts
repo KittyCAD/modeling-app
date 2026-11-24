@@ -10,6 +10,7 @@ import {
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { UnitLength as RustUnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -85,6 +86,8 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
+const GRID_OBJECT_ID = 'cfa78409-653d-4c26-96f1-7c45fb784840'
+const GRID_TEXT_OBJECT_ID = '10782f33-f588-4668-8bcd-040502d26590'
 
 /**
  * Commands the engine can only run in its graphics scene. A geometry-only
@@ -158,6 +161,7 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+
   /** Read-only identity of the actual engine connection, including reconnects. */
   get engineSessionId(): string | undefined {
     return this.connection?.id
@@ -172,6 +176,10 @@ export class ConnectionManager extends EventTarget {
   private localSelectionCommandHandler: LocalSelectionCommandHandler | undefined
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
+  private scaleGridUpdateGeneration = 0
+  private themeUpdateGeneration = 0
+  private backfaceUpdateGeneration = 0
+  private edgeUpdateGeneration = 0
 
   get isReconnectPending(): boolean {
     return (
@@ -412,6 +420,7 @@ export class ConnectionManager extends EventTarget {
     geometryOnly = false,
     kclVersion,
     prepareForReconnect,
+    onConnectionCreated,
   }: {
     width: number
     height: number
@@ -424,6 +433,9 @@ export class ConnectionManager extends EventTarget {
     geometryOnly?: boolean
     kclVersion?: KclVersion
     prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
+    onConnectionCreated?: (
+      connection: Pick<Connection, 'id' | 'mediaStream'>
+    ) => void
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -464,13 +476,15 @@ export class ConnectionManager extends EventTarget {
     const handleMessage = this.createMessageHandler(rustContext)
 
     const url = this.generateWebsocketURL(geometryOnly, kclVersion)
-    this.connection = new Connection({
+    const connection = new Connection({
       url,
       token,
       geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
-      tearDownManager: this.tearDown.bind(this),
+      tearDownManager: (options) => {
+        if (this.connection === connection) this.tearDown(options)
+      },
       onReconnectRequested: this.handleReconnectRequested.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
@@ -482,6 +496,13 @@ export class ConnectionManager extends EventTarget {
           ?.cloudProjectId,
     })
 
+    this.connection = connection
+    onConnectionCreated?.(connection)
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
+
     // Nothing more to do when using a lite engine initialization
     if (callbackOnUnitTestingConnection) {
       this.callbackOnUnitTestingConnection = callbackOnUnitTestingConnection
@@ -491,11 +512,11 @@ export class ConnectionManager extends EventTarget {
     // Only used for useNetworkStatus.tsx listeners, why?!
     this.dispatchEvent(
       new CustomEvent(EngineConnectionManagerEvents.EngineAvailable, {
-        detail: this.connection,
+        detail: connection,
       })
     )
 
-    this.connection.dispatchEvent(
+    connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
         detail: {
           type: EngineConnectionStateType.Connecting,
@@ -506,18 +527,24 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    await this.connection.connect()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
+    await connection.connect()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
 
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (!geometryOnly && !this.connection.peerConnection) {
-      return Promise.reject(
-        new Error('this.connection.peerConnection is undefined')
-      )
+    if (!geometryOnly && !connection.peerConnection) {
+      return Promise.reject(new Error('connection.peerConnection is undefined'))
     }
-    if (!this.connection.websocket) {
-      return Promise.reject(new Error('this.connection.websocket is undefined'))
+    if (!connection.websocket) {
+      return Promise.reject(new Error('connection.websocket is undefined'))
     }
 
     const onEngineConnectionRestartRequest =
@@ -530,7 +557,7 @@ export class ConnectionManager extends EventTarget {
 
     const onEngineConnectionClosed = createOnEngineConnectionClosed()
     const onEngineConnectionStarted = createOnEngineConnectionStarted({
-      peerConnection: this.connection.peerConnection,
+      peerConnection: connection.peerConnection,
       getUnreliableSubscriptions: () => {
         return this.unreliableSubscriptions
       },
@@ -538,7 +565,7 @@ export class ConnectionManager extends EventTarget {
       getInSequence: () => {
         return this.inSequence
       },
-      connection: this.connection,
+      connection: connection,
       trackListener: this.trackListener.bind(this),
     })
 
@@ -547,7 +574,7 @@ export class ConnectionManager extends EventTarget {
       callback: onEngineConnectionRestartRequest,
       type: 'connection',
     })
-    this.connection.addEventListener(
+    connection.addEventListener(
       EngineConnectionEvents.RestartRequest,
       onEngineConnectionRestartRequest
     )
@@ -557,17 +584,14 @@ export class ConnectionManager extends EventTarget {
       callback: onEngineOffline,
       type: 'connection',
     })
-    this.connection.addEventListener(
-      EngineConnectionEvents.Offline,
-      onEngineOffline
-    )
+    connection.addEventListener(EngineConnectionEvents.Offline, onEngineOffline)
 
     this.trackListener(EngineConnectionEvents.Closed, {
       event: EngineConnectionEvents.Closed,
       callback: onEngineConnectionClosed,
       type: 'connection',
     })
-    this.connection.addEventListener(
+    connection.addEventListener(
       EngineConnectionEvents.Closed,
       onEngineConnectionClosed
     )
@@ -577,12 +601,12 @@ export class ConnectionManager extends EventTarget {
       callback: onEngineConnectionStarted,
       type: 'connection',
     })
-    this.connection.addEventListener(
+    connection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
       onEngineConnectionStarted
     )
 
-    this.connection.dispatchEvent(
+    connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
         // detail: this,
       })
@@ -596,13 +620,18 @@ export class ConnectionManager extends EventTarget {
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
       // Don't think this needs the bind because it is an external set function for the callback
       camControlsCameraChange: this._camControlsCameraChange,
-      connection: this.connection,
+      connection: connection,
       setStreamIsReady,
+      isCurrent: () => this.started && this.connection === connection,
     })
 
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
+    if (this.connection !== connection || !this.started)
+      return Promise.reject(
+        new Error('The engine connection closed while starting')
+      )
     this.setViewportRendering(this.settings.viewportRendering)
   }
 
@@ -686,9 +715,15 @@ export class ConnectionManager extends EventTarget {
   }
 
   // Set the engine's theme
-  async setTheme(theme: Themes) {
-    if (this.geometryOnly) return
-
+  async setTheme(theme: Themes, isCurrent: () => boolean = () => true) {
+    if (this.geometryOnly || !isCurrent()) return
+    const generation = ++this.themeUpdateGeneration
+    const connection = this.connection
+    const ownsUpdate = () =>
+      this.started &&
+      isCurrent() &&
+      this.connection === connection &&
+      generation === this.themeUpdateGeneration
     if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -700,7 +735,8 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection?.deferredConnection?.promise
+    await connection?.deferredConnection?.promise
+    if (!ownsUpdate()) return
 
     const mode = this.settings.viewportRendering
     const backgroundColor = getViewportBackgroundColor(theme, mode)
@@ -737,6 +773,7 @@ export class ConnectionManager extends EventTarget {
       },
     })
 
+    if (!ownsUpdate()) return
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(getViewportTheme(theme, mode))
     const defaultSystemColor = getThemeColorForEngine(opposingTheme)
@@ -782,9 +819,13 @@ export class ConnectionManager extends EventTarget {
   }
 
   /** Set default system properties in the engine, with debug logging */
-  async setDefaultSystemProperties(backfaceColor: string) {
-    if (this.geometryOnly) return
-
+  async setDefaultSystemProperties(
+    backfaceColor: string,
+    isCurrent: () => boolean = () => true
+  ) {
+    if (this.geometryOnly || !isCurrent()) return
+    const generation = ++this.backfaceUpdateGeneration
+    const connection = this.connection
     const backfaceRgbaColor = hexToRgba(backfaceColor)
     if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
@@ -810,18 +851,25 @@ export class ConnectionManager extends EventTarget {
         },
       })
 
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+    if (connection?.websocket?.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setDefaultSystemProperties, websocket is not ready',
         metadata: {
-          readyState: this.connection?.websocket?.readyState,
+          readyState: connection?.websocket?.readyState,
         },
       })
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    await connection.deferredConnection?.promise
+    if (
+      this.connection !== connection ||
+      !this.started ||
+      generation !== this.backfaceUpdateGeneration ||
+      !isCurrent()
+    )
+      return
 
     debugLog('start')
     await this.sendSceneCommand({
@@ -833,9 +881,13 @@ export class ConnectionManager extends EventTarget {
   }
 
   /** Set the edge highlighting setting in the engine, with debug logging */
-  async setHighlightEdges(shouldHighlight: boolean) {
-    if (this.geometryOnly) return
-
+  async setHighlightEdges(
+    shouldHighlight: boolean,
+    isCurrent: () => boolean = () => true
+  ) {
+    if (this.geometryOnly || !isCurrent()) return
+    const generation = ++this.edgeUpdateGeneration
+    const connection = this.connection
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldHighlight,
@@ -849,18 +901,25 @@ export class ConnectionManager extends EventTarget {
         },
       })
 
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+    if (connection?.websocket?.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setHighlightEdges, websocket is not ready',
         metadata: {
-          readyState: this.connection?.websocket?.readyState,
+          readyState: connection?.websocket?.readyState,
         },
       })
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    await connection.deferredConnection?.promise
+    if (
+      this.connection !== connection ||
+      !this.started ||
+      generation !== this.edgeUpdateGeneration ||
+      !isCurrent()
+    )
+      return
 
     debugLog('start')
     await this.sendSceneCommand({
@@ -872,42 +931,59 @@ export class ConnectionManager extends EventTarget {
   }
 
   /** Set the "show scale grid" setting in the engine, with debug logging */
-  async setShowScaleGrid(shouldShowGrid: boolean) {
-    if (this.geometryOnly) return
-
-    const cmd = {
-      type: 'edge_lines_visible',
-      hidden: !shouldShowGrid,
-    } as const
-    const debugLog = (event: string) =>
+  async setShowScaleGrid(
+    shouldShowGrid: boolean,
+    fixedSize: boolean,
+    unit: RustUnitLength,
+    isCurrent: () => boolean = () => true
+  ): Promise<void> {
+    if (this.geometryOnly || !isCurrent()) return
+    const generation = ++this.scaleGridUpdateGeneration
+    const connection = this.connection
+    if (connection?.websocket?.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        message: 'setShowScaleGrid, websocket is not ready',
         metadata: {
-          cmd,
-        },
-      })
-
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
-      EngineDebugger.addLog({
-        label: 'connectionManager',
-        message: 'setHighlightEdges, websocket is not ready',
-        metadata: {
-          readyState: this.connection?.websocket?.readyState,
+          readyState: connection?.websocket?.readyState,
         },
       })
       return
     }
 
-    await this.connection.deferredConnection?.promise
-
-    debugLog('start')
-    await this.sendSceneCommand({
-      cmd_id: uuidv4(),
-      type: 'modeling_cmd_req',
-      cmd,
-    })
-    debugLog('done')
+    await connection.deferredConnection?.promise
+    const commands: ModelingCmdReq['cmd'][] = [
+      {
+        type: 'object_visible',
+        object_id: GRID_OBJECT_ID,
+        hidden: !shouldShowGrid,
+      },
+      fixedSize
+        ? { type: 'set_grid_scale', value: 10, units: unit }
+        : { type: 'set_grid_auto_scale' },
+      {
+        type: 'object_visible',
+        object_id: GRID_TEXT_OBJECT_ID,
+        hidden: !shouldShowGrid,
+      },
+    ]
+    for (const cmd of commands) {
+      // A newer toggle owns the complete grid/label state. Do not continue an
+      // older update or send its remaining commands to a replacement engine.
+      if (
+        this.connection !== connection ||
+        !this.started ||
+        this.scaleGridUpdateGeneration !== generation ||
+        !isCurrent()
+      ) {
+        return
+      }
+      await this.sendSceneCommand({
+        cmd_id: uuidv4(),
+        type: 'modeling_cmd_req',
+        cmd,
+      })
+    }
   }
 
   /**

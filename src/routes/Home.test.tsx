@@ -25,15 +25,15 @@ const projectActions = {
   canDuplicate: vi.fn(() => false),
   canRename: vi.fn(() => false),
   canDelete: vi.fn(() => false),
-  canCloneToLibrary: vi.fn(() => false),
+  canDuplicateToLibrary: vi.fn(() => false),
   canReviewDuplicateRealizations: vi.fn(() => false),
   canSeparateProjectCopies: vi.fn(() => false),
   open: vi.fn(async () => undefined),
   duplicate: vi.fn(async () => undefined),
   rename: vi.fn(async () => undefined),
   delete: vi.fn(async () => undefined),
-  getCloneToLibraryTargets: vi.fn(() => []),
-  cloneToLibrary: vi.fn(async () => undefined),
+  getDuplicateToLibraryTargets: vi.fn(() => []),
+  duplicateToLibrary: vi.fn(async () => undefined),
   deleteDuplicateRealizations: vi.fn(async () => undefined),
   separateProjectCopies: vi.fn(async () => undefined),
 } satisfies HomeProjectActionsService
@@ -83,7 +83,7 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
           readFile: vi.fn(),
         }}
         showCloudSyncUi={true}
-        onCloneToLibrary={vi.fn()}
+        onDuplicateToLibrary={vi.fn()}
       />
     </MemoryRouter>
   )
@@ -170,7 +170,7 @@ describe('HomeHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('shows details copy with the linked library path', () => {
+  it('shows cloud library details without the technical source', () => {
     renderHomeHeader({
       showFreeCloudProjectTrainingDisclosure: false,
     })
@@ -183,10 +183,10 @@ describe('HomeHeader', () => {
         /Storage type and model-training controls depend on your plan/
       )
     ).toBeInTheDocument()
-    expect(screen.getByText(/Technical source:/)).toBeInTheDocument()
+    expect(screen.queryByText(/Technical source:/)).not.toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'zoo://personal' })
-    ).toHaveAttribute('href', '/home/settings?tab=user#libraries')
+      screen.queryByRole('link', { name: 'zoo://personal' })
+    ).not.toBeInTheDocument()
   })
 
   it('shows the selected library type icon and caret back link', () => {
