@@ -172,6 +172,7 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
       await scene.waitForExecutionDoneAfter(() =>
         editor.replaceCode('', innerShellCode)
       )
+      await resetView(scene)
 
       // Two dumb hardcoded screen ratio values
 
