@@ -7,7 +7,8 @@ use std::{
 };
 
 use crate::{
-    Binding, Facet, Observation, Origin, RegistryError, Resolution, Service, registry::Published,
+    Binding, Facet, Observation, Origin, RegistryError, Resolution, Service, contract::Providers,
+    registry::Published,
 };
 
 pub type HookError = Box<dyn Error>;
@@ -68,11 +69,11 @@ pub struct Scope {
 
 impl Scope {
     pub fn observe<F: Facet>(&self) -> Observation<F::Output> {
-        Observation::new(self.published.clone(), |snapshot| snapshot.get::<F>())
+        Observation::for_facet::<F>(self.published.clone())
     }
 
     pub fn observe_service<S: Service>(&self) -> Observation<Resolution<S::Capability>> {
-        Observation::new(self.published.clone(), |snapshot| snapshot.resolve::<S>())
+        Observation::for_facet::<Providers<S>>(self.published.clone())
     }
 }
 

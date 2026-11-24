@@ -20,7 +20,10 @@ A declaration of resources to acquire, their constructor dependencies, and the e
 The result of acquiring a Factory in a Registry. It owns its exports, children, and lifecycle callbacks.
 
 **Observation**:
-A live view of a Facet or Service that follows the Registry's published configuration.
+A live view of a Facet or Service in the Registry's published configuration.
+
+**Signal**:
+A shared value whose writes can invalidate the observations that depend on it.
 
 **Published graph**:
 The configuration visible to observations after the Registry commits an acquisition.

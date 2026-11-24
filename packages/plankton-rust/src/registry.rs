@@ -1,5 +1,5 @@
 use std::{
-    any::Any,
+    any::{Any, TypeId},
     cell::{Cell, RefCell},
     collections::{HashMap, HashSet},
     error::Error,
@@ -9,9 +9,11 @@ use std::{
 
 use crate::{
     Binding, ContributionInfo, Extension, Facet, Factory, HookError, Resolution, Scope, Service,
-    Snapshot,
+    Snapshot, Subscription,
+    contract::Providers,
     factory::{Cleanup, ExtensionKind, FactoryItem, FactoryKey, Start},
     planner::{Planned, cycle, plan},
+    signal::Notifier,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -158,27 +160,95 @@ impl fmt::Display for ObservationError {
 
 impl Error for ObservationError {}
 
+/// Owns the active signal connections and batches invalidation through reconciliation.
 #[derive(Default)]
 pub(crate) struct Published {
     snapshot: RefCell<Rc<Snapshot>>,
     acquiring: Cell<bool>,
+    reconciling: Cell<bool>,
+    notifying: Cell<bool>,
+    observers: RefCell<HashMap<TypeId, Rc<Notifier>>>,
+    signal_connections: RefCell<Vec<Subscription>>,
+    dirty: RefCell<HashSet<TypeId>>,
+}
+
+impl Published {
+    fn snapshot_for_observation(&self) -> Result<Rc<Snapshot>, ObservationError> {
+        if self.acquiring.get() {
+            return Err(ObservationError::Acquiring);
+        }
+        Ok(self.snapshot.borrow().clone())
+    }
+
+    fn publish(self: &Rc<Self>, snapshot: Snapshot) {
+        let connections = snapshot
+            .signal_dependents
+            .values()
+            .map(|dependents| {
+                let published = Rc::downgrade(self);
+                let facets = dependents.facets.clone();
+                dependents.signal.subscribe(move || {
+                    if let Some(published) = published.upgrade() {
+                        published.invalidate(facets.iter().copied());
+                    }
+                })
+            })
+            .collect();
+        let snapshot = Rc::new(snapshot);
+        let previous = self.snapshot.replace(snapshot.clone());
+        drop(self.signal_connections.replace(connections));
+        self.invalidate(snapshot.changed_facets(&previous));
+    }
+
+    fn invalidate(&self, facets: impl IntoIterator<Item = TypeId>) {
+        self.dirty.borrow_mut().extend(facets);
+        self.flush();
+    }
+
+    fn flush(&self) {
+        if self.reconciling.get() || self.notifying.get() {
+            return;
+        }
+        let _notifying = ActiveFlag::begin(&self.notifying);
+        loop {
+            let facets = std::mem::take(&mut *self.dirty.borrow_mut());
+            if facets.is_empty() {
+                break;
+            }
+            for facet in facets {
+                let observers = self.observers.borrow().get(&facet).cloned();
+                if let Some(observers) = observers {
+                    observers.notify();
+                }
+            }
+        }
+    }
 }
 
 /// A live, owned handle. Reading it samples the current published graph.
 pub struct Observation<T> {
     published: Weak<Published>,
+    facet: TypeId,
     read: fn(&Snapshot) -> T,
 }
 
 impl<T> Clone for Observation<T> {
     fn clone(&self) -> Self {
-        Self::new(self.published.clone(), self.read)
+        Self {
+            published: self.published.clone(),
+            facet: self.facet,
+            read: self.read,
+        }
     }
 }
 
 impl<T> Observation<T> {
-    pub(crate) fn new(published: Weak<Published>, read: fn(&Snapshot) -> T) -> Self {
-        Self { published, read }
+    pub(crate) fn for_facet<F: Facet<Output = T>>(published: Weak<Published>) -> Self {
+        Self {
+            published,
+            facet: TypeId::of::<F>(),
+            read: Snapshot::get::<F>,
+        }
     }
 
     pub fn get(&self) -> Result<T, ObservationError> {
@@ -186,24 +256,50 @@ impl<T> Observation<T> {
             .published
             .upgrade()
             .ok_or(ObservationError::RegistryDropped)?;
-        if published.acquiring.get() {
-            return Err(ObservationError::Acquiring);
-        }
-        let snapshot = published.snapshot.borrow().clone();
+        let snapshot = published.snapshot_for_observation()?;
         Ok((self.read)(&snapshot))
     }
-}
 
-struct Acquisition<'a>(&'a Cell<bool>);
-
-impl<'a> Acquisition<'a> {
-    fn begin(acquiring: &'a Cell<bool>) -> Self {
-        acquiring.set(true);
-        Self(acquiring)
+    /// Read the latest output on each invalidation until the returned guard drops.
+    /// Registration does not invoke the listener. Pending invalidations are
+    /// delivered synchronously after reconciliation, including to new subscribers.
+    pub fn subscribe(
+        &self,
+        listener: impl Fn(T) + 'static,
+    ) -> Result<Subscription, ObservationError>
+    where
+        T: 'static,
+    {
+        let published = self
+            .published
+            .upgrade()
+            .ok_or(ObservationError::RegistryDropped)?;
+        published.snapshot_for_observation()?;
+        let observers = published
+            .observers
+            .borrow_mut()
+            .entry(self.facet)
+            .or_default()
+            .clone();
+        let observation = self.clone();
+        Ok(observers.subscribe(move || {
+            if let Ok(value) = observation.get() {
+                listener(value);
+            }
+        }))
     }
 }
 
-impl Drop for Acquisition<'_> {
+struct ActiveFlag<'a>(&'a Cell<bool>);
+
+impl<'a> ActiveFlag<'a> {
+    fn begin(flag: &'a Cell<bool>) -> Self {
+        flag.set(true);
+        Self(flag)
+    }
+}
+
+impl Drop for ActiveFlag<'_> {
     fn drop(&mut self) {
         self.0.set(false);
     }
@@ -293,15 +389,11 @@ impl Registry {
     }
 
     pub fn observe<F: Facet>(&self) -> Observation<F::Output> {
-        Observation::new(Rc::downgrade(&self.published), |snapshot| {
-            snapshot.get::<F>()
-        })
+        Observation::for_facet::<F>(Rc::downgrade(&self.published))
     }
 
     pub fn observe_service<S: Service>(&self) -> Observation<Resolution<S::Capability>> {
-        Observation::new(Rc::downgrade(&self.published), |snapshot| {
-            snapshot.resolve::<S>()
-        })
+        Observation::for_facet::<Providers<S>>(Rc::downgrade(&self.published))
     }
 
     pub fn configure(&mut self, roots: Vec<Extension>) -> Result<(), RegistryError> {
@@ -343,7 +435,20 @@ impl Registry {
         if self.disposed {
             return Err(RegistryError::Disposed);
         }
-        let acquisition = Acquisition::begin(&self.published.acquiring);
+        let published = self.published.clone();
+        let reconciling = ActiveFlag::begin(&published.reconciling);
+        let result = self.reconcile_graph(roots, replacement);
+        drop(reconciling);
+        published.flush();
+        result
+    }
+
+    fn reconcile_graph(
+        &mut self,
+        roots: Vec<Extension>,
+        replacement: Option<(FactoryKey, Vec<Extension>)>,
+    ) -> Result<(), RegistryError> {
+        let acquisition = ActiveFlag::begin(&self.published.acquiring);
         let mut draft = Draft {
             replacement,
             ..Draft::default()
@@ -361,7 +466,7 @@ impl Registry {
         self.roots = roots;
         let mut previous = std::mem::replace(&mut self.mounted, draft.mounted);
         let previous_disposal = std::mem::replace(&mut self.disposal, disposal);
-        self.published.snapshot.replace(Rc::new(snapshot));
+        self.published.publish(snapshot);
 
         let mut failures = Vec::new();
         for key in previous_disposal {
@@ -544,7 +649,7 @@ impl Draft {
         let mut snapshot = Snapshot::default();
         self.bindings.sort_by_key(|(_, info)| info.precedence);
         for (binding, info) in std::mem::take(&mut self.bindings) {
-            (binding.install)(&mut snapshot, info);
+            (binding.install)(&binding, &mut snapshot, info);
         }
         snapshot
     }

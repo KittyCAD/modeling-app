@@ -5,7 +5,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::Origin;
+use crate::{Origin, Signal, signal::Notifier};
 
 /// A marker type identifies one contract. Its associated types pair the input
 /// accepted by a binding with the output returned to readers.
@@ -77,7 +77,7 @@ pub enum Resolution<T: ?Sized> {
     Conflict(Vec<Origin>),
 }
 
-type Install = dyn Fn(&mut Snapshot, ContributionInfo);
+type Install = dyn Fn(&Binding, &mut Snapshot, ContributionInfo);
 
 /// Cloning a binding preserves its graph identity. Creating another binding
 /// contributes independently unless the two share a contribution key.
@@ -85,6 +85,7 @@ type Install = dyn Fn(&mut Snapshot, ContributionInfo);
 pub struct Binding {
     pub(crate) options: Rc<BindingOptions>,
     pub(crate) install: Rc<Install>,
+    signals: Vec<Rc<Notifier>>,
 }
 
 impl Binding {
@@ -97,6 +98,18 @@ impl Binding {
         options: BindingOptions,
     ) -> Self {
         Self::for_facet::<F>(move |_| source(), options)
+    }
+
+    /// Invalidate this binding's Facet when the signal is written.
+    /// The source reads the signal explicitly when it needs the value.
+    pub fn depending_on<T>(mut self, signal: &Signal<T>) -> Self {
+        let notifier = signal.notifier();
+        if !self.signals.iter().any(|other| Rc::ptr_eq(notifier, other)) {
+            self.signals.push(notifier.clone());
+            // Adding a dependency creates a distinct binding, even after cloning.
+            self.options = Rc::new((*self.options).clone());
+        }
+        self
     }
 
     pub fn provide<S: Service>(capability: Rc<S::Capability>) -> Self {
@@ -120,12 +133,15 @@ impl Binding {
         let read: Rc<Read<F::Input>> = Rc::new(read);
         Self {
             options: Rc::new(options),
-            install: Rc::new(move |snapshot, info| snapshot.insert::<F>(info, read.clone())),
+            install: Rc::new(move |binding, snapshot, info| {
+                snapshot.insert::<F>(binding, info, read.clone());
+            }),
+            signals: Vec::new(),
         }
     }
 }
 
-struct Providers<S>(PhantomData<S>);
+pub(crate) struct Providers<S>(PhantomData<S>);
 
 impl<S: Service> Facet for Providers<S> {
     type Input = (Origin, Rc<S::Capability>);
@@ -161,11 +177,34 @@ impl<I> Default for Contributions<I> {
     }
 }
 
+#[derive(Default)]
+struct EffectiveBindings(Vec<(Rc<BindingOptions>, ContributionInfo)>);
+
+impl PartialEq for EffectiveBindings {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.len() == other.0.len()
+            && self
+                .0
+                .iter()
+                .zip(&other.0)
+                .all(|((left, left_info), (right, right_info))| {
+                    Rc::ptr_eq(left, right) && left_info == right_info
+                })
+    }
+}
+
+pub(crate) struct SignalDependents {
+    pub(crate) signal: Rc<Notifier>,
+    pub(crate) facets: HashSet<TypeId>,
+}
+
 /// One published graph's effective sources. Reads evaluate the sources on
 /// demand, so application state captured by those sources can still change.
 #[derive(Default)]
 pub struct Snapshot {
     facets: HashMap<TypeId, Box<dyn Any>>,
+    effective: HashMap<TypeId, EffectiveBindings>,
+    pub(crate) signal_dependents: HashMap<*const Notifier, SignalDependents>,
 }
 
 impl Snapshot {
@@ -187,10 +226,32 @@ impl Snapshot {
         self.entries::<F>().iter().map(|entry| &entry.info)
     }
 
-    fn insert<F: Facet>(&mut self, info: ContributionInfo, read: Rc<Read<F::Input>>) {
+    pub(crate) fn changed_facets<'a>(
+        &'a self,
+        previous: &'a Self,
+    ) -> impl Iterator<Item = TypeId> + 'a {
+        self.effective
+            .keys()
+            .chain(
+                previous
+                    .effective
+                    .keys()
+                    .filter(|key| !self.effective.contains_key(key)),
+            )
+            .copied()
+            .filter(move |key| self.effective.get(key) != previous.effective.get(key))
+    }
+
+    fn insert<F: Facet>(
+        &mut self,
+        binding: &Binding,
+        info: ContributionInfo,
+        read: Rc<Read<F::Input>>,
+    ) {
+        let facet = TypeId::of::<F>();
         let contributions = self
             .facets
-            .entry(TypeId::of::<F>())
+            .entry(facet)
             .or_insert_with(|| Box::<Contributions<F::Input>>::default())
             .downcast_mut::<Contributions<F::Input>>()
             .expect("a Facet marker uniquely determines its input type");
@@ -198,6 +259,21 @@ impl Snapshot {
             && !contributions.keys.insert(key.clone())
         {
             return;
+        }
+        self.effective
+            .entry(facet)
+            .or_default()
+            .0
+            .push((binding.options.clone(), info.clone()));
+        for signal in &binding.signals {
+            self.signal_dependents
+                .entry(Rc::as_ptr(signal))
+                .or_insert_with(|| SignalDependents {
+                    signal: signal.clone(),
+                    facets: HashSet::new(),
+                })
+                .facets
+                .insert(facet);
         }
         contributions.entries.push(Entry { info, read });
     }
