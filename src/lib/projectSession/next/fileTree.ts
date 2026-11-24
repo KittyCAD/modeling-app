@@ -11,14 +11,17 @@ const paths = {
   },
 }
 
-const samePath = (left: string, right: string) =>
-  fsZds.relative(left, right) === ''
-
 /** Apply confirmed file membership changes while retaining unaffected entries and directory metadata. */
 export function applyProjectFileMutation(
   root: ProjectDirectory,
-  mutation: ProjectFileMutation
+  mutation: ProjectFileMutation,
+  caseSensitive = false
 ): ProjectDirectory | Error {
+  // Cloud entries remain case-sensitive even when Windows supplies path syntax.
+  const samePath = (left: string, right: string) =>
+    caseSensitive
+      ? fsZds.resolve(left) === fsZds.resolve(right)
+      : fsZds.relative(left, right) === ''
   const destination =
     mutation.type === 'created' ? mutation.path : mutation.destination
   const relative = getContainedRelativePath(paths, root.path, destination)

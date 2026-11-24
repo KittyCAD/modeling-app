@@ -127,7 +127,11 @@ export function createProjectSessionService(
       const current = currentSession.peek()
       if (current !== session || session.signal.aborted) return
       const project = current.project.peek()
-      const contents = applyProjectFileMutation(project.contents, mutation)
+      const contents = applyProjectFileMutation(
+        project.contents,
+        mutation,
+        project.storage?.type === 'cloud'
+      )
       if (isErr(contents)) return contents
       current.project.value = { ...project, contents }
     },

@@ -16,6 +16,7 @@ vi.mock('@src/lib/fs-zds', async () => {
       relative: (from: string, to: string) =>
         paths[platform.value].relative(from, to),
       join: (...parts: string[]) => paths[platform.value].join(...parts),
+      resolve: (...parts: string[]) => paths[platform.value].resolve(...parts),
       dirname: (path: string) => paths[platform.value].dirname(path),
       basename: (path: string) => paths[platform.value].basename(path),
       get sep() {
@@ -156,3 +157,42 @@ it('records the requested Windows file spelling while retaining its parent direc
   expect(tree.children[0].children?.[0].name).toBe('New.md')
   expect(files(tree)).toHaveLength(1)
 })
+
+it.each(['created', 'renamed'] as const)(
+  'preserves case-distinct Windows cloud files when a file is %s',
+  (type) => {
+    platform.value = 'win32'
+    const root = 'C:/cloud/one'
+    const original = win32.join(root, 'main.kcl')
+    const sibling = win32.join(root, 'Main.kcl')
+    const tree: ProjectDirectory = {
+      name: 'one',
+      path: win32.normalize(root),
+      children: [
+        { name: 'main.kcl', path: original, children: null },
+        ...(type === 'renamed'
+          ? [{ name: 'Main.kcl', path: sibling, children: null }]
+          : []),
+      ],
+    }
+    const updated = requireSuccess(
+      applyProjectFileMutation(
+        tree,
+        type === 'created'
+          ? { type, path: sibling }
+          : {
+              type,
+              source: original,
+              destination: win32.join(root, 'moved.kcl'),
+            },
+        true
+      )
+    )
+    expect(files(updated).sort()).toEqual(
+      (type === 'created'
+        ? [original, sibling]
+        : [sibling, win32.join(root, 'moved.kcl')]
+      ).sort()
+    )
+  }
+)
