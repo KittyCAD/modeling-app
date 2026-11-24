@@ -83,7 +83,6 @@ part001 = startSketchOn(XZ)
     test(`"View KCL source code" right click menu in scene ${rendererTag}`, async ({
       editor,
       page,
-      editor,
       homePage,
       scene,
     }) => {
