@@ -32,6 +32,7 @@ import {
   type SceneExecutionDoneDetail,
 } from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -39,6 +40,7 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
+import toast from 'react-hot-toast'
 import {
   Box3,
   BufferGeometry,
@@ -92,6 +94,8 @@ import type {
 } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
+
+const MODEL_LOAD_ERROR_TOAST_ID = 'local-renderer-model-load-error'
 
 // If the filter selects whole bodies, returns which kind: 'solid3d' (the "Bodies"
 // filter) or 'object' (set by commands, also allows planes and regions).
@@ -169,6 +173,8 @@ type AmbientOcclusionPipeline = {
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
 }
+/** What three.js reports for a lost WebGPU device or WebGL context. */
+type DeviceLostInfo = Parameters<WebGPURenderer['onDeviceLost']>[0]
 type DisposableGpuDevice = {
   destroy: () => void
 }
@@ -193,6 +199,18 @@ type RendererSettings = {
   pickingEnabled: boolean
   defaultPlaneVisibility: PlaneVisibilityMap
 }
+/** Why the local renderer cannot draw, so the scene can offer streaming instead. */
+export interface LocalRendererFailure {
+  /** 'initialization': no GPU renderer could start. 'lost': the GPU went away while rendering. */
+  kind: 'initialization' | 'lost'
+  message: string
+}
+
+/** Camera intent when a model arrives; the first load also consumes the host's framing claim. */
+type CameraFraming =
+  | { phase: 'initial-load'; reset: 'host-policy' | 'requested' }
+  | { phase: 'subsequent-loads'; reset: 'preserve' | 'requested' }
+
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
@@ -201,6 +219,7 @@ export interface LocalRendererProps {
   backfaceColor: string
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
+  onRendererFailed?: (failure: LocalRendererFailure) => void
 }
 
 export class LocalRenderer {
@@ -208,6 +227,7 @@ export class LocalRenderer {
   private readonly host: LocalRendererHost
   private readonly settings: RendererSettings
   private readonly onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
+  private readonly onRendererFailed: LocalRendererProps['onRendererFailed']
   private gpu: GpuResources | null = null
   /** Undo what this renderer registered elsewhere; dispose() runs them. */
   private readonly disposers: (() => void)[] = []
@@ -220,8 +240,10 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  /** A camera reset waiting for the next model. The first model always gets one. */
-  private cameraResetPending = true
+  private cameraFraming: CameraFraming = {
+    phase: 'initial-load',
+    reset: 'host-policy',
+  }
   private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -260,6 +282,7 @@ export class LocalRenderer {
       defaultPlaneVisibility: { xy: true, xz: true, yz: true },
     }
     this.onModelLoadSettled = props.onModelLoadSettled
+    this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
     this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
 
@@ -315,10 +338,10 @@ export class LocalRenderer {
     return Object.values(this.settings.defaultPlaneVisibility).some(Boolean)
   }
 
-  private getPlaneTarget(id: string | null): Mesh | null {
+  private getPlaneTargets(id: string | null): Mesh[] | null {
     if (!id) return null
     const plane = this.gpu?.planeRenderer.planes.get(id)
-    return plane?.group.visible ? plane.mesh : null
+    return plane?.group.visible ? plane.meshes : null
   }
 
   private getSelectedTargets() {
@@ -326,7 +349,7 @@ export class LocalRenderer {
       .flatMap(
         (id) =>
           this.bodyFacesById.get(id) ??
-          this.getPlaneTarget(id) ??
+          this.getPlaneTargets(id) ??
           this.targetsByEntityId.get(id)
       )
       .filter(isNonNullable)
@@ -349,11 +372,16 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  // What hovering the target highlights: its whole body with a body filter,
-  // otherwise all the meshes of its face, or just the target for edges and planes.
+  // What hovering the target highlights: all quadrants of a plane, its whole
+  // body with a body filter, otherwise all the meshes of its face, or just the
+  // target for edges.
   private getHoverTargets(target: Mesh | null, filter: readonly EntityType[]) {
     if (!target) {
       return []
+    }
+    const planeTargets = this.getPlaneTargets(target.name)
+    if (planeTargets) {
+      return planeTargets
     }
     if (getBodySelectionType(filter)) {
       return this.getBodyFaces(target)
@@ -368,9 +396,8 @@ export class LocalRenderer {
     const { planeRenderer, edgeRenderer, sketchLineRenderer } = gpu
     planeRenderer.updateDefaultPlanes(this.host.defaultPlanes())
     planeRenderer.setDefaultVisibility(this.settings.defaultPlaneVisibility)
-    const targets = Array.from(
-      planeRenderer.planes.values(),
-      ({ mesh }) => mesh
+    const targets = Array.from(planeRenderer.planes.values()).flatMap(
+      ({ meshes }) => meshes
     )
 
     // Rebuild lookups
@@ -801,8 +828,40 @@ export class LocalRenderer {
   }
 
   private readonly handleInitializationError = (error: unknown) => {
+    if (this.disposed) return
     console.error('[LocalRenderer] initialization failed', error)
     reportRejection(error)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
+    this.onRendererFailed?.({
+      kind: 'initialization',
+      message: error instanceof Error ? error.message : String(error),
+    })
+  }
+
+  private readonly handleDeviceLost = (info: DeviceLostInfo) => {
+    // three.js ignores the loss that dispose() causes, but the scene may be gone.
+    if (this.disposed) return
+    console.error('[LocalRenderer] GPU device lost', info)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: lost',
+      dedupeKey: 'LocalRenderer:lost',
+      extra: {
+        kind: 'lost',
+        api: info.api,
+        reason: info.reason,
+        message: info.message,
+      },
+    })
+    // Stop rendering, so a later execution can't save a blank project thumbnail.
+    this.dispose()
+    this.onRendererFailed?.({ kind: 'lost', message: info.message })
   }
 
   private configureAmbientOcclusion(
@@ -1168,6 +1227,13 @@ export class LocalRenderer {
       alpha: false,
       device,
     })
+    // Covers both backends: a lost WebGPU device and a lost WebGL 2 context.
+    // Keep three.js's default handler, which marks the renderer as lost.
+    const defaultOnDeviceLost = renderer.onDeviceLost.bind(renderer)
+    renderer.onDeviceLost = (info) => {
+      defaultOnDeviceLost(info)
+      this.handleDeviceLost(info)
+    }
     await renderer.init()
     if (this.disposed) {
       await renderer.dispose()
@@ -1399,6 +1465,7 @@ export class LocalRenderer {
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
+      toast.dismiss(MODEL_LOAD_ERROR_TOAST_ID)
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
@@ -1410,6 +1477,9 @@ export class LocalRenderer {
     this.rebuildSelectionTargets()
     console.error('[LocalRenderer] GLB model load failed', error)
     reportRejection(error)
+    toast.error('Failed to load the model for display.', {
+      id: MODEL_LOAD_ERROR_TOAST_ID,
+    })
     this.onModelLoadSettled?.()
   }
 
@@ -1421,17 +1491,18 @@ export class LocalRenderer {
     if (this.isLoadedSceneCurrent()) {
       this.resetCamera()
     } else {
-      this.cameraResetPending = true
+      this.cameraFraming = { ...this.cameraFraming, reset: 'requested' }
     }
   }
 
-  /**
-   * Also stands in for the reset after opening a project, which local mode
-   * skips because the model is not loaded yet.
-   */
+  /** Apply queued resets and consult the host only on this renderer's first successful scene load. */
   private resetCameraIfPending() {
-    if (this.cameraResetPending) {
-      this.cameraResetPending = false
+    const framing = this.cameraFraming
+    const frameInitialModel =
+      framing.phase === 'initial-load' &&
+      (this.host.claimInitialCameraFrame?.() ?? true)
+    this.cameraFraming = { phase: 'subsequent-loads', reset: 'preserve' }
+    if (framing.reset === 'requested' || frameInitialModel) {
       this.resetCamera()
     }
   }

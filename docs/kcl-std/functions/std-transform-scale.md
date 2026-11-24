@@ -36,8 +36,18 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 `(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become
 `(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
 
-**NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
-way (i.e. scaled differently along each axis).
+### Non-uniform scaling cases
+
+To scale a circular region non-uniformly, extrude it into a cylindrical solid first,
+then scale the solid.
+
+- Revolved bodies currently don't support non-uniform scaling (scaling differently
+  along each axis).
+- Sketches or regions containing circles or circular arcs currently don't support
+  non-uniform scaling. For example, scaling a circle on the XY plane with
+  `x = 2, y = 1` keeps it circular instead of producing an ellipse. The transform can
+  silently produce incorrect geometry without a warning or error. Use uniform
+  scaling (`factor`) for these sketches and regions.
 
 ### Arguments
 

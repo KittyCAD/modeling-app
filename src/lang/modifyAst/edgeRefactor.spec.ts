@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 /**
  * Tests for refactoring fillet/chamfer from deprecated tags to edgeRefs (with face tags).
  * The refactor uses the artifact graph to resolve face IDs to tag names (e.g. e1, cap1).
@@ -51,11 +52,9 @@ import type {
   EdgeRefactorMeta,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 const WASM_PATH = join(process.cwd(), 'public', 'kcl_wasm_lib_bg.wasm')
 
@@ -1750,26 +1749,17 @@ part = bracket()
   describe('integration (CPU Engine)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
-    let engineCommandManagerInThisFile: ConnectionManager = null!
 
-    beforeEach(async () => {
-      if (instanceInThisFile) return
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({
-          webrtc: false,
-          geometryOnly: true,
-        })
-      instanceInThisFile = instance
-      kclManagerInThisFile = kclManager
-      engineCommandManagerInThisFile = engineCommandManager
-    })
-
-    afterAll(() => {
-      engineCommandManagerInThisFile?.tearDown({
-        route: 'user-requested',
-        initiatedBy: 'client',
-      })
-    })
+    setupEngineTestWorld(
+      ({ instance, kclManager }) => {
+        instanceInThisFile = instance
+        kclManagerInThisFile = kclManager
+      },
+      {
+        webrtc: false,
+        geometryOnly: true,
+      }
+    )
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
       const ast = assertParse(kcl, instanceInThisFile)
@@ -2236,57 +2226,11 @@ surface001 = extrude(
     })
 
     it('refactors revolve with deprecated axis (axis = getOppositeEdge) to edgeRef', async () => {
-      const ast = assertParse(KCL_REVOLVE_GET_OPPOSITE_EDGE, instanceInThisFile)
-      // Ensure AST has a revolve call we can find (body items with init = revolve(...))
-      const revolveDecl = ast.body.find(
-        (item) =>
-          item.type === 'VariableDeclaration' &&
-          item.declaration.init.type === 'CallExpressionKw' &&
-          item.declaration.init.callee.name.name === 'revolve'
+      const refactored = await runIntegrationRefactor(
+        KCL_REVOLVE_GET_OPPOSITE_EDGE
       )
-      expect(
-        revolveDecl,
-        'AST should contain a VariableDeclaration with revolve(...) init'
-      ).toBeDefined()
-      const axisArg =
-        revolveDecl?.type === 'VariableDeclaration' &&
-        revolveDecl.declaration.init.type === 'CallExpressionKw'
-          ? revolveDecl.declaration.init.arguments.find(
-              (a) => a.label?.name === 'axis'
-            )
-          : undefined
-      expect(axisArg, 'revolve call should have axis argument').toBeDefined()
-      expect(
-        axisArg?.arg.type === 'CallExpressionKw'
-          ? axisArg.arg.callee.name.name
-          : undefined,
-        'axis should be getOppositeEdge(...)'
-      ).toBe('getOppositeEdge')
-
-      await kclManagerInThisFile.executeAst({ ast })
-      const execState = kclManagerInThisFile.execState
-      if ((execState.edgeRefactorMetadata?.length ?? 0) < 1) {
-        expect(execState.artifactGraph.size).toBeGreaterThanOrEqual(0)
-        return
-      }
-      expect(execState.artifactGraph.size).toBeGreaterThan(0)
-      const refactored = refactorZ0006Unified(
-        ast,
-        execState.edgeRefactorMetadata ?? [],
-        execState.directTagFilletMetadata ?? [],
-        execState.artifactGraph,
-        instanceInThisFile
-      )
-      expect(err(refactored)).toBe(false)
-      if (err(refactored)) throw refactored
       expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
       const n = norm(refactored)
-      expect(n).toContain('revolve(')
-      // Refactor may not apply in all environments (path/mutation persistence); skip instead of fail
-      if (!n.includes('axis')) {
-        return // skip remainder: refactor did not produce axis
-      }
-      expect(n).toContain('axis')
       expect(n).not.toContain('axis = getOppositeEdge')
       // The engine now returns the minimal reference: these side faces are sufficient.
       const revolveLineWithAxis =
@@ -2298,27 +2242,14 @@ surface001 = extrude(
     })
 
     it('refactors helix with deprecated axis (axis = getOppositeEdge) to axis with edge reference payload', async () => {
-      const ast = assertParse(KCL_HELIX_GET_OPPOSITE_EDGE, instanceInThisFile)
-      await kclManagerInThisFile.executeAst({ ast })
-      const execState = kclManagerInThisFile.execState
-      if ((execState.edgeRefactorMetadata?.length ?? 0) < 1) {
-        expect(execState.artifactGraph.size).toBeGreaterThanOrEqual(0)
-        return
-      }
-      expect(execState.artifactGraph.size).toBeGreaterThan(0)
-      const refactored = refactorZ0006Unified(
-        ast,
-        execState.edgeRefactorMetadata ?? [],
-        execState.directTagFilletMetadata ?? [],
-        execState.artifactGraph,
-        instanceInThisFile
+      const refactored = await runIntegrationRefactor(
+        KCL_HELIX_GET_OPPOSITE_EDGE
       )
-      expect(err(refactored)).toBe(false)
-      if (err(refactored)) throw refactored
       expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
       const n = norm(refactored)
-      expect(n).toContain('helix(')
-      expect(n).toContain('axis')
+      expect(n).toMatch(
+        /axis = \{ sideFaces = \[(?:seg01, capEnd001|capEnd001, seg01)\] \}/
+      )
       expect(n).not.toContain('axis = getOppositeEdge')
     })
 

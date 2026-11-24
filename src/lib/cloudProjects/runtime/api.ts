@@ -1,3 +1,4 @@
+import { validateProjectUpload } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { collectApiPages } from '@src/lib/apiPagination'
 import { ApiError, type Client, projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
@@ -7,7 +8,6 @@ import {
   withCloudFailureContextSync,
 } from '@src/lib/cloudProjects/runtime/failureContext'
 import {
-  getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
 } from '@src/lib/cloudProjects/runtime/archive'
@@ -274,6 +274,7 @@ export async function updateRemoteProject({
 
   const uploadFiles = buildProjectUploadFiles(projectPath, files, {
     expectedRevision,
+    fallbackTitle: project.title,
     entrypointPath,
     publicationMetadata,
     deletedPaths,
@@ -284,6 +285,7 @@ export async function updateRemoteProject({
 }
 
 type BuildProjectFormDataOptions = {
+  fallbackTitle?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
@@ -298,6 +300,11 @@ function buildProjectUploadFiles(
   return withCloudFailureContextSync(
     { stage: 'archive', point: 'prepare-project-upload' },
     () => {
+      const error = validateProjectUpload(files)
+      if (error) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
       const upload = prepareProjectFilesForCloudUpload(
         projectPath,
         files,
@@ -313,7 +320,7 @@ function buildProjectUploadFiles(
         ...upload.files.map((file) => ({
           name: file.relativePath,
           data: new Blob([toArrayBuffer(file.data)], {
-            type: getMimeType(file.relativePath),
+            type: 'application/octet-stream',
           }),
         })),
       ]

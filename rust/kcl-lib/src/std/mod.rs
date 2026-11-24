@@ -9,6 +9,7 @@ pub mod chamfer;
 pub mod clone;
 pub mod constraints;
 pub mod csg;
+pub mod drawing;
 pub mod edge;
 pub mod extrude;
 pub mod faces;
@@ -915,6 +916,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, St
             |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::view::named"),
         ),
+        ("drawing", "standardSheet") => (
+            |e, a| Box::pin(crate::std::drawing::create_sheet(e, a).map(|r| r.map(KclValue::normal))),
+            StdFnProps::default("std::drawing::standardSheet"),
+        ),
+        ("drawing", "customSheet") => (
+            |e, a| Box::pin(crate::std::drawing::create_custom_sheet(e, a).map(|r| r.map(KclValue::normal))),
+            StdFnProps::default("std::drawing::customSheet"),
+        ),
         (module, fn_name) => {
             return Err(KclError::internal(format!(
                 "No implementation found for {module}::{fn_name}, this is not a recognized KCL standard library function"
@@ -946,6 +955,7 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ),
         ("view", "CameraView") => (PrimitiveType::CameraView, StdFnProps::default("std::view::CameraView")),
         ("view", "NamedView") => (PrimitiveType::NamedView, StdFnProps::default("std::view::NamedView")),
+        ("drawing", "Sheet") => (PrimitiveType::Sheet, StdFnProps::default("std::drawing::Sheet")),
         _ => unreachable!(),
     }
 }

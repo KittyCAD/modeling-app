@@ -46,7 +46,7 @@ import {
 } from '@src/lib/projectLibraries'
 import type {
   HomeProjectActionsService,
-  HomeProjectCloneToLibraryTarget,
+  HomeProjectDuplicateToLibraryTarget,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import {
@@ -74,7 +74,7 @@ const cloudLibraryTarget = {
     id: 'personal-cloud',
     type: CLOUD_PROJECT_LIBRARY_TYPE,
   },
-} as HomeProjectCloneToLibraryTarget
+} as HomeProjectDuplicateToLibraryTarget
 const publishSubmission = {
   title: 'Example',
   description: 'Example project',
@@ -270,7 +270,7 @@ describe('PublishButton', () => {
     )
   })
   test('publishes the cloud clone contents while preserving later source edits', async () => {
-    const cloneToLibrary = vi.fn().mockResolvedValue({
+    const duplicateToLibrary = vi.fn().mockResolvedValue({
       defaultFile: '/cloud/example/main.kcl',
       localProjectPath: '/cloud/example',
     })
@@ -280,8 +280,10 @@ describe('PublishButton', () => {
     const homeProjectActions = {
       canRename: vi.fn().mockReturnValue(true),
       rename: vi.fn(),
-      getCloneToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
-      cloneToLibrary,
+      getDuplicateToLibraryTargets: vi
+        .fn()
+        .mockReturnValue([cloudLibraryTarget]),
+      duplicateToLibrary,
     } as unknown as HomeProjectActionsService
     const codeState = {
       value: '',
@@ -294,7 +296,7 @@ describe('PublishButton', () => {
       closeProject,
       settingsSend,
     })
-    cloneToLibrary.mockImplementation(async () => {
+    duplicateToLibrary.mockImplementation(async () => {
       codeState.value = 'later source edit'
       return {
         defaultFile: '/cloud/example/main.kcl',
@@ -308,12 +310,16 @@ describe('PublishButton', () => {
     })
     expect(writeToFile).toHaveBeenCalledWith('')
     expect(mockState.writeProjectTitleToProjectToml).not.toHaveBeenCalled()
-    expect(cloneToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud', {
-      title: 'Example',
-    })
+    expect(duplicateToLibrary).toHaveBeenCalledWith(
+      homeProject,
+      'personal-cloud',
+      {
+        title: 'Example',
+      }
+    )
     expect(closeProject).not.toHaveBeenCalled()
     expect(settingsSend).not.toHaveBeenCalled()
-    expect(cloneToLibrary).toHaveBeenCalledBefore(
+    expect(duplicateToLibrary).toHaveBeenCalledBefore(
       mockState.publishCurrentProject
     )
     expect(mockState.publishCurrentProject).toHaveBeenCalledWith(
@@ -324,10 +330,14 @@ describe('PublishButton', () => {
     )
   })
   test('does not publish when the cloud transfer fails', async () => {
-    const cloneToLibrary = vi.fn().mockRejectedValue(new Error('Upload failed'))
+    const duplicateToLibrary = vi
+      .fn()
+      .mockRejectedValue(new Error('Upload failed'))
     const homeProjectActions = {
-      getCloneToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
-      cloneToLibrary,
+      getDuplicateToLibraryTargets: vi
+        .fn()
+        .mockReturnValue([cloudLibraryTarget]),
+      duplicateToLibrary,
     } as unknown as HomeProjectActionsService
     const dialogProps = await openPublishDialog(
       createApp({
@@ -338,9 +348,13 @@ describe('PublishButton', () => {
     await act(async () => {
       await expect(dialogProps.onSubmit(publishSubmission)).resolves.toBe(false)
     })
-    expect(cloneToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud', {
-      title: 'Example',
-    })
+    expect(duplicateToLibrary).toHaveBeenCalledWith(
+      homeProject,
+      'personal-cloud',
+      {
+        title: 'Example',
+      }
+    )
     expect(mockState.publishCurrentProject).not.toHaveBeenCalled()
   })
 })

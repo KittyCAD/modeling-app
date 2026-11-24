@@ -116,6 +116,7 @@ export class SceneInfra {
   lastMouseState: MouseState = { type: 'idle' }
 
   public readonly baseUnitChange = new LegacySignal()
+  public readonly themeChange = new LegacySignal()
 
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
@@ -194,7 +195,9 @@ export class SceneInfra {
   }
 
   set theme(theme: Themes) {
+    if (this._theme === theme) return
     this._theme = theme
+    this.themeChange.dispatch()
   }
 
   get theme() {

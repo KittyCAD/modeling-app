@@ -1,7 +1,8 @@
 import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
-import { afterAll, beforeAll, expect, it, vi } from 'vitest'
+import { expect, it, vi } from 'vitest'
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { EngineTestWorld } from '@src/test-setup/engineTestWorld'
 import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import {
   recast,
@@ -44,19 +45,13 @@ function removeObsoleteEdges(graph: ArtifactGraph) {
   }
 }
 
-let world: Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
-beforeAll(async () => {
-  world = await buildTheWorldAndConnectToEngine({
-    webrtc: false,
-    geometryOnly: true,
-  })
-})
-afterAll(() => {
-  world?.engineCommandManager.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+let world: EngineTestWorld
+setupEngineTestWorld(
+  (next) => {
+    world = next
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 async function validateGdtObjects(objects: Selections) {
   const config = modelingMachineCommandConfig['GDT Annotation']
