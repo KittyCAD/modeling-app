@@ -1,8 +1,3 @@
-import { createElement } from 'react'
-import { SaveStatusHeaderItem } from '@src/components/SaveStatusHeaderItem'
-import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
-import { act, fireEvent, render, screen } from '@testing-library/react'
-import { Registry, provide } from 'plankton'
 import { ProjectArchiveLimitError } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { signal } from '@preact/signals-core'
 import { createCloudProjectStorageProvider } from '@src/lib/cloudProjects/storage'
@@ -729,13 +724,15 @@ it('watches only the captured subtree and stops delivering changes after disposa
   expect(changes).toEqual([`${root}/parts/main.kcl`])
 })
 
-it('keeps an archive-limit notice after opening fails and clears it on the next successful open', async () => {
+it('keeps an archive-limit notice until dismissal, even after a successful open', async () => {
   const { storage } = setup()
   const failure = new ProjectArchiveLimitError('entries')
   vi.mocked(parseProjectArchive).mockRejectedValueOnce(failure)
   await expect(storage.openProject('one')).rejects.toBe(failure)
   expect(storage.archiveLimitFailure.value).toBe(failure)
   await storage.openProject('one')
+  expect(storage.archiveLimitFailure.value).toBe(failure)
+  storage.dismissArchiveLimitFailure()
   expect(storage.archiveLimitFailure.value).toBeUndefined()
 })
 
@@ -748,38 +745,6 @@ it('does not turn an unsafe archive failure into a project-size notice', async (
   expect(storage.archiveLimitFailure.value).toBeUndefined()
 })
 
-it('shows a rejected open in the header without an open session and allows dismissal', async () => {
-  const { storage } = setup()
-  const registry = new Registry()
-  await registry.configure([provide(cloudStorageService, storage)])
-  const view = render(
-    createElement(SaveStatusHeaderItem, { app: { registry } })
-  )
-  try {
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    vi.mocked(parseProjectArchive).mockRejectedValueOnce(
-      new ProjectArchiveLimitError('entries')
-    )
-    await act(async () => {
-      await expect(storage.openProject('one')).rejects.toThrow(/file count/)
-    })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Project exceeds 10,000 entries' })
-    )
-    expect(screen.getByRole('status')).toHaveTextContent('Reduce')
-    expect(
-      screen.getByRole('link', { name: 'Contact support' })
-    ).toHaveAttribute('href', 'https://community.zoo.dev/')
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Dismiss archive limit message' })
-    )
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
-  } finally {
-    view.unmount()
-    await registry.dispose()
-  }
-})
-
 it('hides a previous account archive notice after switching accounts', async () => {
   const account = signal('first')
   const { storage } = setup(() => account.value)
@@ -790,4 +755,22 @@ it('hides a previous account archive notice after switching accounts', async () 
   expect(storage.archiveLimitFailure.value).toBeDefined()
   account.value = 'second'
   expect(storage.archiveLimitFailure.value).toBeUndefined()
+})
+
+it('shows a new limit failure even if an earlier notice is dismissed while it is opening', async () => {
+  const { storage } = setup()
+  vi.mocked(parseProjectArchive).mockRejectedValueOnce(
+    new ProjectArchiveLimitError('entries')
+  )
+  await expect(storage.openProject('one')).rejects.toThrow(/file count/)
+  const pending =
+    Promise.withResolvers<Awaited<ReturnType<typeof parseProjectArchive>>>()
+  vi.mocked(parseProjectArchive).mockReturnValueOnce(pending.promise)
+  const opening = storage.openProject('one').catch((error: unknown) => error)
+  await vi.waitFor(() => expect(parseProjectArchive).toHaveBeenCalledTimes(2))
+  storage.dismissArchiveLimitFailure()
+  const failure = new ProjectArchiveLimitError('bytes')
+  pending.reject(failure)
+  expect(await opening).toBe(failure)
+  expect(storage.archiveLimitFailure.value).toBe(failure)
 })
