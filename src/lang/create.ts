@@ -397,35 +397,41 @@ export function findUniqueName(
   ast: Program | string,
   name: string,
   pad = 3,
-  index = 1
+  index = 1,
+  reservedNames?: ReadonlySet<string>
 ): string {
-  let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
+  const searchStr = typeof ast === 'string' ? ast : JSON.stringify(ast)
   const indexStr = String(index).padStart(pad, '0')
+  const nameInUse = (candidate: string) =>
+    reservedNames?.has(candidate) || searchStr.includes(`:"${candidate}"`)
 
   const endingDigitsMatcher = /\d+$/
   const nameEndsInDigits = name.match(endingDigitsMatcher)
-  let nameIsInString = searchStr.includes(`:"${name}"`)
-
   if (nameEndsInDigits !== null) {
     // base case: name is unique and ends in digits
-    if (!nameIsInString) return name
+    if (!nameInUse(name)) return name
 
     // recursive case: name is not unique and ends in digits
     const newPad = nameEndsInDigits[0].length
     const newIndex = parseInt(nameEndsInDigits[0]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
 
-    return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
+    return findUniqueName(
+      searchStr,
+      nameWithoutDigits,
+      newPad,
+      newIndex,
+      reservedNames
+    )
   }
 
   const newName = `${name}${indexStr}`
-  nameIsInString = searchStr.includes(`:"${newName}"`)
 
   // base case: name is unique and does not end in digits
-  if (!nameIsInString) return newName
+  if (!nameInUse(newName)) return newName
 
   // recursive case: name is not unique and does not end in digits
-  return findUniqueName(searchStr, name, pad, index + 1)
+  return findUniqueName(searchStr, name, pad, index + 1, reservedNames)
 }
 
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {

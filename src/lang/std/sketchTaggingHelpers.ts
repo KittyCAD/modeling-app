@@ -55,7 +55,7 @@ type AddTagFn = (
 ) => { modifiedAst: Node<Program>; tag: string } | Error
 
 export function addTagKw(prefix = 'seg'): AddTagFn {
-  return ({ node, pathToNode, wasmInstance }) => {
+  return ({ node, pathToNode, wasmInstance, reservedNames }) => {
     const _node = { ...node }
     const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
       _node,
@@ -68,7 +68,8 @@ export function addTagKw(prefix = 'seg'): AddTagFn {
     const primaryCallExp: CallExpressionKw = callExpr.node
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
-      tagArg || createTagDeclarator(findUniqueName(_node, prefix, 2))
+      tagArg ||
+      createTagDeclarator(findUniqueName(_node, prefix, 2, 1, reservedNames))
     const isTagExisting = !!tagArg
     if (!isTagExisting) {
       const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
@@ -207,7 +208,7 @@ export function addTagToEdgeCutSelector(
   }
   selectedEdges.elements = [selectedEdge]
   const tag = createTagDeclarator(
-    findUniqueName(modifiedAst, `${operation}Face`, 2)
+    findUniqueName(modifiedAst, `${operation}Face`, 2, 1, tagInfo.reservedNames)
   )
   selectedCall.arguments.push(createLabeledArg('tag', tag))
 
@@ -302,7 +303,9 @@ function addTagToEdgeCut(
 
   const chamferLength = findKwArg('length', callExpr)
   if (!chamferLength) return new Error('no chamfer length')
-  const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
+  const tagDec = createTagDeclarator(
+    findUniqueName(_node, 'seg', 2, 1, tagInfo.reservedNames)
+  )
   const solid3dIdentifierUsedInOriginalChamfer = callExpr.unlabeled
   const solid = isPipeExpression ? null : solid3dIdentifierUsedInOriginalChamfer
   const newExpressionToInsert = createCallExpressionStdLibKw('chamfer', solid, [

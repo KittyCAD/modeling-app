@@ -139,7 +139,8 @@ export function modifyAstWithTagsForSelection(
       ast,
       selection,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      options?.reservedNames
     )
     if (err(result)) {
       return result
@@ -182,6 +183,7 @@ export type ModifyAstWithTagsOptions = {
   tagMethods?: string[]
   edgeContext?: EdgeSelectionContext
   nodeToEdit?: PathToNode
+  reservedNames?: ReadonlySet<string>
 }
 
 export function getEdgeBodyKey(
@@ -485,7 +487,8 @@ function modifyAstWithTagsForEdgeSelection(
         astClone,
         faceSelection,
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        options?.reservedNames
       )
       if (err(result)) return result
 
@@ -683,7 +686,8 @@ function modifyAstWithTagForFaceSelection(
   ast: Node<Program>,
   selection: ResolvedGraphSelection,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  reservedNames?: ReadonlySet<string>
 ): { modifiedAst: Node<Program>; expr: Expr } | Error {
   if (!selection.artifact) {
     return new Error('Selection does not have an artifact')
@@ -696,7 +700,8 @@ function modifyAstWithTagForFaceSelection(
       ast,
       selection.artifact,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      reservedNames
     )
     if (err(result)) return result
     const { modifiedAst, expr } = result
@@ -711,7 +716,8 @@ function modifyAstWithTagForFaceSelection(
       ast,
       selection.artifact,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      reservedNames
     )
     if (err(result)) return result
     return {
@@ -725,7 +731,8 @@ function modifyAstWithTagForFaceSelection(
     const result = modifyAstWithTagForEdgeCutFace(
       ast,
       selection.artifact,
-      wasmInstance
+      wasmInstance,
+      reservedNames
     )
     if (err(result)) return result
     const { modifiedAst, tag } = result
@@ -754,7 +761,8 @@ function modifyAstWithTagForWallFace(
   ast: Node<Program>,
   wallFace: Artifact,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  reservedNames?: ReadonlySet<string>
 ): { modifiedAst: Node<Program>; expr: Expr } | Error {
   if (wallFace.type !== 'wall') {
     return new Error('Selection artifact is not a valid wall type')
@@ -809,7 +817,8 @@ function modifyAstWithTagForWallFace(
   const result = modifyAstWithTagForSketchSegment(
     astClone,
     pathToSegmentNode,
-    wasmInstance
+    wasmInstance,
+    reservedNames
   )
   if (err(result)) return result
   const { modifiedAst, tag } = result
@@ -833,7 +842,8 @@ export function modifyAstWithTagForCapFace(
   ast: Node<Program>,
   capFace: Artifact,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  reservedNames?: ReadonlySet<string>
 ): { modifiedAst: Node<Program>; tag: string } | Error {
   if (capFace.type !== 'cap') {
     return new Error('Selection artifact is not a valid cap type')
@@ -876,7 +886,7 @@ export function modifyAstWithTagForCapFace(
     return { modifiedAst: astClone, tag: existingTag.arg.value }
   }
 
-  const newTag = findUniqueName(astClone, `cap${capType}`)
+  const newTag = findUniqueName(astClone, `cap${capType}`, 3, 1, reservedNames)
   const tagCall = createLabeledArg(tagParamName, createTagDeclarator(newTag))
   callExp.node.arguments.push(tagCall)
   return { modifiedAst: astClone, tag: newTag }
@@ -892,7 +902,8 @@ export function modifyAstWithTagForCapFace(
 function modifyAstWithTagForSketchSegment(
   ast: Node<Program>,
   pathToSegmentNode: PathToNode,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  reservedNames?: ReadonlySet<string>
 ): { modifiedAst: Node<Program>; tag: string } | Error {
   // Clone AST
   const astClone = structuredClone(ast)
@@ -916,6 +927,7 @@ function modifyAstWithTagForSketchSegment(
       pathToNode: pathToSegmentNode,
       node: astClone,
       wasmInstance,
+      reservedNames,
     },
     segmentNode.node.callee.name.name,
     null,
@@ -946,7 +958,8 @@ export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode,
   wasmInstance: ModuleType,
-  edgeCutMeta: EdgeCutInfo | null = null
+  edgeCutMeta: EdgeCutInfo | null = null,
+  reservedNames?: ReadonlySet<string>
 ): { modifiedAst: Node<Program>; tag: string } | Error {
   const segmentNode = getNodeFromPath<CallExpressionKw>(
     astClone,
@@ -975,6 +988,7 @@ export function mutateAstWithTagForSketchSegment(
       pathToNode: pathToSegmentNode,
       node: astClone,
       wasmInstance,
+      reservedNames,
     },
     segmentNode.node.callee.name.name,
     edgeCutMeta,
@@ -997,7 +1011,8 @@ export function mutateAstWithTagForSketchSegment(
 function modifyAstWithTagForEdgeCutFace(
   ast: Node<Program>,
   edgeCutFace: Artifact,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  reservedNames?: ReadonlySet<string>
 ): { modifiedAst: Node<Program>; tag: string } | Error {
   if (edgeCutFace.type !== 'edgeCut') {
     return new Error('Selection artifact is not a valid edgeCut type')
@@ -1007,6 +1022,7 @@ function modifyAstWithTagForEdgeCutFace(
     node: structuredClone(ast),
     pathToNode: edgeCutFace.codeRef.pathToNode,
     wasmInstance,
+    reservedNames,
   }
   return edgeCutFace.sourceSelectorIndex != null
     ? addTagToEdgeCutSelector(

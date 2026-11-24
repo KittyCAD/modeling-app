@@ -36,6 +36,7 @@ export type EnginePrimitiveSelection = {
   parentEntityId?: string
   primitiveIndex: number
   primitiveType: EntityType
+  entityRef?: Extract<EntityReference, { type: 'edge' }>
 }
 
 type EngineRegionSelectionBase = {

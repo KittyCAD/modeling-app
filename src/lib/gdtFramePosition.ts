@@ -899,6 +899,7 @@ async function distanceCircleCenter(
 
 type DistanceTarget = {
   id?: string
+  parentId?: string | null
   isEdge: boolean
   sides: string[]
   bounds?: BoundingBox
@@ -908,6 +909,18 @@ type DistanceTarget = {
 }
 
 type DistanceBoundsQuery = (ids: string[]) => Promise<BoundingBox | undefined>
+
+async function getDistanceParentId(
+  engine: ConnectionManager,
+  id: string | undefined
+): Promise<string | null> {
+  if (!id) return null
+  const parent = await queryModelingCommand(engine, {
+    type: 'entity_get_parent_id',
+    entity_id: id,
+  })
+  return parent?.type === 'entity_get_parent_id' ? parent.data.entity_id : null
+}
 
 async function getDistanceTargets(
   selections: Selections,
@@ -932,25 +945,23 @@ async function getDistanceTargets(
             otherSelections: [],
           })[0]
       const isEdge = isEdgeSelection(selection)
-      let sides = primitive
-        ? []
-        : selection.entityRef?.type === 'edge'
+      let parentId: string | null | undefined
+      let sides =
+        selection.entityRef?.type === 'edge'
           ? selection.entityRef.side_faces
-          : selection.artifact?.type === 'segment' ||
-              selection.artifact?.type === 'sweepEdge'
+          : !primitive &&
+              (selection.artifact?.type === 'segment' ||
+                selection.artifact?.type === 'sweepEdge')
             ? (selection.artifact.commonSurfaceIds ?? [])
             : []
-      if (primitive && picked.length === 2) {
-        const parent = await queryModelingCommand(engine, {
-          type: 'entity_get_parent_id',
-          entity_id: id,
-        })
+      if (primitive && !sides.length && picked.length === 2) {
+        parentId = await getDistanceParentId(engine, id)
         const adjacent =
-          parent?.type === 'entity_get_parent_id' &&
+          parentId &&
           (await queryModelingCommand(engine, {
             type: 'solid3d_get_all_edge_faces',
-            object_id: parent.data.entity_id,
-            edge_id: id,
+            object_id: parentId,
+            edge_id: selection.entityId,
           }))
         if (adjacent && adjacent.type === 'solid3d_get_all_edge_faces')
           sides = adjacent.data.faces
@@ -963,19 +974,18 @@ async function getDistanceTargets(
         !selection.entityRef.end_faces?.length &&
         selection.entityRef.index === undefined
       ) {
-        const parent = await queryModelingCommand(engine, {
-          type: 'entity_get_parent_id',
-          entity_id: sides[0],
-        })
+        const parent = await getDistanceParentId(engine, sides[0])
         const edge =
-          parent?.type === 'entity_get_parent_id' &&
+          parent &&
           (await queryModelingCommand(engine, {
             type: 'solid3d_get_common_edge',
-            object_id: parent.data.entity_id,
+            object_id: parent,
             face_ids: sides,
           }))
-        if (edge && edge.type === 'solid3d_get_common_edge' && edge.data.edge)
+        if (edge && edge.type === 'solid3d_get_common_edge' && edge.data.edge) {
           id = edge.data.edge
+          parentId = parent
+        }
       }
       const bounds = id ? await boundingBox([id]) : undefined
       const endpoints =
@@ -1016,6 +1026,7 @@ async function getDistanceTargets(
       }
       return {
         id,
+        parentId,
         isEdge,
         sides,
         bounds,
@@ -1092,19 +1103,14 @@ async function getDistanceSetback({
   let bounds = modelBounds
   if (from && to) {
     const parents = await Promise.all(
-      targets.map(async (t) => {
-        if (!t.id) return undefined
-        const parent = await queryModelingCommand(engine, {
-          type: 'entity_get_parent_id',
-          entity_id: t.id,
-        })
-        return parent?.type === 'entity_get_parent_id'
-          ? parent.data.entity_id
-          : undefined
-      })
+      targets.map(async (target) =>
+        target.parentId === undefined
+          ? await getDistanceParentId(engine, target.id)
+          : target.parentId
+      )
     )
     const bodyBounds =
-      parents.length && parents.every((id) => id !== undefined)
+      parents.length && parents.every((id) => id !== null)
         ? await boundingBox([...new Set(parents)])
         : undefined
     bounds = bodyBounds ?? modelBounds ?? (await boundingBox([]))

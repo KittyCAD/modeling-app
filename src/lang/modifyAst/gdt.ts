@@ -42,14 +42,18 @@ import {
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
 } from '@src/lib/primitiveBodySelection'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 const GDT_LABELED_SELECTION_ARG_NAMES = [
   'faces',
@@ -105,7 +109,7 @@ function resolveSelectionsForTags(
 }
 
 function getEdgeRefPayloadFromSelection(
-  selection: Selection
+  selection: Selection | EnginePrimitiveSelection
 ): ReturnType<typeof entityReferenceToEdgeRefPayload> | null {
   if (selection.entityRef?.type === 'edge') {
     const payload = entityReferenceToEdgeRefPayload(selection.entityRef)
@@ -124,6 +128,8 @@ function getEdgeRefPayloadFromSelection(
       index: payload.index ?? reference.index,
     }
   }
+
+  if (isEnginePrimitiveSelection(selection)) return null
 
   if (selection.artifact?.type === 'segment') {
     return {
@@ -290,59 +296,6 @@ function withoutEdgeLikeSelections(selections: Selections): Selections {
         selection.artifact?.type !== 'segment' &&
         selection.artifact?.type !== 'sweepEdge'
     ),
-  }
-}
-
-function buildGdtFaceAndEdgeExpressions({
-  selections,
-  artifactGraph,
-  ast,
-  wasmInstance,
-}: {
-  selections: Selections
-  artifactGraph: ArtifactGraph
-  ast: Node<Program>
-  wasmInstance: ModuleType
-}):
-  | Error
-  | { modifiedAst: Node<Program>; faceExprs: Expr[]; edgeExprs: Expr[] } {
-  let modifiedAst = ast
-  const edgeResult = buildGdtEdgeExpressions({
-    selections,
-    artifactGraph,
-    ast: modifiedAst,
-    wasmInstance,
-  })
-  if (err(edgeResult)) return edgeResult
-  modifiedAst = edgeResult.modifiedAst
-
-  const faceSelections = resolveSelectionsForTags(
-    withoutEdgeLikeSelections(selections),
-    artifactGraph,
-    isFaceArtifact
-  )
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  return {
-    modifiedAst,
-    faceExprs,
-    edgeExprs: edgeResult.edgeExprs,
   }
 }
 
@@ -1357,15 +1310,19 @@ export function addDistanceGdt({
       leaderScale,
       fontSize,
     ].flatMap((value) =>
-      value && typeof value !== 'string' && 'variableName' in value
+      value &&
+      typeof value !== 'string' &&
+      'variableName' in value &&
+      typeof value.variableName === 'string'
         ? [value.variableName]
         : []
     )
   )
+  type ResolvedBody = { expr: Expr; binding?: [number, string] }
   const bodyExpression = (
     selection: Selection,
     lastChildLookup = false
-  ): Expr | Error => {
+  ): ResolvedBody | Error => {
     const owner = getVariableExprsFromSelection(
       { graphSelections: [selection], otherSelections: [] },
       artifactGraph,
@@ -1377,75 +1334,54 @@ export function addDistanceGdt({
         lastChildLookup,
       }
     )
-    if (err(owner)) return owner
+    if (isErr(owner)) return owner
     if (owner.exprs.length !== 1)
       return new Error('Could not resolve the distance body.')
-    if (!owner.pathIfPipe) return owner.exprs[0]
+    if (!owner.pathIfPipe) return { expr: owner.exprs[0] }
     const index = getBodyIndex(owner.pathIfPipe)
-    if (err(index)) return index
-    let name = unnamedBodies.get(index)
-    if (!name) {
-      let suffix = unnamedBodies.size + 1
-      do {
-        name = findUniqueName(modifiedAst, 'body', 3, suffix++)
-      } while (reservedNames.has(name))
-      unnamedBodies.set(index, name)
-      reservedNames.add(name)
-    }
-    return createLocalName(name)
+    if (isErr(index)) return index
+    const existingName = unnamedBodies.get(index)
+    if (existingName) return { expr: createLocalName(existingName) }
+    const name = findUniqueName(
+      modifiedAst,
+      'body',
+      3,
+      unnamedBodies.size + 1,
+      reservedNames
+    )
+    return { expr: createLocalName(name), binding: [index, name] }
+  }
+  const bindBody = (body: ResolvedBody | undefined) => {
+    if (!body?.binding) return
+    unnamedBodies.set(...body.binding)
+    reservedNames.add(body.binding[1])
   }
   for (const selection of targetSelections) {
     const primitive = isEnginePrimitiveSelection(selection)
-    const payload = primitive ? null : getEdgeRefPayloadFromSelection(selection)
-    const topology = primitive
-      ? {
-          parentId: selection.parentEntityId,
-          primitiveIndex: selection.primitiveIndex,
-        }
-      : getEngineTopologyFallbackNormalized(selection)
-    // Match fillet/chamfer: prefer adjacent-face references, then primitive topology.
-    if (
-      topology &&
-      (!payload?.side_faces.length ||
-        [...payload.side_faces, ...(payload.end_faces ?? [])].some((id) => {
-          const face = artifactGraph.get(id)
-          return !face || face.type === 'primitiveFace'
-        }))
-    ) {
-      if (
-        !topology.parentId ||
-        !Number.isInteger(topology.primitiveIndex) ||
-        topology.primitiveIndex < 0
+    const payload = getEdgeRefPayloadFromSelection(selection)
+    if (!primitive && !payload) {
+      const [face] = resolveSelectionsForTags(
+        { graphSelections: [selection], otherSelections: [] },
+        artifactGraph,
+        isFaceArtifact
       )
-        return new Error(
-          'Could not resolve the selected distance edge topology.'
-        )
-      const body = getBodySelectionFromPrimitiveParentEntityId(
-        topology.parentId,
-        artifactGraph
+      if (!face)
+        return new Error('Could not resolve the selected distance face.')
+      const result = modifyAstWithTagsForSelection(
+        modifiedAst,
+        face,
+        artifactGraph,
+        wasmInstance,
+        { reservedNames }
       )
-      if (!body) return new Error('Could not resolve the distance edge body.')
-      if (body.artifact?.type === 'sweep') {
-        const merged = getMergedSweepBodyArtifact(body.artifact, artifactGraph)
-        if (err(merged)) return merged
-        body.artifact = merged
-        body.codeRef = merged.codeRef
-      }
-      const bodyExpr = bodyExpression(body, true)
-      if (err(bodyExpr)) return bodyExpr
-      targets.push({
-        kind: 'edge',
-        expr: createPrimitiveEdgeExpression(
-          bodyExpr,
-          topology.primitiveIndex,
-          wasmInstance
-        ),
-      })
+      if (err(result)) return result
+      modifiedAst = result.modifiedAst
+      targets.push({ kind: 'face', expr: result.exprs[0] })
       continue
     }
-    if (primitive)
-      return new Error('Could not resolve the selected distance edge.')
-    if (payload) {
+
+    let referenceError: Error | undefined
+    if (payload?.side_faces.length) {
       const cap = [...payload.side_faces, ...(payload.end_faces ?? [])]
         .map((id) => artifactGraph.get(id))
         .find((face) => face?.type === 'cap')
@@ -1455,44 +1391,73 @@ export function addDistanceGdt({
         sweep?.type === 'sweep'
           ? bodyExpression({ artifact: sweep, codeRef: sweep.codeRef })
           : undefined
-      if (err(owner)) return owner
-      const result = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        modifiedAst,
-        artifactGraph,
-        undefined,
-        selection.codeRef,
-        undefined,
-        owner,
-        { requireAllFaces: true }
-      )
-      if (err(result)) return result
-      modifiedAst = result.modifiedAst
-      targets.push({
-        kind: 'edge',
-        expr: result.expr,
-      })
-      continue
+      if (isErr(owner)) {
+        referenceError = owner
+      } else {
+        // Solid2D tagging mutates its input. Discard those edits on fallback.
+        const edgeAst = payload.side_faces.some(
+          (id) => artifactGraph.get(id)?.type === 'solid2d'
+        )
+          ? structuredClone(modifiedAst)
+          : modifiedAst
+        const result = createEdgeRefObjectExpression(
+          payload,
+          wasmInstance,
+          edgeAst,
+          artifactGraph,
+          undefined,
+          primitive ? undefined : selection.codeRef,
+          undefined,
+          owner?.expr,
+          { requireAllFaces: true, reservedNames }
+        )
+        if (!isErr(result)) {
+          bindBody(owner)
+          modifiedAst = result.modifiedAst
+          targets.push({ kind: 'edge', expr: result.expr })
+          continue
+        }
+        referenceError = result
+      }
     }
-    const expressions = buildGdtFaceAndEdgeExpressions({
-      selections: { graphSelections: [selection], otherSelections: [] },
-      artifactGraph,
-      ast: modifiedAst,
-      wasmInstance,
-    })
-    if (err(expressions)) return expressions
-    modifiedAst = expressions.modifiedAst
 
-    const edgeExpr = expressions.edgeExprs[0]
-    const expr = edgeExpr ?? expressions.faceExprs[0]
-    if (!expr)
-      return new Error(
-        'No expression could be generated for distance selection.'
+    const topology = primitive
+      ? {
+          parentId: selection.parentEntityId,
+          primitiveIndex: selection.primitiveIndex,
+        }
+      : getEngineTopologyFallbackNormalized(selection)
+    if (
+      !topology?.parentId ||
+      !Number.isInteger(topology.primitiveIndex) ||
+      topology.primitiveIndex < 0
+    ) {
+      return (
+        referenceError ??
+        new Error('Could not resolve the selected distance edge topology.')
       )
+    }
+    const body = getBodySelectionFromPrimitiveParentEntityId(
+      topology.parentId,
+      artifactGraph
+    )
+    if (!body) return new Error('Could not resolve the distance edge body.')
+    if (body.artifact?.type === 'sweep') {
+      const merged = getMergedSweepBodyArtifact(body.artifact, artifactGraph)
+      if (err(merged)) return merged
+      body.artifact = merged
+      body.codeRef = merged.codeRef
+    }
+    const owner = bodyExpression(body, true)
+    if (err(owner)) return owner
+    bindBody(owner)
     targets.push({
-      kind: edgeExpr ? 'edge' : 'face',
-      expr,
+      kind: 'edge',
+      expr: createPrimitiveEdgeExpression(
+        owner.expr,
+        topology.primitiveIndex,
+        wasmInstance
+      ),
     })
   }
 

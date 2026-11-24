@@ -18,7 +18,7 @@ import {
 } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { baseUnitToMm } from '@src/lib/utils'
-import { getPrimitiveSelectionForEntity } from '@src/lib/selections'
+import { getEventForQueryEntityTypeWithPoint } from '@src/lib/selections'
 import { enterEditFlow } from '@src/lib/operations'
 import { getDistanceFrameDefaults } from '@src/lib/gdtFramePosition'
 import { enginelessExecutor } from '@src/lib/testHelpers'
@@ -37,6 +37,9 @@ it.each([
   async ({ plane, unit, sign, geometry, explicit }) => {
     const { instance, rustContext, kclManager, engineCommandManager } =
       await buildTheWorldAndNoEngineConnection()
+    const namedRegion = plane === 'YZ'
+    const hasFaceRefs = namedRegion || (plane === 'XY' && !explicit)
+    const region = 'region(sketch = profile, point = [0mm, 10mm])'
     const ast = assertParse(
       `@settings(defaultLengthUnit = ${unit}, kclVersion = 3.0)
 support = offsetPlane(${plane}, offset = 4mm)
@@ -45,7 +48,7 @@ profile = sketch(on = support) {
   left = circle(center = [-6mm, ${sign}mm], start = [-3mm, ${sign}mm])
   right = circle(center = [6mm, ${sign}mm], start = [9mm, ${sign}mm])
 }
-plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
+${namedRegion ? `profileRegion = ${region}\n` : ''}plate = extrude(${namedRegion ? 'profileRegion' : region}, length = 5mm)`,
       instance
     )
     const { artifactGraph } = await enginelessExecutor(ast, rustContext)
@@ -53,6 +56,48 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
     if (sweep?.type !== 'sweep' || !sweep.pathId)
       throw new Error('Missing extrusion')
     const engineBodyId = sweep.pathId
+    const rimIds = ['left-rim', 'right-rim']
+    if (hasFaceRefs) {
+      const path = artifactGraph.get(engineBodyId)
+      if (path?.type !== 'path') throw new Error('Missing extrusion profile')
+      artifactGraph.set('cap', {
+        type: 'cap',
+        id: 'cap',
+        subType: 'end',
+        sweepId: sweep.id,
+        pathIds: [path.id],
+        edgeCutEdgeIds: [],
+        faceCodeRef: sweep.codeRef,
+        cmdId: sweep.id,
+      })
+      for (const rimId of rimIds) {
+        const name = rimId === 'left-rim' ? 'left' : 'right'
+        const segment = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'segment' &&
+            getSketchSegmentName(ast, artifact.id, artifactGraph, instance) ===
+              name
+        )
+        if (segment?.type !== 'segment') throw new Error('Missing rim segment')
+        artifactGraph.set(`${rimId}-segment`, {
+          ...segment,
+          id: `${rimId}-segment`,
+          originalSegId: segment.originalSegId ?? segment.id,
+          pathId: path.id,
+          codeRef: path.codeRef,
+        })
+        artifactGraph.set(`${rimId}-wall`, {
+          type: 'wall',
+          id: `${rimId}-wall`,
+          sweepId: sweep.id,
+          segId: `${rimId}-segment`,
+          pathIds: [path.id],
+          edgeCutEdgeIds: [],
+          faceCodeRef: sweep.codeRef,
+          cmdId: sweep.id,
+        })
+      }
+    }
     kclManager.artifactGraph = artifactGraph
     kclManager.fileSettings = { defaultLengthUnit: unit }
     const point = (x: number, y: number) =>
@@ -177,17 +222,31 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
         ]
       })
     try {
-      const picks = await Promise.all(
-        ['left-rim', 'right-rim'].map((id) =>
-          getPrimitiveSelectionForEntity(
-            id,
-            engineCommandManager,
-            artifactGraph
+      const otherSelections = await Promise.all(
+        rimIds.map(async (id) => {
+          const event = await getEventForQueryEntityTypeWithPoint(
+            {
+              entity_id: id,
+              reference: {
+                type: 'edge',
+                side_faces: hasFaceRefs ? ['cap', `${id}-wall`] : [],
+              },
+            },
+            {
+              engineCommandManager,
+              kclManager,
+              rustContext,
+              wasmInstance: instance,
+            }
           )
-        )
+          if (
+            event?.type !== 'Set selection' ||
+            event.data.selectionType !== 'enginePrimitiveSelection'
+          )
+            throw new Error('Missing viewport edge selection')
+          return event.data.selection
+        })
       )
-      const otherSelections = picks.filter((p) => p !== null)
-      expect(otherSelections).toHaveLength(2)
       expect(otherSelections[0].parentEntityId).toBe(sweep.id)
       expect(sweep.id).not.toBe(engineBodyId)
       const zero = {
@@ -198,17 +257,30 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
         valueText: '[0, 0]',
         valueCalculated: '[0, 0]',
       }
+      const precision = {
+        valueAst: createLiteral(0, instance),
+        valueText: '0',
+        valueCalculated: '0',
+      }
+      mock.mockClear()
       const result = await modelingCommandCodemods['GDT Distance'].run({
         ast,
         kclManager,
         wasmInstance: instance,
         args: {
           objects: { graphSelections: [], otherSelections },
-          precision: {
-            valueAst: createLiteral(0, instance),
-            valueText: '0',
-            valueCalculated: '0',
-          },
+          precision: namedRegion
+            ? {
+                ...precision,
+                variableName: 'capEnd001',
+                variableIdentifierAst: createLocalName('capEnd001'),
+                variableDeclarationAst: createVariableDeclaration(
+                  'capEnd001',
+                  precision.valueAst
+                ),
+                insertIndex: 0,
+              }
+            : precision,
           ...(explicit ? { framePosition: zero, framePlane: 'XY' } : {}),
         },
       })
@@ -216,10 +288,20 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
       const code = recast(result.modifiedAst, instance)
       if (code instanceof Error) throw code
       expect(code).toContain(`framePlane = ${plane}`)
-      expect(code).toContain('precision = 0')
       expect(code).not.toContain('tolerance =')
-      expect(code).toContain('from = edgeId(plate, index = 1)')
-      expect(code).toContain('to = edgeId(plate, index = 2)')
+      if (namedRegion) {
+        expect(code).toContain('precision = capEnd001')
+        expect(code).toContain('tagEnd = $capEnd002')
+        expect(code).toContain('plate.faces.capEnd002')
+        expect(code).toContain('profileRegion.tags.left')
+        expect(code).toContain('profileRegion.tags.right')
+        expect(code).not.toContain('edgeId(')
+      } else {
+        expect(code).toContain('precision = 0')
+        expect(code).toContain('from = edgeId(plate, index = 1)')
+        expect(code).toContain('to = edgeId(plate, index = 2)')
+        expect(code).not.toContain('tagEnd =')
+      }
       expect(code).not.toContain('faceId(')
       expect(code).toContain(
         explicit
@@ -236,6 +318,14 @@ plate = extrude(region(sketch = profile, point = [0mm, 10mm]), length = 5mm)`,
           expect(mock).not.toHaveBeenCalledWith(
             expect.objectContaining({ cmd: expect.objectContaining({ type }) })
           )
+      } else if (geometry) {
+        const parentIds = mock.mock.calls.flatMap(([request]) =>
+          request.type === 'modeling_cmd_req' &&
+          request.cmd.type === 'entity_get_parent_id'
+            ? [request.cmd.entity_id]
+            : []
+        )
+        expect(parentIds.sort()).toEqual(rimIds)
       }
       const execution = await enginelessExecutor(
         assertParse(code, instance),

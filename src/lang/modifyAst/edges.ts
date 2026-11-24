@@ -750,6 +750,7 @@ export function createEdgeRefObjectExpression(
   options?: {
     allowAstEdits?: boolean
     requireAllFaces?: boolean
+    reservedNames?: ReadonlySet<string>
   }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   const sideFaceExprs: Expr[] = []
@@ -978,7 +979,9 @@ export function createEdgeRefObjectExpression(
       const tagResult = mutateAstWithTagForSketchSegment(
         currentAst,
         segmentPathToNode,
-        wasmInstance
+        wasmInstance,
+        null,
+        options?.reservedNames
       )
       if (err(tagResult)) {
         return new Error(
@@ -999,7 +1002,8 @@ export function createEdgeRefObjectExpression(
           codeRef: codeRefs[0],
         },
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        { reservedNames: options?.reservedNames }
       )
       if (err(tagResult)) {
         return new Error(
@@ -1035,7 +1039,8 @@ export function createEdgeRefObjectExpression(
           codeRef: codeRefs[0],
         },
         artifactGraph,
-        wasmInstance
+        wasmInstance,
+        { reservedNames: options?.reservedNames }
       )
       if (err(tagResult)) {
         continue

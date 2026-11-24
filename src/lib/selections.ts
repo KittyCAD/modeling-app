@@ -1819,7 +1819,10 @@ export async function getEventForQueryEntityTypeWithPoint(
         type: 'Set selection',
         data: {
           selectionType: 'enginePrimitiveSelection',
-          selection: primitiveSel,
+          selection:
+            entityRef.type === 'edge' && entityRef.side_faces.length
+              ? { ...primitiveSel, entityRef }
+              : primitiveSel,
         },
       }
     }

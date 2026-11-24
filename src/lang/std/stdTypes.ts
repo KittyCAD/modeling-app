@@ -40,6 +40,7 @@ export interface AddTagInfo {
   node: Node<Program>
   pathToNode: PathToNode
   wasmInstance: ModuleType
+  reservedNames?: ReadonlySet<string>
 }
 
 /** Inputs for all straight segments, to and from are absolute values, as this gives a
