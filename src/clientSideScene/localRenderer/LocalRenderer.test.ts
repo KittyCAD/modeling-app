@@ -391,36 +391,47 @@ describe('local GLB loading', () => {
     }
   )
 
-  it('exports once after successful execution and loads standard geometry/materials', async () => {
-    const f = fixture()
-    f.manager.isExecutingSignal.value = true
-    expect(f.manager.rustContext.export).not.toHaveBeenCalled()
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
-      {
-        type: 'gltf',
-        storage: 'binary',
-        presentation: 'compact',
-        include_uuids: true,
-        extras: ['sketches', 'regions'],
-      },
-      { settings: { modeling: { base_unit: 'mm' } } }
-    )
-    const mesh = f.state.currentModel?.children[0]
-    expect(mesh).toBeInstanceOf(Mesh)
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    expect(mesh.geometry.getAttribute('position').count).toBe(3)
-    expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
-    expect(mesh.material.metalness).toBe(0.3)
-    expect(mesh.material.roughness).toBe(0.4)
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.manager.sceneInfra,
-      settingsActor: f.manager.systemDeps.settings,
-    })
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
-    f.renderer.dispose()
-  })
+  it.each([false, true])(
+    'loads standard geometry/materials with a partial buffer view: %s',
+    async (partialView) => {
+      const f = fixture()
+      if (partialView) {
+        const file = triangleGlb()
+        const padded = new Uint8Array(file.contents.length + 2)
+        padded.set(file.contents, 1)
+        f.manager.rustContext.export.mockResolvedValue([
+          { ...file, contents: padded.subarray(1, -1) },
+        ])
+      }
+      f.manager.isExecutingSignal.value = true
+      expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
+        {
+          type: 'gltf',
+          storage: 'binary',
+          presentation: 'compact',
+          include_uuids: true,
+          extras: ['sketches', 'regions'],
+        },
+        { settings: { modeling: { base_unit: 'mm' } } }
+      )
+      const mesh = f.state.currentModel?.children[0]
+      expect(mesh).toBeInstanceOf(Mesh)
+      if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+      expect(mesh.geometry.getAttribute('position').count).toBe(3)
+      expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
+      expect(mesh.material.metalness).toBe(0.3)
+      expect(mesh.material.roughness).toBe(0.4)
+      expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+        sceneInfra: f.manager.sceneInfra,
+        settingsActor: f.manager.systemDeps.settings,
+      })
+      expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+      f.renderer.dispose()
+    }
+  )
 
   it('keeps the scene camera when a local presentation is recreated, while allowing explicit resets', async () => {
     const claimInitialCameraFrame = vi
@@ -760,5 +771,5 @@ function triangleGlb(): ModelingAppFile {
   header.setUint32(binOffset, vertices.byteLength, true)
   header.setUint32(binOffset + 4, 0x004e4942, true)
   bytes.set(new Uint8Array(vertices.buffer), binOffset + 8)
-  return { name: 'model.glb', contents: Array.from(bytes) }
+  return { name: 'model.glb', contents: bytes }
 }
