@@ -81,29 +81,11 @@ export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLi
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
-type ExportOptionalArg = 'up' | 'scale'
 
-const exportOptionalArgSupportByType: Partial<
-  Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
-> = {
-  fbx: {
-    up: false,
-    scale: false,
-  },
-  gltf: {
-    up: false,
-    scale: false,
-  },
-}
-
-function isExportOptionalArgSupported(
-  exportType: unknown,
-  arg: ExportOptionalArg
-): boolean {
-  if (typeof exportType !== 'string') return true
-  const supportByArg =
-    exportOptionalArgSupportByType[exportType as OutputTypeKey]
-  return supportByArg?.[arg] ?? true
+function hideExportUpAndScale({
+  argumentsToSubmit,
+}: Pick<CommandBarContext, 'argumentsToSubmit'>) {
+  return argumentsToSubmit.type === 'fbx' || argumentsToSubmit.type === 'gltf'
 }
 
 export const EXTRUSION_RESULTS = [
@@ -542,11 +524,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'Up',
         required: false,
         prepopulate: true,
-        hidden: (commandContext) =>
-          !isExportOptionalArgSupported(
-            commandContext.argumentsToSubmit.type,
-            'up'
-          ),
+        hidden: hideExportUpAndScale,
         defaultValue: 'z',
         options: enumOptions(exportOptions.up),
         valueSummary: (value) =>
@@ -557,11 +535,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'Scale',
         required: false,
         prepopulate: true,
-        hidden: (commandContext) =>
-          !isExportOptionalArgSupported(
-            commandContext.argumentsToSubmit.type,
-            'scale'
-          ),
+        hidden: hideExportUpAndScale,
         defaultValue: (commandContext) => {
           const machineContext =
             commandContext.selectedCommand?.machineActor?.getSnapshot()

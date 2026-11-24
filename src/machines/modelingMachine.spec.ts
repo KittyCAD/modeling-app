@@ -259,7 +259,7 @@ describe('export requests', () => {
     ['rhino', undefined],
     ['stl', 'binary'],
     ['ply', 'binary_big_endian'],
-    ['fbx', 'binary'],
+    ['fbx', 'ascii'],
   ] as const
   it.each(otherFormats)(
     'sends only the selected format options when exporting %s',
@@ -267,7 +267,7 @@ describe('export requests', () => {
       const format = await exportFormat({
         type,
         schema: StepSchema.Ap214,
-        fbxStorage: 'binary',
+        fbxStorage: 'ascii',
         gltfStorage: 'embedded',
         stlStorage: 'binary',
         plyStorage: 'binary_big_endian',

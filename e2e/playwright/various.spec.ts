@@ -1,6 +1,4 @@
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
-  doExport,
   expectKeybindingsSettingsVisible,
   getUtils,
 } from '@e2e/playwright/test-utils'
@@ -38,7 +36,7 @@ test(
 test(
   'Successful export shows a success toast',
   { tag: ['@desktop', '@skipLocalEngine', '@localRenderer'] },
-  async ({ page, homePage, modelingDialog, tronApp }, testInfo) => {
+  async ({ page, homePage, modelingDialog }) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -88,19 +86,15 @@ part001 = startSketchOn(-XZ)
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
-    if (!tronApp) throwTronAppMissing()
-
-    await doExport(
-      {
-        type: 'gltf',
-        storage: 'embedded',
-        presentation: 'pretty',
-      },
-      tronApp?.projectDirName,
-      page,
-      modelingDialog,
-      testInfo
-    )
+    await page.getByTestId('project-sidebar-toggle').click()
+    await page
+      .getByTestId('project-sidebar-menu')
+      .getByText('Export 3D model', { exact: true })
+      .click()
+    await modelingDialog.options('type').selectOption({ label: 'glTF' })
+    await modelingDialog.options('storage').selectOption({ label: 'embedded' })
+    await modelingDialog.submit()
+    await expect(page.getByText('Exported successfully')).toBeVisible()
   }
 )
 
