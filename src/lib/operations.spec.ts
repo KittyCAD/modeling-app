@@ -1185,7 +1185,7 @@ gdt::annotation(faces = [treatmentFace], annotation = "yoyo", fontSize = 1.54mm)
         if (isErr(result)) throw result
         const newCode = recast(result.modifiedAst, instance)
         if (isErr(newCode)) throw newCode
-        expect(newCode).toContain('from = first, to = second')
+        expect(newCode).toMatch(/from = first,\s+to = second/)
         expect(newCode).toContain('precision = 3')
         if (toleranceText === undefined) {
           expect(newCode).not.toContain('tolerance =')
