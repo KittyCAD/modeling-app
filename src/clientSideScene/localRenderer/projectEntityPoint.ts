@@ -5,6 +5,13 @@ export function getEntityPoint(
   geometry: BufferGeometry,
   kind: 'edge' | 'face'
 ) {
+  return getEntityPoints(geometry, kind).next().value
+}
+
+export function* getEntityPoints(
+  geometry: BufferGeometry,
+  kind: 'edge' | 'face'
+): Generator<Vector3, undefined> {
   if (kind === 'edge') {
     const starts = geometry.getAttribute('instanceStart')
     const ends = geometry.getAttribute('instanceEnd')
@@ -16,7 +23,10 @@ export function getEntityPoint(
     })
     let remaining = segments.reduce((sum, s) => sum + s.length, 0) / 2
     for (const { a, b, length } of segments) {
-      if (remaining <= length) return a.lerp(b, length ? remaining / length : 0)
+      if (remaining <= length) {
+        yield a.lerp(b, length ? remaining / length : 0)
+        return
+      }
       remaining -= length
     }
     return undefined
@@ -52,7 +62,13 @@ export function getEntityPoint(
       a.center.distanceToSquared(centroid) -
       b.center.distanceToSquared(centroid)
   )
-  return triangles[0]?.center
+  const first = triangles[0]
+  yield first.center
+  // Only try additional interiors if the representative point didn't pick the face.
+  triangles.sort((a, b) => b.area - a.area)
+  for (const triangle of triangles.slice(0, 8)) {
+    if (triangle !== first) yield triangle.center
+  }
 }
 
 export function projectEntityPoint(
@@ -75,4 +91,22 @@ export function projectEntityPoint(
     x: rect.left + ((ndc.x + 1) * rect.width) / 2,
     y: rect.top + ((1 - ndc.y) * rect.height) / 2,
   }
+}
+
+/** Mouse helpers click integer CSS pixels; try the closest one first. */
+export function nearbyViewportPixels(
+  point: { x: number; y: number },
+  rect: DOMRect
+) {
+  const xs = [...new Set([Math.floor(point.x), Math.ceil(point.x)])]
+  const ys = [...new Set([Math.floor(point.y), Math.ceil(point.y)])]
+  const distance = ({ x, y }: typeof point) =>
+    (x - point.x) ** 2 + (y - point.y) ** 2
+  return xs
+    .flatMap((x) => ys.map((y) => ({ x, y })))
+    .filter(
+      ({ x, y }) =>
+        x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom
+    )
+    .sort((a, b) => distance(a) - distance(b))
 }

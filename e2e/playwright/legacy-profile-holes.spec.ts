@@ -28,7 +28,7 @@ test('does not select a legacy profile through its hole @localRenderer @web', as
     .toEqual([])
   await editor.closePane()
   await scene.moveCameraTo({ x: 5, y: 5, z: 50 }, { x: 5, y: 5, z: 0 })
-  const [clickProfile] = await scene.findFace(0, { visible: true })
+  const [clickProfile] = await scene.findEntity('sketchFace', 0)
   await clickProfile()
   await expect(page.getByTestId('selection-status')).not.toContainText(
     'No selection'

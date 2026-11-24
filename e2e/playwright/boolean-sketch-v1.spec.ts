@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-
+import { getEndCapId } from '@e2e/playwright/lib/solidSelection'
 import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.use({ useTestSettings: true })
 
@@ -79,8 +79,11 @@ test.describe(
             await expect(targets).toHaveAttribute('aria-pressed', 'true')
             // Select first object in the scene, expect there to be a pixel diff from the selection color change
             const [clickFirstObject] = await scene.makeSelectionHelpers({
-              kind: 'face',
-              index: 7,
+              kind: 'bodyFace',
+              id:
+                rendererTag === '@localRenderer'
+                  ? await getEndCapId(page, 'extrude001')
+                  : undefined,
               stream: { x: 592, y: 174, format: 'pixels' },
             })
             await clickFirstObject({ pixelDiff: 50 })
@@ -101,10 +104,13 @@ test.describe(
             // Local selection resolves asynchronously; keep Shift held until both
             // bodies are selected rather than releasing it on the first pixel diff.
             try {
-              // Select second object
+              // extrude002's cap is visible on the solid later modified by extrude006.
               const [clickSecondObject] = await scene.makeSelectionHelpers({
-                kind: 'face',
-                index: 1,
+                kind: 'bodyFace',
+                id:
+                  rendererTag === '@localRenderer'
+                    ? await getEndCapId(page, 'extrude002')
+                    : undefined,
                 stream: { x: 500, y: 300, format: 'pixels' },
               })
               await clickSecondObject({ pixelDiff: 50 })
