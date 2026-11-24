@@ -1174,6 +1174,11 @@ export const zookeeperManagerMachine = setup({
         // of being included in the responses list.
       } else if ('delta' in event.response) {
         lastExchange.deltasAggregated += event.response.delta.delta
+      } else if ('activity' in event.response) {
+        conversation.exchanges[conversation.exchanges.length - 1] = {
+          ...lastExchange,
+          responses: [...lastExchange.responses, event.response],
+        }
       } else {
         lastExchange.responses.push(event.response)
       }
@@ -1195,6 +1200,7 @@ export const zookeeperManagerMachine = setup({
         'delta',
         'tool_output',
         'reasoning',
+        'activity',
         'files',
         'replay',
       ]

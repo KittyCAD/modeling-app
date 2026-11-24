@@ -2750,6 +2750,9 @@ describe('mirrored conversation messages', () => {
   const reasoning = {
     reasoning: { type: 'markdown', content: 'Checking the model.' },
   }
+  const activity = {
+    activity: { kind: 'commentary', text: 'Reading the project.' },
+  }
   const final = { end_of_stream: { whole_response: 'Finished.' } }
   const toolOutput = {
     tool_output: {
@@ -3202,11 +3205,12 @@ describe('mirrored conversation messages', () => {
       receive(user('Make it brown'))
       expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
       receive(reasoning)
-      const activity = {
-        activity: { kind: 'commentary', text: 'Checking the model.' },
-      }
+      const beforeActivity = actor.getSnapshot().context.conversation
       receive(activity)
-      const active = actor.getSnapshot().context.conversation?.exchanges.at(-1)
+      const afterActivity = actor.getSnapshot().context.conversation
+      expect(afterActivity).not.toBe(beforeActivity)
+      expect(beforeActivity?.exchanges.at(-1)?.responses).toEqual([reasoning])
+      const active = afterActivity?.exchanges.at(-1)
       expect(active?.request).toMatchObject({ content: 'Make it brown' })
       expect(active?.responses).toEqual([reasoning, activity])
       receive(toolOutput)
@@ -3246,11 +3250,12 @@ describe('mirrored conversation messages', () => {
   )
 
   it.each(['json', 'msgpack'] as const)(
-    'buffers reflected user messages and reasoning during %s setup',
+    'buffers reflected user messages, reasoning, and activity during %s setup',
     async (format) => {
       const { actor, receive, finishSetup } = await connect(format)
       receive(user('Make it brown'))
       receive(reasoning)
+      receive(activity)
       receive({ delta: { delta: 'Finished.' } })
       receive(final)
       await finishSetup()
@@ -3258,7 +3263,7 @@ describe('mirrored conversation messages', () => {
         [
           {
             request: user('Make it brown'),
-            responses: [reasoning, final],
+            responses: [reasoning, activity, final],
             deltasAggregated: 'Finished.',
           },
         ]
