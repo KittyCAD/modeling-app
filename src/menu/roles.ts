@@ -1,6 +1,10 @@
 // Does not matter what labels belong to what type. I only split these into some internal types to easily parse
 // what labels should belong to what grouping
 import type { Menu, MenuItemConstructorOptions } from 'electron'
+import type {
+  EXPORT_MODEL_LABEL,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 
 type HeaderLabel =
   | 'File'
@@ -22,7 +26,8 @@ type FileRoleLabel =
   | 'Keybindings'
   | 'Sign Out'
   | 'Theme'
-  | 'Export'
+  | typeof EXPORT_MODEL_LABEL
+  | typeof EXPORT_PROJECT_ARCHIVE_LABEL
   | 'Create New File'
   | 'Create New Folder'
   | 'Share Part via Zoo Link'
