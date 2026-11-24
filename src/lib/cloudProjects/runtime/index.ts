@@ -73,9 +73,19 @@ export function createCloudProjectRuntime(
   const memory = createMemoryFileSystem(paths)
   let pendingRequests = 0
   const saves = signal<ReadonlyMap<string, CloudSaveState>>(new Map())
-  const projects = signal<readonly RemoteProjectSummary[]>([])
+  const projectIndex = signal<{
+    owner?: string
+    items: readonly RemoteProjectSummary[]
+  }>({ items: [] })
+  const projects = computed(() =>
+    projectIndex.value.owner === config().accountId
+      ? projectIndex.value.items
+      : []
+  )
   let listGeneration = 0
-  const pendingProjectLists = signal(0)
+  const projectListRequests = signal<
+    ReadonlyMap<AbortController, string | undefined>
+  >(new Map())
   const opened = new Map<string, OpenCloudProject>()
   // Update checks capture these per-project counters and discard downloaded
   // snapshots if edits or acknowledged revision changes advance them.
@@ -99,6 +109,30 @@ export function createCloudProjectRuntime(
   const reconciliationListeners = new Set<
     (root: string, files: readonly ProjectArchiveFile[]) => void
   >()
+  const snapshotObservers = new Set<{
+    projectId: string
+    canApply: () => boolean
+    onApply: (
+      files: readonly ProjectArchiveFile[],
+      adoptedRemote: boolean
+    ) => void
+  }>()
+  const canAdopt = (id: string) =>
+    [...snapshotObservers].every(
+      (observer) => observer.projectId !== id || observer.canApply()
+    )
+  // Only the new session's observers require online delivery to its read-only buffers.
+  const hasOfflineObserver = (id: string) =>
+    isOffline() &&
+    [...snapshotObservers].some((observer) => observer.projectId === id)
+  const adopted = (
+    id: string,
+    files: readonly ProjectArchiveFile[],
+    adoptedRemote = false
+  ) => {
+    for (const observer of snapshotObservers)
+      if (observer.projectId === id) observer.onApply(files, adoptedRemote)
+  }
   const listeners = new Set<(changes: readonly CloudFileChange[]) => void>()
   const ready = memory.mkdir(root, { recursive: true })
   const pathFor = (id: string) => paths.join(root, id)
@@ -233,25 +267,38 @@ export function createCloudProjectRuntime(
       observedRevision: remote.revision,
     })
     listGeneration += 1
-    projects.value = [
-      ...projects.peek().filter((item) => item.id !== id),
-      remote,
-    ]
+    projectIndex.value = {
+      owner: config().accountId,
+      items: [...projects.peek().filter((item) => item.id !== id), remote],
+    }
     state(id, { state: 'saved' })
     if (project?.remote.revision !== remote.revision) recordProjectChange(id)
   }
-  const reconcile = async (id: string, requestConfig: CloudApiConfig) => {
+  const reconcile = async (
+    id: string,
+    requestConfig: CloudApiConfig,
+    submitted?: readonly ProjectArchiveFile[]
+  ) => {
     const project = opened.get(id)!
-    // Invalidate work submitted against the superseded snapshot, even if fetching fails.
-    if (!project.needsReconciliation) project.generation += 1
+    const alreadyInvalidated = project.needsReconciliation
+    // A rejected retry can be an acknowledgement of our own earlier upload.
+    // Keep its waiting edits valid unless the downloaded contents actually differ.
+    if (!submitted && !alreadyInvalidated) project.generation += 1
     project.needsReconciliation = true
     clearThumbnail(id)
-    const remote = await api.getRemoteProject(requestConfig, id)
-    const archive = await downloadArchive(
-      requestConfig,
-      id,
-      String(remote.revision ?? '')
-    )
+    let remote: RemoteProject
+    let archive: ProjectArchiveFile[]
+    try {
+      remote = await api.getRemoteProject(requestConfig, id)
+      archive = await downloadArchive(
+        requestConfig,
+        id,
+        String(remote.revision ?? '')
+      )
+    } catch (error) {
+      if (submitted && !alreadyInvalidated) project.generation += 1
+      return Promise.reject(error)
+    }
     if (
       config().accountId !== requestConfig.accountId ||
       opened.get(id) !== project
@@ -259,8 +306,30 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Cloud project changed during reconciliation.')
       )
+    if (hasOfflineObserver(id)) return Promise.reject(offlineError())
+    const submittedByPath = new Map(
+      submitted?.map((file) => [file.relativePath, file.data])
+    )
+    const sameContents =
+      submitted !== undefined &&
+      archive.length === submitted.length &&
+      archive.every((file) => {
+        const bytes = submittedByPath.get(file.relativePath)
+        return (
+          bytes?.length === file.data.length &&
+          bytes.every((byte, index) => byte === file.data[index])
+        )
+      })
+    if (sameContents) {
+      // Keep staged thumbnail bytes in memory too, without replacing editor source.
+      await hydrate(id, archive)
+      acknowledge(id, remote, archive)
+      return
+    }
+    if (submitted && !alreadyInvalidated) project.generation += 1
     await hydrate(id, archive)
     acknowledge(id, remote, archive)
+    adopted(id, archive, true)
     for (const listener of reconciliationListeners)
       listener(pathFor(id), archive)
     notify([{ path: pathFor(id), eventType: 'change' }])
@@ -305,7 +374,7 @@ export function createCloudProjectRuntime(
       })
     } catch (error) {
       if (error instanceof api.CloudApiError && error.status === 409)
-        return reconcile(id, requestConfig)
+        return reconcile(id, requestConfig, archive)
       return Promise.reject(error)
     }
     if (config().accountId !== requestConfig.accountId)
@@ -344,6 +413,15 @@ export function createCloudProjectRuntime(
       return Promise.reject(
         new Error('Cloud snapshot needs reconciliation. Retry before editing.')
       )
+    if (
+      project.remote.access?.can_edit === false &&
+      (persist || reportSaveFailure)
+    ) {
+      const error = new Error(
+        'This project is read-only. Create an editable copy in another library.'
+      )
+      return Promise.reject(error)
+    }
     const generation = project.generation
     pendingRequests += 1
     const result = project.queue
@@ -641,6 +719,7 @@ export function createCloudProjectRuntime(
       await ready
     },
     detach: async () => {
+      for (const request of projectListRequests.peek().keys()) request.abort()
       await Promise.allSettled([...polling.values()])
       await Promise.all(
         [...pendingThumbnails.keys()].map((id) => {
@@ -715,7 +794,10 @@ export function createCloudProjectRuntime(
     remainingSaves.delete(id)
     saves.value = remainingSaves
     listGeneration += 1
-    projects.value = projects.peek().filter((project) => project.id !== id)
+    projectIndex.value = {
+      owner: requestConfig.accountId,
+      items: projects.peek().filter((project) => project.id !== id),
+    }
     notify([{ path: pathFor(id), eventType: 'unlinkDir' }])
   }
   const createProject = async (
@@ -746,21 +828,37 @@ export function createCloudProjectRuntime(
     ...fs,
     root,
     projects,
-    projectsLoading: computed(() => pendingProjectLists.value > 0),
+    projectsLoading: computed(() => {
+      const account = config().accountId
+      return [...projectListRequests.value.values()].some(
+        (owner) => owner === account
+      )
+    }),
     listProjects: async () => {
       const generation = ++listGeneration
       const requestConfig = config()
-      pendingProjectLists.value = pendingProjectLists.peek() + 1
+      const controller = new AbortController()
+      const requests = new Map(projectListRequests.peek())
+      for (const [request, owner] of requests)
+        if (owner !== requestConfig.accountId) request.abort()
+      requests.set(controller, requestConfig.accountId)
+      projectListRequests.value = requests
       try {
-        const result = await api.listRemoteProjects(requestConfig)
+        const result = await api.listRemoteProjects(
+          requestConfig,
+          undefined,
+          controller.signal
+        )
         if (
           generation === listGeneration &&
           requestConfig.accountId === config().accountId
         )
-          projects.value = result
+          projectIndex.value = { owner: requestConfig.accountId, items: result }
         return result
       } finally {
-        pendingProjectLists.value = pendingProjectLists.peek() - 1
+        const requests = new Map(projectListRequests.peek())
+        requests.delete(controller)
+        projectListRequests.value = requests
       }
     },
     exists: async (id: string) => {
@@ -797,7 +895,16 @@ export function createCloudProjectRuntime(
             ? new Error('Cloud snapshot changed; queued operation canceled.')
             : undefined
     },
-    saves,
+    saves: computed(
+      () =>
+        new Map(
+          [...saves.value].filter(
+            ([id]) => opened.get(id)?.owner === config().accountId
+          )
+        )
+    ),
+    isReadOnlyProject: (id: string) =>
+      opened.get(id)?.remote.access?.can_edit === false,
     stageThumbnail: async (path: string, bytes: Uint8Array) => {
       if (isOffline()) return
       const id = idFor(path)
@@ -806,6 +913,7 @@ export function createCloudProjectRuntime(
         return Promise.reject(
           new Error('Cloud project is not open for this account.')
         )
+      if (project.remote.access?.can_edit === false) return
       if (project.needsReconciliation)
         return Promise.reject(new Error('Cloud snapshot is being reconciled.'))
       clearThumbnail(id)
@@ -820,6 +928,20 @@ export function createCloudProjectRuntime(
     subscribeProjectChanges: (listener: (id: string) => void) =>
       subscribeToSet(projectChangeSubscribers, listener),
     pending: () => pendingRequests,
+    /** Sessions veto background adoption while dirty and apply downloaded bytes synchronously. */
+    watchSnapshots: (observer: {
+      projectId: string
+      canApply: () => boolean
+      onApply: (
+        files: readonly ProjectArchiveFile[],
+        adoptedRemote: boolean
+      ) => void
+    }) => {
+      snapshotObservers.add(observer)
+      return () => {
+        snapshotObservers.delete(observer)
+      }
+    },
     subscribeReconciled: (
       listener: (root: string, files: readonly ProjectArchiveFile[]) => void
     ) => subscribeToSet(reconciliationListeners, listener),
@@ -862,7 +984,9 @@ export function createCloudProjectRuntime(
         if (!remote.revision) return { changed, refreshed: false }
         const safe = () =>
           current() &&
+          !hasOfflineObserver(id) &&
           canApply() &&
+          canAdopt(id) &&
           projectChangeCounters.get(id) === changeCounter &&
           saves.peek().get(id)?.state !== 'failed' &&
           !opened.get(id)?.needsReconciliation
@@ -885,6 +1009,7 @@ export function createCloudProjectRuntime(
             clearThumbnail(id)
             await hydrate(id, archive)
             acknowledge(id, remote, archive)
+            adopted(id, archive)
             refreshed = true
           },
           { persist: false, reportSaveFailure: false }
@@ -911,6 +1036,10 @@ export function createCloudProjectRuntime(
         id,
         async (previousState) => {
           if (!isCurrent()) return
+          if (!canAdopt(id))
+            return Promise.reject(
+              new Error('Cloud refresh postponed to preserve unsaved edits.')
+            )
           if (previousState?.state === 'failed')
             return Promise.reject(
               new Error(
@@ -936,10 +1065,17 @@ export function createCloudProjectRuntime(
             return Promise.reject(
               new Error('Cloud account changed during refresh.')
             )
-          if (!archive || !isCurrent()) return
+          if (
+            !archive ||
+            !isCurrent() ||
+            !canAdopt(id) ||
+            hasOfflineObserver(id)
+          )
+            return
           clearThumbnail(id)
           await hydrate(id, archive)
           acknowledge(id, remote, archive)
+          adopted(id, archive)
         },
         { persist: false, reportSaveFailure: false }
       )

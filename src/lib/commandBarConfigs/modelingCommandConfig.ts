@@ -30,6 +30,8 @@ import type {
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXPORT_MODEL_ICON,
+  EXPORT_MODEL_LABEL,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
@@ -466,9 +468,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
+    displayName: EXPORT_MODEL_LABEL,
     forceCommandBar: true,
     description: 'Export the current model.',
-    icon: 'floppyDiskArrow',
+    icon: EXPORT_MODEL_ICON,
     needsReview: true,
     args: {
       type: {
@@ -481,6 +484,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },
           { name: 'PLY', isCurrent: false, value: 'ply' },
+          { name: '3DM', isCurrent: false, value: 'rhino' },
         ],
       },
       storage: {
@@ -541,6 +545,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             case 'step':
             case 'obj':
             case 'fbx':
+            case 'rhino':
             default:
               return []
           }
@@ -2156,7 +2161,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             required: true,
             hidden: isEditingNodeSelection,
           },
-          tolerance: gdtToleranceProps,
+          tolerance: {
+            ...gdtToleranceProps,
+            required: false,
+            defaultValue: undefined,
+          },
           ...gdtFrameArgOverrides,
         },
       }

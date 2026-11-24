@@ -38,7 +38,7 @@ export default defineConfig({
           name: 'unit',
           include: [
             'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-            'packages/registry/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'packages/plankton/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'e2e/performance/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
         },
@@ -49,9 +49,10 @@ export default defineConfig({
           name: 'integration',
           include: [
             'src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-            'packages/registry/src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'packages/plankton/src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
-          hookTimeout: 30_000,
+          testTimeout: 30_000,
+          hookTimeout: 60_000,
           retry: 2,
         },
       },

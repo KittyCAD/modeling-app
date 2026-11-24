@@ -1,6 +1,6 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { KclManager } from '@src/lang/KclManager'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
-import { artifactToEntityRef } from '@src/lang/queryAst'
 import { type Artifact, recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -11,78 +11,66 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-})
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, kclManager, rustContext }) => {
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+    rustContextInThisFile = rustContext
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 describe('surfaces', () => {
+  const legacySurface = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [6.07, 1.66])
+  |> yLine(length = -5.33)
+extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)`
+
   describe('Testing addFlipSurface', () => {
-    it('should add a simple flipSurface call on surface selection', async () => {
-      const code = `sketch001 = startSketchOn(XY)
+    it.each([
+      {
+        artifactType: 'path',
+        code: `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
-extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
-      const expectedNewLine = `surface001 = flipSurface(extrude001)`
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const artifact = [...artifactGraph.values()].find(
-        (n) => n.type === 'path'
-      )
-      const surface: Selections = {
-        graphSelections: [
-          {
-            entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
-            codeRef: artifact!.codeRef,
-          },
-        ],
-        otherSelections: [],
+extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`,
+      },
+      { artifactType: 'sweep', code: legacySurface },
+    ] as const)(
+      'should flip a sketch v1 surface selected by its $artifactType artifact',
+      async ({ artifactType, code }) => {
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const artifact = [...artifactGraph.values()].find(
+          (item): item is Extract<Artifact, { type: 'path' | 'sweep' }> =>
+            item.type === artifactType
+        )
+        if (!artifact) throw new Error(`Surface ${artifactType} not found`)
+
+        const result = addFlipSurface({
+          ast,
+          artifactGraph,
+          surface: createSelectionFromPathArtifact([artifact], artifactGraph),
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+
+        expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+          `${code}
+surface001 = flipSurface(extrude001)`
+        )
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       }
-
-      const result = addFlipSurface({
-        ast,
-        artifactGraph,
-        surface,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(code + '\n' + expectedNewLine)
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    )
 
     it('should resolve selected joinSurfaces result instead of a child blend surface', async () => {
       const code = `sketch001 = sketch(on = XY) {
@@ -161,38 +149,52 @@ surface001 = joinSurfaces([blend001, blend002])`
   })
 
   describe('Testing addJoinSurfaces', () => {
-    it('should add a simple join call on body selections', async () => {
-      const code = `sketch001 = startSketchOn(XY)
+    it.each([
+      {
+        artifactType: 'path',
+        code: `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [-0.2, 0], radius = 0.1)
 profile002 = circle(sketch001, center = [0.2, 0], radius = 0.1)
 extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)
-extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
-      const expectedNewLine = `surface001 = joinSurfaces([extrude001, extrude002])`
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
+extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`,
+      },
+      {
+        artifactType: 'sweep',
+        code: `${legacySurface}
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [-2, -3.87])
+  |> line(endAbsolute = [0, 0])
+extrude002 = extrude(profile002, length = 5, bodyType = SURFACE)`,
+      },
+    ] as const)(
+      'should join sketch v1 surfaces selected by their $artifactType artifacts',
+      async ({ artifactType, code }) => {
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const surfaces = [...artifactGraph.values()].filter(
+          (item): item is Extract<Artifact, { type: 'path' | 'sweep' }> =>
+            item.type === artifactType
+        )
+        expect(surfaces).toHaveLength(2)
 
-      const pathArtifacts = [...artifactGraph.values()].filter(
-        (n) => n.type === 'path'
-      )
-      const selection = createSelectionFromPathArtifact(
-        pathArtifacts,
-        artifactGraph
-      )
-      const result = addJoinSurfaces({
-        ast,
-        artifactGraph,
-        selection,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
+        const result = addJoinSurfaces({
+          ast,
+          artifactGraph,
+          selection: createSelectionFromPathArtifact(surfaces, artifactGraph),
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(code + '\n' + expectedNewLine)
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+        expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+          `${code}
+surface001 = joinSurfaces([extrude001, extrude002])`
+        )
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
 
     it('should join selected blend sweep surfaces directly', async () => {
       const code = `beamLeftRotationAngle = 20deg

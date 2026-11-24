@@ -781,19 +781,12 @@ const things = "things"
         let module_id = ModuleId::default();
         let actual = lex("foo (4/* comment */ +,2,\"sdfsdf\") // comment", module_id).unwrap();
         let non_code = [1, 4, 5, 12, 13];
-        for i in 0..14 {
+        assert_eq!(actual.tokens.len(), 14);
+        for (i, token) in actual.tokens.iter().enumerate() {
             if non_code.contains(&i) {
-                assert!(
-                    !actual.tokens[i].is_code_token(),
-                    "failed test {i}: {:?}",
-                    actual.tokens[i],
-                );
+                assert!(!token.is_code_token(), "failed test {i}: {token:?}");
             } else {
-                assert!(
-                    actual.tokens[i].is_code_token(),
-                    "failed test {i}: {:?}",
-                    actual.tokens[i],
-                );
+                assert!(token.is_code_token(), "failed test {i}: {token:?}");
             }
         }
     }

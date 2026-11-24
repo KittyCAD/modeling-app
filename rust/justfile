@@ -2,14 +2,21 @@ cnr := "cargo nextest run --retries 3 --no-fail-fast"
 cita := "cargo insta test --accept"
 kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
+# Check existing snapshots, even when the calling shell enables updates.
+[positional-arguments]
+verify *args:
+    INSTA_UPDATE=no INSTA_FORCE_PASS=0 INSTA_FORCE_UPDATE=0 INSTA_FORCE_UPDATE_SNAPSHOTS=0 \
+        EXPECTORATE=check TWENTY_TWENTY=check ZOO_SIM_UPDATE=never \
+        cargo nextest run --workspace --features=artifact-graph --no-fail-fast "$@"
+
 # Run the same lint checks we run in CI.
 lint:
     # All features.
-    cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+    CARGO_BUILD_WARNINGS=deny cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
     # Default features.
-    cargo clippy -p kcl-lib --all-targets --locked -- -D warnings
+    CARGO_BUILD_WARNINGS=deny cargo clippy -p kcl-lib --all-targets --locked -- -D warnings
     # kcl-wasm-lib
-    cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown --all-targets --locked -- -D warnings
+    CARGO_BUILD_WARNINGS=deny cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown --all-targets --locked -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix
@@ -65,6 +72,17 @@ overwrite-sim-test test_name:
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::{{ test_name }}::unparse
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::{{ test_name }}::kcl_test_execute
     [ {{ test_name }} != "kcl_samples" ] || ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::{{ test_name }}::test_after_engine
+
+# Update snapshots for simulation test modules with a shared prefix.
+overwrite-sim-test-family prefix:
+    @case {{ quote(prefix) }} in \
+        ''|*[!a-zA-Z0-9_]*) \
+            echo 'Expected a nonempty Rust module prefix with letters, digits, or underscores.' >&2; \
+            exit 1 ;; \
+    esac
+    INSTA_UPDATE=always ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update \
+        cargo nextest run {{ kcl_lib_flags }} --lib --no-fail-fast --no-tests fail \
+        -E {{ quote('test(/^simulation_tests::' + prefix + '[^:]*::(parse|unparse|kcl_test_execute)$/)') }}
 
 # Run execution part of sim test, with additional snapshot of engine responses.
 debug-sim-test test_name:

@@ -15,11 +15,6 @@ export function createCloudProjectStorageProvider(
   offline: ReadonlySignal<boolean>
 ) {
   const bindings = new Map<string, ProjectStorage>()
-  const writeAvailability = computed<ProjectWriteAvailability>(() =>
-    offline.value
-      ? { writable: false, reason: 'Offline. Cloud project is read-only.' }
-      : { writable: true }
-  )
   return (path: string): ProjectStorage | undefined => {
     if (
       getContainedRelativePath(paths, cloud.root, path) === undefined ||
@@ -30,9 +25,19 @@ export function createCloudProjectStorageProvider(
     const root = paths.join(cloud.root, id)
     const existing = bindings.get(id)
     if (existing) return existing
+    const readOnly = computed(() => {
+      void cloud.saves.value
+      return cloud.isReadOnlyProject(id)
+    })
     const binding: ProjectStorage = {
       root,
-      writeAvailability,
+      writeAvailability: computed<ProjectWriteAvailability>(() =>
+        offline.value
+          ? { writable: false, reason: 'Offline. Cloud project is read-only.' }
+          : readOnly.value
+            ? { writable: false, reason: 'Read-only project.' }
+            : { writable: true }
+      ),
       saveState: computed(() => cloud.saves.value.get(id)),
       externalChanges: 'snapshot',
       removeWithHistory: async (path) => {
@@ -53,6 +58,7 @@ export function createCloudProjectStorageProvider(
         }),
       batch: (path, run) => cloud.batch(path, run),
       refresh: async (isCurrent, revision) => {
+        if (revision === undefined) return cloud.checkForUpdates(id, isCurrent)
         await cloud.refreshProject(id, isCurrent, revision)
       },
       retry: () => cloud.retry(id),

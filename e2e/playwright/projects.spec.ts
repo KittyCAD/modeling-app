@@ -29,6 +29,87 @@ import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
+test(
+  'Create project units default to user settings and can be overridden',
+  { tag: ['@web', '@localRenderer'] },
+  async ({ page, homePage, cmdBar, editor, fs, folderSetupFn }) => {
+    let otherLibraryPath = ''
+    const { dir } = await folderSetupFn(async (dir) => {
+      otherLibraryPath = await fs.join(await fs.dirname(dir), 'other-projects')
+      await fs.mkdir(otherLibraryPath, { recursive: true })
+    })
+    await homePage.projectsLoaded()
+    await page.evaluate(() => {
+      window.app.settings.actor.send({
+        type: 'set.modeling.defaultUnit',
+        data: { level: 'user', value: 'in' },
+      })
+    })
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await page.evaluate(
+      (libraries) => {
+        window.app.settings.actor.send({
+          type: 'set.app.libraries',
+          data: { level: 'user', value: libraries },
+        })
+      },
+      [
+        { title: 'Local Projects', path: dir, type: 'directory' },
+        { title: 'Other Projects', path: otherLibraryPath, type: 'directory' },
+      ]
+    )
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+
+    await homePage.createAndGoToProject('user-units')
+    await editor.expectEditor.toContain('defaultLengthUnit = in')
+
+    await page.evaluate(() => {
+      window.app.settings.actor.send({
+        type: 'set.modeling.defaultUnit',
+        data: { level: 'project', value: 'ft' },
+        doNotPersist: true,
+      })
+    })
+    await page.waitForFunction(() =>
+      window.app.settings.actor.getSnapshot().matches('idle')
+    )
+    await cmdBar.openCmdBar()
+    await cmdBar.cmdSearchInput.fill('Create project')
+    await cmdBar.chooseCommand('Create project')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        headerArguments: { Units: 'Inches' },
+      })
+    await cmdBar.currentArgumentInput.fill('explicit-units')
+    await cmdBar.clickHeaderArgument('units')
+    await expect
+      .poll(() => cmdBar.getState())
+      .toMatchObject({
+        headerArguments: { Title: 'explicit-units' },
+      })
+    await cmdBar.selectOption({ name: /^Millimeters/ }).click()
+    await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
+    await cmdBar.clickHeaderArgument('libraryid')
+    await cmdBar.selectOption({ name: 'Other Projects', exact: true }).click()
+    await expect(cmdBar.currentArgumentInput).toHaveValue('explicit-units')
+    await cmdBar.progressCmdBar()
+    await editor.expectEditor.toContain('defaultLengthUnit = mm')
+    const explicitFile = await fs.join(
+      otherLibraryPath,
+      'explicit-units',
+      'main.kcl'
+    )
+    expect(new TextDecoder().decode(await fs.readFile(explicitFile))).toBe(
+      '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\n'
+    )
+  }
+)
+
 async function clickProjectCardContextMenuItem(
   page: Page,
   projectTitle: string,
@@ -48,7 +129,7 @@ async function clickProjectCardContextMenuItem(
 }
 
 test(
-  'projects reload if a new one is created, deleted, or renamed externally',
+  'refreshes external project changes when requested',
   { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
   async ({ context, page, fs, folderSetupFn }, testInfo) => {
     const appLogo = page.getByTestId('app-logo')
@@ -72,13 +153,21 @@ test(
     const projectLinks = page.getByTestId('project-link')
     await projectLinks.first().waitFor()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    await expect(refresh).toHaveAttribute('aria-busy', 'false')
+    await page.clock.install()
 
     await fs.rename(
       path.join(targetDir, externalCreatedProjectName),
       path.join(targetDir, externalCreatedProjectName + '1')
     )
 
+    await page.clock.runFor(7_000)
+    await expect(page.getByTestId('project-title')).toHaveText(
+      externalCreatedProjectName
+    )
     externalCreatedProjectName += '1'
+    await refresh.click()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
 
     await fs.rm(path.join(targetDir, externalCreatedProjectName), {
@@ -86,7 +175,12 @@ test(
       force: true,
     })
 
+    await page.clock.runFor(5_000)
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+    await expect(refresh).toBeEnabled()
+    await refresh.click()
     await expect(projectLinks).toHaveCount(0)
+    await page.clock.resume()
   }
 )
 
@@ -594,6 +688,11 @@ test(
       await inputField.fill('lego')
       await page.keyboard.press('Enter')
       await expect(page.getByText('already exists')).toBeVisible()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'already exists' })
+      ).toHaveCount(1)
+      await expect(page.getByText('bracket', { exact: true })).toBeVisible()
+      await expect(page.getByText('lego', { exact: true })).toBeVisible()
     })
   }
 )

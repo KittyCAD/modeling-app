@@ -198,6 +198,7 @@ import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl
 import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
+  SketchSourceChangedEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -684,6 +685,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
+  | SketchSourceChangedEvent
   | {
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
@@ -4565,7 +4567,8 @@ export const modelingMachine = setup({
           format.type === 'obj' ||
           format.type === 'ply' ||
           format.type === 'step' ||
-          format.type === 'stl'
+          format.type === 'stl' ||
+          format.type === 'rhino'
         ) {
           // Configure output orientation from export options.
           format.coords =
@@ -4596,7 +4599,8 @@ export const modelingMachine = setup({
           format.type === 'obj' ||
           format.type === 'stl' ||
           format.type === 'ply' ||
-          format.type === 'step'
+          format.type === 'step' ||
+          format.type === 'rhino'
         ) {
           format.units = exportScale
         }
@@ -6543,6 +6547,9 @@ export const modelingMachine = setup({
             'delete selected': {
               actions: ['forward event to sketch solve if active'],
             },
+            'sketch source changed': {
+              actions: ['forward event to sketch solve if active'],
+            },
             'update sketch outcome': {
               actions: ['forward event to sketch solve if active'],
             },
@@ -7531,10 +7538,14 @@ export const modelingMachine = setup({
           }
           fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
           fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
-          const extension =
-            event.data.type === 'gltf' && event.data.storage === 'binary'
-              ? 'glb'
-              : event.data.type
+          let extension: string = event.data.type
+
+          if (event.data.type === 'gltf' && event.data.storage === 'binary') {
+            extension = 'glb'
+          } else if (event.data.type === 'rhino') {
+            extension = '3dm'
+          }
+
           fileName += `.${extension}` // add file extension
 
           return {

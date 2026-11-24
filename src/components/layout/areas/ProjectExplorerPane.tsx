@@ -11,7 +11,7 @@ import {
   openActiveTextFile,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { FILE_EXT } from '@src/lib/constants'
+import { EXPORT_PROJECT_ARCHIVE_COMMAND, FILE_EXT } from '@src/lib/constants'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
@@ -71,10 +71,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   }, [layout])
 
   const downloadProjectZip = useCallback(() => {
-    selectCommand(commands, {
-      name: 'export-project-zip',
-      groupId: 'application',
-    })
+    selectCommand(commands, EXPORT_PROJECT_ARCHIVE_COMMAND)
   }, [commands])
 
   const onRowDoubleClicked = useCallback(
@@ -167,9 +164,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onCollapseExplorer={() => {
               setCollapsedPressed(performance.now())
             }}
-            onDownloadProject={
-              !window.electron ? downloadProjectZip : undefined
-            }
+            onDownloadProject={project ? downloadProjectZip : undefined}
           />
         }
         onClose={props.onClose}

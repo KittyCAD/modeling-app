@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_compatibility_missing_on.kcl
+---
+KCL Semantic error
+
+  × semantic: The `sketch` function requires a keyword argument `on`
+   ╭─[5:11]
+ 4 │     before = 17
+ 5 │ ╭─▶ profile = sketch() {
+ 6 │ │     assert(false, error = "The sketch body ran without its required on argument")
+ 7 │ ├─▶ }
+   · ╰──── tests/sketch_block_compatibility_missing_on/input.kcl
+   ╰────

@@ -74,6 +74,9 @@ pub enum KclValueView {
     NamedView {
         value: JsonValue,
     },
+    Sheet {
+        value: Box<SheetView>,
+    },
     Plane {
         value: Box<PlaneView>,
     },
@@ -160,6 +163,51 @@ pub struct TagDeclaratorView {
 #[serde(rename_all = "camelCase")]
 pub struct GdtAnnotationView {
     pub id: uuid::Uuid,
+}
+
+/// A supported standard paper size.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub enum StandardSheetSize {
+    AnsiA,
+    AnsiB,
+    AnsiC,
+    AnsiD,
+    AnsiE,
+    IsoA0,
+    IsoA1,
+    IsoA2,
+    IsoA3,
+    IsoA4,
+}
+
+/// The orientation selected for a drawing sheet.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub enum SheetOrientation {
+    Landscape,
+    Portrait,
+}
+
+/// How a drawing sheet's dimensions were selected.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "kind", rename_all = "camelCase")]
+pub enum SheetSizeSourceView {
+    Standard { preset: StandardSheetSize },
+    Custom,
+}
+
+/// A drawing sheet's name and oriented dimensions in their original units.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct SheetView {
+    pub size_source: SheetSizeSourceView,
+    pub name: String,
+    pub orientation: SheetOrientation,
+    pub width: NumericValueView,
+    pub height: NumericValueView,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]

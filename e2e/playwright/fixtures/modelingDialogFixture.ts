@@ -68,7 +68,9 @@ export class ModelingDialogFixture {
     if (empty) await input.click()
     else await input.press('ControlOrMeta+A')
     if (value) {
-      // Native insertion into empty dialog fields crashes Mac WebKit.
+      // Native insertion into empty dialog fields crashes Mac WebKit, so prefer
+      // a synthetic paste. Firefox ignores ClipboardEvent.clipboardData, which
+      // leaves CodeMirror empty (aria-placeholder "Use defaults"); fall back.
       await input.evaluate((element, text) => {
         const clipboardData = new DataTransfer()
         clipboardData.setData('text/plain', text)
@@ -79,6 +81,12 @@ export class ModelingDialogFixture {
             cancelable: true,
           })
         )
+        const applied =
+          !element.querySelector('.cm-placeholder') &&
+          (element.textContent ?? '') === text
+        if (!applied) {
+          document.execCommand('insertText', false, text)
+        }
       }, value)
       await expect(input).toHaveText(value)
     } else if (!empty) {

@@ -9,6 +9,7 @@ import type { App } from '@src/lib/app'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
+  getFileRoute,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -21,20 +22,24 @@ import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { HomeLoaderData } from '@src/lib/types'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
+  projectLibrarySettingDefaultPoliciesFacet,
+  projectLibrarySettingDefaultsFacet,
 } from '@src/registry/contracts/projectLibraries'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { settingsFacet } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-import { hasProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import {
+  hasProjectShellFeature,
+  waitForProjectShellSettled,
+} from '@src/lib/projectSession/next/feature'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import { readProject } from '@src/lib/projectSession/next/utils'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
-import { loadProjectEditor } from '@src/lib/editors/loadProjectEditor'
-import { editorsService } from '@src/lib/editors/registry/contract'
+import { openInitialProjectEditor } from '@src/lib/projectSession/next/initialEditor'
 import { isErr } from '@src/lib/trap'
+import { isDesktop } from '@src/lib/isDesktop'
+import { generateSignInUrl } from '@src/routes/utils'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -44,17 +49,21 @@ function loadRouteSettings(
   projectPath?: string
 ) {
   return loadAndValidateSettings(
-    app.registry.get(fileOperationsService),
+    app.registry.required(fileOperationsService),
     wasmInstance,
     {
       defaultProjectLibraries: app.registry.get(
-        projectLibrarySettingDefaultsValueSpec
+        projectLibrarySettingDefaultsFacet
       ),
       projectLibrarySettingDefaultPolicies: app.registry.get(
-        projectLibrarySettingDefaultPoliciesValueSpec
+        projectLibrarySettingDefaultPoliciesFacet
       ),
-      extensionSettings: app.registry.get(settingsValueSpec),
+      extensionSettings: app.registry.get(settingsFacet),
       projectPath,
+      projectReadOnly: projectPath
+        ? !app.projectSession.storageFor(projectPath).writeAvailability.peek()
+            .writable
+        : false,
     }
   )
 }
@@ -79,28 +88,80 @@ export const baseLoader =
     return redirect(PATHS.HOME + routerSearch)
   }
 
-/** Settle the shared feature grant before either experimental route accesses resources. */
+/** Wait for the grant and its installed content before either route accesses resources. */
 async function canOpenProjectShell(app: App, signal: AbortSignal) {
   await waitForUserFeaturesSettled(app.userFeatures.actor, undefined, signal)
   signal.throwIfAborted()
+  if (!hasProjectShellFeature(app.userFeatures)) return false
+  await waitForProjectShellSettled(app.registry, signal)
   return hasProjectShellFeature(app.userFeatures)
 }
 
-/**
- * `/project/:id` identifies a cloud project by its API ID, never a disk path or
- * an internal cloud relationship ID. Cloud opening is reserved for a follow-up;
- * this route must not fall through to filesystem discovery in the meantime.
- */
+/** Open a cloud API ID through its memory mount, never as a local directory path. */
 export const projectLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async ({ request, params }) => {
-    if (!(await canOpenProjectShell(app, request.signal)))
-      return redirect(PATHS.HOME)
-    if (!params.id)
-      return Promise.reject(new Error('No cloud project ID provided'))
-    return Promise.reject(
-      new Error('Cloud projects are not yet supported by this route')
+    const id = params.id
+    if (!id || id === '.' || id === '..' || /[\\/:]/.test(id))
+      return Promise.reject(new Error('Expected a cloud project API ID'))
+    const auth = app.registry.optional(authService)
+    if (auth) {
+      const state = await waitFor(
+        auth.actor,
+        (state) => !state.matches('checkIfLoggedIn'),
+        { signal: request.signal }
+      )
+      request.signal.throwIfAborted()
+      if (!isDesktop() && state.matches('loggedOut'))
+        return redirect(generateSignInUrl(request.url))
+    }
+    const projectShellEnabled = await canOpenProjectShell(app, request.signal)
+    const cloud = app.registry.required(cloudStorageService)
+    if (!projectShellEnabled)
+      return redirect(
+        getFileRoute(cloud.pathFor(id)) + new URL(request.url).search
+      )
+    const projects = app.registry.required(projectSessionService)
+    const ownsServices = () =>
+      hasProjectShellFeature(app.userFeatures) &&
+      app.registry.optional(projectSessionService) === projects &&
+      app.registry.optional(cloudStorageService) === cloud
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    const path = await cloud.openProject(id)
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    const fileOperations = app.registry.required(fileOperationsService)
+    const library = await getProjectLibraryOwnership(
+      app.settings.get().app.libraries.current,
+      path
     )
+    const project = await readProject(fileOperations, path, {
+      signal: request.signal,
+      library,
+    })
+    request.signal.throwIfAborted()
+    if (!ownsServices()) return redirect(PATHS.HOME)
+    // Retire the other route's poller before selecting this opening.
+    app.closeProject()
+    const session = projects.openProject({
+      ...project,
+      storage: { type: 'cloud', projectId: id },
+      metadata: {
+        ...project.metadata,
+        title:
+          cloud.projects.peek().find((item) => item.id === id)?.title ||
+          project.metadata.title,
+      },
+    })
+    const error = await openInitialProjectEditor(
+      app,
+      session,
+      request.signal,
+      fileOperations
+    )
+    if (isErr(error)) return Promise.reject(error)
+    return session
   }
 
 /**
@@ -119,8 +180,8 @@ export const localLoader =
       return Promise.reject(new Error('No local directory path provided'))
 
     const assertCurrent = () => request.signal.throwIfAborted()
-    const fileOperations = app.registry.get(fileOperationsService)
-    const projectSessions = app.registry.get(projectSessionService)
+    const fileOperations = app.registry.required(fileOperationsService)
+    const projectSessions = app.registry.required(projectSessionService)
     // A grant can be revoked (and granted again) while discovery is awaiting IO.
     // Never publish through a captured service that the registry has disposed.
     const ownsSession = () =>
@@ -141,31 +202,13 @@ export const localLoader =
     if (!ownsSession()) return redirect(PATHS.HOME)
     // Consumers retain this session instead of resolving the global selection again.
     const session = projectSessions.openProject(project)
-    const files = projectSessions.listFiles()
-    const configuredPath = project.metadata.defaultFile
-      ? fsZds.join(project.contents.path, project.metadata.defaultFile)
-      : undefined
-    const entrypoint = fsZds.join(project.contents.path, PROJECT_ENTRYPOINT)
-    const initialFile =
-      files.find((file) => file.path === configuredPath) ??
-      files.find((file) => file.path === entrypoint) ??
-      files.find((file) => fsZds.extname(file.path).toLowerCase() === '.kcl')
-    if (initialFile) {
-      const editor = await loadProjectEditor(
-        initialFile.path,
-        app.registry.get(editorsService),
-        () => projectSessions,
-        () => fileOperations,
-        { signal: request.signal, reuseExisting: true }
-      )
-      assertCurrent()
-      if (isErr(editor)) return Promise.reject(editor)
-      const editors = app.registry.get(editorsService)
-      if (!editors.views.peek().some((view) => view.editor === editor)) {
-        const view = editors.createView(editor)
-        if (isErr(view)) return Promise.reject(view)
-      }
-    }
+    const error = await openInitialProjectEditor(
+      app,
+      session,
+      request.signal,
+      fileOperations
+    )
+    if (isErr(error)) return Promise.reject(error)
     return session
   }
 
@@ -230,7 +273,7 @@ export const fileLoader =
       (params.id && !params.id.includes('/') && !params.id.includes('\\'))
     ) {
       await waitForCloudAuth()
-      const cloud = app.registry.get(cloudStorageService)
+      const cloud = app.registry.required(cloudStorageService)
       const location = await resolveProjectLocation(params.id, cloud.exists)
       assertCurrent()
       if (location.type === 'cloud') {
@@ -243,7 +286,7 @@ export const fileLoader =
       assertCurrent()
     }
 
-    const cloudStorage = app.registry.get(cloudStorageService)
+    const cloudStorage = app.registry.required(cloudStorageService)
     if (params.id?.startsWith(`${cloudStorage.root}${fsZds.sep}`)) {
       await waitForCloudAuth()
       const id = cloudStorage.idFor(params.id)
@@ -295,21 +338,29 @@ export const fileLoader =
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
+    const storage = app.projectSession.storageFor(projectPath)
+    const projectInfoOptions = {
+      createMissingEntrypoint: storage.createMissingEntrypoint,
+      readOnly: !storage.writeAvailability.peek().writable,
+    }
 
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
       const fallbackFile = (
         await getProjectInfo(
-          app.registry.get(fileOperationsService),
+          app.registry.required(fileOperationsService),
           projectPath,
-          wasmInstance
+          wasmInstance,
+          projectInfoOptions
         )
       ).default_file
       let fileExists = true
       if (currentFilePath && fileExists) {
         try {
-          await app.registry.get(fileOperationsService).stat(currentFilePath)
+          await app.registry
+            .required(fileOperationsService)
+            .stat(currentFilePath)
         } catch (e) {
           if (isPathNotFoundError(e)) {
             fileExists = false
@@ -361,14 +412,15 @@ export const fileLoader =
     }
 
     const maybeProjectInfo = await getProjectInfo(
-      app.registry.get(fileOperationsService),
+      app.registry.required(fileOperationsService),
       projectPath,
-      wasmInstance
+      wasmInstance,
+      projectInfoOptions
     )
     assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
-    const cloud = app.registry.get(cloudStorageService)
+    const cloud = app.registry.required(cloudStorageService)
     if (projectPath.startsWith(`${cloud.root}${fsZds.sep}`))
       project.cloudProjectId = cloud.idFor(projectPath)
 

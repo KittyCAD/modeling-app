@@ -1,9 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import { DEFAULT_SKETCH_SOLVE_DIMMING } from '@src/clientSideScene/sceneUtils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
-import { BodiesPane } from '@src/lib/featureTree/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { FeatureTreePane } from '@src/lib/featureTree/FeatureTreePane'
 import { EditorPane } from '@src/components/layout/areas/EditorPane'
 import { KclNamedViewsPane } from '@src/components/layout/areas/KclNamedViewsPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
@@ -12,16 +10,18 @@ import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplore
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { BodiesPane } from '@src/lib/featureTree/BodiesPane'
+import { FeatureTreePane } from '@src/lib/featureTree/FeatureTreePane'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { layoutAreaLibraryFacet } from '@src/lib/layout/registry/contract'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import {
   EngineSceneViewExtensionOverlay,
-  engineSceneStreamClassNamesValueSpec,
-  engineSceneStreamLayersValueSpec,
-  engineSceneViewExtensionsValueSpec,
+  engineSceneStreamClassNamesFacet,
+  engineSceneStreamLayersFacet,
+  engineSceneViewExtensionsFacet,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -30,22 +30,22 @@ function ModelingArea() {
   const { auth, registry } = useApp()
   const { state, send } = useModelingContext()
   const authToken = auth.useToken()
-  const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
-    DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
+  const [sketchSolveDimming, setSketchSolveDimming] = useState(
+    DEFAULT_SKETCH_SOLVE_DIMMING
   )
-  const engineSceneViewExtensions = registry.signal(
-    engineSceneViewExtensionsValueSpec
+  const engineSceneViewExtensions = registry.observe(
+    engineSceneViewExtensionsFacet
   ).value
-  const engineSceneStreamClassNames = registry.signal(
-    engineSceneStreamClassNamesValueSpec
+  const engineSceneStreamClassNames = registry.observe(
+    engineSceneStreamClassNamesFacet
   ).value
   const engineSceneStreamLayers =
-    registry.signal(engineSceneStreamLayersValueSpec).value ?? []
+    registry.observe(engineSceneStreamLayersFacet).value ?? []
   const engineSceneContext = {
     modelingState: state,
     modelingSend: send,
-    sketchSolveStreamDimming,
-    setSketchSolveStreamDimming,
+    sketchSolveDimming,
+    setSketchSolveDimming,
   }
   const streamClassName = mergeEngineSceneClassNames(
     engineSceneStreamClassNames
@@ -55,7 +55,7 @@ function ModelingArea() {
     <div className="relative z-0 min-w-64 min-h-64 flex flex-col flex-1 items-center overflow-hidden">
       <ConnectionStream
         authToken={authToken}
-        sketchSolveStreamDimming={sketchSolveStreamDimming}
+        sketchSolveDimming={sketchSolveDimming}
         streamClassName={streamClassName || undefined}
         streamLayers={engineSceneStreamLayers}
         streamLayerProps={engineSceneContext}
@@ -73,9 +73,7 @@ export const useDefaultAreaLibrary = () => {
   const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
   const getSettings = settings.get
-  const registeredAreaLibrary = registry.signal(
-    layoutAreaLibraryValueSpec
-  ).value
+  const registeredAreaLibrary = registry.observe(layoutAreaLibraryFacet).value
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
