@@ -46,6 +46,7 @@ url = { version = "2.5.8", features = ["serde"] }
 
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["async_tokio"] }
+futures = "0.3.32"
 kcl-lib = { version = "=0.2.198", path = "../kcl-lib", features = ["lsp-test-util"] }
 pretty_assertions = "1.4.1"
 
