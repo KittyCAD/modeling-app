@@ -1,3 +1,4 @@
+import { createStaleModelIndicator } from '@src/lib/kcl/modeling/StaleIndicator'
 import { cameraCommands } from '@src/lib/kcl/registry/cameraCommands'
 import { renderCommands } from '@src/lib/kcl/registry/renderCommands'
 import { acquireKclExecutionPolicy } from '@src/lib/kcl/modeling/executionPolicy'
@@ -14,6 +15,8 @@ import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
   editorViewsFacet,
+  editorTabIndicatorsFacet,
+  observations as editorInputs,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import {
@@ -62,6 +65,7 @@ const extension = factory({
     auth: authInputs,
     wasmInput: wasmInputs,
     executorsInput: executorInputs,
+    editorsInput: editorInputs,
   },
   create: ({
     camera,
@@ -72,7 +76,13 @@ const extension = factory({
     auth,
     wasmInput,
     executorsInput,
+    editorsInput,
   }) => {
+    const freshness = createStaleModelIndicator(
+      (instance) =>
+        editorsInput.editorsService.current.value?.viewState(instance).value
+          .selected?.id === 'kcl.modeling'
+    )
     const getWasm = () =>
       wasmInput.wasmPromiseFacet.value ??
       Promise.reject(new Error('Missing WASM promise registry value.'))
@@ -100,7 +110,7 @@ const extension = factory({
             .currentSignal.value ?? Themes.System
         ),
     })
-    const modelingView = defineEditorView(({ editor, onDispose }) => {
+    const modelingView = defineEditorView(({ editor, instance, onDispose }) => {
       const executors = executorsInput.executorsService.required()
       const lease = executors.acquireExecutor(editor)
       if (isErr(lease)) return lease
@@ -184,6 +194,7 @@ const extension = factory({
         () => nativeSettings.configuration.peek()
       )
       onDispose(viewExecution.dispose)
+      onDispose(freshness.track(instance, viewExecution.state))
       onDispose(
         acquireKclExecutionPolicy(
           executor,
@@ -229,6 +240,7 @@ const extension = factory({
     })
     return {
       items: [
+        contribute(editorTabIndicatorsFacet, () => freshness.indicator),
         contribute(executorCapabilityFacet, () => execution.capability),
         contribute(editorViewsFacet, () => modelingView),
         contribute(editorViewsFacet, () => variablesView),

@@ -224,7 +224,9 @@ geometry, or prevent connection recovery and renderer replacement from replaying
 retained input. Re-enabling automatic rendering catches up to the newest source
 before applying native settings, avoiding an intermediate render of older source.
 
-Every Modeling view exposes Render and a freshness indicator. The registered
+The Stale badge marks a previously produced Modeling result that is out of date.
+The contribution uses `editorTabIndicatorsFacet` and stays hidden during initial
+loading. Code tabs and fresh sibling views do not show it. The registered
 `kcl.render` command targets the focused editor, including its Code view when a
 Modeling context has been acquired. Its default `mod+s` binding uses the existing
 keymap system and supports user remapping. Opening the command palette retains its

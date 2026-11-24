@@ -140,12 +140,13 @@ export interface EditorReadOnlyPolicy {
   readOnly: ReadonlySignal<boolean>
 }
 
-/** Informational decorations contributed alongside a buffer's tab label. */
+/** Decorations for one tab; document-wide indicators can use just `editor`. */
 export interface EditorTabIndicator {
   id: string
   order?: number
   component: ComponentType<{
     editor: Editor
+    instance: EditorViewInstance
   }>
 }
 
