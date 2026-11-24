@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
 
 use anyhow::anyhow;
 use futures::SinkExt;
@@ -361,6 +362,7 @@ impl WebSocketTransport {
         mut shutdown_rx: mpsc::Receiver<()>,
         heartbeats: Option<u64>,
     ) {
+        println!("start_write_actor {:#?}", SystemTime::now());
         let heartbeats = heartbeats.unwrap_or_default();
         let send_heartbeats = heartbeats != 0;
         let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
@@ -408,7 +410,15 @@ impl WebSocketTransport {
                 // Send heartbeats periodically.
                 _ = heartbeats_stream.tick(), if send_heartbeats => {
                     // Send a heartbeat.
+                    println!("hb sent {:#?}", SystemTime::now());
                     let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
+
+                    if res.is_err() {
+                        println!("hb recieved error {:#?}", SystemTime::now());
+                    } else {
+                        println!("hb recieved {:#?}", SystemTime::now());
+                    }
+
                     // We don't really care if a heartbeat fails, we'll just try again soon.
                     let _ = res;
                 }
