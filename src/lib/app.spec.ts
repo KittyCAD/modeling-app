@@ -1,3 +1,4 @@
+import { executorsService } from '@src/lib/executors/registry/contract'
 import '@src/lib/projectSession/next/testFeature'
 import type { Feature } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
@@ -189,7 +190,7 @@ function expectedRuntimeFlags() {
   })
 }
 describe('project system', () => {
-  it('closes project editor resources through the Home navigation boundary', async () => {
+  it('closes project editor and executor resources through the Home navigation boundary', async () => {
     const app = createAppForTest()
     try {
       await waitForSettingsIdle(app)
@@ -207,8 +208,10 @@ describe('project system', () => {
         },
       })
       const editors = app.registry.required(editorsService)
+      const executors = app.registry.required(executorsService)
       const editor = requireSuccess(editors.openEditor('/project/main.kcl', ''))
       const destroy = vi.spyOn(codeSurface(editors, editor), 'destroy')
+      executors.createExecutor(editor)
       // Exercise Home's actual close boundary without starting unrelated folder IO.
       loadHomeProjects({
         projectLibraries: {
@@ -224,6 +227,7 @@ describe('project system', () => {
       expect(projects.currentSession.value).toBeUndefined()
       expect(session.signal.aborted).toBe(true)
       expect(editors.editors.value).toEqual([])
+      expect(executors.executors.value).toEqual([])
       expect(destroy).toHaveBeenCalledOnce()
     } finally {
       await app.disposeAsync()
@@ -445,8 +449,12 @@ describe('project system', () => {
       expect(clear).not.toHaveBeenCalled()
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
-      expect(edges).toHaveBeenCalledExactlyOnceWith(setting.current)
-      expect(execute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      expect(edges.mock.calls[0]?.[1]?.()).toBe(true)
+      expect(execute).not.toHaveBeenCalled()
       edges.mockClear()
 
       // A different editor still takes ownership and applies current values.
@@ -456,6 +464,7 @@ describe('project system', () => {
       expect(rendering).toHaveBeenCalledExactlyOnceWith('ssao')
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
+      expect(execute).not.toHaveBeenCalled()
       project.executingPath = second.path
       expect(theme).toHaveBeenCalledTimes(1)
       expect(rendering).toHaveBeenCalledTimes(1)
@@ -497,9 +506,9 @@ describe('project system', () => {
         app.engineCommandManager,
         'setViewportRendering'
       ).mockImplementation(() => {})
-      vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
-        undefined
-      )
+      const edges = vi
+        .spyOn(app.engineCommandManager, 'setHighlightEdges')
+        .mockResolvedValue(undefined)
       vi.spyOn(
         app.engineCommandManager,
         'setDefaultSystemProperties'
@@ -510,18 +519,36 @@ describe('project system', () => {
       } as typeof app.engineCommandManager.connection
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      const firstIsCurrent = edges.mock.calls[0]?.[1]
+      expect(firstIsCurrent?.()).toBe(true)
+      expect(firstExecute).not.toHaveBeenCalled()
       expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
       project.executingPath = second.path
+      expect(firstIsCurrent?.()).toBe(false)
+      edges.mockClear()
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
-      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      const secondIsCurrent = edges.mock.calls[0]?.[1]
+      expect(secondIsCurrent?.()).toBe(true)
+      expect(firstExecute).not.toHaveBeenCalled()
+      expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
       project.executingPath = null
+      expect(secondIsCurrent?.()).toBe(false)
+      edges.mockClear()
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
-      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(edges).not.toHaveBeenCalled()
+      expect(firstExecute).not.toHaveBeenCalled()
+      expect(secondExecute).not.toHaveBeenCalled()
+      expect(singletonExecute).not.toHaveBeenCalled()
     } finally {
       await app.dispose()
     }
@@ -1204,6 +1231,10 @@ describe('project system', () => {
         kclManager.engineCommandManager,
         'sendSceneCommand'
       ).mockResolvedValue({} as never)
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'setViewportRendering'
+      ).mockImplementation(() => {})
       kclManager.engineCommandManager.connection = {
         connected: true,
         disconnectAll: () => {},

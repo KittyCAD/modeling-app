@@ -1,6 +1,7 @@
 import { signal } from '@preact/signals-core'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 import { createProjectCommands } from '@src/lib/homeProjects/commands'
+import { commandKey } from '@src/lib/commandUtils'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
@@ -110,7 +111,7 @@ function createHomeProjectActions(
     canDuplicate: vi.fn(() => true),
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
-    canCloneToLibrary: vi.fn(() => false),
+    canDuplicateToLibrary: vi.fn(() => false),
     canReviewDuplicateRealizations: vi.fn(() => false),
     canSeparateProjectCopies: vi.fn(() => false),
     open: vi.fn(async (project) => ({
@@ -119,8 +120,8 @@ function createHomeProjectActions(
     duplicate: vi.fn(async () => undefined),
     rename: vi.fn(async () => undefined),
     delete: vi.fn(async () => undefined),
-    getCloneToLibraryTargets: vi.fn(() => []),
-    cloneToLibrary: vi.fn(async () => undefined),
+    getDuplicateToLibraryTargets: vi.fn(() => []),
+    duplicateToLibrary: vi.fn(async () => undefined),
     deleteDuplicateRealizations: vi.fn(async () => undefined),
     separateProjectCopies: vi.fn(async () => undefined),
     ...overrides,
@@ -516,7 +517,7 @@ describe('project command config', () => {
     { commandName: 'Open project', argName: 'name' },
     { commandName: 'Rename project', argName: 'oldName' },
     { commandName: 'Delete project', argName: 'name' },
-    { commandName: 'Clone project', argName: 'project' },
+    { commandName: 'Duplicate project', argName: 'project' },
   ])(
     'disambiguates projects across libraries in $commandName',
     ({ commandName, argName }) => {
@@ -557,7 +558,7 @@ describe('project command config', () => {
         getProjectLibraries: () => libraries,
         getHomeProjectActions: () =>
           createHomeProjectActions({
-            canCloneToLibrary: () => true,
+            canDuplicateToLibrary: () => true,
           }),
         getHomeProjectEntries: () => [
           localProject,
@@ -694,7 +695,7 @@ describe('project command config', () => {
     ).toBeInTheDocument()
   })
 
-  it('clones home project entries to a selected library through project actions', async () => {
+  it('duplicates home project entries to a selected library through project actions', async () => {
     const dependencies = createCommandDependencies()
     const sourceLibrary = createLibrary('client-projects', 'Client Projects')
     const targetLibrary = createLibrary(
@@ -710,14 +711,14 @@ describe('project command config', () => {
       libraryIds: [sourceLibrary.id],
     })
     const homeProjectActions = createHomeProjectActions({
-      canCloneToLibrary: vi.fn(() => true),
-      getCloneToLibraryTargets: vi.fn(() => [
+      canDuplicateToLibrary: vi.fn(() => true),
+      getDuplicateToLibraryTargets: vi.fn(() => [
         {
           sourceLibrary,
           library: targetLibrary,
         },
       ]),
-      cloneToLibrary: vi.fn(async () => ({
+      duplicateToLibrary: vi.fn(async () => ({
         defaultFile: '/cloud/bracket/main.kcl',
       })),
     })
@@ -727,15 +728,19 @@ describe('project command config', () => {
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
-    const moveCommand = commands.find(
-      (command) => command.name === 'Clone project'
+    const duplicateCommand = commands.find(
+      (command) => command.name === 'Duplicate project'
     )
-    const projectArg = moveCommand?.args?.project as unknown as {
+    expect(duplicateCommand?.displayName).toBe('Duplicate project')
+    expect(duplicateCommand && commandKey(duplicateCommand)).toBe(
+      'projects:Duplicate project'
+    )
+    const projectArg = duplicateCommand?.args?.project as unknown as {
       hidden: (context: {
         argumentsToSubmit: Record<string, unknown>
       }) => boolean
     }
-    const libraryArg = moveCommand?.args?.library as unknown as {
+    const libraryArg = duplicateCommand?.args?.library as unknown as {
       defaultValue: (
         context: ContextFrom<typeof commandBarMachine>
       ) => string | undefined
@@ -747,7 +752,9 @@ describe('project command config', () => {
       }) => CommandArgumentOption<string>[]
     }
 
-    expect(moveCommand && projectOptions(moveCommand, 'project')).toEqual([
+    expect(
+      duplicateCommand && projectOptions(duplicateCommand, 'project')
+    ).toEqual([
       {
         name: 'Client Bracket',
         description: 'Client Projects',
@@ -778,7 +785,7 @@ describe('project command config', () => {
     // Arguments remain editable on review; Step back can return to the library.
     expect(projectArg.hidden).toBeUndefined()
     expect(libraryArg.hidden).toBeUndefined()
-    const summaries = moveCommand!.args!
+    const summaries = duplicateCommand!.args!
     expect(summaries.project.valueSummary!(homeProject.id)).toBe(
       'Client Bracket'
     )
@@ -786,16 +793,105 @@ describe('project command config', () => {
       'Personal Cloud'
     )
 
-    await moveCommand?.onSubmit({
+    await duplicateCommand?.onSubmit({
       project: homeProject.id,
       library: targetLibrary.id,
     })
 
-    expect(homeProjectActions.cloneToLibrary).toHaveBeenCalledWith(
+    expect(homeProjectActions.duplicateToLibrary).toHaveBeenCalledWith(
       homeProject,
       targetLibrary.id
     )
     expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
+  })
+
+  it('defaults duplication to the source library even when another destination is listed first', () => {
+    const sourceLibrary = createLibrary('source', 'Source')
+    const otherLibrary = createLibrary('other', 'Other')
+    const project = createHomeProject({
+      id: 'project',
+      title: 'Bracket',
+      localProjectName: 'bracket',
+      localProjectPath: '/source/bracket',
+      libraryIds: [sourceLibrary.id],
+    })
+    const actions = createHomeProjectActions({
+      canDuplicateToLibrary: () => true,
+      getDuplicateToLibraryTargets: () => [
+        { sourceLibrary, library: otherLibrary },
+        { sourceLibrary, library: sourceLibrary },
+      ],
+    })
+    const command = createProjectCommands({
+      ...createCommandDependencies(),
+      getHomeProjectActions: () => actions,
+      getHomeProjectEntries: () => [project],
+    }).find((command) => command.name === 'Duplicate project')!
+    const libraryArg = command.args!.library
+    if (libraryArg.inputType !== 'options')
+      throw new Error('Expected a library picker')
+    const context = {
+      argumentsToSubmit: { project: project.id },
+    } as unknown as ContextFrom<typeof commandBarMachine>
+    expect(libraryArg.prepopulate).not.toBe(true)
+    expect(typeof libraryArg.defaultValue).toBe('function')
+    if (typeof libraryArg.defaultValue !== 'function')
+      throw new Error('Missing default destination')
+    expect(libraryArg.defaultValue(context)).toBe(sourceLibrary.id)
+  })
+
+  it('opens the editable copy when duplicating the current read-only cloud project', async () => {
+    const sourceLibrary = createLibrary('dataset', 'Dataset', 'cloud')
+    const targetLibrary = createLibrary(
+      'cloud-personal',
+      'Personal Cloud',
+      'cloud'
+    )
+    const project: HomeProjectEntry = {
+      id: 'remote:model',
+      name: 'model',
+      title: 'Model',
+      source: 'remote',
+      status: 'cloud-only',
+      libraryIds: [sourceLibrary.id],
+      remoteProjectId: 'model',
+      projectPath: '/__zoo_cloud__/model',
+      readWriteAccess: false,
+    }
+    const actions = createHomeProjectActions({
+      canDuplicateToLibrary: () => true,
+      getDuplicateToLibraryTargets: () => [
+        { sourceLibrary, library: targetLibrary },
+      ],
+      duplicateToLibrary: async () => ({
+        defaultFile: '/__zoo_cloud__/copy/main.kcl',
+      }),
+    })
+    const commands = createProjectCommands({
+      ...createCommandDependencies(),
+      getCurrentProjectPath: () => project.projectPath,
+      getProjectLibraries: () => [sourceLibrary, targetLibrary],
+      getHomeProjectActions: () => actions,
+      getHomeProjectEntries: () => [project],
+    })
+    const duplicate = commands.find(
+      (command) => command.name === 'Duplicate project'
+    )
+    if (!duplicate) throw new Error('Duplicate project command is missing')
+    const previousHash = window.location.hash
+    window.location.hash =
+      '#/file/' + encodeURIComponent(`${project.projectPath}/main.kcl`)
+    try {
+      await duplicate.onSubmit({
+        project: project.id,
+        library: targetLibrary.id,
+      })
+      expect(window.location.hash).toBe(
+        '#/file/%2F__zoo_cloud__%2Fcopy%2Fmain.kcl'
+      )
+    } finally {
+      window.location.hash = previousHash
+    }
   })
 
   it('defaults home project rename titles from the selected entry', () => {

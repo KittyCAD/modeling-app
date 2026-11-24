@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { KclManager } from '@src/lang/KclManager'
 import { createLocalName } from '@src/lang/create'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -8,37 +9,18 @@ import type {
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, kclManager, engineCommandManager } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-})
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, kclManager }) => {
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 const executeCode = async (
   code: string,
@@ -205,8 +187,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tagStart = $capStart001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-    }, 5_000)
-
+    })
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {
       const { ast, artifactGraph } = await executeCode(
@@ -238,8 +219,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-    }, 5_000)
-
+    })
     // Handle FACE selections
     it('should tag a wall face by tagging the underlying segment', async () => {
       const { ast, artifactGraph } = await executeCode(
@@ -276,8 +256,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(tags.length).toBe(1)
       expect(newCode).toContain('tag = $seg01')
       expect(tags[0]).toBeTruthy()
-    }, 5_000)
-
+    })
     it('should tag a cap face by tagging the extrusion', async () => {
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
@@ -311,8 +290,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const hasTagEnd = newCode.includes('tagEnd = $capEnd001')
       expect(hasTagStart || hasTagEnd).toBe(true)
       expect(tags[0]).toBeTruthy()
-    }, 5_000)
-
+    })
     it('should tag an edgeCut face by tagging the edgeCut expression', async () => {
       const { ast, artifactGraph } = await executeCode(
         boxWithOneTagAndChamfer,
@@ -343,7 +321,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(tags.length).toBe(1)
       expect(newCode).toContain('tag = $chamferFace01')
       expect(tags[0]).toEqual(createLocalName('chamferFace01'))
-    }, 5_000)
+    })
   })
 
   describe('mutateAstWithTagForSketchSegment', () => {
@@ -378,8 +356,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify chamfer tagging worked
       expect(tag).toBeTruthy()
       expect(newCode).toContain('tag = $chamferFace01')
-    }, 5_000)
-
+    })
     it('should successfully tag a fillet edgeCut', async () => {
       const { ast, artifactGraph } = await executeCode(
         boxWithOneTagAndFillet,
@@ -415,6 +392,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
           expect(newCode).toContain('tag = $filletFace01')
         }
       }
-    }, 5_000)
+    })
   })
 })

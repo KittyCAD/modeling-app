@@ -9,7 +9,7 @@ class TestWebSocket extends EventTarget {
   readyState = TestWebSocket.OPEN
   close() {
     this.readyState = TestWebSocket.CLOSED
-    this.dispatchEvent(new Event('close'))
+    this.dispatchEvent(new CloseEvent('close', { code: 1000 }))
   }
 
   binaryType: BinaryType = 'blob'

@@ -1,5 +1,11 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
+  cacheModelCode,
+  cacheSceneReceipt,
+  presentedEngineFrame,
+  waitForExecutedModel,
+} from '@e2e/playwright/lib/cache-model'
+import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
@@ -24,6 +30,9 @@ import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
+import type { PNG } from 'pngjs'
+
+const liveEngineTest = test.extend({ mockApiRoutes: false })
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -812,88 +821,214 @@ test.describe(
       }
     )
 
-    test('Changing backface color setting sends updated backface command to engine', async ({
-      page,
-      homePage,
-      scene,
-      cmdBar,
-    }) => {
-      type BackfaceColor = { r: number; g: number; b: number; a: number }
-      const expectedBackfaceColor: BackfaceColor = {
-        r: 0,
-        g: 0,
-        b: 1,
-        a: 1,
-      }
-
-      const clearEngineCommandLogs = async () => {
-        await page.evaluate(() => {
-          window.engineCommandManager?.clearCommandLogs()
+    liveEngineTest(
+      'Imported model scale grid toggles on off on in live video without executing KCL',
+      async ({ page, homePage, scene, cmdBar, tronApp, folderSetupFn }) => {
+        test.setTimeout(90_000)
+        if (!tronApp) throwTronAppMissing()
+        await tronApp.cleanProjectDir({
+          ...TEST_SETTINGS,
+          modeling: {
+            ...TEST_SETTINGS.modeling,
+            show_scale_grid: true,
+            // A fixed 10mm grid is completely covered by this 20mm cylinder.
+            fixed_size_grid: false,
+          },
         })
-      }
-
-      const getLastSentBackfaceColor =
-        async (): Promise<BackfaceColor | null> =>
-          page.evaluate(() => {
-            type CommandLogLike = {
-              type: string
-              data?: {
-                type?: string
-                cmd?: {
-                  type?: string
-                  backface_color?: BackfaceColor
-                }
-              }
-            }
-            // @ts-expect-error engineCommandManager is attached to window at runtime.
-            const logs: CommandLogLike[] =
-              window.engineCommandManager?.commandLogs ?? []
-
-            const matchingLog = [...logs]
-              .reverse()
-              .find(
-                (log) =>
-                  (log.type === 'send-scene' || log.type === 'send-modeling') &&
-                  log.data?.type === 'modeling_cmd_req' &&
-                  log.data?.cmd?.type === 'set_default_system_properties' &&
-                  Boolean(log.data.cmd.backface_color)
-              )
-
-            return matchingLog?.data?.cmd?.backface_color ?? null
-          })
-
-      const setBackfaceColor = async (hex: string) => {
-        const hexUppercase = hex.toUpperCase()
-        await cmdBar.openCmdBar()
-        await cmdBar.chooseCommand('Settings · modeling · backface color')
-        await cmdBar.currentArgumentInput.fill(hex)
-        await cmdBar.progressCmdBar()
-
-        const toastMessage = page.getByText(
-          `Set backface color to "${hexUppercase}" as a user default`
-        )
-        await expect(toastMessage).toBeVisible()
-        await expect(toastMessage).not.toBeVisible()
+        const code =
+          '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\nimport importedBody from "body.kcl"\nbody = importedBody\n'
+        await folderSetupFn(async (directory) => {
+          const project = path.join(directory, 'imported-grid')
+          await fsp.mkdir(project, { recursive: true })
+          await fsp.writeFile(path.join(project, 'main.kcl'), code)
+          await fsp.writeFile(
+            path.join(project, 'body.kcl'),
+            `${cacheModelCode}export importedBody = body\n`
+          )
+        })
+        await page.setBodyDimensions({ width: 1200, height: 700 })
+        await homePage.openProject('imported-grid')
         await scene.settled()
-      }
+        await waitForExecutedModel(page, code)
+        await scene.moveCameraTo({ x: 45, y: -60, z: 45 })
+        await scene.getCameraInfo()
+        await expect(page.locator('#video-stream')).toBeVisible()
 
-      await test.step('Load modeling view', async () => {
+        const setGrid = async (visible: boolean) => {
+          await page.waitForFunction(() =>
+            window.app.settings.actor.getSnapshot().matches('idle')
+          )
+          await cmdBar.openCmdBar()
+          await cmdBar.chooseCommand('Settings · modeling · show scale grid')
+          await page
+            .getByRole('option', { name: visible ? 'On' : 'Off', exact: true })
+            .click()
+          await page.waitForFunction((visible) => {
+            const editor = window.app.project?.executingEditor.value
+            return (
+              window.app.settings.actor.getSnapshot().matches('idle') &&
+              window.app.settings.get().modeling.showScaleGrid.current ===
+                visible &&
+              editor &&
+              !editor.isExecutingSignal.value &&
+              Object.keys(editor.engineCommandManager.pendingCommands)
+                .length === 0
+            )
+          }, visible)
+          const notification = page.getByText(
+            `Set show scale grid to "${visible}" as a user default.`,
+            { exact: true }
+          )
+          await expect(notification).toBeVisible()
+          await expect(notification).not.toBeVisible()
+          await page.mouse.move(0, 0)
+        }
+        const readFrame = async () => (await presentedEngineFrame(page)).image
+        const distance = (first: PNG, second: PNG, index: number) =>
+          Math.abs(first.data[index] - second.data[index]) +
+          Math.abs(first.data[index + 1] - second.data[index + 1]) +
+          Math.abs(first.data[index + 2] - second.data[index + 2])
+        await setGrid(false)
+        const off = await readFrame()
+        const before = await cacheSceneReceipt(page)
+        expect(before.code).toBe(code)
+        expect(before.bodyId).toBeTruthy()
+        expect(before.engineBodyIds).toEqual([before.bodyId])
+        expect(before.artifacts.length).toBeGreaterThan(0)
+        await page.evaluate(() =>
+          window.app.project?.executingEditor.value?.engineCommandManager.clearCommandLogs()
+        )
+
+        await setGrid(true)
+        let on = off
+        let changed: number[] = []
+        await expect
+          .poll(async () => {
+            on = await readFrame()
+            expect([on.width, on.height]).toEqual([off.width, off.height])
+            changed = []
+            for (let y = 0; y < off.height; y++)
+              for (let x = 0; x < off.width; x++) {
+                if (
+                  x >= off.width / 3 &&
+                  x < (off.width * 2) / 3 &&
+                  y >= off.height / 3 &&
+                  y < (off.height * 2) / 3
+                )
+                  continue
+                const index = (y * off.width + x) * 4
+                if (distance(on, off, index) >= 48) changed.push(index)
+              }
+            return changed.length
+          })
+          .toBeGreaterThanOrEqual(Math.ceil((off.width * off.height) / 1000))
+        for (const visible of [false, true]) {
+          await setGrid(visible)
+          const expected = visible ? on : off
+          await expect
+            .poll(async () => {
+              const frame = await readFrame()
+              expect([frame.width, frame.height]).toEqual([
+                off.width,
+                off.height,
+              ])
+              return (
+                changed.filter(
+                  (index) => distance(frame, expected, index) <= 24
+                ).length / changed.length
+              )
+            })
+            .toBeGreaterThanOrEqual(0.9)
+        }
+        const after = await cacheSceneReceipt(page)
+        expect(after).toMatchObject({
+          code,
+          bodyId: before.bodyId,
+          sessionId: before.sessionId,
+          engineSceneGeneration: before.engineSceneGeneration,
+          executions: 0,
+          isExecuting: false,
+          hasErrors: false,
+        })
+        expect(after.artifacts).toEqual(before.artifacts)
+        expect(after.engineBodyIds).toEqual(before.engineBodyIds)
+      }
+    )
+
+    liveEngineTest(
+      'Changing backface color setting sends updated backface command to engine',
+      async ({ page, homePage, scene, editor, cmdBar }) => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
-      })
-
-      await test.step('Set backface color to blue', async () => {
-        await clearEngineCommandLogs()
-        await setBackfaceColor('#0000ff')
-      })
-
-      await test.step('Verify set_default_system_properties includes backface_color', async () => {
-        await expect
-          .poll(() => getLastSentBackfaceColor(), { timeout: 15_000 })
-          .toEqual(expectedBackfaceColor)
-      })
-    })
+        await editor.openPane()
+        await editor.replaceCode('', cacheModelCode)
+        await waitForExecutedModel(page, cacheModelCode)
+        const before = await cacheSceneReceipt(page)
+        expect(before.bodyId).toBeTruthy()
+        expect(before.engineBodyIds).toEqual([before.bodyId])
+        expect(before.engineSceneGeneration).toBeGreaterThan(0)
+        await page.evaluate(() =>
+          window.app.project?.executingEditor.value?.engineCommandManager.clearCommandLogs()
+        )
+        for (const color of [
+          { hex: '#ff0000', rgba: { r: 1, g: 0, b: 0, a: 1 } },
+          { hex: '#00ff00', rgba: { r: 0, g: 1, b: 0, a: 1 } },
+          { hex: '#0000ff', rgba: { r: 0, g: 0, b: 1, a: 1 } },
+        ]) {
+          await test.step(`Set backface color to ${color.hex}`, async () => {
+            await cmdBar.openCmdBar()
+            await cmdBar.chooseCommand('Settings · modeling · backface color')
+            await cmdBar.currentArgumentInput.fill(color.hex)
+            await cmdBar.progressCmdBar()
+            const notification = page.getByText(
+              `Set backface color to "${color.hex.toUpperCase()}" as a user default`
+            )
+            await expect(notification).toBeVisible()
+            await expect(notification).not.toBeVisible()
+            await scene.settled()
+            await expect
+              .poll(
+                () =>
+                  page.evaluate(() => {
+                    const logs =
+                      window.app.project?.executingEditor.value
+                        ?.engineCommandManager.commandLogs ?? []
+                    return (
+                      logs
+                        .flatMap((log) =>
+                          (log.type === 'send-scene' ||
+                            log.type === 'send-modeling') &&
+                          log.data.type === 'modeling_cmd_req' &&
+                          log.data.cmd.type ===
+                            'set_default_system_properties' &&
+                          log.data.cmd.backface_color
+                            ? [log.data.cmd.backface_color]
+                            : []
+                        )
+                        .at(-1) ?? null
+                    )
+                  }),
+                { timeout: 15_000 }
+              )
+              .toEqual(color.rgba)
+            const current = await cacheSceneReceipt(page)
+            expect(current).toMatchObject({
+              path: before.path,
+              code: before.code,
+              bodyId: before.bodyId,
+              sessionId: before.sessionId,
+              engineSceneGeneration: before.engineSceneGeneration,
+              executions: 0,
+              isExecuting: false,
+              hasErrors: false,
+            })
+            expect(current.artifacts).toEqual(before.artifacts)
+            expect(current.engineBodyIds).toEqual(before.engineBodyIds)
+          })
+        }
+      }
+    )
 
     test(
       `Change inline units setting`,

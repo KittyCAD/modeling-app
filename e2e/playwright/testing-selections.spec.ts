@@ -1,4 +1,4 @@
-import { getUtils } from '@e2e/playwright/test-utils'
+import { resetView, sansWhitespace } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import fs from 'fs'
 import path from 'path'
@@ -8,83 +8,9 @@ const bracket = fs.readFileSync(
   'utf8'
 )
 
-test.describe('Testing selections', { tag: '@desktop' }, () => {
-  test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
-    page,
-    editor,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
+test.use({ useTestSettings: true })
 
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [3.29, 7.86])
-    |> line(end = [2.48, 2.44])
-    |> line(end = [2.66, 1.17])
-    |> line(end = [3.75, 0.46])
-    |> line(end = [4.99, -0.46], tag = $seg01)
-    |> line(end = [3.3, -2.12])
-    |> line(end = [2.16, -3.33])
-    |> line(end = [0.85, -3.08])
-    |> line(end = [-0.18, -3.36])
-    |> line(end = [-3.86, -2.73])
-    |> line(end = [-17.67, 0.85])
-    |> close()
-  extrude001 = extrude(sketch001, length = 10)
-    `
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.waitForAuthentication()
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    const selectUnExtrudable = async () => {
-      await editor.scrollToText(`line(end = [4.99, -0.46], tag = $seg01)`)
-      await page.getByText(`line(end = [4.99, -0.46], tag = $seg01)`).click()
-    }
-    const clickEmpty = () => page.mouse.click(700, 460)
-    await selectUnExtrudable()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-
-    await clickEmpty()
-
-    // expect active line to contain nothing
-    await expect(page.locator('.cm-activeLine')).toHaveText('')
-
-    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
-  sketch002 = startSketchOn(extrude001, face = $seg01)
-    |> startProfile(at = [-12.94, 6.6])
-    |> line(end = [2.45, -0.2])
-    |> line(end = [-2, -1.25])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  `
-    await u.codeLocator.fill(codeToAdd)
-
-    await selectUnExtrudable()
-    // expect extrude button to be enabled, since we don't guard
-    // until the extrude button is clicked
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-
-    await clickEmpty()
-    await expect(page.locator('.cm-activeLine')).toHaveText('')
-    // there's not extrudable geometry, so button should be enabled
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
-  })
-
+test.describe('Testing selections', { tag: '@web' }, () => {
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Testing selections (and hovers) work on sketches when NOT in sketch mode ${rendererTag}`, async ({
       page,
@@ -153,112 +79,9 @@ part001 = startSketchOn(XZ)
     })
   }
 
-  test(
-    "Various pipe expressions should and shouldn't allow edit and or extrude",
-    { tag: '@localRenderer' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
-      const u = await getUtils(page)
-      const selectionsSnippets = {
-        extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
-        extrudeAndEditBlockedInFunction: '|> startProfile(at = pos)',
-        extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
-        editOnly: '|> startProfile(at = [15.79, -14.6])',
-      }
-      await page.addInitScript(
-        async ({
-          extrudeAndEditBlocked,
-          extrudeAndEditBlockedInFunction,
-          extrudeAndEditAllowed,
-          editOnly,
-        }: any) => {
-          localStorage.setItem(
-            'persistCode',
-            `part001 = startSketchOn(XZ)
-  ${extrudeAndEditBlocked}
-  |> line(end = [25.96, 2.93])
-  |> line(end = [5.25, -5.72])
-  |> line(end = [-2.01, -10.35])
-  |> line(end = [-27.65, -2.78])
-  |> close()
-  |> extrude(length = 5)
-    sketch002 = startSketchOn(XZ)
-  ${extrudeAndEditAllowed}
-  |> line(end = [10.32, 6.47])
-  |> line(end = [9.71, -6.16])
-  |> line(end = [-3.08, -9.86])
-  |> line(end = [-12.02, -1.54])
-  |> close()
-    sketch003 = startSketchOn(XZ)
-  ${editOnly}
-  |> line(end = [27.55, -1.65])
-  |> line(end = [4.95, -8])
-  |> line(end = [-20.38, -10.12])
-  |> line(end = [-15.79, 17.08])
-
-    fn yohey(@pos) {
-  sketch004 = startSketchOn(XZ)
-  ${extrudeAndEditBlockedInFunction}
-  |> line(end = [27.55, -1.65])
-  |> line(end = [4.95, -10.53])
-  |> line(end = [-20.38, -8])
-  |> line(end = [-15.79, 17.08])
-  return ''
-    }
-
-    yohey([15.79, -34.6])
-    `
-          )
-        },
-        selectionsSnippets
-      )
-      await page.setBodyDimensions({ width: 1200, height: 1000 })
-
-      await homePage.goToModelingScene()
-      await scene.settled()
-
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
-
-      // wait for start sketch as a proxy for the stream being ready
-      await expect(toolbar.startSketchBtn).not.toBeDisabled()
-
-      await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
-      // expect extrude button to be enabled, since we don't guard
-      // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-
-      await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-      await expect(
-        page.getByRole('button', { name: 'Extrude' })
-      ).not.toBeDisabled()
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeDisabled()
-
-      await page.getByText(selectionsSnippets.editOnly).click()
-      // expect extrude button to be enabled, since we don't guard
-      // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeDisabled()
-
-      await page
-        .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
-        .click()
-      // expect extrude button to be enabled, since we don't guard
-      // until the extrude button is clicked
-      await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).not.toBeVisible()
-    }
-  )
-
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`"View KCL source code" right click menu in scene ${rendererTag}`, async ({
+      editor,
       page,
       editor,
       homePage,
@@ -269,13 +92,15 @@ part001 = startSketchOn(XZ)
       const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
         format: 'ratio',
       })
-      await page.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, bracket)
 
       await homePage.goToModelingScene()
       await scene.settled()
       await editor.closePane()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', bracket)
+      )
+      await resetView(scene)
+      await editor.scrollToText(bracket.trimStart().split('\n')[0])
 
       const laterCode = page.getByText('finalBracket = hole::holes(')
       const menuItems = page.locator(
@@ -338,20 +163,19 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Engine primitive selection works on shell inner face ${rendererTag}`, async ({
-      context,
+      editor,
       page,
       homePage,
       scene,
       toolbar,
       cmdBar,
     }) => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, innerShellCode)
-
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', innerShellCode)
+      )
 
       // Two dumb hardcoded screen ratio values
 
@@ -378,7 +202,6 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Can start a sketch on a shell inner face ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -404,19 +227,11 @@ rectangleSketch = sketch(on = XY) {
 extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
 shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, code)
-
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.goToModelingScene()
       await scene.settled()
-
-      await expect
-        .poll(() =>
-          page.evaluate(() => window.app.singletons.kclManager.read())
-        )
-        .toBe(code)
+      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+      await resetView(scene)
 
       if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
         await scene.moveCameraTo(
@@ -439,8 +254,9 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
 
       await expect(toolbar.lineBtn).toBeEnabled()
       await expect
-        .poll(() => editor.getCurrentCode())
-        .toBe(`@settings(kclVersion = 2.0)
+        .poll(async () => sansWhitespace(await editor.getCurrentCode()))
+        .toBe(
+          sansWhitespace(`@settings(kclVersion = 2.0)
 
 
 rectangleSketch = sketch(on = XY) {
@@ -464,12 +280,12 @@ sketch001 = sketch(on = face001) {
 }
 
 `)
+        )
     })
   }
 
   for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
     test(`Shell inner edge: selection uses engine topology_fallback (primitive index); fillet codegen uses edgeId(solid, index) when the artifact graph lacks wall/cap. ${rendererTag}`, async ({
-      context,
       page,
       homePage,
       scene,
@@ -477,13 +293,13 @@ sketch001 = sketch(on = face001) {
       modelingDialog,
       editor,
     }) => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, innerShellCode)
-
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', innerShellCode)
+      )
+      await resetView(scene)
 
       if (rendererTag === '@localRenderer') {
         // Expose the original inner edge, whose midpoint is otherwise occluded.

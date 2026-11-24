@@ -1,4 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
+import { getDesktopHandoffUrl } from '@src/lib/browserHandoff'
+import { PATHS } from '@src/lib/routePaths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { HomeSidebarItemProps } from '@src/registry/contracts/homeSidebar'
 import type { ProjectExplorerProjectMenuItemComponentProps } from '@src/registry/contracts/projectExplorer'
@@ -56,6 +58,32 @@ export function ProjectMenuGetDesktopApp({
         testId="project-menu-get-desktop-app"
         onMouseUp={close}
       />
+    </li>
+  )
+}
+
+export function ProjectMenuOpenInDesktopApp({
+  context: { project },
+  className,
+  close,
+}: ProjectExplorerProjectMenuItemComponentProps) {
+  const id = project.cloudProjectId
+  if (!id) return null
+
+  return (
+    <li className="contents">
+      <ActionButton
+        Element="button"
+        className={className}
+        onClick={() => {
+          window.location.href = getDesktopHandoffUrl(
+            new URL(`${PATHS.PROJECT}/${id}`, window.location.origin)
+          )
+          close()
+        }}
+      >
+        <span className="min-w-0 flex-1 truncate">Open in desktop app</span>
+      </ActionButton>
     </li>
   )
 }

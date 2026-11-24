@@ -36,6 +36,9 @@ describe('auth extension', () => {
     expect(auth.token.value).toBe(auth.actor.getSnapshot().context.token)
     expect(auth.isLoggedIn.value).toBe(false)
     expect(auth.user.value).toBeUndefined()
+    expect(auth.organization.current.value).toBeUndefined()
+    expect(auth.organization.loading.value).toBe(false)
+    expect(auth.organization.error.value).toBeUndefined()
 
     const send = vi.spyOn(auth.actor, 'send')
     auth.send({ type: 'Log out' })

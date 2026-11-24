@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_compatibility_engine_restriction.kcl
+---
+KCL InvalidExpression error
+
+  × invalid expression: Modeling commands communicating with the engine cannot
+  │ be used inside a sketch block
+    ╭─[23:3]
+ 22 │ sketch(on = XY) {
+ 23 │   extrude(region1, length = 2mm)
+    ·   ───────────────┬──────────────
+    ·                  ╰── tests/sketch_block_compatibility_engine_restriction/input.kcl
+ 24 │ }
+    ╰────
+  ╰─▶ KCL InvalidExpression error
+      
+        × invalid expression: Modeling commands communicating with the engine
+        │ cannot be used inside a sketch block
+          ╭─[23:3]
+       22 │ sketch(on = XY) {
+       23 │   extrude(region1, length = 2mm)
+          ·   ───────────────┬──────────────
+          ·                  ╰── tests/
+      sketch_block_compatibility_engine_restriction/input.kcl
+       24 │ }
+          ╰────

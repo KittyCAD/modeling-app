@@ -32,7 +32,7 @@ const save_ = async (
         await ensureDirectory(fileOperations, downloadDir)
         await fileOperations.writeFile(
           fsZds.join(downloadDir, file.name),
-          new Uint8Array(file.contents)
+          file.contents
         )
         toast.success(EXPORT_TOAST_MESSAGES.SUCCESS + ' [TEST]', {
           id: toastId,
@@ -61,10 +61,7 @@ const save_ = async (
       }
 
       // Write the file.
-      await fileOperations.writeFile(
-        filePathMeta.filePath,
-        new Uint8Array(file.contents)
-      )
+      await fileOperations.writeFile(filePathMeta.filePath, file.contents)
       toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
     } else {
       // Download the file to the user's computer.
@@ -72,7 +69,7 @@ const save_ = async (
       // Or the destination they choose.
       // Iterate over the files.
       // Create a new blob.
-      const blob = new Blob([new Uint8Array(file.contents)])
+      const blob = new Blob([file.contents])
       // Save the file.
       await browserSaveFile(blob, file.name, toastId)
     }
@@ -99,12 +96,15 @@ export async function exportSave({
   if (files.length > 1) {
     let zip = new JSZip()
     for (const file of files) {
-      zip.file(file.name, new Uint8Array(file.contents), { binary: true })
+      zip.file(file.name, file.contents, { binary: true })
     }
-    return zip.generateAsync({ type: 'array' }).then((contents) => {
+    return zip.generateAsync({ type: 'arraybuffer' }).then((buffer) => {
       return save_(
         fileOperations,
-        { name: `${fileName || 'output'}.zip`, contents },
+        {
+          name: `${fileName || 'output'}.zip`,
+          contents: new Uint8Array(buffer),
+        },
         toastId
       )
     })

@@ -1,7 +1,8 @@
 import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
-import { afterAll, beforeAll, expect, it, vi } from 'vitest'
+import { expect, it, vi } from 'vitest'
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { EngineTestWorld } from '@src/test-setup/engineTestWorld'
 import { getAstAndArtifactGraph } from '@src/lib/testHelpers'
 import {
   recast,
@@ -44,19 +45,13 @@ function removeObsoleteEdges(graph: ArtifactGraph) {
   }
 }
 
-let world: Awaited<ReturnType<typeof buildTheWorldAndConnectToEngine>>
-beforeAll(async () => {
-  world = await buildTheWorldAndConnectToEngine({
-    webrtc: false,
-    geometryOnly: true,
-  })
-})
-afterAll(() => {
-  world?.engineCommandManager.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+let world: EngineTestWorld
+setupEngineTestWorld(
+  (next) => {
+    world = next
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 async function validateGdtObjects(objects: Selections) {
   const config = modelingMachineCommandConfig['GDT Annotation']
@@ -358,8 +353,7 @@ hide(sketch002)`
   expect(output).toContain('getBoundedEdge(')
   await getAstAndArtifactGraph(output, world.instance, world.kclManager)
   expect(world.kclManager.errors).toEqual([])
-}, 30_000)
-
+})
 it.each(['before', 'after'] as const)(
   'preserves recoverable edge bounds and index when an untracked edge comes %s',
   (position) => {
@@ -714,8 +708,7 @@ it('translates a treatment body without selecting a nested sketch segment', asyn
   expect(output).toContain('translate(fillet001, x = 5mm)')
   await getAstAndArtifactGraph(output, world.instance, world.kclManager)
   expect(world.kclManager.errors).toEqual([])
-}, 60_000)
-
+})
 it('rejects a copied chamfer face rather than materializing a different face', async () => {
   const code =
     chainedTreatmentCode +
@@ -750,4 +743,4 @@ it('rejects a copied chamfer face rather than materializing a different face', a
     new Error('Cannot create a sketch on this copied treatment face.')
   )
   expect(recast(ast, world.instance)).toBe(original)
-}, 60_000)
+})

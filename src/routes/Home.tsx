@@ -64,6 +64,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  getProjectLibraryCreateProjectOperation,
   getProjectLibraryOperation,
   type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
@@ -145,12 +146,12 @@ function readHomeProjectCardDragData(
 interface UseProjectLibraryDragOptions {
   projects: HomeProjectEntry[]
   projectActions: HomeProjectActionsService
-  onCloneToLibrary: (project: HomeProjectEntry, libraryId: string) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry, libraryId: string) => void
 }
 function useProjectLibraryDrag({
   projects,
   projectActions,
-  onCloneToLibrary,
+  onDuplicateToLibrary,
 }: UseProjectLibraryDragOptions): ProjectLibraryDragController {
   const [draggedProjectId, setDraggedProjectId] = useState<string>()
   const [dragOverLibraryId, setDragOverLibraryId] = useState<string>()
@@ -166,24 +167,24 @@ function useProjectLibraryDrag({
     setDraggedProjectId(undefined)
     setDragOverLibraryId(undefined)
   }, [])
-  const canCloneProjectToLibrary = useCallback(
+  const canDuplicateProjectToLibrary = useCallback(
     (project: HomeProjectEntry | undefined, library: ProjectLibrary) =>
       Boolean(
         project &&
           projectActions
-            .getCloneToLibraryTargets(project)
+            .getDuplicateToLibraryTargets(project)
             .some((target) => target.library.id === library.id)
       ),
     [projectActions]
   )
   const canDropOnLibrary = useCallback(
     (library: ProjectLibrary) =>
-      canCloneProjectToLibrary(draggedProject, library),
-    [canCloneProjectToLibrary, draggedProject]
+      canDuplicateProjectToLibrary(draggedProject, library),
+    [canDuplicateProjectToLibrary, draggedProject]
   )
   const getProjectCardDragProps = useCallback(
     (project: HomeProjectEntry): ProjectCardDragProps => {
-      if (!projectActions.canCloneToLibrary(project)) {
+      if (!projectActions.canDuplicateToLibrary(project)) {
         return {
           draggable: false,
         }
@@ -191,7 +192,7 @@ function useProjectLibraryDrag({
       return {
         draggable: true,
         onDragStart: (event) => {
-          if (!projectActions.canCloneToLibrary(project)) {
+          if (!projectActions.canDuplicateToLibrary(project)) {
             event.preventDefault()
             return
           }
@@ -199,7 +200,7 @@ function useProjectLibraryDrag({
           writeHomeProjectCardDragData(event.dataTransfer, project)
           setDragPreview(event.dataTransfer, {
             id: HOME_PROJECT_CARD_DRAG_PREVIEW_ID,
-            text: `Clone ${projectDisplayName}`,
+            text: `Duplicate ${projectDisplayName}`,
             offsetX: 12,
             offsetY: 12,
           })
@@ -240,23 +241,23 @@ function useProjectLibraryDrag({
           readHomeProjectCardDragData(event.dataTransfer)?.projectId ??
           draggedProject?.id
         const project = projects.find((entry) => entry.id === droppedProjectId)
-        if (!project || !canCloneProjectToLibrary(project, library)) {
+        if (!project || !canDuplicateProjectToLibrary(project, library)) {
           finishProjectDrag()
           return
         }
         event.preventDefault()
         event.stopPropagation()
         event.dataTransfer.dropEffect = 'copy'
-        onCloneToLibrary(project, library.id)
+        onDuplicateToLibrary(project, library.id)
         finishProjectDrag()
       },
     }),
     [
       canDropOnLibrary,
-      canCloneProjectToLibrary,
+      canDuplicateProjectToLibrary,
       draggedProject?.id,
       finishProjectDrag,
-      onCloneToLibrary,
+      onDuplicateToLibrary,
       projects,
     ]
   )
@@ -335,9 +336,11 @@ const Home = () => {
   )
   const homeSidebarItems = registry.observe(homeSidebarItemsFacet).value
   const settingsValues = settings.useSettings()
+  const [searchParams, setSearchParams] = useSearchParams()
   const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
   const projectLibraries = projectLibrariesFromSettings(
-    settingsValues.app.libraries.current
+    settingsValues.app.libraries.current,
+    projectLibraryTypes
   ).map((library) => ({
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
@@ -351,14 +354,17 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.required(homeProjectActionsService)
+  const visibleProjectLibraries = projectLibraries.filter(
+    (library) => !library.hiddenByDefault
+  )
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
     : undefined
   const singleProjectLibrary =
-    !libraryId && projectLibraries.length === 1
-      ? projectLibraries[0]
+    !libraryId && visibleProjectLibraries.length === 1
+      ? visibleProjectLibraries[0]
       : undefined
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
@@ -371,7 +377,7 @@ const Home = () => {
   ).value
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
-    : projectLibraries
+    : visibleProjectLibraries
   const projectsInitiallyLoaded = visibleLibraries.every((library) =>
     settledLibraryIds.includes(library.id)
   )
@@ -414,8 +420,11 @@ const Home = () => {
       )
     : libraryId
       ? []
-      : homeProjectEntries
-  const [searchParams, setSearchParams] = useSearchParams()
+      : homeProjectEntries.filter((project) =>
+          project.libraryIds?.some((id) =>
+            visibleProjectLibraries.some((library) => library.id === id)
+          )
+        )
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
@@ -433,14 +442,14 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-  const cloneProjectToLibrary = useCallback(
+  const duplicateProjectToLibrary = useCallback(
     (project: HomeProjectEntry, libraryId?: string) => {
-      if (!homeProjectActions.canCloneToLibrary(project)) {
+      if (!homeProjectActions.canDuplicateToLibrary(project)) {
         return
       }
       selectCommand(commands, {
         groupId: 'projects',
-        name: 'Clone project',
+        name: 'Duplicate project',
         argDefaultValues: {
           project: project.id,
           ...(libraryId
@@ -456,7 +465,7 @@ const Home = () => {
   const projectLibraryDrag = useProjectLibraryDrag({
     projects: homeProjectEntries,
     projectActions: homeProjectActions,
-    onCloneToLibrary: cloneProjectToLibrary,
+    onDuplicateToLibrary: duplicateProjectToLibrary,
   })
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
@@ -592,11 +601,14 @@ const Home = () => {
     selectCommand(commands, {
       groupId: 'projects',
       name: 'Create project',
-      argDefaultValues: selectedProjectLibrary
-        ? {
-            libraryId: selectedProjectLibrary.id,
-          }
-        : undefined,
+      argDefaultValues:
+        selectedProjectLibrary &&
+        getProjectLibraryCreateProjectOperation(
+          projectLibraryTypes.get(selectedProjectLibrary.type),
+          selectedProjectLibrary
+        )
+          ? { libraryId: selectedProjectLibrary.id }
+          : undefined,
     })
   useMenuListener(cb)
 
@@ -787,14 +799,14 @@ const Home = () => {
             fileOperations={app.fileOperations}
             showCloudSyncUi
             showSourceStatusBadges={false}
-            onCloneToLibrary={cloneProjectToLibrary}
+            onDuplicateToLibrary={duplicateProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
         ) : (
           <ProjectLibraryOverview
             projectShellEnabled={projectShellEnabled}
-            libraries={projectLibraries}
+            libraries={visibleProjectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
             projectsLoaded={projectsInitiallyLoaded}
@@ -804,7 +816,7 @@ const Home = () => {
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
             showCloudSyncUi
-            onCloneToLibrary={cloneProjectToLibrary}
+            onDuplicateToLibrary={duplicateProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
@@ -861,7 +873,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
-  onCloneToLibrary: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -877,7 +889,7 @@ function ProjectLibraryOverview({
   projectActions,
   fileOperations,
   showCloudSyncUi,
-  onCloneToLibrary,
+  onDuplicateToLibrary,
   projectLibraryDrag,
   projectLibraryTypes,
   ...rest
@@ -929,7 +941,7 @@ function ProjectLibraryOverview({
                   projectActions={projectActions}
                   fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
-                  onCloneToLibrary={onCloneToLibrary}
+                  onDuplicateToLibrary={onDuplicateToLibrary}
                   projectLibraryDrag={projectLibraryDrag}
                   projectLibraryTypes={projectLibraryTypes}
                 />
@@ -994,7 +1006,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
-  onCloneToLibrary: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
@@ -1009,7 +1021,7 @@ function ProjectGrid({
   projectActions,
   fileOperations,
   showCloudSyncUi,
-  onCloneToLibrary,
+  onDuplicateToLibrary,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
@@ -1034,7 +1046,7 @@ function ProjectGrid({
               projectActions={projectActions}
               fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
-              onCloneToLibrary={onCloneToLibrary}
+              onDuplicateToLibrary={onDuplicateToLibrary}
               showSourceStatusBadges={showSourceStatusBadges}
             />
           ) : (

@@ -1395,7 +1395,10 @@ export function buildSolidsAndFacesExprs(
   } = {}
 ) {
   let modifiedAst = structuredClone(ast)
-  const { lastChildLookup = true, artifactTypeFilter = ['sweep'] } = options
+  const {
+    lastChildLookup = true,
+    artifactTypeFilter = ['sweep', 'compositeSolid'],
+  } = options
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
   const vars = getVariableExprsFromSelection(
     faces,

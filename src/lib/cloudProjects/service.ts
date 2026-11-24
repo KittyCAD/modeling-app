@@ -77,10 +77,22 @@ export function createCloudProjectsServices(
           thumbnailRequests.delete(project.id)
       })
   }
-  const stopThumbnailWatcher = effect(() => {
-    const watched = thumbnailWatches.value
-    for (const project of projects.value)
-      if (watched.has(project.id)) loadThumbnail(project)
+  let stopThumbnailWatcher = () => {}
+  queueMicrotask(() => {
+    if (disposed) return
+    stopThumbnailWatcher = effect(() => {
+      const watched = thumbnailWatches.value
+      const visible = new Set(projects.value.map((project) => project.id))
+      for (const id of thumbnails.peek().keys())
+        if (!visible.has(id)) {
+          const next = new Map(thumbnails.peek())
+          next.delete(id)
+          thumbnails.value = next
+          thumbnailVersions.delete(id)
+        }
+      for (const project of projects.value)
+        if (watched.has(project.id)) loadThumbnail(project)
+    })
   })
   const withFileOperations = async <T>(
     backing: IZooDesignStudioFS,
