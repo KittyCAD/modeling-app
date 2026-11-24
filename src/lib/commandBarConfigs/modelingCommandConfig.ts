@@ -2161,7 +2161,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             required: true,
             hidden: isEditingNodeSelection,
           },
-          tolerance: gdtToleranceProps,
+          tolerance: {
+            ...gdtToleranceProps,
+            required: false,
+            defaultValue: undefined,
+          },
           ...gdtFrameArgOverrides,
         },
       }
