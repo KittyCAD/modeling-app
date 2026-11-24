@@ -58,23 +58,13 @@ export function KclScene({ context }: { context: ModelingViewContext }) {
           />
         )}
         <KclConnectionStatus session={session} />
-        {state.type === 'ready' && error ? (
+        {state.type === 'ready' && error && (
           <p
             role="alert"
             className="absolute bottom-4 left-4 z-50 bg-2 p-3 text-destroy-80"
           >
             {error.message}
           </p>
-        ) : (
-          state.type === 'ready' &&
-          output.running && (
-            <p
-              role="status"
-              className="pointer-events-none absolute bottom-4 left-4 z-50"
-            >
-              Executing…
-            </p>
-          )
         )}
       </div>
       <ModelingStatusBar context={context} />
