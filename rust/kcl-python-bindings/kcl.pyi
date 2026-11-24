@@ -51,6 +51,8 @@ __all__ = [
     "PlyStorage",
     "Point3d",
     "RawFile",
+    "RhinoExportOptions",
+    "RhinoImportOptions",
     "SketchConstraintReport",
     "SketchConstraintStatus",
     "SldprtImportOptions",
@@ -455,6 +457,18 @@ class InputFormat3d:
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key: builtins.int, /) -> typing.Any: ...
     
+    @typing.final
+    class Rhino(InputFormat3d):
+        r"""
+        Rhino (3dm) file format
+        """
+        __match_args__ = ("_0",)
+        @property
+        def _0(self) -> zooRhinoImportOptions: ...
+        def __new__(cls, _0: zooRhinoImportOptions) -> InputFormat3d.Rhino: ...
+        def __len__(self) -> builtins.int: ...
+        def __getitem__(self, key: builtins.int, /) -> typing.Any: ...
+    
     ...
 
 @typing.final
@@ -684,6 +698,26 @@ class RawFile:
     def contents(self) -> builtins.list[builtins.int]: ...
     @property
     def name(self) -> builtins.str: ...
+
+@typing.final
+class RhinoExportOptions:
+    r"""
+    Options for exporting 3DM.
+    """
+    def __new__(cls) -> RhinoExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+@typing.final
+class RhinoImportOptions:
+    r"""
+    Options for importing 3DM.
+    """
+    def __new__(cls) -> RhinoImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
 
 @typing.final
 class SketchConstraintReport:
@@ -951,6 +985,10 @@ class FileExportFormat(enum.Enum):
     Stl = ...
     r"""
     The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
+    """
+    Rhino = ...
+    r"""
+    The 3DM file format. <https://deepwiki.com/mcneel/rhino3dm/6.1-3dm-file-format>
     """
 
 @typing.final
