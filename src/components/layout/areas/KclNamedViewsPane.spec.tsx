@@ -1,16 +1,45 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { signal } from '@preact/signals-core'
+import { render, screen, within } from '@testing-library/react'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({
+    commands: {
+      useState: () => ({ context: { commands: [] } }),
+    },
+  }),
+  useSingletons: vi.fn(),
+}))
+vi.mock('@src/hooks/useModelingContext', () => ({
+  useModelingContext: () => ({ state: null }),
+}))
+vi.mock('@src/hooks/useReliesOnEngine', () => ({
+  useReliesOnEngine: () => false,
+}))
 
 import {
   canManageNamedView,
+  KclNamedViewsPane,
   viewRows,
 } from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
+import { useSingletons } from '@src/lib/boot'
+import {
+  activeViewSignal,
+  resetNamedViewSession,
+} from '@src/lib/kclNamedViewActivation'
+import { namedViewsPaneConfig } from '@src/lib/layout/configs/default'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
-import { beforeAll, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
   await initialiseWasmNode()
+})
+
+afterEach(() => {
+  vi.clearAllMocks()
+  resetNamedViewSession()
 })
 
 const CODE_REF = {
@@ -43,7 +72,7 @@ function view({
       baseline: 'show',
       showIds: [],
       hideIds: [],
-      codeRef: CODE_REF,
+      codeRef: { ...CODE_REF, range: [0, 0, moduleId] },
     },
     moduleId,
     modulePath,
@@ -61,6 +90,58 @@ const LOCAL_BRACKET: ModulePath = {
   value: '/project/parts/bracket.kcl',
   original_import_path: 'parts/bracket.kcl',
 }
+
+it('renders numbered rows with Default View first and module-qualified duplicate names', () => {
+  const views = [
+    view({ name: 'Front', id: 'panel-front', moduleId: 1 }),
+    view({ name: 'Front', id: 'main-front' }),
+    view({ name: 'Top' }),
+  ]
+  vi.mocked(useSingletons).mockReturnValue({
+    kclManager: {
+      isExecutingSignal: signal(false),
+      execStateSignal: signal({
+        artifactGraph: new Map(
+          views.map(({ artifact }) => [
+            artifact.id,
+            {
+              type: 'namedView',
+              ...artifact,
+            },
+          ])
+        ),
+        filenames: {
+          0: LOCAL_MAIN,
+          1: {
+            type: 'Local',
+            value: '/project/panel.kcl',
+            original_import_path: 'panel.kcl',
+          },
+        },
+      }),
+    },
+  } as unknown as ReturnType<typeof useSingletons>)
+  activeViewSignal.value = 'kclDefault'
+
+  render(
+    <KclNamedViewsPane
+      layout={namedViewsPaneConfig}
+      areaConfig={{ hide: () => false }}
+    />
+  )
+
+  const pane = within(screen.getByRole('list', { name: 'Named views' }))
+  expect(
+    pane.getAllByTestId('named-view-label').map((row) => row.textContent)
+  ).toEqual(['Default View', 'panel::Front', 'main::Front', 'Top'])
+  expect(
+    pane.getAllByTestId('named-view-number').map((row) => row.textContent)
+  ).toEqual(['1', '2', '3', '4'])
+  expect(pane.getAllByRole('listitem')[0]).toHaveAttribute(
+    'data-active',
+    'true'
+  )
+})
 
 describe('viewRows', () => {
   it('puts Default View first when the program declared no views', () => {

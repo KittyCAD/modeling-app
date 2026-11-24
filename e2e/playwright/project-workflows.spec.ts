@@ -52,7 +52,7 @@ async function flushEditorAndThumbnailSaves(page: Page) {
   await page.clock.resume()
   await expect(
     page
-      .locator('#statusbar')
+      .getByTestId('app-header')
       .getByRole('status')
       .filter({ hasText: 'Saving...' })
   ).not.toBeAttached()
@@ -188,7 +188,6 @@ test('keeps the modeling viewport stable when the save status changes @web', asy
   await page.evaluate(() => window.app.singletons.kclManager.flushWriteToFile())
   const stream = page.getByTestId('stream')
   const header = page.getByTestId('app-header')
-  const statusBar = page.locator('#statusbar')
   const originalHeader = await header.boundingBox()
   const originalStream = await stream.boundingBox()
   const video = await page.locator('#video-stream').elementHandle()
@@ -210,7 +209,7 @@ test('keeps the modeling viewport stable when the save status changes @web', asy
     }
     await route.fallback()
   })
-  const retry = statusBar.getByRole('button', { name: 'Save failed. Retry' })
+  const retry = header.getByRole('button', { name: 'Save failed. Retry' })
   try {
     await editThroughUI(page, editedCode)
     await expect.poll(() => editedUploadStarted).toBe(true)
@@ -219,7 +218,7 @@ test('keeps the modeling viewport stable when the save status changes @web', asy
     for (const state of ['saving', 'failed', 'saved'] as const) {
       if (state === 'saving')
         await expect(
-          statusBar.getByRole('status').filter({ hasText: 'Saving...' })
+          header.getByRole('status').filter({ hasText: 'Saving...' })
         ).toBeVisible()
       if (state === 'failed') {
         failedSaveResponse.resolve(undefined)
@@ -230,7 +229,7 @@ test('keeps the modeling viewport stable when the save status changes @web', asy
         rejectEditedUpload = false
         await retry.click()
         await expect.poll(() => storage.read(root)).toBe(editedCode)
-        await expect(statusBar.getByRole('status')).not.toBeAttached()
+        await expect(header.getByRole('status')).not.toBeAttached()
       }
       expect(await header.boundingBox(), state).toEqual(originalHeader)
       expect(await stream.boundingBox(), state).toEqual(originalStream)
@@ -953,7 +952,7 @@ for (const kind of storageKinds) {
         await page.clock.runFor(7_000)
         await expect(
           page
-            .locator('#statusbar')
+            .getByTestId('app-header')
             .getByRole('status')
             .filter({ hasText: 'Saving...' })
         ).not.toBeAttached()
@@ -1678,7 +1677,7 @@ for (const kind of storageKinds) {
           gate.resolve(undefined)
           await localFailure.evaluate((f) => f.release())
           await page.clock.resume()
-          const retry = page.locator('#statusbar').getByRole('button', {
+          const retry = page.getByTestId('app-header').getByRole('button', {
             name: 'Save failed. Retry',
           })
           await expect(retry).toBeVisible()

@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals-core'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
-import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
+import { LocalWebGPUSceneView } from '@src/clientSideScene/localRenderer/LocalWebGPUSceneView'
 import { Themes } from '@src/lib/theme'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -34,16 +34,12 @@ vi.mock('@src/clientSideScene/localRenderer/LocalRenderer', () => ({
     }
   },
 }))
-vi.mock('@src/lib/boot', () => ({
-  useSingletons: () => {
-    throw new Error('Presentation requested app singletons')
-  },
-}))
-vi.mock('@src/hooks/useModelingContext', () => ({
-  useModelingContext: () => {
-    throw new Error('Presentation requested modeling context')
-  },
-}))
+vi.mock('@src/lib/boot', () => {
+  throw new Error('Renderer presentation imported the legacy app bootstrap')
+})
+vi.mock('@src/hooks/useModelingContext', () => {
+  throw new Error('Renderer presentation imported legacy modeling context')
+})
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()

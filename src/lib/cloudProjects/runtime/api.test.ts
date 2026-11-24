@@ -65,6 +65,57 @@ function projectResponse(projectId: string, revision: string) {
 }
 
 describe('cloud upload HTTP contract (mocked fetch)', () => {
+  test.each(['create', 'update'] as const)(
+    'uploads %s project files as octet-stream with their paths and bytes intact',
+    async (operation) => {
+      const files = [
+        ...projectFiles(),
+        ...['png', 'jpg', 'jpeg', 'webp', 'step', 'unknown'].map(
+          (extension) => ({
+            relativePath: `assets/part.${extension}`,
+            data: new Uint8Array([0, 127, 128, 255]),
+          })
+        ),
+      ]
+      const fetchMock = vi.fn<typeof fetch>(async () =>
+        projectResponse('project-existing', 'rev-2')
+      )
+      vi.stubGlobal('fetch', fetchMock)
+      const config = { enabled: true, baseUrl: 'https://api.dev.zoo.dev' }
+
+      if (operation === 'create') {
+        await createRemoteProject(config, '/projects/bracket', files)
+      } else {
+        await updateRemoteProject({
+          config,
+          projectPath: '/projects/bracket',
+          project: {
+            id: 'project-existing',
+            description: '',
+            category_ids: [],
+          },
+          files,
+        })
+      }
+
+      const form = fetchMock.mock.calls[0][1]?.body
+      expect(form).toBeInstanceOf(FormData)
+      if (!(form instanceof FormData)) throw new Error('Missing upload form')
+      expect([...form.keys()]).toEqual([
+        'body',
+        ...files.map((file) => file.relativePath),
+      ])
+      expect(form.get('body')).toMatchObject({ type: 'application/json' })
+      for (const file of files) {
+        const part = form.get(file.relativePath)
+        expect(part).toBeInstanceOf(Blob)
+        if (!(part instanceof Blob)) throw new Error('Missing uploaded file')
+        expect(part.type).toBe('application/octet-stream')
+        expect(new Uint8Array(await part.arrayBuffer())).toEqual(file.data)
+      }
+    }
+  )
+
   test.each([
     ['create', 'file count'],
     ['update', 'file count'],

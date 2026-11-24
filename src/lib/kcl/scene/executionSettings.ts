@@ -11,7 +11,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 export interface SceneExecutionSettings {
   configuration: ReadonlySignal<ReturnType<typeof jsAppSettings>>
   executeRevision: ReadonlySignal<string>
-  rebuildRevision: ReadonlySignal<string>
+  streamedRevision: ReadonlySignal<string>
   revision: (geometryOnly: () => boolean) => ReadonlySignal<string>
 }
 
@@ -29,28 +29,28 @@ export function createSceneExecutionSettings(
   )
   const inputs = computed(() => {
     const execute: unknown[] = []
-    const rebuild: unknown[] = []
+    const streamed: unknown[] = []
     for (const input of declarations.value) {
       const value = [input.id, input.read(getSettings())]
       if (input.refresh === 'execute') execute.push(value)
-      else rebuild.push(value)
+      else streamed.push(value)
     }
     return {
       execute: JSON.stringify(execute),
-      rebuild: JSON.stringify(rebuild),
+      streamed: JSON.stringify(streamed),
     }
   })
   const executeRevision = computed(() => inputs.value.execute)
-  const rebuildRevision = computed(() => inputs.value.rebuild)
+  const streamedRevision = computed(() => inputs.value.streamed)
   return {
     configuration,
     executeRevision,
-    rebuildRevision,
+    streamedRevision,
     revision: (geometryOnly: () => boolean) =>
       computed(() =>
         JSON.stringify([
           executeRevision.value,
-          geometryOnly() ? null : rebuildRevision.value,
+          geometryOnly() ? null : streamedRevision.value,
         ])
       ),
   }

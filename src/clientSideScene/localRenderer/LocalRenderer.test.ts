@@ -116,7 +116,8 @@ function fixture(
     1,
     0.1,
     10000
-  )
+  ),
+  claimInitialCameraFrame?: () => boolean
 ) {
   const manager = Object.assign(new EventTarget(), {
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
@@ -153,7 +154,10 @@ function fixture(
   const onRendererFailed = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
-    legacyLocalRendererHost(manager as unknown as KclManager),
+    {
+      ...legacyLocalRendererHost(manager as unknown as KclManager),
+      claimInitialCameraFrame,
+    },
     {
       theme: Themes.Light,
       enableSSAO: false,
@@ -446,35 +450,111 @@ describe('local GLB loading', () => {
     expect(f.picker.invalidate).toHaveBeenCalledTimes(invalidations)
   })
 
-  it('exports once after successful execution and loads standard geometry/materials', async () => {
-    const f = fixture()
-    f.manager.isExecutingSignal.value = true
-    expect(f.manager.rustContext.export).not.toHaveBeenCalled()
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
-      {
-        type: 'gltf',
-        storage: 'binary',
-        presentation: 'compact',
-        include_uuids: true,
-        extras: ['sketches', 'regions'],
-      },
-      { settings: { modeling: { base_unit: 'mm' } } }
+  it.each([false, true])(
+    'loads standard geometry/materials with a partial buffer view: %s',
+    async (partialView) => {
+      const f = fixture()
+      if (partialView) {
+        const file = triangleGlb()
+        const padded = new Uint8Array(file.contents.length + 2)
+        padded.set(file.contents, 1)
+        f.manager.rustContext.export.mockResolvedValue([
+          { ...file, contents: padded.subarray(1, -1) },
+        ])
+      }
+      f.manager.isExecutingSignal.value = true
+      expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
+        {
+          type: 'gltf',
+          storage: 'binary',
+          presentation: 'compact',
+          include_uuids: true,
+          extras: ['sketches', 'regions'],
+        },
+        { settings: { modeling: { base_unit: 'mm' } } }
+      )
+      const mesh = f.state.currentModel?.children[0]
+      expect(mesh).toBeInstanceOf(Mesh)
+      if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+      expect(mesh.geometry.getAttribute('position').count).toBe(3)
+      expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
+      expect(mesh.material.metalness).toBe(0.3)
+      expect(mesh.material.roughness).toBe(0.4)
+      expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+        sceneInfra: f.manager.sceneInfra,
+        settingsActor: f.manager.systemDeps.settings,
+      })
+      expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+      f.renderer.dispose()
+    }
+  )
+
+  it('keeps the scene camera when a local presentation is recreated, while allowing explicit resets', async () => {
+    const claimInitialCameraFrame = vi
+      .fn()
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
+    const camera = new PerspectiveCamera(45, 1, 0.1, 10000)
+    const first = fixture(camera, claimInitialCameraFrame)
+    first.done()
+    await vi.waitFor(() =>
+      expect(first.renderer.isLoadedSceneCurrent()).toBe(true)
     )
-    const mesh = f.state.currentModel?.children[0]
-    expect(mesh).toBeInstanceOf(Mesh)
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    expect(mesh.geometry.getAttribute('position').count).toBe(3)
-    expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
-    expect(mesh.material.metalness).toBe(0.3)
-    expect(mesh.material.roughness).toBe(0.4)
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.manager.sceneInfra,
-      settingsActor: f.manager.systemDeps.settings,
-    })
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
-    f.renderer.dispose()
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    first.renderer.dispose()
+
+    const reattached = fixture(camera, claimInitialCameraFrame)
+    camera.position.set(10, 20, 30)
+    reattached.done()
+    await vi.waitFor(() =>
+      expect(reattached.renderer.isLoadedSceneCurrent()).toBe(true)
+    )
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(camera.position.toArray()).toEqual([10, 20, 30])
+    reattached.renderer.resetCameraAfterModelLoad()
+    expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    reattached.renderer.dispose()
+  })
+
+  it('retains reset requests across failed loads and consumes initial framing only once', async () => {
+    const claimInitialCameraFrame = vi.fn(() => false)
+    const f = fixture(
+      new PerspectiveCamera(45, 1, 0.1, 10000),
+      claimInitialCameraFrame
+    )
+    try {
+      f.renderer.resetCameraAfterModelLoad()
+      f.done(false)
+      expect(resetCameraPosition).not.toHaveBeenCalled()
+      expect(claimInitialCameraFrame).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.done(false)
+      f.renderer.resetCameraAfterModelLoad()
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    } finally {
+      f.renderer.dispose()
+    }
   })
 
   it('keeps planes in fit bounds until their visibility update follows the model load', async () => {
@@ -750,5 +830,5 @@ function triangleGlb(): ModelingAppFile {
   header.setUint32(binOffset, vertices.byteLength, true)
   header.setUint32(binOffset + 4, 0x004e4942, true)
   bytes.set(new Uint8Array(vertices.buffer), binOffset + 8)
-  return { name: 'model.glb', contents: Array.from(bytes) }
+  return { name: 'model.glb', contents: bytes }
 }

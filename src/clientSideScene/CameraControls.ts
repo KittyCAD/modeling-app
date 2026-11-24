@@ -1222,6 +1222,11 @@ export class CameraControls {
     return modelingResponse.data.view
   }
 
+  /** Last synchronized pose, available even after the streamed connection has closed. */
+  snapshotCameraView(): CameraViewState {
+    return getLocalCameraView(this.camera, this.target, this.lastPerspectiveFov)
+  }
+
   async setCameraView(view: CameraViewState): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
       await this.setLocalCameraView(view)

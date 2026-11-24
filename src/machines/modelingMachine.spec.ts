@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { STRAIGHT_SEGMENT } from '@src/clientSideScene/sceneConstants'
@@ -50,7 +51,6 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
-  buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
   createProjectForTest,
 } from '@src/unitTestUtils'
@@ -95,24 +95,10 @@ function setTestWorld(world: TestWorld) {
   machineManagerInThisFile = world.machineManager
 }
 
-/**
- * Keep engine sessions scoped to the describe blocks that need them. A single
- * session for this whole file can expire before the shuffled tests finish.
- */
+/** Scope live sessions to engine-backed suites and refresh their globals before each retry. */
 function useEngineWorld() {
-  beforeAll(async () => {
-    setTestWorld(
-      await buildTheWorldAndConnectToEngine({
-        webrtc: false,
-      })
-    )
-  })
-
+  setupEngineTestWorld(setTestWorld, { webrtc: false })
   afterAll(() => {
-    engineCommandManagerInThisFile.tearDown({
-      route: 'user-requested',
-      initiatedBy: 'client',
-    })
     setTestWorld(worldWithoutEngine)
   })
 }

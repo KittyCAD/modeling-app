@@ -211,6 +211,12 @@ export interface LocalRendererFailure {
   kind: 'initialization' | 'lost'
   message: string
 }
+
+/** Camera intent when a model arrives; the first load also consumes the host's framing claim. */
+type CameraFraming =
+  | { phase: 'initial-load'; reset: 'host-policy' | 'requested' }
+  | { phase: 'subsequent-loads'; reset: 'preserve' | 'requested' }
+
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
@@ -241,8 +247,10 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  /** A camera reset waiting for the next model. The first model always gets one. */
-  private cameraResetPending = true
+  private cameraFraming: CameraFraming = {
+    phase: 'initial-load',
+    reset: 'host-policy',
+  }
   private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
@@ -284,7 +292,8 @@ export class LocalRenderer {
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
-    this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
+    const backfacePlugin = backfaceColorPlugin(this.backfaceColor)
+    this.gltfLoader.register(() => backfacePlugin)
 
     this.container.style.opacity = '0'
     host.executionEvents.addEventListener(
@@ -1450,12 +1459,13 @@ export class LocalRenderer {
         return
       }
 
-      const bytes = new Uint8Array(file.contents)
+      const bytes = file.contents
       const gltf = (await this.gltfLoader.parseAsync(
-        bytes.buffer,
+        bytes.byteLength === bytes.buffer.byteLength
+          ? bytes.buffer
+          : bytes.slice().buffer,
         ''
       )) as KITTYCAD_GLTF
-      console.log('local renderer glTF', gltf.parser.json, gltf)
       gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
 
@@ -1527,17 +1537,18 @@ export class LocalRenderer {
     if (this.isLoadedSceneCurrent()) {
       this.resetCamera()
     } else {
-      this.cameraResetPending = true
+      this.cameraFraming = { ...this.cameraFraming, reset: 'requested' }
     }
   }
 
-  /**
-   * Also stands in for the reset after opening a project, which local mode
-   * skips because the model is not loaded yet.
-   */
+  /** Apply queued resets and consult the host only on this renderer's first successful scene load. */
   private resetCameraIfPending() {
-    if (this.cameraResetPending) {
-      this.cameraResetPending = false
+    const framing = this.cameraFraming
+    const frameInitialModel =
+      framing.phase === 'initial-load' &&
+      (this.host.claimInitialCameraFrame?.() ?? true)
+    this.cameraFraming = { phase: 'subsequent-loads', reset: 'preserve' }
+    if (framing.reset === 'requested' || frameInitialModel) {
       this.resetCamera()
     }
   }
@@ -1554,16 +1565,13 @@ export class LocalRenderer {
 // in the backface color, which shows on open surfaces.
 // This makes GLTFLoaderbuild doubleSided materials.
 function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
+  const colorNode = select(frontFacing, color(materialColor), backfaceColor)
   return {
     name: 'zoo_backface_color',
     getMaterialType: () => MeshStandardNodeMaterial,
     extendMaterialParams: (_materialIndex, params) => {
       params.side = DoubleSide
-      params.colorNode = select(
-        frontFacing,
-        color(materialColor),
-        backfaceColor
-      )
+      params.colorNode = colorNode
       return null
     },
   }

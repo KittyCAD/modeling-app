@@ -1,4 +1,3 @@
-import { useApp } from '@src/lib/boot'
 import {
   homeProjectActionsService,
   type HomeProjectActionsService,
@@ -31,10 +30,16 @@ import cloudProjects from '@src/lib/cloudProjects/registry/library'
 import { afterEach, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { FileSaveStatus } from '@src/components/FileSaveStatus'
-import type { App } from '@src/lib/app'
+import { SaveStatusHeaderItem } from '@src/components/SaveStatusHeaderItem'
+import {
+  projectSession,
+  type ProjectSessionService,
+} from '@src/registry/contracts/projectSession'
+import {
+  commandSystemService,
+  type CommandSystemService,
+} from '@src/registry/contracts/commands'
 
-vi.mock('@src/lib/boot', () => ({ useApp: vi.fn() }))
 vi.mock('@src/lib/fs-zds', async () => ({
   default: (await import('@chainner/node-path')).posix,
 }))
@@ -75,11 +80,25 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   vi.stubGlobal('fetch', fetchMock)
   const user = signal({ id: 'first' })
   const token = signal('first-token')
+  const send = vi.fn()
   registry = new Registry()
   await registry.configure([
     cloudProjects,
+    provide(projectSession, {
+      project: signal({
+        path: '/__zoo_cloud__/model',
+        executingEditor: signal(undefined),
+      }),
+      storageFor: () => ({
+        writeAvailability: signal({
+          writable: false,
+          reason: 'Read-only project.',
+        }),
+      }),
+    } as unknown as ProjectSessionService),
+    provide(commandSystemService, { send } as unknown as CommandSystemService),
     provide(homeProjectActionsService, {
-      canCloneToLibrary: () => true,
+      canDuplicateToLibrary: () => true,
     } as unknown as HomeProjectActionsService),
     provide(authService, {
       user,
@@ -142,24 +161,9 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
       'cloneProjectFrom'
     )?.canCloneProject?.({ library: dataset, project: entries[0] })
   ).toBe(true)
-  const send = vi.fn()
-  vi.mocked(useApp).mockReturnValue({
-    registry,
-    projectSignal: signal({
-      path: '/__zoo_cloud__/model',
-      executingEditor: signal(undefined),
-    }),
-    projectSession: {
-      storageFor: () => ({
-        writeAvailability: signal({
-          writable: false,
-          reason: 'Read-only project.',
-        }),
-      }),
-    },
-    commands: { send },
-  } as unknown as App)
-  const view = render(createElement(FileSaveStatus))
+  const view = render(
+    createElement(SaveStatusHeaderItem, { app: { registry } })
+  )
   fireEvent.click(
     screen.getByRole('button', { name: 'Create an editable copy' })
   )
@@ -167,7 +171,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
     type: 'Find and select command',
     data: {
       groupId: 'projects',
-      name: 'Clone project',
+      name: 'Duplicate project',
       argDefaultValues: { project: entries[0].id },
     },
   })

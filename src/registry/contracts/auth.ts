@@ -1,5 +1,5 @@
 import { inputs, observeService, observe } from '@src/registry/inputs'
-import type { UserResponse } from '@kittycad/lib'
+import type { UserOrgInfo, UserResponse } from '@kittycad/lib'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { SessionExpiredNotice } from '@src/lib/sessionExpired'
 import type { authMachine } from '@src/machines/authMachine'
@@ -16,6 +16,14 @@ export type AuthSessionExpiredListener = (context: {
   notice: SessionExpiredNotice
 }) => void
 
+export type AuthOrganizationState = {
+  current: ReadonlySignal<UserOrgInfo | undefined>
+  loading: ReadonlySignal<boolean>
+  error: ReadonlySignal<Error | undefined>
+  /** Reload membership; failures are published through error. */
+  refresh: () => Promise<void>
+}
+
 export type AuthRegistryService = {
   actor: ActorRefFrom<typeof authMachine>
   send: ActorRefFrom<typeof authMachine>['send']
@@ -23,6 +31,7 @@ export type AuthRegistryService = {
   token: ReadonlySignal<string>
   user: ReadonlySignal<UserResponse | undefined>
   isLoggedIn: ReadonlySignal<boolean>
+  organization: AuthOrganizationState
   sessionExpiredNotice: ReadonlySignal<SessionExpiredNotice | undefined>
   clearSessionExpiredNotice: () => void
   useAuthState: () => SnapshotFrom<typeof authMachine>

@@ -25,15 +25,15 @@ const projectActions = {
   canDuplicate: vi.fn(() => false),
   canRename: vi.fn(() => false),
   canDelete: vi.fn(() => false),
-  canCloneToLibrary: vi.fn(() => false),
+  canDuplicateToLibrary: vi.fn(() => false),
   canReviewDuplicateRealizations: vi.fn(() => false),
   canSeparateProjectCopies: vi.fn(() => false),
   open: vi.fn(async () => undefined),
   duplicate: vi.fn(async () => undefined),
   rename: vi.fn(async () => undefined),
   delete: vi.fn(async () => undefined),
-  getCloneToLibraryTargets: vi.fn(() => []),
-  cloneToLibrary: vi.fn(async () => undefined),
+  getDuplicateToLibraryTargets: vi.fn(() => []),
+  duplicateToLibrary: vi.fn(async () => undefined),
   deleteDuplicateRealizations: vi.fn(async () => undefined),
   separateProjectCopies: vi.fn(async () => undefined),
 } satisfies HomeProjectActionsService
@@ -83,7 +83,7 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
           readFile: vi.fn(),
         }}
         showCloudSyncUi={true}
-        onCloneToLibrary={vi.fn()}
+        onDuplicateToLibrary={vi.fn()}
       />
     </MemoryRouter>
   )
