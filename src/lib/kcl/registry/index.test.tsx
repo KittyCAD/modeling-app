@@ -1,7 +1,14 @@
 import '@src/lib/projectSession/next/testFeature'
 import { contribute, provide, Registry } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
-import { editorsService } from '@src/lib/editors/registry/contract'
+import {
+  editorsService,
+  editorTabIndicatorsFacet,
+} from '@src/lib/editors/registry/contract'
+import { EditorsPane } from '@src/lib/editors/EditorsPane'
+import { LayoutType } from '@src/lib/layout/types'
+import { commandsFacet } from '@src/registry/contracts/commands'
+import { KCL_RENDER_COMMAND } from '@src/lib/kcl/registry/renderCommands'
 import { requireSuccess } from '@src/lib/editors/testViews'
 import executorsExtension from '@src/lib/executors/registry'
 import { executorsService } from '@src/lib/executors/registry/contract'
@@ -510,12 +517,11 @@ it.each([false, true])(
   }
 )
 
-it('honors Automatically Render Off and exposes explicit rendering and freshness in the Modeling view', async () => {
+it('shows stale tabs with Automatically Render Off and refreshes through the Render command', async () => {
   const { createSettings } = await import('@src/lib/settings/initialSettings')
   const { defineBooleanExtensionSetting } = await import(
     '@src/lib/settings/extensionSettings'
   )
-  const { fireEvent } = await import('@testing-library/react')
   const settingsProvider = createTestSettings()
   const automatic = defineBooleanExtensionSetting({
     defaultValue: false,
@@ -530,6 +536,11 @@ it('honors Automatically Render Off and exposes explicit rendering and freshness
   }
   settingsProvider.current.value = settings
   const resource = createTestKclScene('streamed')
+  const initialExecution =
+    Promise.withResolvers<ReturnType<typeof resource.runtime.state.peek>>()
+  vi.mocked(resource.runtime.execute).mockImplementationOnce(
+    () => initialExecution.promise
+  )
   vi.mocked(openKclScene).mockResolvedValue(resource)
   vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
   vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
@@ -555,11 +566,25 @@ it('honors Automatically Render Off and exposes explicit rendering and freshness
     const binding = editors.viewState(instance).peek().binding
     if (binding.type !== 'ready') return expect.fail('Modeling did not bind')
     mounted = render(
-      <binding.Component editor={editor} instance={instance} active />
+      <EditorsPane
+        editors={editors}
+        indicators={registry.observe(editorTabIndicatorsFacet)}
+        layout={{
+          id: 'editors',
+          label: 'Editors',
+          type: LayoutType.Simple,
+          areaType: 'editors',
+        }}
+      />
     )
     await vi.waitFor(() =>
       expect(resource.runtime.execute).toHaveBeenCalledOnce()
     )
+    expect(screen.getByRole('tab')).not.toHaveTextContent('Stale')
+    await act(async () => {
+      initialExecution.resolve(resource.runtime.state.peek())
+    })
+    expect(screen.getByRole('tab')).not.toHaveTextContent('Stale')
     await act(async () => {
       editor.dispatch({
         changes: {
@@ -571,15 +596,22 @@ it('honors Automatically Render Off and exposes explicit rendering and freshness
       settings.modeling.defaultUnit.user = 'in'
     })
     expect(resource.runtime.execute).toHaveBeenCalledOnce()
-    expect(screen.getByLabelText('Model freshness')).toHaveTextContent(
-      'out of date'
-    )
-    fireEvent.click(screen.getByRole('button', { name: /^Render$/ }))
+    expect(screen.getByRole('tab')).toHaveTextContent('Stale')
+    expect(screen.queryByLabelText('Model freshness')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /^Render$/ })
+    ).not.toBeInTheDocument()
+    act(() => instance.element.peek()?.focus())
+    const renderCommand = registry
+      .get(commandsFacet)
+      .find(({ id }) => id === KCL_RENDER_COMMAND)
+    if (!renderCommand) return expect.fail('Render command was not registered')
+    await act(async () => {
+      await renderCommand.onSubmit()
+    })
     await vi.waitFor(() => {
       expect(resource.runtime.execute).toHaveBeenCalledTimes(2)
-      expect(screen.getByLabelText('Model freshness')).toHaveTextContent(
-        'up to date'
-      )
+      expect(screen.getByRole('tab')).not.toHaveTextContent('Stale')
     })
     const [snapshot, configuration] = vi.mocked(resource.runtime.execute).mock
       .calls[1]
@@ -613,10 +645,9 @@ it('honors Automatically Render Off and exposes explicit rendering and freshness
       })
     })
     expect(resource.runtime.execute).toHaveBeenCalledTimes(3)
-    expect(screen.getByLabelText('Model freshness')).toHaveTextContent(
-      'out of date'
-    )
+    expect(screen.getByRole('tab')).toHaveTextContent('Stale')
   } finally {
+    initialExecution.resolve(resource.runtime.state.peek())
     mounted?.unmount()
     await registry.dispose()
   }
