@@ -244,6 +244,8 @@ interface EditorFileSaveSnapshot extends EditorFileSave {
 
 type UpdateCodeEditorOptions = {
   shouldExecute: boolean
+  /** Bypass the debounce when `shouldExecute` is true, even if automatic rendering is off. */
+  shouldExecuteImmediately: boolean
   shouldSyncRust: boolean
   shouldClearHistory: boolean
   /** Only has an effect if `shouldClearHistory` is `false`.
@@ -2735,7 +2737,10 @@ export class KclManager extends File {
     if (originalCode === code) return
 
     // Update the code state and the editor.
-    this.updateCodeEditor(code, { shouldExecute: true })
+    this.updateCodeEditor(code, {
+      shouldExecute: true,
+      shouldExecuteImmediately: this._automaticallyRenderEnabled,
+    })
   }
 
   // There's overlapping responsibility between updateAst and executeAst.
@@ -3717,6 +3722,7 @@ export class KclManager extends File {
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
     shouldExecute: false,
+    shouldExecuteImmediately: false,
     shouldSyncRust: true,
     shouldWriteToDisk: true,
     shouldResetCamera: false,
@@ -3934,6 +3940,7 @@ export class KclManager extends File {
       }
       this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
       this.setDiagnosticsForCurrentErrors()
+      this.executeEditorUpdateImmediately(resolvedOptions)
       return
     }
 
@@ -3979,7 +3986,15 @@ export class KclManager extends File {
     }
     this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
     this.setDiagnosticsForCurrentErrors()
+    this.executeEditorUpdateImmediately(resolvedOptions)
   }
+
+  private executeEditorUpdateImmediately(options: UpdateCodeEditorOptions) {
+    if (!options.shouldExecute || !options.shouldExecuteImmediately) return
+    this.scheduleCurrentCodeExecution(options.shouldResetCamera)
+    this.flushPendingEditorExecution().catch(reportRejection)
+  }
+
   async writeToFile(
     newCode = this.codeSignal.value,
     requestedDocumentVersion = this._documentVersion,
