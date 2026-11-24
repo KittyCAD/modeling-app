@@ -241,7 +241,7 @@ impl Published {
 pub struct Observation<T> {
     published: Weak<Published>,
     facet: TypeId,
-    read: fn(&Snapshot) -> T,
+    read: Rc<dyn Fn(&Snapshot) -> T>,
 }
 
 impl<T> Clone for Observation<T> {
@@ -249,7 +249,7 @@ impl<T> Clone for Observation<T> {
         Self {
             published: self.published.clone(),
             facet: self.facet,
-            read: self.read,
+            read: self.read.clone(),
         }
     }
 }
@@ -259,7 +259,23 @@ impl<T> Observation<T> {
         Self {
             published,
             facet: TypeId::of::<F>(),
-            read: Snapshot::get::<F>,
+            read: Rc::new(Snapshot::get::<F>),
+        }
+    }
+
+    pub(crate) fn map<U>(self, project: impl Fn(T) -> U + 'static) -> Observation<U>
+    where
+        T: 'static,
+    {
+        let Self {
+            published,
+            facet,
+            read,
+        } = self;
+        Observation {
+            published,
+            facet,
+            read: Rc::new(move |snapshot| project(read(snapshot))),
         }
     }
 

@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
 use plankton_rust::{
-    Binding, Dependencies, Extension, Facet, Factory, HookResult, Instance, ReadSignal, Registry,
-    RegistryError, ScopedSlot, Service, Signal, slot,
+    Binding, Dependencies, Facet, Factory, HookResult, Instance, PluginSpec, Plugins, Registry,
+    Service, Signal, create_plugin, slot,
 };
 
 struct Panels;
@@ -26,64 +26,6 @@ impl Service for ActiveDocument {
     type Capability = Document;
 }
 
-struct OutlineEnabled;
-
-impl Facet for OutlineEnabled {
-    type Input = ();
-    type Output = bool;
-
-    fn combine(inputs: Vec<()>) -> bool {
-        !inputs.is_empty()
-    }
-}
-
-struct OutlinePlugin;
-
-impl Service for OutlinePlugin {
-    type Capability = OutlineController;
-}
-
-struct OutlineController {
-    body: ScopedSlot,
-    content: Vec<Extension>,
-}
-
-impl OutlineController {
-    fn toggle(&self, registry: &mut Registry) -> Result<(), RegistryError> {
-        let children = if registry.get::<OutlineEnabled>() {
-            Vec::new()
-        } else {
-            self.content.clone()
-        };
-        self.body.replace(registry, children)
-    }
-}
-
-fn outline_plugin(document: &Factory<ReadSignal<String>>) -> Factory<()> {
-    Factory::keyed(
-        "outline plugin",
-        document.dependency("title"),
-        |title, scope| {
-            let read_title = title.as_ref().clone();
-            let content = vec![
-                Binding::new::<OutlineEnabled>(|| ()).into(),
-                Binding::new::<Panels>(move || format!("Outline for {}", read_title.get()))
-                    .depending_on(&title)
-                    .into(),
-            ];
-            let (body, handle) = scope.slot(content.clone());
-            let controller = OutlineController {
-                body: handle,
-                content,
-            };
-            Ok(Instance::new(()).with_children(vec![
-                body,
-                Binding::provide::<OutlinePlugin>(Rc::new(controller)).into(),
-            ]))
-        },
-    )
-}
-
 fn main() -> HookResult {
     let document = Factory::new(Dependencies::none(), |(), _| {
         let document = Rc::new(Document {
@@ -102,7 +44,22 @@ fn main() -> HookResult {
         Ok(Instance::new(()).with_children(vec![panel.into()]))
     });
 
-    let outline = outline_plugin(&document);
+    let outline = create_plugin(
+        PluginSpec::new(
+            "outline",
+            "Outline",
+            "Show an outline for the current document",
+        ),
+        document.dependency("title"),
+        |title| {
+            let read_title = title.as_ref().clone();
+            Ok(vec![
+                Binding::new::<Panels>(move || format!("Outline for {}", read_title.get()))
+                    .depending_on(&title)
+                    .into(),
+            ])
+        },
+    );
     let sidebar = slot(vec![Binding::new::<Panels>(|| "help".into()).into()]);
     let mut registry = Registry::new();
     registry.configure(vec![editor.into(), sidebar.clone().into(), outline.into()])?;
@@ -118,7 +75,12 @@ fn main() -> HookResult {
     )?;
 
     // The same controller stays available while its slot is empty.
-    let outline = registry.required::<OutlinePlugin>()?;
+    let outline = registry
+        .get::<Plugins>()
+        .into_iter()
+        .find(|plugin| plugin.id == "outline")
+        .ok_or("expected an installed outline plugin")?;
+    let outline = outline.controller;
     outline.toggle(&mut registry)?;
     document.title.set("scene.kcl".into());
     outline.toggle(&mut registry)?;

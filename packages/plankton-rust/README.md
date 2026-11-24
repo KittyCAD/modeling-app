@@ -63,13 +63,29 @@ fails, writes to shared signals still take effect and subscribers read the
 previously published graph. Facet sources and combiners should remain pure.
 Subscriptions installed by an instance can be dropped in its startup cleanup.
 
+## Plugins
+
+`create_plugin` combines a factory, a scoped slot, and a record in the
+`Plugins` facet. The factory takes typed constructor dependencies and builds
+the extensions for the slot. Plugins start enabled by default. Set
+`PluginSpec::enabled_by_default` to `false` to mount the record with an empty
+slot. Constructor dependencies stay mounted while the plugin is disabled.
+Declare resources that should follow the toggle in child factories.
+
+Use `registry.get::<Plugins>()` to find a plugin's metadata and controller.
+The controller exposes an `active` observation and takes `&mut Registry` for
+`enable`, `disable`, and `toggle`. Activity follows the published graph. A failed
+acquisition preserves the previous state, and a cleanup failure after disabling
+leaves the plugin inactive. Records remain discoverable while disabled.
+An activity subscription can receive an unchanged value when another plugin
+toggles because the activity observations share a Facet.
+
 ## Scoped slots
 
 A factory can call `scope.slot(initial_children)` during construction. It
 installs the returned extension among its own children and can share the
-`ScopedSlot` handle through a service. The workspace plugin installs its
-controller alongside the slot, so toggling the outline leaves the controller
-available.
+`ScopedSlot` handle through a contract such as a service. A controller installed
+alongside its slot stays available while the slot is empty.
 
 The controller passes `&mut Registry` when it calls `ScopedSlot::replace`. The
 handle is tied to the registry and acquired instance that created it. It works
@@ -102,7 +118,5 @@ run at removal. Keep resources that need a deterministic shutdown boundary
 behind an explicit cleanup hook. Lifecycle failure reporting covers errors
 returned from hooks. Panics follow ordinary Rust unwinding.
 
-This prototype uses a single-threaded registry and synchronous hooks. Plugins
-can compose a controller from a scoped slot and a service. The reusable
-TypeScript plugin helper, service facade, and async cleanup are outside this
-prototype's scope.
+This prototype uses a single-threaded registry and synchronous hooks. The
+TypeScript service facade and async cleanup are outside this prototype's scope.
