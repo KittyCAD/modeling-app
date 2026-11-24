@@ -1,3 +1,4 @@
+import { ProjectArchiveLimitToast } from '@src/components/ProjectArchiveLimitToast'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -289,6 +290,7 @@ const Home = () => {
     false
   )
   const { auth, billing, commands, settings, registry } = app
+  const cloud = registry.required(cloudStorageService)
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
@@ -330,7 +332,7 @@ const Home = () => {
   const billingContext = billing.useContext()
   const homeProjectEntries = registry.observe(homeProjectEntriesFacet).value
   const projectStatuses = useProjectStatuses(
-    registry.required(cloudStorageService),
+    cloud,
     homeProjectEntries,
     apiToken
   )
@@ -623,6 +625,7 @@ const Home = () => {
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
+      <ProjectArchiveLimitToast cloud={cloud} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           data-testid="home-header"

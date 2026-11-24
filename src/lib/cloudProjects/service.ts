@@ -120,7 +120,6 @@ export function createCloudProjectsServices(
   const archiveOperation = async <T>(run: () => Promise<T>): Promise<T> => {
     const attempt = ++archiveAttempt
     const owner = config().accountId
-    archiveFailure.value = undefined
     const recordFailure = (error: unknown) => {
       const limitError = getProjectArchiveLimitError(error)
       if (
@@ -148,7 +147,6 @@ export function createCloudProjectsServices(
         : undefined
     ),
     dismissArchiveLimitFailure: () => {
-      archiveAttempt += 1
       archiveFailure.value = undefined
     },
     openProject: (...args: Parameters<typeof fileSystem.openProject>) =>
