@@ -1,5 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { CREATE_CLOUD_LIBRARY_COMMAND } from '@src/lib/cloudProjects/commands'
 import { selectCommand } from '@src/lib/commandUtils'
 import { PATHS } from '@src/lib/paths'
@@ -46,14 +47,20 @@ function CloudLibrariesSetting({
         {cloudLibraries.map((library) => (
           <li
             key={library.id}
-            className="flex min-w-0 items-center gap-2 rounded-sm border b-4 p-2 text-sm"
+            className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 rounded-sm border border-chalkboard-30 p-2 dark:border-chalkboard-80"
           >
-            <span className="min-w-0 flex-1 truncate" title={library.title}>
+            <span
+              aria-hidden="true"
+              className="flex h-8 w-8 items-center justify-center rounded-sm border border-chalkboard-30 text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30"
+            >
+              <CustomIcon name="cloud" className="h-5 w-5" />
+            </span>
+            <p className="truncate text-sm" title={library.title}>
               {library.title}
-            </span>
-            <span className="text-2">
+            </p>
+            <p className="col-start-2 text-sm text-2">
               {library.organizationId ? 'Organization' : 'Personal'}
-            </span>
+            </p>
           </li>
         ))}
       </ul>
