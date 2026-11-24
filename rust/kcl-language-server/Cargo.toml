@@ -54,8 +54,10 @@ name = "lsp_semantic_tokens_benchmark_criterion"
 harness = false
 required-features = ["lsp-test-util"]
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "windows")))'.dependencies]
 signal-hook = "0.4.4"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { version = "1.52.3", features = ["full"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
