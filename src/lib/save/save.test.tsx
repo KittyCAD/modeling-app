@@ -1,5 +1,5 @@
 import '@src/lib/projectSession/next/testFeature'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import markdownExtension from '@src/lib/markdown/registry'
@@ -429,6 +429,7 @@ describe('contributed editor saving', () => {
     createFile.mockReturnValueOnce(pending.promise)
     const saved = saving().save(editor)
     const submitted = naming().submit(editor, 'new.txt')
+    await vi.waitFor(() => expect(createFile).toHaveBeenCalled())
     change(editor, 'newer edits')
     pending.resolve()
     await submitted
@@ -607,6 +608,7 @@ describe('contributed editor saving', () => {
     createFile.mockReturnValueOnce(pending.promise)
     const saved = saving().save(editor)
     const submitted = naming().submit(editor, 'new.md')
+    await vi.waitFor(() => expect(createFile).toHaveBeenCalled())
     expect(projects.listFiles()).toEqual([])
     editors.closeEditor(editor.id)
     pending.resolve()
@@ -783,6 +785,50 @@ describe('contributed editor saving', () => {
     expect(editor.src.peek()).toBe('/project/parts/drafts/notes.txt')
     expect(saving().state(editor).peek().dirty).toBe(false)
   })
+  it.each(['first save', 'rename'])(
+    'rejects symlink parents on a %s without writing outside the project',
+    async (operation) => {
+      const root = await mkdtemp(join(tmpdir(), 'zds-linked-project-'))
+      const outside = await mkdtemp(join(tmpdir(), 'zds-outside-project-'))
+      try {
+        await symlink(outside, join(root, 'link'), 'junction')
+        const source = join(root, 'original.txt')
+        await testFileOperations.createFile(source, 'original')
+        createFile.mockImplementation(testFileOperations.createFile)
+        rename.mockImplementation(testFileOperations.rename)
+        createDirectory.mockImplementation(testFileOperations.createDirectory)
+        const projects = createProjectSessionService(testFileOperations)
+        projects.openProject({
+          contents: { name: 'project', path: root, children: [] },
+          metadata: { title: 'Project', readWriteAccess: true },
+        })
+        await registry.replace(extra, [
+          provide(projectSessionService, projects),
+        ])
+        const editor =
+          operation === 'rename'
+            ? open(source)
+            : requireSuccess(
+                registry.required(editorsService).createEditor('draft')
+              )
+        naming().rename(editor)
+        await naming().submit(editor, 'link/escaped.txt')
+        expect(naming().state(editor).peek()?.error).toMatch(/symbolic links/)
+        expect(editor.src.peek()).toBe(
+          operation === 'rename' ? source : undefined
+        )
+        expect(
+          await testFileOperations.exists(join(outside, 'escaped.txt'))
+        ).toBe(false)
+        expect(
+          new TextDecoder().decode(await testFileOperations.readFile(source))
+        ).toBe('original')
+      } finally {
+        await rm(root, { recursive: true, force: true })
+        await rm(outside, { recursive: true, force: true })
+      }
+    }
+  )
   it('moves a saved buffer into new directories without rereading the project', async () => {
     const root = await mkdtemp(join(tmpdir(), 'zds-nested-rename-'))
     const source = join(root, 'notes.txt')

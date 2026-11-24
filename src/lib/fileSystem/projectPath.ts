@@ -1,5 +1,5 @@
 import { FileNotFound } from '@src/lib/fileSystem/fileSystem'
-import { getRelativePathIfContained } from '@src/lib/paths'
+import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import fsZds from '@src/lib/fs-zds'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
@@ -9,7 +9,8 @@ export async function assertProjectPathWithoutSymlinks(
   root: string,
   target: string
 ): Promise<void> {
-  if (getRelativePathIfContained(root, target) === undefined)
+  const paths = { relative: fsZds.relative, sep: fsZds.sep }
+  if (getContainedRelativePath(paths, root, target) === undefined)
     return Promise.reject(new Error('File path is outside its project.'))
   const projectRoot = fsZds.resolve(root)
   let path = fsZds.resolve(target)
@@ -25,7 +26,7 @@ export async function assertProjectPathWithoutSymlinks(
     } catch (error) {
       if (!(error instanceof FileNotFound)) return Promise.reject(error)
     }
-    if (getRelativePathIfContained(projectRoot, path) === '') return
+    if (getContainedRelativePath(paths, projectRoot, path) === '') return
     path = fsZds.dirname(path)
   }
 }

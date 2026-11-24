@@ -7,6 +7,7 @@ import type {
 } from '@src/lib/editors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
+import { assertProjectPathWithoutSymlinks } from '@src/lib/fileSystem/projectPath'
 import { getContainedRelativePath } from '@src/lib/fileSystem/pathContainment'
 import type {
   OpenProjectSession,
@@ -185,10 +186,14 @@ export function createEditorNaming(
     // project must still be writable when this storage operation starts.
     const before = writableError(editor, current)
     if (before) return before
+    const root = current.session.project.peek().contents.path
+    if (current.source)
+      await assertProjectPathWithoutSymlinks(files, root, current.source)
+    await assertProjectPathWithoutSymlinks(files, root, destination)
+    const checked = writableError(editor, current)
+    if (checked) return checked
     const parent = fsZds.dirname(destination)
-    const existingParent = current.source
-      ? fsZds.dirname(current.source)
-      : current.session.project.peek().contents.path
+    const existingParent = current.source ? fsZds.dirname(current.source) : root
     if (parent !== existingParent) {
       await ensureDirectory(files, parent)
       // The editor or project can close or become read-only while
