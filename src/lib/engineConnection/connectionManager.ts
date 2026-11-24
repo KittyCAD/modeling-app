@@ -85,6 +85,9 @@ import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
+// A replacement connection must not request the encoding that triggered recovery.
+let exportDecompressionFailed = false
+
 const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
 
 /**
@@ -1199,6 +1202,14 @@ export class ConnectionManager extends EventTarget {
       }, PENDING_COMMAND_TIMEOUT)
     }
 
+    if (
+      exportDecompressionFailed &&
+      message.command.type === 'modeling_cmd_req' &&
+      message.command.cmd.type === 'export3d' &&
+      'compression' in message.command.cmd
+    ) {
+      delete message.command.cmd.compression
+    }
     this.connection.send(message.command)
 
     return promise
@@ -1348,6 +1359,7 @@ export class ConnectionManager extends EventTarget {
     this.responseDecoder = new ModelingResponseDecoder(
       handleMessage,
       (error) => {
+        exportDecompressionFailed = true
         console.error('Failed to decompress modeling response', error)
         this.tearDown({
           route: 'backend-shutdown',

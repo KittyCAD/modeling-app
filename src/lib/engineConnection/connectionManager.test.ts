@@ -815,7 +815,7 @@ describe('ConnectionManager', () => {
     expect(manager.pendingCommands).toEqual({})
   })
 
-  it('rejects pending commands when a compressed response cannot be decoded', async () => {
+  it('recovers from a decode failure by sending subsequent exports uncompressed', async () => {
     vi.stubGlobal(
       'Worker',
       class {
@@ -844,6 +844,32 @@ describe('ConnectionManager', () => {
     await rejected
     expect(manager.pendingCommands).toEqual({})
     expect(manager.connection).toBeUndefined()
+
+    const send = vi.fn()
+    addConnectedState(manager).send = send
+    const id = '00000000-0000-4000-8000-000000000014'
+    const cmd = { type: 'export3d', format: { type: 'stl' }, entity_ids: [] }
+    const request = { type: 'modeling_cmd_req', cmd_id: id, cmd }
+    const result = manager.sendModelingCommandFromWasm(
+      id,
+      '[0,0,0]',
+      JSON.stringify({ ...request, cmd: { ...cmd, compression: 'zstd' } }),
+      '{}'
+    )
+    expect(send).toHaveBeenCalledWith(request)
+    manager.createMessageHandler()(
+      message({
+        success: true,
+        request_id: id,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: { type: 'export3d', data: { files: [] } },
+          },
+        },
+      })
+    )
+    await expect(result).resolves.toBeInstanceOf(Uint8Array)
   })
 
   it('settles modeling responses before the WebRTC readiness handoff', async () => {
