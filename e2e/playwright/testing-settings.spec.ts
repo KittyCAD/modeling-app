@@ -1,5 +1,10 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
+  cacheModelCode,
+  cacheSceneReceipt,
+  waitForExecutedModel,
+} from '@e2e/playwright/lib/cache-model'
+import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
@@ -835,18 +840,7 @@ test.describe(
       })
       const code =
         '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\nimport importedBody from "body.kcl"\nbody = importedBody\n'
-      const bodyCode = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
-radiusValue = 10mm
-height = 5mm
-profile = sketch(on = XY) {
-  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
-  coincident([perimeter.center, ORIGIN])
-  radius(perimeter) == radiusValue
-  horizontal([perimeter.center, perimeter.start])
-}
-body = extrude(region(segments = [profile.perimeter]), length = height)
-export importedBody = body
-`
+      const bodyCode = `${cacheModelCode}export importedBody = body\n`
       await folderSetupFn(async (directory) => {
         const project = path.join(directory, 'imported-grid')
         await fsp.mkdir(project, { recursive: true })
@@ -856,15 +850,11 @@ export importedBody = body
       await page.setBodyDimensions({ width: 1200, height: 700 })
       await homePage.openProject('imported-grid')
       await scene.settled()
+      await waitForExecutedModel(page, code)
       await page.waitForFunction(() => {
         const editor = window.app.project?.executingEditor.value
         return (
           editor &&
-          !editor.isExecutingSignal.value &&
-          !editor.hasErrors() &&
-          editor.artifactGraph.size > 0 &&
-          Object.keys(editor.engineCommandManager.pendingCommands).length ===
-            0 &&
           Object.values(editor.execState.filenames).some(
             (module) =>
               module?.type === 'Local' && /body\.kcl$/.test(module.value)
@@ -932,32 +922,15 @@ export importedBody = body
         Math.abs(first.data[index + 1] - second.data[index + 1]) +
         Math.abs(first.data[index + 2] - second.data[index + 2])
       const assertNoExecution = async () => {
-        expect(
-          await page.evaluate(
-            () =>
-              window.app.project?.executingEditor.value?.engineCommandManager.commandLogs.filter(
-                (log) => log.type === 'execution-done'
-              ).length ?? -1
-          )
-        ).toBe(0)
-        expect(
-          await page.evaluate(() => {
-            const editor = window.app.project?.executingEditor.value
-            return (
-              editor && !editor.isExecutingSignal.value && !editor.hasErrors()
-            )
-          })
-        ).toBe(true)
+        expect(await cacheSceneReceipt(page)).toMatchObject({
+          executions: 0,
+          isExecuting: false,
+          hasErrors: false,
+        })
       }
       await setGrid(false)
       const off = await readFrame()
-      const before = await page.evaluate(() => {
-        const editor = window.app.project?.executingEditor.value
-        return {
-          code: editor?.code,
-          artifacts: [...(editor?.artifactGraph.keys() ?? [])].sort(),
-        }
-      })
+      const before = await cacheSceneReceipt(page)
       expect(before.code).toBe(code)
       expect(before.artifacts.length).toBeGreaterThan(0)
       expect(
@@ -1034,15 +1007,9 @@ export importedBody = body
         })
         .toBeGreaterThanOrEqual(0.9)
       await assertNoExecution()
-      expect(
-        await page.evaluate(() => {
-          const editor = window.app.project?.executingEditor.value
-          return {
-            code: editor?.code,
-            artifacts: [...(editor?.artifactGraph.keys() ?? [])].sort(),
-          }
-        })
-      ).toEqual(before)
+      const after = await cacheSceneReceipt(page)
+      expect(after.code).toBe(before.code)
+      expect(after.artifacts).toEqual(before.artifacts)
     })
 
     test('Changing backface color setting sends updated backface command to engine', async ({

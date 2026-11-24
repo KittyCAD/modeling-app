@@ -157,36 +157,3 @@ export async function presentedEngineFrame(page: Page) {
   )
   return { buffer, image: PNG.sync.read(buffer), streamId: frame.streamId }
 }
-
-export async function presentedModel(page: Page) {
-  const { image, streamId } = await presentedEngineFrame(page)
-  const { width, height, data } = image
-  const background = (width + 1) * 4
-  let foregroundPixels = 0
-  let centerPixels = 0
-  let centerForegroundPixels = 0
-  for (let y = Math.floor(height / 5); y < height * 0.8; y++)
-    for (let x = Math.floor(width / 5); x < width * 0.8; x++) {
-      const index = (y * width + x) * 4
-      const foreground =
-        Math.abs(data[index] - data[background]) +
-          Math.abs(data[index + 1] - data[background + 1]) +
-          Math.abs(data[index + 2] - data[background + 2]) >=
-        80
-      if (foreground) foregroundPixels++
-      if (
-        x >= width * 0.475 &&
-        x < width * 0.525 &&
-        y >= height * 0.475 &&
-        y < height * 0.525
-      ) {
-        centerPixels++
-        if (foreground) centerForegroundPixels++
-      }
-    }
-  return {
-    foregroundPixels,
-    centerForegroundFraction: centerForegroundPixels / centerPixels,
-    streamId,
-  }
-}

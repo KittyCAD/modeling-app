@@ -3137,12 +3137,14 @@ export class KclManager extends File {
         effect(() => {
           if (scene && !this.sceneSettingsActive.value) return
           const current = value.value
-          const path = this.path
+          const ownershipVersion = this.editorOwnershipVersion
+          const path = untracked(() => this.path)
           const projectPath = this.systemDeps.projectPath.peek()
           let cancelled = false
           const isCurrent = () =>
             !cancelled &&
             !this.closed &&
+            this.editorOwnershipVersion === ownershipVersion &&
             (!scene || this.sceneSettingsActive.peek()) &&
             this.path === path &&
             this.systemDeps.projectPath.peek() === projectPath
@@ -3305,55 +3307,20 @@ export class KclManager extends File {
         this._fileSettingsSignal.value.defaultLengthUnit ||
         DEFAULT_DEFAULT_LENGTH_UNIT
     )
-    let previousGrid:
-      | { visible: boolean; fixedSize: boolean; unit: BaseUnit }
-      | undefined
-    disposers.push(
-      effect(() => {
-        const active = this.sceneSettingsActive.value
-        const current = {
-          visible: showScaleGrid.value,
-          fixedSize: fixedSizeGrid.value,
-          unit: modelLengthUnit.value,
+    watchValue(
+      () => ({
+        visible: showScaleGrid.value,
+        fixedSize: fixedSizeGrid.value,
+        unit: modelLengthUnit.value,
+      }),
+      ({ visible, fixedSize, unit }, isCurrent) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager
+            .setShowScaleGrid(visible, fixedSize, unit, isCurrent)
+            .catch(reportRejection)
         }
-        if (!active) {
-          previousGrid = undefined
-          return
-        }
-        if (
-          previousGrid?.visible === current.visible &&
-          previousGrid.fixedSize === current.fixedSize &&
-          previousGrid.unit === current.unit
-        ) {
-          return
-        }
-        previousGrid = current
-        let cancelled = false
-        untracked(() => {
-          if (this._isExecuting.peek())
-            this.scenePreferencesChangedDuringExecution = true
-          if (this.engineCommandManager.connection) {
-            const path = this.path
-            const projectPath = this.systemDeps.projectPath.peek()
-            const isCurrent = () =>
-              !cancelled &&
-              this.sceneSettingsActive.peek() &&
-              this.path === path &&
-              this.systemDeps.projectPath.peek() === projectPath
-            this.engineCommandManager
-              .setShowScaleGrid(
-                current.visible,
-                current.fixedSize,
-                current.unit,
-                isCurrent
-              )
-              .catch(reportRejection)
-          }
-        })
-        return () => {
-          cancelled = true
-        }
-      })
+      },
+      true
     )
     return () => {
       subscription.unsubscribe()

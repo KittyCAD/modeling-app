@@ -915,54 +915,13 @@ describe('KclManager settings ownership', () => {
     }
   )
 
-  it('refreshes streamed backface color without reexecuting KCL', async () => {
-    const { app, kclManager } = createKclManagerTestHarness()
-    try {
-      await waitForSettingsIdle(app.settings.actor)
-      const mocks = mockEngineSettings(kclManager)
-      kclManager.setSceneSettingsActive(true)
-      mocks.setDefaultSystemProperties.mockClear()
-      app.settings.get().modeling.backfaceColor.user = '#123456'
-      expect(mocks.setDefaultSystemProperties).toHaveBeenCalledExactlyOnceWith(
-        '#123456',
-        expect.any(Function)
-      )
-      expect(mocks.executeCode).not.toHaveBeenCalled()
-    } finally {
-      await app.dispose()
-    }
-  })
-
-  it.each(['closed', 'inactive'])(
-    'does not apply engine settings for a %s manager',
-    async (state) => {
-      const { app, kclManager } = createKclManagerTestHarness()
-      try {
-        await waitForSettingsIdle(app.settings.actor)
-        const mocks = mockEngineSettings(kclManager)
-        kclManager.setSceneSettingsActive(true)
-        await flushPromises(12)
-        if (state === 'closed') kclManager.close()
-        else kclManager.setSceneSettingsActive(false)
-        for (const mock of Object.values(mocks)) mock.mockClear()
-        const settings = app.settings.get()
-        settings.modeling.backfaceColor.user = '#123456'
-        settings.modeling.showScaleGrid.user =
-          !settings.modeling.showScaleGrid.current
-        settings.modeling.highlightEdges.user =
-          !settings.modeling.highlightEdges.current
-        await flushPromises(12)
-        expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
-        expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
-        expect(mocks.sendSceneCommand).not.toHaveBeenCalled()
-        expect(mocks.executeCode).not.toHaveBeenCalled()
-      } finally {
-        await app.dispose()
-      }
-    }
-  )
-
-  it.each(['closed', 'inactive', 'different file', 'different project'])(
+  it.each([
+    'closed',
+    'inactive',
+    'different file',
+    'different project',
+    'reopened file',
+  ])(
     'does not continue a grid update after its manager has a %s scene owner',
     async (state) => {
       const { app, kclManager } = createKclManagerTestHarness()
@@ -992,13 +951,39 @@ describe('KclManager settings ownership', () => {
         if (state === 'closed') kclManager.close()
         else if (state === 'inactive') kclManager.setSceneSettingsActive(false)
         else if (state === 'different file') kclManager.path = 'other.kcl'
-        else {
+        else if (state === 'reopened file') {
+          const originalPath = kclManager.path
+          vi.spyOn(kclManager, 'flushWriteToFile').mockResolvedValue(true)
+          for (const path of ['other.kcl', originalPath]) {
+            await KclManager.fromFile(
+              new File(path, kclManager.textFileIO),
+              kclManager.systemDeps,
+              kclManager,
+              kclManager.code,
+              { shouldSyncRustOnOpen: false }
+            )
+          }
+          expect(kclManager.path).toBe(originalPath)
+        } else {
           kclManager.systemDeps.projectPath = signal('other-project')
         }
         firstCommand.resolve(null)
         await flushPromises(12)
         expect(mocks.sendSceneCommand).toHaveBeenCalledTimes(1)
         expect(mocks.executeCode).not.toHaveBeenCalled()
+
+        if (state === 'closed' || state === 'inactive') {
+          for (const mock of Object.values(mocks)) mock.mockClear()
+          const settings = app.settings.get().modeling
+          settings.backfaceColor.user = '#123456'
+          settings.showScaleGrid.user = !settings.showScaleGrid.current
+          settings.highlightEdges.user = !settings.highlightEdges.current
+          await flushPromises(12)
+          expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
+          expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
+          expect(mocks.sendSceneCommand).not.toHaveBeenCalled()
+          expect(mocks.executeCode).not.toHaveBeenCalled()
+        }
       } finally {
         await app.dispose()
       }
