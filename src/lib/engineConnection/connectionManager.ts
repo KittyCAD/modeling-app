@@ -24,6 +24,7 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
+import { ModelingResponseDecoder } from '@src/lib/engineConnection/compression'
 import {
   createOnDarkThemeMediaQueryChange,
   createOnEngineConnectionClosed,
@@ -85,6 +86,9 @@ import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
+// A replacement connection must not request the encoding that triggered recovery.
+let exportDecompressionFailed = false
+
 const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
 const GRID_OBJECT_ID = 'cfa78409-653d-4c26-96f1-7c45fb784840'
 const GRID_TEXT_OBJECT_ID = '10782f33-f588-4668-8bcd-040502d26590'
@@ -135,6 +139,7 @@ export type ConnectionSystemDeps = {
 }
 
 export class ConnectionManager extends EventTarget {
+  private responseDecoder: ModelingResponseDecoder | undefined
   started: boolean
   inSequence = 1
   _camControlsCameraChange = () => {}
@@ -1234,6 +1239,14 @@ export class ConnectionManager extends EventTarget {
       }, PENDING_COMMAND_TIMEOUT)
     }
 
+    if (
+      exportDecompressionFailed &&
+      message.command.type === 'modeling_cmd_req' &&
+      message.command.cmd.type === 'export3d' &&
+      'compression' in message.command.cmd
+    ) {
+      delete message.command.cmd.compression
+    }
     this.connection.send(message.command)
 
     return promise
@@ -1241,7 +1254,8 @@ export class ConnectionManager extends EventTarget {
 
   // this.connection.websocket.addEventListener('message') handler
   createMessageHandler(rustContext?: RustContext) {
-    return (event: MessageEvent) => {
+    this.responseDecoder?.dispose()
+    const handleMessage = (event: MessageEvent) => {
       let message: WebSocketResponse | null = null
 
       if (event.data instanceof ArrayBuffer) {
@@ -1379,6 +1393,19 @@ export class ConnectionManager extends EventTarget {
         })
       }
     }
+    this.responseDecoder = new ModelingResponseDecoder(
+      handleMessage,
+      (error) => {
+        exportDecompressionFailed = true
+        console.error('Failed to decompress modeling response', error)
+        this.tearDown({
+          route: 'backend-shutdown',
+          initiatedBy: 'api',
+          reason: 'Invalid compressed modeling response',
+        })
+      }
+    )
+    return this.responseDecoder.handleMessage
   }
 
   subscribeTo<T extends ModelTypes>({
@@ -1557,6 +1584,8 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options: ManagerTearDown) {
+    this.responseDecoder?.dispose()
+    this.responseDecoder = undefined
     const connection = this.connection
     const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
 

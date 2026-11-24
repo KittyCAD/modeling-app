@@ -323,7 +323,10 @@ impl Context {
             .await
             .map_err(|error| error.error.to_string())?;
 
-        match ctx.export(format).await {
+        match ctx
+            .export_with_compression(format, Some(kittycad_modeling_cmds::shared::CompressionType::Zstd))
+            .await
+        {
             Ok(outcome) => {
                 let files = js_sys::Array::new();
                 for file in outcome {
