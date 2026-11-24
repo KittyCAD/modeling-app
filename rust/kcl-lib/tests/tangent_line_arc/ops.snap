@@ -99,10 +99,10 @@ description: Operations executed tangent_line_arc.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -221,10 +221,10 @@ description: Operations executed tangent_line_arc.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -265,10 +265,10 @@ description: Operations executed tangent_line_arc.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {

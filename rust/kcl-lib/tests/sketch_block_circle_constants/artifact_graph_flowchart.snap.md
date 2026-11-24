@@ -4,9 +4,9 @@ flowchart LR
     2["Path<br>[285, 766, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     3["Segment<br>[383, 430, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwBlock, BlockItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     4["Segment<br>[660, 716, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwBlock, BlockItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path5 [Path]
     5["Path Region<br>[785, 824, 0]<br>Consumed: true"]
@@ -45,7 +45,7 @@ flowchart LR
   21["SketchBlock<br>[285, 766, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   22["SketchBlockConstraint EqualRadius<br>[743, 764, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwBlock, BlockItem { index: 3 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 5
   1 <--x 13

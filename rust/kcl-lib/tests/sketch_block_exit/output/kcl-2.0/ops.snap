@@ -44,10 +44,10 @@ description: Operations executed sketch_block_exit.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
