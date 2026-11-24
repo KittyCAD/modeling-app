@@ -28,6 +28,7 @@ export interface ProjectStorage {
   readonly saveState?: ReadonlySignal<
     | {
         readonly state: 'saved' | 'saving' | 'failed'
+        readonly error?: unknown
       }
     | undefined
   >

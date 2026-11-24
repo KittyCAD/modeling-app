@@ -1,5 +1,6 @@
 import { posix } from '@chainner/node-path'
 import JSZip from 'jszip'
+import { getCloudFailureCause } from '@src/lib/cloudProjects/runtime/failureContext'
 import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
 
 export interface ProjectArchiveLimits {
@@ -14,14 +15,38 @@ export const PROJECT_ARCHIVE_LIMITS: ProjectArchiveLimits = {
   maxEntries: 10_000,
 }
 
+export class ProjectArchiveLimitError extends Error {
+  readonly limitLabel: string
+  constructor(
+    readonly limit: 'bytes' | 'entries',
+    limits = PROJECT_ARCHIVE_LIMITS
+  ) {
+    const limitLabel =
+      limit === 'bytes'
+        ? `${limits.maxBytes / (1024 * 1024 * 1024)} GiB`
+        : `${limits.maxEntries.toLocaleString('en-US')} entries`
+    const exceeded = `${limit === 'bytes' ? 'size' : 'file count'} limit (${limitLabel})`
+    super(
+      `Project exceeds the ${exceeded}. Reduce the project's size or file count, or contact support for help.`
+    )
+    this.name = 'ProjectArchiveLimitError'
+    this.limitLabel = limitLabel
+  }
+}
+
+export function getProjectArchiveLimitError(error: unknown) {
+  const cause = getCloudFailureCause(error)
+  return cause instanceof ProjectArchiveLimitError ? cause : undefined
+}
+
 export function validateProjectUpload(files: readonly ProjectArchiveFile[]) {
   if (files.length > PROJECT_ARCHIVE_LIMITS.maxEntries)
-    return new Error('Project upload exceeds the file count limit.')
+    return new ProjectArchiveLimitError('entries')
   let bytes = 0
   for (const file of files) {
     bytes += file.data.byteLength
     if (bytes > PROJECT_ARCHIVE_LIMITS.maxBytes)
-      return new Error('Project upload exceeds the size limit.')
+      return new ProjectArchiveLimitError('bytes')
   }
   return undefined
 }
@@ -47,7 +72,7 @@ function validateZipDirectory(
   limits: ProjectArchiveLimits
 ) {
   if (archive.byteLength > limits.maxBytes)
-    return new Error('Project archive exceeds the size limit.')
+    return new ProjectArchiveLimitError('bytes', limits)
   const data = new DataView(archive)
   let end = archive.byteLength - 22
   const first = Math.max(0, end - 65_535)
@@ -61,14 +86,13 @@ function validateZipDirectory(
   if (end < first) return new Error('Project archive is not a valid ZIP file.')
   const count = data.getUint16(end + 10, true)
   if (
-    count > limits.maxEntries ||
     data.getUint16(end + 8, true) !== count ||
     data.getUint16(end + 4, true) !== 0 ||
     data.getUint16(end + 6, true) !== 0
   )
-    return new Error(
-      'Project archive exceeds the supported file count or format.'
-    )
+    return new Error('Project archive uses an unsupported ZIP format.')
+  if (count > limits.maxEntries)
+    return new ProjectArchiveLimitError('entries', limits)
   let offset = data.getUint32(end + 16, true)
   const directoryEnd = offset + data.getUint32(end + 12, true)
   if (directoryEnd > end)
@@ -103,8 +127,10 @@ function validateZipDirectory(
     names.add(name)
     entries += 1
     expandedBytes += data.getUint32(offset + 24, true)
-    if (entries > limits.maxEntries || expandedBytes > limits.maxBytes)
-      return new Error('Project archive exceeds the size or file count limit.')
+    if (entries > limits.maxEntries)
+      return new ProjectArchiveLimitError('entries', limits)
+    if (expandedBytes > limits.maxBytes)
+      return new ProjectArchiveLimitError('bytes', limits)
     offset = next
   }
   return entries === count
@@ -121,7 +147,8 @@ declare module 'jszip' {
 
 function readZipEntry(
   entry: JSZip.JSZipObject,
-  maxBytes: number
+  maxBytes: number,
+  limits: ProjectArchiveLimits
 ): Promise<Uint8Array<ArrayBuffer>> {
   return new Promise((resolve, reject) => {
     const stream = entry.internalStream('uint8array')
@@ -136,7 +163,7 @@ function readZipEntry(
           stopped = true
           stream.pause()
           chunks.length = 0
-          reject(new Error('Project archive exceeds the size limit.'))
+          reject(new ProjectArchiveLimitError('bytes', limits))
           return
         }
         chunks.push(chunk)
@@ -181,7 +208,7 @@ export async function readProjectZip(
         )
       )
     if (entry.dir || entry.name.startsWith('__MACOSX/')) continue
-    const data = await readZipEntry(entry, remaining)
+    const data = await readZipEntry(entry, remaining, limits)
     remaining -= data.byteLength
     files.push({ relativePath: entry.name, data })
   }
