@@ -24,7 +24,7 @@ export type GitignoreFileEntry = {
 
 /** Adapts coordinated file operations to the narrow gitignore reader API. */
 export function fileOperationsGitignoreFs(
-  fileOperations: FileOperationsRegistryService
+  fileOperations: Pick<FileOperationsRegistryService, 'readFile'>
 ): GitignoreFs {
   return {
     join: fsZds.join,

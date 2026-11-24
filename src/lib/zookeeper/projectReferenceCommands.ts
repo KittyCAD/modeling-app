@@ -1,6 +1,13 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
 import type { FileStat } from '@src/lib/fileSystem/fileOperations'
+import {
+  appendGitignoreForDirectoryWithFs,
+  createInitialGitignoreStackWithFs,
+  fileOperationsGitignoreFs,
+  type GitignoreStackEntry,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { isRecord } from '@src/lib/utils'
@@ -160,6 +167,14 @@ export function createProjectReferenceCommands(deps: {
   const projectKeys = new Map<string, string>()
   const revision = 1
   let activeSocket: WebSocket | undefined
+  const gitignoreFs = fileOperationsGitignoreFs({
+    async readFile(path) {
+      const stat = await deps.fileOperations.stat(path, READ_STAT_OPTIONS)
+      return stat.kind === 'file' && stat.size > 0
+        ? deps.fileOperations.readFile(path)
+        : new Uint8Array()
+    },
+  })
 
   function sendCatalog(ws: WebSocket, advertisedCommands: readonly unknown[]) {
     ws.send(
@@ -228,10 +243,22 @@ export function createProjectReferenceCommands(deps: {
     }
   }
 
-  async function inspectChild(parent: string, name: string) {
+  async function inspectChild(
+    root: string,
+    parent: string,
+    name: string,
+    gitignoreStack: GitignoreStackEntry[]
+  ) {
     const absolute = fsZds.join(parent, name)
     const stat = await deps.fileOperations.stat(absolute, READ_STAT_OPTIONS)
-    if (stat.kind === 'symlink') {
+    if (
+      stat.kind === 'symlink' ||
+      isPathIgnoredByGitignore(
+        gitignoreStack,
+        fsZds.relative(root, absolute),
+        stat.kind === 'directory'
+      )
+    ) {
       return undefined
     }
     return { absolute, stat }
@@ -249,7 +276,17 @@ export function createProjectReferenceCommands(deps: {
   async function localFiles(root: string): Promise<string[]> {
     const found: string[] = []
     await inspectRoot(root)
-    const queue = [{ absolute: root, relative: '', depth: 0 }]
+    const queue = [
+      {
+        absolute: root,
+        relative: '',
+        depth: 0,
+        gitignoreStack: await createInitialGitignoreStackWithFs(
+          gitignoreFs,
+          root
+        ),
+      },
+    ]
     const seenDirectories = new Set<string>()
     let visited = 0
     while (queue.length) {
@@ -275,7 +312,12 @@ export function createProjectReferenceCommands(deps: {
             )
           )
         }
-        const child = await inspectChild(current.absolute, name)
+        const child = await inspectChild(
+          root,
+          current.absolute,
+          name,
+          current.gitignoreStack
+        )
         if (!child) {
           continue
         }
@@ -287,6 +329,12 @@ export function createProjectReferenceCommands(deps: {
             absolute: child.absolute,
             relative,
             depth: current.depth + 1,
+            gitignoreStack: await appendGitignoreForDirectoryWithFs(
+              gitignoreFs,
+              current.gitignoreStack,
+              child.absolute,
+              root
+            ),
           })
         } else if (child.stat.kind === 'file' && isReadableFile(relative)) {
           found.push(relative)
@@ -349,16 +397,19 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
-    await inspectRoot(entry.localProjectPath)
-    let absolute = entry.localProjectPath
+    const root = entry.localProjectPath
+    await inspectRoot(root)
+    let gitignoreStack = await createInitialGitignoreStackWithFs(
+      gitignoreFs,
+      root
+    )
+    let absolute = root
     let stat: FileStat | undefined
     const parts = webSafePathSplit(path)
     for (const [index, part] of parts.entries()) {
-      const child = await inspectChild(absolute, part)
-      if (
-        !child ||
-        (index < parts.length - 1 && child.stat.kind !== 'directory')
-      ) {
+      const isAncestor = index < parts.length - 1
+      const child = await inspectChild(root, absolute, part, gitignoreStack)
+      if (!child || (isAncestor && child.stat.kind !== 'directory')) {
         return Promise.reject(
           new ProjectReferenceCommandError(
             'File is not in the library project.'
@@ -367,6 +418,14 @@ export function createProjectReferenceCommands(deps: {
       }
       absolute = child.absolute
       stat = child.stat
+      if (isAncestor) {
+        gitignoreStack = await appendGitignoreForDirectoryWithFs(
+          gitignoreFs,
+          gitignoreStack,
+          absolute,
+          root
+        )
+      }
     }
     if (stat?.kind !== 'file' || stat.size > MAX_FILE_BYTES) {
       return Promise.reject(

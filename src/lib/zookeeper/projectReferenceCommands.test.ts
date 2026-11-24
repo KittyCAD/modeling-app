@@ -42,12 +42,17 @@ function fixture(
     initialEntries?: HomeProjectEntry[]
     fileOperations?: FileOperationsRegistryService
     getApiToken?: () => string
+    gitignoreFiles?: Record<string, string>
   } = {}
 ) {
   const entries = signal<readonly HomeProjectEntry[]>(
     options.initialEntries ?? [localProject, cloudProject]
   )
   const readFile = vi.fn(async (path: string) => {
+    const ignoreRules = options.gitignoreFiles?.[path]
+    if (ignoreRules !== undefined) {
+      return new TextEncoder().encode(ignoreRules)
+    }
     if (path === '/private/library/TRUCK/main.kcl') {
       return new TextEncoder().encode('wheel = circle(10)')
     }
@@ -78,7 +83,9 @@ function fixture(
       path.endsWith('/parts')
         ? 'directory'
         : 'file',
-    size: 20,
+    size: path.endsWith('/.gitignore')
+      ? (options.gitignoreFiles?.[path]?.length ?? 0)
+      : 20,
   }))
   const fileOperations = {
     readDirectory,
@@ -329,6 +336,30 @@ describe('Zookeeper project reference commands', () => {
     expect(readDirectory).not.toHaveBeenCalled()
   })
 
+  it('honors root and nested .gitignore rules in listings and direct reads', async () => {
+    const root = '/private/library/TRUCK'
+    const { readFile, request } = fixture({
+      gitignoreFiles: {
+        [`${root}/.gitignore`]: '/main.kcl\n/assets/\n',
+        [`${root}/parts/.gitignore`]: '/wheel.kcl\n',
+      },
+    })
+    const projectId = await searchProjectId(request, 'TRUCK')
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.result?.files).toEqual(['project.toml'])
+
+    for (const path of ['main.kcl', 'parts/wheel.kcl', 'assets/ignored.kcl']) {
+      const read = await request('projects.read_file', {
+        project_id: projectId,
+        path,
+      })
+      expect(read.status).toBe('rejected')
+      expect(readFile).not.toHaveBeenCalledWith(`${root}/${path}`)
+    }
+  })
+
   it('rejects traversal, hidden files, and a project removed from the library', async () => {
     const { entries, readFile, request } = fixture()
     const projectId = await searchProjectId(request, 'TRUCK')
@@ -357,6 +388,12 @@ describe('Zookeeper project reference commands', () => {
       await mkdir(outside)
       await writeFile(path.join(root, 'main.kcl'), 'cube = 1')
       await writeFile(path.join(outside, 'secret.kcl'), 'secret = 1')
+      await writeFile(path.join(outside, '.gitignore'), '/main.kcl\n')
+      await symlink(
+        path.join(outside, '.gitignore'),
+        path.join(root, '.gitignore'),
+        'file'
+      )
       await symlink(outside, path.join(root, 'linked'), 'dir')
       await symlink(
         path.join(outside, 'secret.kcl'),
