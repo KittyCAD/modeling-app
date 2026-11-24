@@ -23,7 +23,8 @@ export const projectLibrariesSettingsContribution: ExtensionSettingsContribution
         createSetting: () =>
           new Setting<ProjectLibrarySetting[]>({
             defaultValue: [],
-            description: 'Project libraries shown on the home page.',
+            title: 'Local Libraries',
+            description: 'Folders on this computer shown as libraries on Home.',
             hideOnLevel: 'project',
             validate: isProjectLibrarySettings,
             Component: (props) => (

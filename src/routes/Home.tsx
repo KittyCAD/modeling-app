@@ -35,6 +35,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
@@ -354,9 +355,13 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.required(homeProjectActionsService)
-  const visibleProjectLibraries = projectLibraries.filter(
-    (library) => !library.hiddenByDefault
-  )
+  const visibleProjectLibraries = projectLibraries
+    .filter((library) => !library.hiddenByDefault)
+    .toSorted(
+      (a, b) =>
+        Number(a.type === CLOUD_PROJECT_LIBRARY_TYPE) -
+        Number(b.type === CLOUD_PROJECT_LIBRARY_TYPE)
+    )
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId

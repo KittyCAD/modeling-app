@@ -22,9 +22,11 @@ export function createCloudProjectCommands({
     { name?: string; scope?: ProjectLibraryScope }
   > = {
     name: CREATE_CLOUD_LIBRARY_COMMAND,
+    description:
+      'Store projects in your Zoo account or share them with your organization',
     groupId: 'projects',
     scopes: GLOBAL_COMMAND_SCOPES,
-    icon: 'folderPlus',
+    icon: 'cloud',
     disabled: !enabled(),
     needsReview: true,
     args: {

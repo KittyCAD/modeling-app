@@ -1,11 +1,6 @@
 import { computed, effect, signal } from '@preact/signals-core'
-import { createElement } from 'react'
-import { CloudLibraryCreateButton } from '@src/lib/cloudProjects/CloudLibraryCreateButton'
-import {
-  createCloudProjectCommands,
-  CREATE_CLOUD_LIBRARY_COMMAND,
-} from '@src/lib/cloudProjects/commands'
-import { selectCommand } from '@src/lib/commandUtils'
+import { cloudLibrariesSettingsContribution } from '@src/lib/cloudProjects/CloudLibrariesSetting'
+import { createCloudProjectCommands } from '@src/lib/cloudProjects/commands'
 import { newKclFile } from '@src/lang/project'
 import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
 import {
@@ -35,14 +30,7 @@ import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { observations as authObservations } from '@src/registry/contracts/auth'
-import {
-  observations as commandsObservations,
-  commandsFacet,
-} from '@src/registry/contracts/commands'
-import {
-  homeSidebarItemsFacet,
-  type HomeSidebarItemProps,
-} from '@src/registry/contracts/homeSidebar'
+import { commandsFacet } from '@src/registry/contracts/commands'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntryContribution,
@@ -56,6 +44,7 @@ import {
 } from '@src/registry/contracts/projectLibraries'
 import { observations as routerObservations } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
+import { settingsFacet } from '@src/registry/contracts/settings'
 import { observations as wasmObservations } from '@src/registry/contracts/wasm'
 import { observeService } from '@src/registry/inputs'
 import {
@@ -74,7 +63,6 @@ export default defineFactory({
     auth: authObservations,
     router: routerObservations,
     runtime: observeService(runtimeService),
-    commands: commandsObservations,
   },
   key: 'cloud-projects-library',
   create: ({
@@ -84,7 +72,6 @@ export default defineFactory({
     auth: authInputs,
     router: routerInputs,
     runtime: runtimeInput,
-    commands: commandsInputs,
   }) => {
     const cloud = () => cloudProjectsInputs.cloudStorageService.required()
     const operations = () =>
@@ -186,6 +173,7 @@ export default defineFactory({
       icon: 'cloud',
       order: 10,
       defaultSetting: getDefaultCloudProjectLibrarySetting(),
+      hideInSettingsOnPlatform: 'both',
       readRealizations: async () => [],
       operations: {
         refresh: {
@@ -339,18 +327,6 @@ export default defineFactory({
           refreshCatalog.value += 1
         },
       })[0]
-    const NewLibraryButton = ({ className }: HomeSidebarItemProps) =>
-      createElement(CloudLibraryCreateButton, {
-        className,
-        onClick: () => {
-          const commands = commandsInputs.commandSystemService.current.value
-          if (commands)
-            selectCommand(commands, {
-              groupId: 'projects',
-              name: CREATE_CLOUD_LIBRARY_COMMAND,
-            })
-        },
-      })
     return {
       start: () => {
         const onVisibilityChange = () => {
@@ -411,15 +387,12 @@ export default defineFactory({
         }
       },
       items: [
+        contribute(settingsFacet, () => cloudLibrariesSettingsContribution, {
+          precedence: 'low',
+        }),
         contribute(commandsFacet, newLibraryCommand, {
           key: 'cloud-projects.create-library',
         }),
-        contribute(homeSidebarItemsFacet, () => ({
-          id: 'cloud-projects.create-library',
-          order: 15,
-          isVisible: () => Boolean(auth.value?.isLoggedIn.value),
-          Component: NewLibraryButton,
-        })),
         contribute(
           homeProjectSettledLibraryIdsFacet,
           () => {

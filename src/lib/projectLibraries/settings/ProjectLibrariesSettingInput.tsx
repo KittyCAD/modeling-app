@@ -678,13 +678,10 @@ export function ProjectLibrariesSettingInput({
           onClick={toSync(addLibrary, reportRejection)}
           disabled={selectableLibraryTypeOptions.length === 0}
           className="self-start disabled:cursor-not-allowed disabled:opacity-60"
-          iconStart={{
-            icon: 'plus',
-            bgClassName: '!bg-transparent',
-          }}
+          iconStart={{ icon: 'folder', size: 'sm', className: 'p-1' }}
           data-testid="project-library-add"
         >
-          Add library
+          New local library
         </ActionButton>
       )}
     </div>
