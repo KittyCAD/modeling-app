@@ -253,11 +253,10 @@ describe('feature tree generated histories', () => {
               // intermediate detachment synchronously during these DOM moves.
               const canReorder =
                 target &&
+                target.id !== active &&
                 !nodes.some(
                   (node) =>
-                    (node.id === active ||
-                      rows.get(node.id)!.contains(document.activeElement)) &&
-                    (node === target || ancestors(node).includes(target))
+                    node.id === active && ancestors(node).includes(target)
                 )
 
               if (step.kind === 'insert') {
