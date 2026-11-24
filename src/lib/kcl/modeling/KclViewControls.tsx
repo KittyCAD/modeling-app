@@ -1,3 +1,4 @@
+import type { CameraShortcutHints } from '@src/lib/cameraViewCommands'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { lazy, Suspense } from 'react'
@@ -29,8 +30,10 @@ export interface KclViewControlHost {
 export function KclViewControls({
   resource,
   target,
+  shortcuts,
 }: {
   resource: KclSceneResource
+  shortcuts?: CameraShortcutHints
   target: RefObject<HTMLDivElement | null>
 }) {
   useSignals()
@@ -42,7 +45,7 @@ export function KclViewControls({
   const items = [
     ...createCameraViewMenuItems({
       camera,
-      showShortcutLabels: false,
+      shortcuts,
       reset: host.reset,
       center: () => camera.centerOnSelection(),
       disabled,
