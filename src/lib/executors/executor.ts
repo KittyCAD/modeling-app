@@ -18,15 +18,16 @@ import * as Fiber from 'effect/Fiber'
 import * as Scope from 'effect/Scope'
 import * as Exit from 'effect/Exit'
 
-/** A run captures source, contents, and applicable contributions together. */
+/** Inputs compared by `sameInput` to decide whether this editor needs a replacement run. */
 interface ExecutionInput {
   src: string
   contents: string
   capabilities: readonly ExecutorCapability[]
+  revisions: readonly unknown[]
   refresh: number
 }
 
-/** Owns a scoped watcher and interrupts the previous computation before starting another. */
+/** Watches one `Editor` and matching contributions; replacement input interrupts its Effect fiber before new results can publish. */
 export function createExecutor(
   editor: Editor,
   contributions: ReadonlySignal<readonly ExecutorCapability[]>,
@@ -36,11 +37,17 @@ export function createExecutor(
   let disposed = false
   const snapshot = (): ExecutionInput => {
     const context = editorMatchContext(editor)
+    const capabilities = contributions.value.filter((capability) =>
+      matchesEditor(capability.matches, context)
+    )
     return {
       ...context,
       refresh: refresh.value,
-      capabilities: contributions.value.filter((capability) =>
-        matchesEditor(capability.matches, context)
+      capabilities,
+      revisions: capabilities.map((capability) =>
+        typeof capability.revision === 'function'
+          ? capability.revision(executor)
+          : capability.revision?.value
       ),
     }
   }
@@ -50,11 +57,19 @@ export function createExecutor(
       contents: input.contents,
       running: input.capabilities.length > 0,
     })
-  const output = signal<ExecutorOutput>(pending(snapshot()))
+  // Revision readers receive the executor, so establish its output before the first snapshot.
+  const output = signal<ExecutorOutput>(
+    createExecutorOutput({
+      src: editor.src.peek() ?? '',
+      contents: editor.contents.peek(),
+      running: false,
+    })
+  )
   const execute = (input: ExecutionInput) =>
     Effect.gen(function* () {
       if (input.capabilities.length === 0) return
-      // Yield before starting computations so edits from the same turn coalesce.
+      // Delay capability calls by a microtask. Another edit in this JavaScript
+      // turn can interrupt this fiber before it starts expensive computation.
       yield* Effect.promise(() => Promise.resolve())
       const completed: ExecutorResult[] = []
       const results = yield* Effect.forEach(
@@ -86,7 +101,8 @@ export function createExecutor(
             Effect.tap((result) =>
               Effect.sync(() => {
                 completed.push(result)
-                // A view can use its result while an unrelated capability awaits resources.
+                // Publish this capability's result immediately; other capabilities
+                // may still be waiting for resources such as a mounted viewport.
                 output.value = createExecutorOutput(
                   { src: input.src, contents: input.contents, running: true },
                   completed
@@ -127,8 +143,8 @@ export function createExecutor(
           const next = snapshot()
           if (previous && sameInput(previous, next)) return
           previous = next
-          // Interrupt at the signal boundary, before a queued old completion can
-          // publish. A buffered stream alone leaves a window before consumption.
+          // Cancel when the input signal changes, before queued Promise
+          // continuations from the old run can reach their output-publication effect.
           if (currentRun) Effect.runSync(Fiber.interruptFork(currentRun))
           output.value = pending(next)
           currentRun = Effect.runSync(
@@ -170,7 +186,9 @@ function sameInput(previous: ExecutionInput, next: ExecutionInput) {
     previous.contents === next.contents &&
     previous.capabilities.length === next.capabilities.length &&
     previous.capabilities.every(
-      (capability, index) => capability === next.capabilities[index]
+      (capability, index) =>
+        capability === next.capabilities[index] &&
+        Object.is(previous.revisions[index], next.revisions[index])
     )
   )
 }

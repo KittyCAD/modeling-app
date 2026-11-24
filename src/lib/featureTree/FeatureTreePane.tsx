@@ -976,7 +976,7 @@ async function prepareFeatureTreeEditCommand({
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
  */
-const OperationItem = ({
+export const OperationItem = ({
   item,
   code,
   isStaleReference = false,

@@ -57,7 +57,7 @@ export async function exportMake({
     const formData = new FormData()
     formData.append('params', JSON.stringify(params))
     let file = files[0]
-    const fileBlob = new Blob([new Uint8Array(file.contents)], {
+    const fileBlob = new Blob([file.contents], {
       type: 'text/plain',
     })
     formData.append('file', fileBlob, file.name)

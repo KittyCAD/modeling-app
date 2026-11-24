@@ -3,7 +3,12 @@
 Executors watch a bound editor and run every matching capability. Each run uses
 an immutable input snapshot; newer input interrupts older work. Results coalesce
 without one capability's failure hiding the others. Typed `output.get(capability)`
-lookups preserve the data type declared by that capability.
+lookups preserve the data type declared by that capability. A capability may supply
+a reactive `revision` for additional inputs, such as imported buffers; a changed
+revision interrupts the previous run even when the bound editor is unchanged.
+A revision reader can instead receive the specific executor and read its owned
+inputs, so sibling views need not refresh for a preference that affects only one
+of their captured presentations.
 
 Creating or acquiring an executor for a closed editor returns an `Error` without
 retaining resources. `executionContext` passes that error to the mode binding.
@@ -28,9 +33,11 @@ one tab leaves the document and its remaining contexts alive. Closing the last
 view disposes the document and interrupts its executors.
 
 `Executor.refresh()` retries the current editor and capability inputs for that
-executor without editing the document or rerunning sibling executors. Scene
-recovery uses it after acquiring a fresh connection, so normal source loading and
-error publication handle the retry. Calls after disposal are ignored.
+executor without editing the document or rerunning sibling executors. KCL scene
+recovery starts opening a replacement connection and calls `refresh` to load
+current sources. Source capture can run during startup; the KCL session waits for
+the connection and native runtime before executing. Calls after disposal are
+ignored.
 
 The Plankton assembly contributes computations through `executorCapabilityFacet`
 and publishes `executorsService` from a factory that owns executor cleanup.

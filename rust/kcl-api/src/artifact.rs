@@ -154,6 +154,7 @@ pub enum ArtifactVisibility {
 /// Where a named view's camera looks from: one variant per KCL constructor
 /// function, so a stored view can never carry both a curated orientation and a
 /// custom direction.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]

@@ -5,6 +5,11 @@ import env from '@src/env'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_ICON,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
+import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
@@ -569,23 +574,19 @@ export function createApplicationCommands({
   }
 
   const exportProjectZipCommand: Command = {
+    ...EXPORT_PROJECT_ARCHIVE_COMMAND,
     scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    name: 'export-project-zip',
-    displayName: 'Download project files',
-    description: 'Download every file in the current project as a ZIP archive.',
+    displayName: EXPORT_PROJECT_ARCHIVE_LABEL,
+    description: 'Save the entire project as a ZIP archive.',
     needsReview: false,
-    icon: 'download',
-    groupId: 'application',
-    onSubmit: async () => {
-      const project = app.project?.projectIORefSignal.value
-      const executingEditor = app.project?.executingEditor.value
-      const wasmInstance = await app.wasmPromise
-
-      await exportProjectZip({
+    icon: EXPORT_PROJECT_ARCHIVE_ICON,
+    onSubmit: () => {
+      const project = app.project
+      return exportProjectZip({
         fileOperations: app.fileOperations,
-        project,
-        currentFilePath: app.project?.executingPath,
-        currentFileContents: executingEditor?.code,
+        project: project?.projectIORefSignal.value,
+        currentFilePath: project?.executingPath,
+        currentFileContents: project?.executingEditor.value?.code,
         wasmInstance,
       })
     },
@@ -593,7 +594,7 @@ export function createApplicationCommands({
 
   return [
     addKCLFileToProject,
-    ...(!isDesktop() ? [exportProjectZipCommand] : []),
+    exportProjectZipCommand,
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,

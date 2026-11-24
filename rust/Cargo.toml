@@ -32,7 +32,6 @@ kittycad = { version = "0.7.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-# Use the immutable viewport schema revision until its registry release.
 kittycad-modeling-cmds = { version = "0.2.265", features = [
   "ts-rs",
   "websocket",

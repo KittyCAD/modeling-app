@@ -1,0 +1,75 @@
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { signal } from '@preact/signals-core'
+import { EditorSelection } from '@codemirror/state'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import type { ComponentProps } from 'react'
+import { MemoryRouter } from 'react-router-dom'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ layout: { signal: { value: null } } }),
+  useSingletons: vi.fn(),
+}))
+
+import { OperationItem } from '@src/lib/featureTree/FeatureTreePane'
+
+type OperationItemProps = ComponentProps<typeof OperationItem>
+
+describe('imported feature tree menus', () => {
+  it.each<Operation>([
+    {
+      type: 'ModuleInstance',
+      name: 'bracket',
+      moduleId: 1,
+      nodePath: { steps: [] },
+      sourceRange: [0, 10, 0],
+    },
+    {
+      type: 'StdLibCall',
+      name: 'extrude',
+      unlabeledArg: null,
+      labeledArgs: {},
+      nodePath: { steps: [] },
+      sourceRange: [0, 10, 1],
+    },
+  ])('only offers source navigation for $type', async (item) => {
+    const systemDeps = {
+      kclManager: {
+        diagnosticsSignal: signal([]),
+        astSignal: signal({ body: [] }),
+        hasParseErrors: () => false,
+        wasmInstancePromise: Promise.resolve({}),
+      },
+    } as unknown as OperationItemProps['systemDeps']
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <OperationItem
+            item={item}
+            code=""
+            isModuleOwned
+            sketchNoFace={false}
+            systemDeps={systemDeps}
+            engineCommandManager={
+              {} as OperationItemProps['engineCommandManager']
+            }
+            modelingActor={{} as OperationItemProps['modelingActor']}
+            onSelect={vi.fn()}
+            visibilityOperations={[]}
+            editorSelection={EditorSelection.single(0)}
+            liveLatestOperationKey={null}
+          />
+        </MemoryRouter>
+      )
+    })
+
+    fireEvent.contextMenu(screen.getByRole('button'))
+
+    const menu = await screen.findByRole('dialog')
+    expect(
+      within(menu).getByRole('button', { name: 'View KCL source code' })
+    ).toBeEnabled()
+    expect(within(menu).getAllByRole('button')).toHaveLength(1)
+  })
+})

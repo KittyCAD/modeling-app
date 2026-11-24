@@ -6,7 +6,10 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
+import {
+  appHeaderItemsFacet,
+  appHeaderLeftItemsFacet,
+} from '@src/registry/contracts/appHeader'
 import type { ReactNode } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: header navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
@@ -44,6 +47,7 @@ export const AppHeader = ({
     ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
     : undefined
   const appHeaderItems = app.registry.observe(appHeaderItemsFacet).value
+  const appHeaderLeftItems = app.registry.observe(appHeaderLeftItemsFacet).value
   const appHeaderItemClassName =
     'relative inline-flex h-7 min-w-7 items-center justify-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 px-1 text-chalkboard-100 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary disabled:cursor-default disabled:opacity-70'
 
@@ -72,6 +76,9 @@ export const AppHeader = ({
         }}
       >
         {projectMenuChildren}
+        {appHeaderLeftItems.map(({ id, Component }) => (
+          <Component key={id} app={app} className="self-center" />
+        ))}
       </ProjectSidebarMenu>
       <div className="flex items-center gap-2 py-1.5 ml-auto">
         {children ||

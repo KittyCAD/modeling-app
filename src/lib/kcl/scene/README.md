@@ -38,6 +38,20 @@ uses those model generations to avoid displaying geometry with an older graph.
 `SceneExecutionEvents` in this module defines the execution notifications that
 presentations consume.
 
+## Shared viewport behavior
+
+The legacy file route and Modeling editor views use the same canvas resize,
+pixel-density, streamed-video sizing, camera-input, and overlay-theme helpers.
+[`viewport.ts`](viewport.ts) owns the resize observers and browser sizing rule;
+[`applyPreferences.ts`](applyPreferences.ts) applies mouse/touch preferences and
+sketch foreground themes.
+
+The hosts retain their lifecycle and application policy. `ClientSideScene` observes
+its container size, while Modeling sessions own pane resizing. The legacy route
+keeps its sketch-mode projection guard and segment-color updates; Modeling views
+keep their per-connection projection and render-resume callbacks. Engine reconnect
+and idle scheduling remain outside these helpers.
+
 ## KCL refresh policy
 
 KCL extensions contribute refresh inputs through
@@ -52,16 +66,22 @@ provideKclExecutionInput({
   id: 'modeling.highlightEdges',
   read: (settings) => settings.modeling.highlightEdges.currentSignal.value,
   refresh: 'execute',
+  legacyRefresh: 'direct',
 })
 ```
 
-The two rules describe different operations:
+The two rules select which Modeling views request execution:
 
 - `execute` reruns KCL with the existing native cache. Default units, edge
   highlighting, and scale-grid visibility and size use this rule.
-- `rebuild-streamed` clears the streamed scene and native cache before executing.
-  Backface color uses this rule. The local renderer applies that color directly,
-  so this input does not request native execution in local rendering.
+- `execute-streamed` requests execution only for streamed scenes. Backface color
+  uses this rule. Rust reapplies the color to existing streamed geometry without
+  clearing the scene or cache. The local renderer applies it directly.
+
+The legacy file route uses `legacyRefresh: 'direct'` for edge highlighting,
+scale-grid visibility and size, and backface color. `KclManager` applies these
+through engine APIs without executing KCL. Default units and contributed inputs
+without this override retain their execution rules in both hosts.
 
 `createSceneExecutionSettings` in `executionSettings.ts` reads the registry's live contribution signal and
 the effective preferences. It provides native configuration through the existing
@@ -77,16 +97,11 @@ because the file route also needs them.
 ## Applying changes to the active scene
 
 `observeLegacySceneExecutionSettings` in `legacyExecutionSettings.ts` watches the
-comparison keys.
+legacy comparison keys, which exclude inputs applied directly.
 `KclManager.watchSettings` supplies callbacks bound to the active file, project,
-and connection: execute the model, clear its scene/cache, and check whether those
-resources are still current.
-
-Cache clears run in order. If an execute-only preference changes while a clear is
-pending, execution waits for that clear; otherwise the clear could erase the
-newly rendered model. Closing the observer, deactivating the file, or replacing
-the connection prevents queued work from starting against stale resources.
-Disposal cannot abort a native operation that has already started.
+and connection: execute the model and check whether those resources are still
+current. Rust owns cache invalidation; the observer does not clear scenes before
+requesting execution.
 
 The observer records preference changes while inactive or disconnected without
 executing. File opening and reconnecting own their initial execution, so simply

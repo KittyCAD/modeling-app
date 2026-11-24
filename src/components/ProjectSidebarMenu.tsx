@@ -8,14 +8,18 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { selectCommand } from '@src/lib/commandUtils'
-import { APP_NAME } from '@src/lib/constants'
+import { commandKey, selectCommand } from '@src/lib/commandUtils'
+import {
+  APP_NAME,
+  EXPORT_MODEL_LABEL,
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   findKeymapItemForCommand,
@@ -199,15 +203,27 @@ function ProjectMenuPopover({
   const platform = usePlatform()
   const navigate = useNavigate()
   const keymap = app.registry.optional(keymapService)
+  const keymapScopes = app.registry.observe(keymapScopesFacet).value
+  const currentScopes = keymap?.getCurrentScopes() ?? []
   const projectSettingsKeybinding = keymapKeystrokesDisplay(
     keymap
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           'zds.settings.open',
-          keymap.getCurrentScopes(),
-          app.registry.observe(keymapScopesFacet).value
+          currentScopes,
+          keymapScopes
         )?.keystrokes
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
+    platform
+  )
+  const projectArchiveKeybinding = keymapKeystrokesDisplay(
+    keymap &&
+      findKeymapItemForCommand(
+        keymap.keymap.value,
+        commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
+        currentScopes,
+        keymapScopes
+      )?.keystrokes,
     platform
   )
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
@@ -222,10 +238,6 @@ function ProjectMenuPopover({
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
-  const exportProjectZipCommandInfo = {
-    name: 'export-project-zip',
-    groupId: 'application',
-  }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = useCallback(
     (obj: { name: string; groupId: string }) =>
@@ -237,14 +249,6 @@ function ProjectMenuPopover({
     [commandList]
   )
   const machineCount = machineManager.machines.length
-  const getCurrentFileForDuplicate = useCallback(
-    () => ({
-      currentFilePath: app?.project?.executingPath,
-      currentFileContents: app?.project?.executingEditor.value?.code,
-    }),
-    [app]
-  )
-
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
@@ -276,40 +280,6 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
-        project
-          ? {
-              id: 'duplicate-project',
-              Element: 'button' as const,
-              children: (
-                <span
-                  className={projectMenuItemLabelClassName}
-                  data-testid="project-sidebar-duplicate-project"
-                >
-                  Duplicate project
-                </span>
-              ),
-              onClick: () => {
-                const editor = getCurrentFileForDuplicate()
-                app.projectOperations
-                  .duplicateProject(
-                    project,
-                    getProjectDisplayName(project),
-                    editor.currentFilePath
-                      ? {
-                          path: editor.currentFilePath,
-                          contents: editor.currentFileContents ?? '',
-                        }
-                      : undefined
-                  )
-                  .then((created) =>
-                    app.projectSession.openFile(created.path, {
-                      projectPath: created.path,
-                    })
-                  )
-                  .catch(reportRejection)
-              },
-            }
-          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []
@@ -381,7 +351,9 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className={projectMenuItemLabelClassName}>Export</span>
+              <span className={projectMenuItemLabelClassName}>
+                {EXPORT_MODEL_LABEL}
+              </span>
               <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>
@@ -401,13 +373,17 @@ function ProjectMenuPopover({
         {
           id: 'download-project-zip',
           Element: 'button' as const,
-          className: isDesktop() ? 'hidden' : '',
           children: (
             <>
               <span className={projectMenuItemLabelClassName}>
-                Download project files
+                {EXPORT_PROJECT_ARCHIVE_LABEL}
               </span>
-              {!findCommand(exportProjectZipCommandInfo) && (
+              {projectArchiveKeybinding && (
+                <kbd className={projectMenuItemHotkeyClassName}>
+                  {projectArchiveKeybinding}
+                </kbd>
+              )}
+              {!findCommand(EXPORT_PROJECT_ARCHIVE_COMMAND) && (
                 <Tooltip
                   position="right"
                   wrapperClassName="!max-w-none min-w-fit"
@@ -417,8 +393,9 @@ function ProjectMenuPopover({
               )}
             </>
           ),
-          disabled: !findCommand(exportProjectZipCommandInfo),
-          onClick: () => selectCommand(commands, exportProjectZipCommandInfo),
+          disabled: !findCommand(EXPORT_PROJECT_ARCHIVE_COMMAND),
+          onClick: () =>
+            selectCommand(commands, EXPORT_PROJECT_ARCHIVE_COMMAND),
         },
         {
           id: 'make',
@@ -497,7 +474,6 @@ function ProjectMenuPopover({
       onProjectClose,
       projectPath,
       project,
-      getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
       app.projectOperations,
@@ -506,6 +482,7 @@ function ProjectMenuPopover({
       filePath,
       machineCount,
       navigate,
+      projectArchiveKeybinding,
       projectSettingsKeybinding,
       settings.actor,
     ]
@@ -538,7 +515,7 @@ function ProjectMenuPopover({
       />
       <Popover.Panel
         data-testid="project-sidebar-menu"
-        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+        className={`z-10 absolute top-full left-0 mt-1 pb-1 w-64 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
       >

@@ -1,3 +1,8 @@
+import { commandKey } from '@src/lib/commandUtils'
+import {
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
@@ -145,6 +150,13 @@ export const defaultKeymap: KeymapDocument = {
       userBindingCommand: APP_COMMAND_IDS.search.focusProjects,
     },
     {
+      id: 'project.export-archive',
+      title: EXPORT_PROJECT_ARCHIVE_LABEL,
+      when: [...FILE_KEYMAP_SCOPES, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+shift+s'],
+      command: commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
+    },
+    {
       id: 'editor.undo',
       title: 'Undo',
       when: FILE_KEYMAP_SCOPES,
@@ -242,14 +254,14 @@ export const defaultKeymap: KeymapDocument = {
     },
     {
       id: 'project-explorer.arrow-up',
-      title: 'Clone project explorer selection up',
+      title: 'Select previous project explorer row',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowup'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
     },
     {
       id: 'project-explorer.arrow-down',
-      title: 'Clone project explorer selection down',
+      title: 'Select next project explorer row',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowdown'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,

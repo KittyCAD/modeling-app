@@ -1,3 +1,8 @@
+import { fitOrthographicDepthRange } from '@src/clientSideScene/localRenderer/orthographicDepth'
+import {
+  applyFaceDepthBiasDeferred,
+  exportedFacePlane,
+} from '@src/clientSideScene/localRenderer/faceDepthBias'
 import type {
   EntityReference,
   EntityType,
@@ -32,6 +37,7 @@ import {
   type SceneExecutionDoneDetail,
 } from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -54,6 +60,7 @@ import {
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
+  type Plane,
   Scene,
   Texture,
   Vector3,
@@ -172,6 +179,8 @@ type AmbientOcclusionPipeline = {
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
 }
+/** What three.js reports for a lost WebGPU device or WebGL context. */
+type DeviceLostInfo = Parameters<WebGPURenderer['onDeviceLost']>[0]
 type DisposableGpuDevice = {
   destroy: () => void
 }
@@ -196,6 +205,18 @@ type RendererSettings = {
   pickingEnabled: boolean
   defaultPlaneVisibility: PlaneVisibilityMap
 }
+/** Why the local renderer cannot draw, so the scene can offer streaming instead. */
+export interface LocalRendererFailure {
+  /** 'initialization': no GPU renderer could start. 'lost': the GPU went away while rendering. */
+  kind: 'initialization' | 'lost'
+  message: string
+}
+
+/** Camera intent when a model arrives; the first load also consumes the host's framing claim. */
+type CameraFraming =
+  | { phase: 'initial-load'; reset: 'host-policy' | 'requested' }
+  | { phase: 'subsequent-loads'; reset: 'preserve' | 'requested' }
+
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
@@ -204,6 +225,7 @@ export interface LocalRendererProps {
   backfaceColor: string
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
+  onRendererFailed?: (failure: LocalRendererFailure) => void
 }
 
 export class LocalRenderer {
@@ -211,11 +233,13 @@ export class LocalRenderer {
   private readonly host: LocalRendererHost
   private readonly settings: RendererSettings
   private readonly onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
+  private readonly onRendererFailed: LocalRendererProps['onRendererFailed']
   private gpu: GpuResources | null = null
   /** Undo what this renderer registered elsewhere; dispose() runs them. */
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private readonly modelBounds = new Box3()
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -223,12 +247,15 @@ export class LocalRenderer {
   private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  /** A camera reset waiting for the next model. The first model always gets one. */
-  private cameraResetPending = true
+  private cameraFraming: CameraFraming = {
+    phase: 'initial-load',
+    reset: 'host-policy',
+  }
   private camera: PerspectiveCamera | OrthographicCamera | null = null
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
+  private depthDirty = true
   private disposed = false
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
@@ -263,8 +290,10 @@ export class LocalRenderer {
       defaultPlaneVisibility: { xy: true, xz: true, yz: true },
     }
     this.onModelLoadSettled = props.onModelLoadSettled
+    this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
-    this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
+    const backfacePlugin = backfaceColorPlugin(this.backfaceColor)
+    this.gltfLoader.register(() => backfacePlugin)
 
     this.container.style.opacity = '0'
     host.executionEvents.addEventListener(
@@ -318,10 +347,10 @@ export class LocalRenderer {
     return Object.values(this.settings.defaultPlaneVisibility).some(Boolean)
   }
 
-  private getPlaneTarget(id: string | null): Mesh | null {
+  private getPlaneTargets(id: string | null): Mesh[] | null {
     if (!id) return null
     const plane = this.gpu?.planeRenderer.planes.get(id)
-    return plane?.group.visible ? plane.mesh : null
+    return plane?.group.visible ? plane.meshes : null
   }
 
   private getSelectedTargets() {
@@ -329,7 +358,7 @@ export class LocalRenderer {
       .flatMap(
         (id) =>
           this.bodyFacesById.get(id) ??
-          this.getPlaneTarget(id) ??
+          this.getPlaneTargets(id) ??
           this.targetsByEntityId.get(id)
       )
       .filter(isNonNullable)
@@ -352,11 +381,16 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  // What hovering the target highlights: its whole body with a body filter,
-  // otherwise all the meshes of its face, or just the target for edges and planes.
+  // What hovering the target highlights: all quadrants of a plane, its whole
+  // body with a body filter, otherwise all the meshes of its face, or just the
+  // target for edges.
   private getHoverTargets(target: Mesh | null, filter: readonly EntityType[]) {
     if (!target) {
       return []
+    }
+    const planeTargets = this.getPlaneTargets(target.name)
+    if (planeTargets) {
+      return planeTargets
     }
     if (getBodySelectionType(filter)) {
       return this.getBodyFaces(target)
@@ -371,9 +405,8 @@ export class LocalRenderer {
     const { planeRenderer, edgeRenderer, sketchLineRenderer } = gpu
     planeRenderer.updateDefaultPlanes(this.host.defaultPlanes())
     planeRenderer.setDefaultVisibility(this.settings.defaultPlaneVisibility)
-    const targets = Array.from(
-      planeRenderer.planes.values(),
-      ({ mesh }) => mesh
+    const targets = Array.from(planeRenderer.planes.values()).flatMap(
+      ({ meshes }) => meshes
     )
 
     // Rebuild lookups
@@ -545,6 +578,7 @@ export class LocalRenderer {
         !this.camera
       )
         return {}
+      this.prepareDepth()
       const requestVersion = isHover
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
@@ -804,8 +838,40 @@ export class LocalRenderer {
   }
 
   private readonly handleInitializationError = (error: unknown) => {
+    if (this.disposed) return
     console.error('[LocalRenderer] initialization failed', error)
     reportRejection(error)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
+    this.onRendererFailed?.({
+      kind: 'initialization',
+      message: error instanceof Error ? error.message : String(error),
+    })
+  }
+
+  private readonly handleDeviceLost = (info: DeviceLostInfo) => {
+    // three.js ignores the loss that dispose() causes, but the scene may be gone.
+    if (this.disposed) return
+    console.error('[LocalRenderer] GPU device lost', info)
+    void reportClientError({
+      code: ClientErrorCode.LocalRendererFailure,
+      message: 'Local renderer failed: lost',
+      dedupeKey: 'LocalRenderer:lost',
+      extra: {
+        kind: 'lost',
+        api: info.api,
+        reason: info.reason,
+        message: info.message,
+      },
+    })
+    // Stop rendering, so a later execution can't save a blank project thumbnail.
+    this.dispose()
+    this.onRendererFailed?.({ kind: 'lost', message: info.message })
   }
 
   private configureAmbientOcclusion(
@@ -853,6 +919,19 @@ export class LocalRenderer {
     }
   }
 
+  private prepareDepth() {
+    if (!this.depthDirty) return
+    this.depthDirty = false
+    const { camera, gpu } = this
+    if (!gpu || !(camera instanceof OrthographicCamera)) return
+    const depthBounds = this.modelBounds.clone()
+    // Reference planes change size with zoom. Include their actual drawn
+    // bounds (and labels), while keeping model bounds cached across frames.
+    depthBounds.union(gpu.planeRenderer.getDrawnBounds())
+    fitOrthographicDepthRange(camera, depthBounds)
+    gpu.integerIdPicker.invalidate()
+  }
+
   // Draws at the viewport's size, or at the given size in device pixels.
   private render(size?: FrameSize) {
     const { camera, gpu } = this
@@ -873,6 +952,8 @@ export class LocalRenderer {
     ) {
       renderer.setDrawingBufferSize(width, height, pixelRatio)
     }
+
+    this.prepareDepth()
 
     const baseRendered = selectionHighlightRenderer.beginFrame(
       this.baseRenderDirty
@@ -981,6 +1062,7 @@ export class LocalRenderer {
       this.host.executing.peek()
     )
       return []
+    this.prepareDepth()
     const version = this.executionVersion
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
@@ -1088,6 +1170,7 @@ export class LocalRenderer {
 
   private invalidateBaseRender() {
     this.baseRenderDirty = true
+    this.depthDirty = true
     this.scheduleRender()
   }
 
@@ -1119,6 +1202,7 @@ export class LocalRenderer {
 
   private clearModel() {
     const { gpu } = this
+    this.modelBounds.makeEmpty()
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
     this.bodyFacesById.clear()
@@ -1169,8 +1253,17 @@ export class LocalRenderer {
     const renderer = new WebGPURenderer({
       antialias: true,
       alpha: false,
+      // Match the engine; Three also selects floating-point depth attachments.
+      reversedDepthBuffer: true,
       device,
     })
+    // Covers both backends: a lost WebGPU device and a lost WebGL 2 context.
+    // Keep three.js's default handler, which marks the renderer as lost.
+    const defaultOnDeviceLost = renderer.onDeviceLost.bind(renderer)
+    renderer.onDeviceLost = (info) => {
+      defaultOnDeviceLost(info)
+      this.handleDeviceLost(info)
+    }
     await renderer.init()
     if (this.disposed) {
       await renderer.dispose()
@@ -1367,12 +1460,13 @@ export class LocalRenderer {
         return
       }
 
-      const bytes = new Uint8Array(file.contents)
+      const bytes = file.contents
       const gltf = (await this.gltfLoader.parseAsync(
-        bytes.buffer,
+        bytes.byteLength === bytes.buffer.byteLength
+          ? bytes.buffer
+          : bytes.slice().buffer,
         ''
       )) as KITTYCAD_GLTF
-      console.log('local renderer glTF', gltf.parser.json, gltf)
       gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
 
@@ -1384,7 +1478,7 @@ export class LocalRenderer {
 
       this.clearModel()
 
-      assignFaceUuids(gltf)
+      const facePlanes = assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
       gpu?.scene.add(gltf.scene)
@@ -1399,12 +1493,27 @@ export class LocalRenderer {
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
+      this.modelBounds.copy(bounds)
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       toast.dismiss(MODEL_LOAD_ERROR_TOAST_ID)
       this.onModelLoadSettled?.(true)
+      const model = gltf.scene
+      const isModelCurrent = () => !this.disposed && this.currentModel === model
+      void applyFaceDepthBiasDeferred(
+        model,
+        isModelCurrent,
+        undefined,
+        facePlanes
+      )
+        .then((applied) => {
+          if (!applied || !isModelCurrent()) return
+          this.rebuildSelectionTargets()
+          this.invalidateBaseRender()
+        })
+        .catch(reportRejection)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
     }
@@ -1429,17 +1538,18 @@ export class LocalRenderer {
     if (this.isLoadedSceneCurrent()) {
       this.resetCamera()
     } else {
-      this.cameraResetPending = true
+      this.cameraFraming = { ...this.cameraFraming, reset: 'requested' }
     }
   }
 
-  /**
-   * Also stands in for the reset after opening a project, which local mode
-   * skips because the model is not loaded yet.
-   */
+  /** Apply queued resets and consult the host only on this renderer's first successful scene load. */
   private resetCameraIfPending() {
-    if (this.cameraResetPending) {
-      this.cameraResetPending = false
+    const framing = this.cameraFraming
+    const frameInitialModel =
+      framing.phase === 'initial-load' &&
+      (this.host.claimInitialCameraFrame?.() ?? true)
+    this.cameraFraming = { phase: 'subsequent-loads', reset: 'preserve' }
+    if (framing.reset === 'requested' || frameInitialModel) {
       this.resetCamera()
     }
   }
@@ -1456,16 +1566,13 @@ export class LocalRenderer {
 // in the backface color, which shows on open surfaces.
 // This makes GLTFLoaderbuild doubleSided materials.
 function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
+  const colorNode = select(frontFacing, color(materialColor), backfaceColor)
   return {
     name: 'zoo_backface_color',
     getMaterialType: () => MeshStandardNodeMaterial,
     extendMaterialParams: (_materialIndex, params) => {
       params.side = DoubleSide
-      params.colorNode = select(
-        frontFacing,
-        color(materialColor),
-        backfaceColor
-      )
+      params.colorNode = colorNode
       return null
     },
   }
@@ -1525,12 +1632,13 @@ function fillEmptyBrepArrays(gltf: KITTYCAD_GLTF) {
 
 /** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
 export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
+  const planes = new Map<Mesh, Plane>()
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   if (!brep) {
     console.warn(
       '[LocalRenderer] The model has no B-rep data, so its faces and edges cannot be selected.'
     )
-    return
+    return planes
   }
   const faceIdsBySolidMesh = new Map<number, (number | undefined)[]>()
 
@@ -1582,5 +1690,10 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
     const uuid = face?.extras?.KITTYCAD?.uuid
     if (uuid) object.userData.faceUuid = uuid
+    const plane = exportedFacePlane(
+      face ? brep.surfaces[face.surface[0]] : undefined
+    )
+    if (plane) planes.set(object, plane)
   })
+  return planes
 }
