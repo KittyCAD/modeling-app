@@ -284,7 +284,8 @@ export class LocalRenderer {
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
-    this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
+    const backfacePlugin = backfaceColorPlugin(this.backfaceColor)
+    this.gltfLoader.register(() => backfacePlugin)
 
     this.container.style.opacity = '0'
     host.executionEvents.addEventListener(
@@ -1429,12 +1430,13 @@ export class LocalRenderer {
         return
       }
 
-      const bytes = new Uint8Array(file.contents)
+      const bytes = file.contents
       const gltf = (await this.gltfLoader.parseAsync(
-        bytes.buffer,
+        bytes.byteLength === bytes.buffer.byteLength
+          ? bytes.buffer
+          : bytes.slice().buffer,
         ''
       )) as KITTYCAD_GLTF
-      console.log('local renderer glTF', gltf.parser.json, gltf)
       gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
 
@@ -1519,16 +1521,13 @@ export class LocalRenderer {
 // in the backface color, which shows on open surfaces.
 // This makes GLTFLoaderbuild doubleSided materials.
 function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
+  const colorNode = select(frontFacing, color(materialColor), backfaceColor)
   return {
     name: 'zoo_backface_color',
     getMaterialType: () => MeshStandardNodeMaterial,
     extendMaterialParams: (_materialIndex, params) => {
       params.side = DoubleSide
-      params.colorNode = select(
-        frontFacing,
-        color(materialColor),
-        backfaceColor
-      )
+      params.colorNode = colorNode
       return null
     },
   }

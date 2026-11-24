@@ -327,9 +327,20 @@ impl Context {
             .export_with_compression(format, Some(kittycad_modeling_cmds::shared::CompressionType::Zstd))
             .await
         {
-            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+            Ok(outcome) => {
+                let files = js_sys::Array::new();
+                for file in outcome {
+                    let value = js_sys::Object::new();
+                    js_sys::Reflect::set(&value, &"name".into(), &file.name.into())
+                        .map_err(|error| format!("{error:?}"))?;
+                    // Copy into an owned JS buffer, independent of later Wasm memory growth.
+                    let contents = js_sys::Uint8Array::from(file.contents.as_slice());
+                    js_sys::Reflect::set(&value, &"contents".into(), &contents)
+                        .map_err(|error| format!("{error:?}"))?;
+                    files.push(&value);
+                }
+                Ok(files.into())
+            }
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
     }
