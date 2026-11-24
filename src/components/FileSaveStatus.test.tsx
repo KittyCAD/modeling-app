@@ -1,6 +1,8 @@
 import { signal } from '@preact/signals-core'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ProjectArchiveLimitError } from '@src/lib/cloudProjects/runtime/archiveContents'
+import { attachCloudFailureContext } from '@src/lib/cloudProjects/runtime/failureContext'
 import type { ProjectWriteAvailability } from '@src/lib/projectSession/storage'
 
 const editor = {
@@ -11,9 +13,9 @@ const editor = {
 const project = { path: '/project', executingEditor: signal(editor) }
 const projectSignal = signal<typeof project | undefined>(project)
 const writeAvailability = signal<ProjectWriteAvailability>({ writable: true })
-const saveState = signal<{ state: 'saved' | 'saving' | 'failed' } | undefined>(
-  undefined
-)
+const saveState = signal<
+  { state: 'saved' | 'saving' | 'failed'; error?: unknown } | undefined
+>(undefined)
 const retrySave = vi.fn(async () => undefined)
 
 import { FileSaveStatus } from '@src/components/FileSaveStatus'
@@ -34,6 +36,32 @@ beforeEach(() => {
 })
 
 describe('project save status', () => {
+  it.each(['bytes', 'entries'] as const)(
+    'offers support instead of retry for the %s limit, including wrapped errors',
+    (limit) => {
+      saveState.value = {
+        state: 'failed',
+        error: attachCloudFailureContext(
+          { stage: 'archive', point: 'prepare-project-upload' },
+          new ProjectArchiveLimitError(limit)
+        ),
+      }
+      render(<FileSaveStatus {...props} />)
+      expect(screen.getByRole('status')).toHaveTextContent(
+        limit === 'bytes' ? '1 GiB' : '10,000'
+      )
+      fireEvent.click(screen.getByRole('button', { name: /Project exceeds/ }))
+      expect(screen.getByRole('status')).toHaveTextContent('Reduce')
+      expect(
+        screen.getByRole('link', { name: 'Contact support' })
+      ).toHaveAttribute('href', 'https://community.zoo.dev/')
+      expect(
+        screen.queryByRole('button', { name: /Retry/ })
+      ).not.toBeInTheDocument()
+      expect(screen.getByRole('img', { name: 'Unsaved changes' })).toBeVisible()
+    }
+  )
+
   it('shows an unsaved dot during the autosave delay and clears it after saving', () => {
     const { container } = render(<FileSaveStatus {...props} />)
     expect(container).toBeEmptyDOMElement()
