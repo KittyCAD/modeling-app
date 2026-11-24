@@ -40,6 +40,7 @@ vi.mock('@src/hooks/useModelingContext', () => ({
 }))
 
 vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ commands: {}, settings: {} }),
   useSingletons: () => ({
     kclManager: {
       sceneInfra: mocks.sceneInfra,
@@ -52,8 +53,11 @@ vi.mock('@src/lib/boot', () => ({
 vi.mock('@src/clientSideScene/ConstraintBadgeTooltipOverlay', () => ({
   ConstraintBadgeTooltipOverlay: () => null,
 }))
-vi.mock('@src/clientSideScene/EditingConstraintInput', () => ({
-  EditingConstraintInput: () => null,
+vi.mock('@src/clientSideScene/EditingConstraintInputView', () => ({
+  EditingConstraintInputView: () => null,
+}))
+vi.mock('@src/hooks/useToolbarConfig', () => ({
+  useToolbarConfig: () => [],
 }))
 vi.mock('@src/machines/sketchSolve/sketchSolveImpl', () => ({
   cleanupSketchSolveGroup: vi.fn(),
