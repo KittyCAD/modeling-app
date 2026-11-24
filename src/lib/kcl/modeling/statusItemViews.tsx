@@ -9,7 +9,7 @@ import { UnitsMenuView } from '@src/components/UnitsMenuView'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import { useSceneToolsHost } from '@src/registry/extensions/engineScene/sceneToolsHost'
+import { viewSceneToolsHost } from '@src/lib/kcl/modeling/sceneToolsHost'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { EngineExecutionStatusTooltip } from '@src/registry/extensions/engineScene/executionIndicator/EngineExecutionStatusTooltip'
 import { setViewFileUnits } from '@src/lib/kcl/modeling/viewCommands'
@@ -29,11 +29,19 @@ export function ScreenshotItem({ context }: { context: ModelingViewContext }) {
     />
   )
 }
-export function MeasurementItem() {
-  return <MeasurementStatusBarItemView />
+export function MeasurementItem({ context }: { context: ModelingViewContext }) {
+  useSignals()
+  return <MeasurementStatusBarItemView host={viewSceneToolsHost(context)} />
 }
-export function PhysicalAnalysisItem() {
-  return <PhysicalAnalysisStatusBarItemView />
+export function PhysicalAnalysisItem({
+  context,
+}: {
+  context: ModelingViewContext
+}) {
+  useSignals()
+  return (
+    <PhysicalAnalysisStatusBarItemView host={viewSceneToolsHost(context)} />
+  )
 }
 export function FilterItem({ context }: { context: ModelingViewContext }) {
   useSignals()
@@ -51,7 +59,7 @@ export function FilterItem({ context }: { context: ModelingViewContext }) {
 }
 export function SelectionItem({ context }: { context: ModelingViewContext }) {
   useSignals()
-  const host = useSceneToolsHost()
+  const host = viewSceneToolsHost(context)
   const scene = context.session.resource.value
   const selection = scene?.selection
   const count = selection?.displayed.value.length ?? 0
@@ -86,7 +94,7 @@ export function SelectionItem({ context }: { context: ModelingViewContext }) {
 }
 export function UnitsItem({ context }: { context: ModelingViewContext }) {
   useSignals()
-  const host = useSceneToolsHost()
+  const host = viewSceneToolsHost(context)
   return (
     <UnitsMenuView
       currentUnit={host.unit}
