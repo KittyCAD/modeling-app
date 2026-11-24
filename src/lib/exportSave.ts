@@ -7,11 +7,9 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 import JSZip from 'jszip'
 import toast from 'react-hot-toast'
 
-type ExportFile = ModelingAppFile | { name: string; contents: ArrayBuffer }
-
 const save_ = async (
   fileOperations: FileOperationsRegistryService,
-  file: ExportFile,
+  file: ModelingAppFile,
   toastId: string
 ) => {
   try {
@@ -91,7 +89,7 @@ export async function exportSave({
   toastId,
 }: {
   fileOperations: FileOperationsRegistryService
-  files: ExportFile[]
+  files: ModelingAppFile[]
   fileName: string
   toastId: string
 }) {

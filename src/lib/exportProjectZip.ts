@@ -52,7 +52,9 @@ export async function exportProjectZip({
 
   await exportSave({
     fileOperations,
-    files: [{ name: archive.fileName, contents: archive.contents }],
+    files: [
+      { name: archive.fileName, contents: new Uint8Array(archive.contents) },
+    ],
     fileName: archive.fileName,
     toastId,
   })
