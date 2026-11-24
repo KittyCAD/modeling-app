@@ -392,13 +392,15 @@ describe('local GLB loading', () => {
   )
 
   it.each([false, true])(
-    'loads standard geometry/materials with typed bytes: %s',
-    async (typedBytes) => {
+    'loads standard geometry/materials with a partial buffer view: %s',
+    async (partialView) => {
       const f = fixture()
-      if (typedBytes) {
+      if (partialView) {
         const file = triangleGlb()
+        const padded = new Uint8Array(file.contents.length + 2)
+        padded.set(file.contents, 1)
         f.manager.rustContext.export.mockResolvedValue([
-          { ...file, contents: new Uint8Array(file.contents) },
+          { ...file, contents: padded.subarray(1, -1) },
         ])
       }
       f.manager.isExecutingSignal.value = true
@@ -769,5 +771,5 @@ function triangleGlb(): ModelingAppFile {
   header.setUint32(binOffset, vertices.byteLength, true)
   header.setUint32(binOffset + 4, 0x004e4942, true)
   bytes.set(new Uint8Array(vertices.buffer), binOffset + 8)
-  return { name: 'model.glb', contents: Array.from(bytes) }
+  return { name: 'model.glb', contents: bytes }
 }

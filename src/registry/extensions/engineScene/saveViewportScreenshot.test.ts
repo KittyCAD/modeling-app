@@ -56,7 +56,7 @@ describe('saveViewportScreenshot', () => {
       files: [
         {
           name: VIEWPORT_SCREENSHOT_FILE_NAME,
-          contents: Array.from(new TextEncoder().encode('screenshot')),
+          contents: new TextEncoder().encode('screenshot'),
         },
       ],
       fileName: VIEWPORT_SCREENSHOT_FILE_NAME,

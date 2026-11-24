@@ -1430,9 +1430,11 @@ export class LocalRenderer {
         return
       }
 
-      const bytes = new Uint8Array(file.contents)
+      const bytes = file.contents
       const gltf = (await this.gltfLoader.parseAsync(
-        bytes.buffer,
+        bytes.byteLength === bytes.buffer.byteLength
+          ? bytes.buffer
+          : bytes.slice().buffer,
         ''
       )) as KITTYCAD_GLTF
       gltf.scene ??= new Group() // A sketch-only model has no scene
