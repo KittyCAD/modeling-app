@@ -8,8 +8,8 @@ use std::{
 };
 
 use crate::{
-    Binding, ContributionInfo, Extension, Facet, Factory, HookError, Resolution, Scope, Service,
-    ServiceResolutionError, Snapshot, Subscription,
+    Binding, ContributionInfo, Extension, Facet, Factory, HookError, Resolution, Scope, ScopedSlot,
+    Service, ServiceResolutionError, Snapshot, Subscription,
     contract::Providers,
     factory::{Cleanup, ExtensionKind, FactoryItem, FactoryKey, Start},
     planner::{Planned, cycle, plan},
@@ -74,6 +74,9 @@ pub struct HookFailure {
 pub enum RegistryError {
     Disposed,
     Unmounted,
+    WrongRegistry,
+    ScopeExpired,
+    SlotNotOwned,
     DependencyMismatch(String),
     RetainedFactoryChanged(Origin),
     DependencyCycle(Vec<ItemPath>),
@@ -94,6 +97,15 @@ impl fmt::Display for RegistryError {
         match self {
             Self::Disposed => f.write_str("registry is disposed"),
             Self::Unmounted => f.write_str("factory is not mounted"),
+            Self::WrongRegistry => {
+                f.write_str("the selected registry did not acquire this scoped slot")
+            }
+            Self::ScopeExpired => {
+                f.write_str("the scoped slot's owning instance is no longer mounted")
+            }
+            Self::SlotNotOwned => {
+                f.write_str("the scoped slot is not installed among its owner's children")
+            }
             Self::DependencyMismatch(name) => {
                 write!(f, "dependency {name:?} does not match the selected factory")
             }
@@ -312,6 +324,7 @@ struct Mounted {
 }
 
 struct RuntimeInstance {
+    lifetime: Rc<()>,
     definition: FactoryItem,
     dependencies: Vec<Rc<RuntimeInstance>>,
     exports: Rc<dyn Any>,
@@ -415,17 +428,50 @@ impl Registry {
         owner: &Factory<T>,
         children: Vec<Extension>,
     ) -> Result<(), RegistryError> {
+        self.replace_factory(&owner.item, children)
+    }
+
+    fn replace_factory(
+        &mut self,
+        owner: &FactoryItem,
+        children: Vec<Extension>,
+    ) -> Result<(), RegistryError> {
         if self.disposed {
             return Err(RegistryError::Disposed);
         }
-        let key = owner.item.key();
+        let key = owner.key();
         let mounted = self.mounted.get(&key).ok_or(RegistryError::Unmounted)?;
-        if mounted.instance.definition.0.exports != owner.item.0.exports {
+        if mounted.instance.definition.0.exports != owner.0.exports {
             return Err(RegistryError::RetainedFactoryChanged(
                 mounted.instance.origin.clone(),
             ));
         }
         self.reconcile(self.roots.clone(), Some((key, children)))
+    }
+
+    pub(crate) fn replace_scoped(
+        &mut self,
+        slot: &ScopedSlot,
+        children: Vec<Extension>,
+    ) -> Result<(), RegistryError> {
+        if !Weak::ptr_eq(&slot.published, &Rc::downgrade(&self.published)) {
+            return Err(RegistryError::WrongRegistry);
+        }
+        let owner = self
+            .mounted
+            .get(&slot.owner)
+            .filter(|owner| Weak::ptr_eq(&slot.lifetime, &Rc::downgrade(&owner.instance.lifetime)))
+            .ok_or(RegistryError::ScopeExpired)?;
+        let target = FactoryItem(slot.target.upgrade().ok_or(RegistryError::SlotNotOwned)?);
+        let key = target.key();
+        if !owner
+            .children
+            .iter()
+            .any(|item| item.contains_direct_factory(&key))
+        {
+            return Err(RegistryError::SlotNotOwned);
+        }
+        self.replace_factory(&target, children)
     }
 
     pub fn dispose(&mut self) -> Result<(), RegistryError> {
@@ -613,15 +659,19 @@ impl Draft {
                         .map_or_else(|| path.to_string(), str::to_owned),
                     path: path.clone(),
                 };
+                let lifetime = Rc::new(());
                 let scope = Scope {
                     origin: origin.clone(),
                     published: Rc::downgrade(&registry.published),
+                    owner: key.clone(),
+                    lifetime: Rc::downgrade(&lifetime),
                 };
                 let instance = (factory.0.create)(&self.exports, scope)?;
                 self.created.push(key.clone());
                 Mounted {
                     children: instance.children,
                     instance: Rc::new(RuntimeInstance {
+                        lifetime,
                         definition: factory,
                         dependencies,
                         exports: instance.exports,

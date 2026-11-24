@@ -10,9 +10,10 @@ cargo run --manifest-path packages/plankton-rust/Cargo.toml --example document_w
 ```
 
 The editor receives the document's title signal at construction and contributes
-the title to the panel list. A single subscriber prints the list after a
-document edit and again after the sidebar is replaced. The editor and document
-stay mounted through both changes. See the [example](examples/document_workspace.rs).
+the title to the panel list. A subscriber prints updates after document edits,
+sidebar replacement, and outline plugin toggles. The plugin can turn its
+outline off, let the document change, and restore the outline for the current
+title. See the [example](examples/document_workspace.rs).
 
 ## Contracts
 
@@ -62,6 +63,19 @@ fails, writes to shared signals still take effect and subscribers read the
 previously published graph. Facet sources and combiners should remain pure.
 Subscriptions installed by an instance can be dropped in its startup cleanup.
 
+## Scoped slots
+
+A factory can call `scope.slot(initial_children)` during construction. It
+installs the returned extension among its own children and can share the
+`ScopedSlot` handle through a service. The workspace plugin installs its
+controller alongside the slot, so toggling the outline leaves the controller
+available.
+
+The controller passes `&mut Registry` when it calls `ScopedSlot::replace`. The
+handle is tied to the registry and acquired instance that created it. It works
+while that instance owns the slot as a direct child, including through a static
+group. Removing and reacquiring the owner invalidates the old handle.
+
 ## Ownership and lifecycle
 
 A constructor declares a concrete dependency with `factory.dependency("name")`.
@@ -88,6 +102,7 @@ run at removal. Keep resources that need a deterministic shutdown boundary
 behind an explicit cleanup hook. Lifecycle failure reporting covers errors
 returned from hooks. Panics follow ordinary Rust unwinding.
 
-This prototype uses a single-threaded registry and synchronous hooks. Slots are
-available for composing toggles. The TypeScript plugin controller, service
-facade, and async cleanup are outside this prototype's scope.
+This prototype uses a single-threaded registry and synchronous hooks. Plugins
+can compose a controller from a scoped slot and a service. The reusable
+TypeScript plugin helper, service facade, and async cleanup are outside this
+prototype's scope.

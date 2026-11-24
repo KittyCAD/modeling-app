@@ -7,8 +7,8 @@ use std::{
 };
 
 use crate::{
-    Binding, Facet, Observation, Origin, RegistryError, Resolution, Service, contract::Providers,
-    registry::Published,
+    Binding, Facet, Observation, Origin, Registry, RegistryError, Resolution, Service,
+    contract::Providers, registry::Published,
 };
 
 pub type HookError = Box<dyn Error>;
@@ -60,14 +60,30 @@ impl<T> Instance<T> {
     }
 }
 
-/// Constructor access to provenance and live observations. Observations can be
-/// captured during creation and first read after publication.
+/// Constructor access to provenance, observations, and owned slots.
+/// Observations can be captured during creation and first read after publication.
 pub struct Scope {
     pub origin: Origin,
     pub(crate) published: Weak<Published>,
+    pub(crate) owner: FactoryKey,
+    pub(crate) lifetime: Weak<()>,
 }
 
 impl Scope {
+    /// Create a slot and an owned handle that can replace its contents.
+    /// Include the returned extension among this instance's children.
+    pub fn slot(&self, children: Vec<Extension>) -> (Extension, ScopedSlot) {
+        let factory = slot(children);
+        let extension = factory.clone().into();
+        let handle = ScopedSlot {
+            published: self.published.clone(),
+            owner: self.owner.clone(),
+            lifetime: self.lifetime.clone(),
+            target: Rc::downgrade(&factory.item.0),
+        };
+        (extension, handle)
+    }
+
     pub fn observe<F: Facet>(&self) -> Observation<F::Output> {
         Observation::for_facet::<F>(self.published.clone())
     }
@@ -77,9 +93,41 @@ impl Scope {
     }
 }
 
+/// Replacement access to a slot installed by one acquired instance.
+#[derive(Clone)]
+pub struct ScopedSlot {
+    pub(crate) published: Weak<Published>,
+    pub(crate) owner: FactoryKey,
+    pub(crate) lifetime: Weak<()>,
+    pub(crate) target: Weak<Definition>,
+}
+
+impl ScopedSlot {
+    /// Replace the slot's children using the Registry that acquired its owner.
+    pub fn replace(
+        &self,
+        registry: &mut Registry,
+        children: Vec<Extension>,
+    ) -> Result<(), RegistryError> {
+        registry.replace_scoped(self, children)
+    }
+}
+
 /// A binding, a factory, or a static group of extensions.
 #[derive(Clone)]
 pub struct Extension(pub(crate) ExtensionKind);
+
+impl Extension {
+    pub(crate) fn contains_direct_factory(&self, key: &FactoryKey) -> bool {
+        match &self.0 {
+            ExtensionKind::Factory(factory) => factory.key() == *key,
+            ExtensionKind::Group(items) => {
+                items.iter().any(|item| item.contains_direct_factory(key))
+            }
+            ExtensionKind::Binding(_) => false,
+        }
+    }
+}
 
 #[derive(Clone)]
 pub(crate) enum ExtensionKind {

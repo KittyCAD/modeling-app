@@ -10,7 +10,9 @@ pub use contract::{
     Binding, BindingOptions, ContributionInfo, Facet, Precedence, Resolution, Service,
     ServiceResolutionError, Snapshot, Source,
 };
-pub use factory::{Dependencies, Extension, Factory, HookError, HookResult, Instance, Scope, slot};
+pub use factory::{
+    Dependencies, Extension, Factory, HookError, HookResult, Instance, Scope, ScopedSlot, slot,
+};
 pub use registry::{
     HookFailure, HookPhase, ItemPath, Observation, ObservationError, Origin, PathStep, Registry,
     RegistryError,
