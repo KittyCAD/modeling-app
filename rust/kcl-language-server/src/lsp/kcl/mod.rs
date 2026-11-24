@@ -2037,6 +2037,123 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    async fn document_edits_release_previous_execution_memory() {
+        let server = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let ctx = server.executor_ctx().await.as_ref().unwrap().clone();
+        let mut baseline = None;
+        for position in 0..12 {
+            let text = format!(
+                "@settings(kclVersion = 3.0)\nsketch001 = sketch(on = XY) {{\n\
+                 point1 = point(at = [var 1mm, var 2mm])\n\
+                 point2 = point(at = [var 3mm, var 2mm])\n\
+                 distance([point1, point2], labelPosition = [{position}mm, 11mm]) == 2mm\n}}\n"
+            );
+            server
+                .inner_on_change(
+                    TextDocumentItem {
+                        uri: "file:///drag.kcl".parse().unwrap(),
+                        language_id: "kcl".to_owned(),
+                        version: position,
+                        text,
+                    },
+                    false,
+                )
+                .await;
+            let diagnostics = server.diagnostics_map.get("file:///drag.kcl");
+            assert!(
+                diagnostics.as_ref().is_none_or(|items| items
+                    .iter()
+                    .all(|item| item.severity != Some(DiagnosticSeverity::ERROR))),
+                "{diagnostics:?}"
+            );
+            let retained = crate::execution::cache::retained_environment_count(&ctx.cache)
+                .await
+                .unwrap();
+            let baseline = *baseline.get_or_insert(retained);
+            assert_eq!(
+                retained, baseline,
+                "previous label positions remain in memory after edit {position}"
+            );
+        }
+        ctx.close().await;
+    }
+
+    #[tokio::test]
+    async fn document_edits_replace_cached_values_and_recover_after_errors() {
+        let server = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let initial = Program::parse_no_errs("@settings(kclVersion = 3.0)\nremoved = 2\nanswer = removed\n").unwrap();
+        server.execute(&initial).await.unwrap();
+        assert_eq!(
+            with_cached_var(&server, "answer", KclValue::value_str).await,
+            Some(Some("2".to_owned()))
+        );
+
+        let invalid = Program::parse_no_errs("@settings(kclVersion = 3.0)\nanswer = removed\n").unwrap();
+        let error = server.execute(&invalid).await.unwrap_err();
+        assert!(error.error.message().contains("not defined"), "{error:?}");
+
+        let recovered =
+            Program::parse_no_errs("@settings(kclVersion = 3.0)\nfn value() { return 7 }\nanswer = value()\n").unwrap();
+        server.execute(&recovered).await.unwrap();
+        assert_eq!(
+            with_cached_var(&server, "answer", KclValue::value_str).await,
+            Some(Some("7".to_owned()))
+        );
+        assert!(with_cached_var(&server, "removed", |_| ()).await.is_none());
+        server.executor_ctx().await.as_ref().unwrap().close().await;
+    }
+
+    #[tokio::test]
+    async fn document_edits_keep_imports_functions_and_hover_values_current() {
+        let server = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let project_directory =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../kcl-lib/tests/import_constant");
+        let path = project_directory.join("hover.kcl");
+        let uri = url::Url::from_file_path(&path).unwrap();
+        let ctx = crate::execution::ExecutorContext::new_mock(Some(kcl_lib::ExecutorSettings {
+            project_directory: Some(kcl_lib::TypedPath(project_directory)),
+            current_file: Some(kcl_lib::TypedPath(path)),
+            ..Default::default()
+        }))
+        .await;
+        *server.executor_ctx.write().await = Some(ctx.clone());
+        for (version, offset) in [4, 8].into_iter().enumerate() {
+            let text = format!(
+                "@settings(kclVersion = 3.0)\nimport three from \"export_constant.kcl\"\nfn value() {{ return three + {offset} }}\nanswer = value()\nanswer\n"
+            );
+            server
+                .did_open(DidOpenTextDocumentParams {
+                    text_document: TextDocumentItem {
+                        uri: uri.clone(),
+                        language_id: "kcl".to_owned(),
+                        version: version as i32,
+                        text,
+                    },
+                })
+                .await;
+            let hover = server
+                .hover(HoverParams {
+                    text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                        text_document: tower_lsp::lsp_types::TextDocumentIdentifier { uri: uri.clone() },
+                        position: Position::new(4, 1),
+                    },
+                    work_done_progress_params: Default::default(),
+                })
+                .await
+                .unwrap()
+                .unwrap();
+            let HoverContents::Markup(contents) = hover.contents else {
+                panic!("expected a value hover")
+            };
+            assert!(
+                contents.value.contains(&format!("answer: number = {}", offset + 3)),
+                "{contents:?}"
+            );
+        }
+        ctx.close().await;
+    }
+
+    #[tokio::test]
     async fn cached_variables_are_scoped_to_the_backend_session() {
         let a = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
         let b = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
