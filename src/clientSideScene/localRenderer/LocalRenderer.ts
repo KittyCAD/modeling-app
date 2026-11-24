@@ -282,6 +282,13 @@ export class LocalRenderer {
   // HOOPS (map_topology_uuids only restores edges and faces). Once the GLB has
   // them, this can go and faces can be matched to their body by that UUID.
   private readonly bodyFacesById = new Map<string, Mesh[]>()
+  private bodySelectionRestore:
+    | {
+        model: Object3D
+        execution: number
+        promise: Promise<void>
+      }
+    | undefined
   private hoveredTarget: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
@@ -331,6 +338,8 @@ export class LocalRenderer {
       host.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
       () => dprDetector.dispose()
     )
+    // Remounting the renderer must project the selection already held by its scene.
+    void this.syncSelectionFromEngine().catch(reportRejection)
     void this.initialize().catch(this.handleInitializationError)
   }
 
@@ -379,6 +388,59 @@ export class LocalRenderer {
   // All the meshes of the target's body, or just the target if it isn't on a body.
   private getBodyFaces(target: Mesh) {
     return this.facesByBodyMesh.get(target.userData.bodyMeshIndex) ?? [target]
+  }
+
+  /** A remounted renderer has mesh groups but none of the body IDs learned by the old picker. */
+  private restoreSelectedBodies(): Promise<void> {
+    const model = this.currentModel
+    const execution = this.executionVersion
+    const unresolved = () =>
+      this.selectedEntityIds.some(
+        (id) =>
+          !this.bodyFacesById.has(id) &&
+          !this.targetsByEntityId.has(id) &&
+          !this.gpu?.planeRenderer.planes.has(id)
+      )
+    if (
+      !model ||
+      this.disposed ||
+      this.host.executing.peek() ||
+      !this.isLoadedSceneCurrent() ||
+      !unresolved()
+    )
+      return Promise.resolve()
+    const previous = this.bodySelectionRestore
+    if (previous?.model === model && previous.execution === execution)
+      return previous.promise
+    const current = () =>
+      !this.disposed &&
+      this.currentModel === model &&
+      this.executionVersion === execution
+    const restore = async () => {
+      // One face identifies its whole exported body. Cache every resolved group,
+      // including groups traversed before reaching the selected body.
+      for (const faces of [...this.facesByBodyMesh.values()]) {
+        if (!current() || !unresolved()) break
+        const faceId: unknown = faces[0]?.userData.faceUuid
+        if (typeof faceId !== 'string') continue
+        const reference = await this.getEngineEntityReference(faceId)
+        if (!current()) return
+        if (
+          reference?.type === 'face' &&
+          reference.topology_fallback?.parent_id
+        )
+          this.bodyFacesById.set(reference.topology_fallback.parent_id, faces)
+      }
+      if (current()) this.updateSelection()
+    }
+    const restoring = { model, execution, promise: restore() }
+    this.bodySelectionRestore = restoring
+    const clear = () => {
+      if (this.bodySelectionRestore === restoring)
+        this.bodySelectionRestore = undefined
+    }
+    void restoring.promise.then(clear, clear)
+    return restoring.promise
   }
 
   private updateSelection() {
@@ -465,6 +527,7 @@ export class LocalRenderer {
     ])
     this.clearHover()
     this.updateSelection()
+    void this.restoreSelectedBodies().catch(reportRejection)
   }
 
   // Decides if the target can be selected by the currently set filter.
@@ -562,6 +625,7 @@ export class LocalRenderer {
       if (modelingResponse.type === 'select_get') {
         this.selectedEntityIds = modelingResponse.data.entity_ids
         this.updateSelection()
+        await this.restoreSelectedBodies()
       }
     }
   }
@@ -1565,6 +1629,7 @@ export class LocalRenderer {
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       toast.dismiss(MODEL_LOAD_ERROR_TOAST_ID)
+      void this.restoreSelectedBodies().catch(reportRejection)
       this.onModelLoadSettled?.(true)
       const model = gltf.scene
       const isModelCurrent = () => !this.disposed && this.currentModel === model
