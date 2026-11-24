@@ -13,6 +13,7 @@ export type OPFSWorkerRequest =
       id: number
       type: 'read-file'
       targetPath: string
+      maxBytes?: number
     }
 
 export type OPFSWorkerResponse =
@@ -97,7 +98,8 @@ const writeFile = async (
 }
 
 const readFile = async (
-  targetPath: string
+  targetPath: string,
+  maxBytes?: number
 ): Promise<Uint8Array<ArrayBuffer>> => {
   const handle = await walk(targetPath)
   if (!handle) return Promise.reject('ENOENT')
@@ -115,7 +117,10 @@ const readFile = async (
     return Promise.reject('OPFS_READ_UNSUPPORTED')
   const access = await create.call(handle)
   try {
-    const data = new Uint8Array(access.getSize())
+    const size = access.getSize()
+    if (maxBytes !== undefined && size > maxBytes)
+      return Promise.reject('EFBIG')
+    const data = new Uint8Array(size)
     let offset = 0
     while (offset < data.byteLength) {
       const count = access.read(data.subarray(offset), { at: offset })
@@ -134,7 +139,7 @@ self.onmessage = (event: MessageEvent<OPFSWorkerRequest>) => {
   const result =
     request.type === 'write-file'
       ? writeFile(targetPath, request.data)
-      : readFile(targetPath)
+      : readFile(targetPath, request.maxBytes)
 
   void result
     .then((data) => {

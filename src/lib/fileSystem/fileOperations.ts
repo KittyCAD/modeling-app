@@ -10,6 +10,7 @@ import {
 } from '@src/lib/fileSystem/fileNames'
 import {
   type FileStat,
+  type ReadFileOptions,
   type StatOptions,
   FileSystem,
   type FileSystemError,
@@ -98,7 +99,8 @@ export interface FileOperationsService {
   ) => Effect.Effect<readonly string[], FileSystemError>
   /** Read one complete version of a file coordinated with path mutations. */
   readonly readFile: (
-    path: string
+    path: string,
+    options?: ReadFileOptions
   ) => Effect.Effect<Uint8Array, FileSystemError>
   readonly copy: (
     source: string,
@@ -518,7 +520,8 @@ const makeFileOperations = (
       exists: (path) => coordinateRead(path, fileSystem.exists(path)),
       readDirectory: (path) =>
         coordinateDirectoryRead(path, fileSystem.readDirectory(path)),
-      readFile: (path) => coordinateRead(path, fileSystem.readFile(path)),
+      readFile: (path, options) =>
+        coordinateRead(path, fileSystem.readFile(path, options)),
       copy: (source, destination, options) =>
         coordinateMutation(
           [source, destination],
@@ -628,8 +631,10 @@ export const readDirectory = (path: string) =>
     Effect.flatMap((operations) => operations.readDirectory(path))
   )
 
-export const readFile = (path: string) =>
-  FileOperations.pipe(Effect.flatMap((operations) => operations.readFile(path)))
+export const readFile = (path: string, options?: ReadFileOptions) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.readFile(path, options))
+  )
 
 export const copy = (
   source: string,
@@ -717,6 +722,7 @@ export {
   FileOperationUnsupported,
   FilePermissionDenied,
   type FileStat,
+  type ReadFileOptions,
   type StatOptions,
   type FileSystemError,
   type FileSystemOperation,

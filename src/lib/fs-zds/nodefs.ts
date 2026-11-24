@@ -2,6 +2,7 @@
 // This is primarily used for unit tests.
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import noopfs from '@src/lib/fs-zds/noopfs'
+import { readFileBounded } from '@src/lib/fs-zds/readFileBounded'
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -30,6 +31,7 @@ if (typeof process !== 'undefined' && process.title !== 'browser') {
     access: fs.access,
     cp: fs.cp,
     readFile: fs.readFile,
+    readFileBounded,
     rename: fs.rename,
     writeFile: fs.writeFile,
     readdir: fs.readdir,

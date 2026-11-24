@@ -97,7 +97,7 @@ export function createMountedFileOperations(
     canReadWrite: (path) => find(path).canReadWrite(path),
     exists: (path) => find(path).exists(path),
     readDirectory: (path) => find(path).readDirectory(path),
-    readFile: (path) => find(path).readFile(path),
+    readFile: (path, options) => find(path).readFile(path, options),
     writeFile: (path, contents) => find(path).writeFile(path, contents),
     createFile: (path, contents) => find(path).createFile(path, contents),
     createUniqueFile: (parent, name, contents) =>

@@ -13,6 +13,11 @@ export interface StatOptions {
   readonly readOnly?: boolean
 }
 
+export interface ReadFileOptions {
+  /** Reject non-regular files and files larger than this byte count. */
+  readonly maxBytes: number
+}
+
 /** File replacement policy supported by every filesystem backing. */
 export interface WriteFileOptions {
   readonly flag?: 'w' | 'wx'
@@ -70,6 +75,7 @@ export interface IZooDesignStudioFS {
     ((src: string, options: 'utf8') => Promise<string>) &
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     ((src: string, options?: {}) => Promise<Uint8Array>)
+  readFileBounded?: (path: string, maxBytes: number) => Promise<Uint8Array>
   rename: (
     src: string,
     dest: string,

@@ -5,6 +5,7 @@ const fsPromisesMock = vi.hoisted(() => ({
   rename: vi.fn(),
   stat: vi.fn(),
   lstat: vi.fn(),
+  open: vi.fn(),
   mkdir: vi.fn(),
   cp: vi.fn(),
   rm: vi.fn(),
@@ -46,11 +47,15 @@ vi.mock('chokidar', () => ({
 
 import { move, openExternal } from '@src/preload'
 
-describe('filesystem stat bridge', () => {
+describe('filesystem bridge', () => {
   // Capture the exposed API before other suites clear mock call history.
   const api = exposeInMainWorldMock.mock.calls.find(
     ([name]) => name === 'electron'
   )![1] as NonNullable<typeof window.electron>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('can inspect a link without following its target', async () => {
     const link = { mode: 0xa000 }
@@ -59,6 +64,35 @@ describe('filesystem stat bridge', () => {
       api.stat('/project/link', { followSymlinks: false })
     ).resolves.toBe(link)
     expect(fsPromisesMock.lstat).toHaveBeenCalledWith('/project/link')
+  })
+
+  it('rejects a special entry before opening it', async () => {
+    fsPromisesMock.lstat.mockResolvedValueOnce({ isFile: () => false })
+
+    await expect(api.readFileBounded('/project/pipe', 3)).rejects.toBe('EINVAL')
+    expect(fsPromisesMock.open).not.toHaveBeenCalled()
+  })
+
+  it('caps reads when the file grows after stat and closes the handle', async () => {
+    const close = vi.fn().mockResolvedValue(undefined)
+    const read = vi.fn().mockResolvedValue({ bytesRead: 4 })
+    fsPromisesMock.lstat.mockResolvedValueOnce({ isFile: () => true })
+    fsPromisesMock.open.mockResolvedValueOnce({
+      stat: async () => ({ isFile: () => true, size: 3 }),
+      read,
+      close,
+    })
+
+    await expect(api.readFileBounded('/project/large.kcl', 3)).rejects.toBe(
+      'EFBIG'
+    )
+    expect(read).toHaveBeenCalledExactlyOnceWith(
+      expect.any(Uint8Array),
+      0,
+      4,
+      0
+    )
+    expect(close).toHaveBeenCalledOnce()
   })
 })
 

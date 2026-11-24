@@ -1,6 +1,6 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
-import type { FileStat } from '@src/lib/fileSystem/fileOperations'
+import { FileNotFound, type FileStat } from '@src/lib/fileSystem/fileOperations'
 import {
   appendGitignoreForDirectoryWithFs,
   createInitialGitignoreStackWithFs,
@@ -21,6 +21,7 @@ const READ_CHARS = 8_000
 const MAX_LIST_PAGE_BYTES = 32 * 1024
 const MAX_DEPTH = 16
 const READ_STAT_OPTIONS = { followSymlinks: false, readOnly: true } as const
+const READ_FILE_OPTIONS = { maxBytes: MAX_FILE_BYTES }
 
 class ProjectReferenceCommandError extends Error {}
 
@@ -167,14 +168,17 @@ export function createProjectReferenceCommands(deps: {
   const projectKeys = new Map<string, string>()
   const revision = 1
   let activeSocket: WebSocket | undefined
-  const gitignoreFs = fileOperationsGitignoreFs({
-    async readFile(path) {
-      const stat = await deps.fileOperations.stat(path, READ_STAT_OPTIONS)
-      return stat.kind === 'file' && stat.size > 0
-        ? deps.fileOperations.readFile(path)
-        : new Uint8Array()
-    },
-  })
+  const gitignoreFs = {
+    ...fileOperationsGitignoreFs({
+      async readFile(path) {
+        const stat = await deps.fileOperations.stat(path, READ_STAT_OPTIONS)
+        return stat.kind === 'file' && stat.size > 0
+          ? deps.fileOperations.readFile(path, READ_FILE_OPTIONS)
+          : new Uint8Array()
+      },
+    }),
+    ignoreReadError: (error: unknown) => error instanceof FileNotFound,
+  }
 
   function sendCatalog(ws: WebSocket, advertisedCommands: readonly unknown[]) {
     ws.send(
@@ -229,9 +233,14 @@ export function createProjectReferenceCommands(deps: {
         projectIds.set(entry.id, projectId)
         projectKeys.set(projectId, entry.id)
       }
+      const displayName = getHomeProjectDisplayName(entry)
+      const nameLimit = 300
+      const splitsCharacter =
+        isHighSurrogate(displayName.charCodeAt(nameLimit - 1)) &&
+        isLowSurrogate(displayName.charCodeAt(nameLimit))
       return {
         project_id: projectId,
-        name: getHomeProjectDisplayName(entry).slice(0, 300),
+        name: displayName.slice(0, splitsCharacter ? nameLimit - 1 : nameLimit),
         source: 'local',
         status: entry.status,
       }
@@ -432,12 +441,10 @@ export function createProjectReferenceCommands(deps: {
         new ProjectReferenceCommandError('File is not a supported text file.')
       )
     }
-    const bytes = await deps.fileOperations.readFile(absolute)
-    if (bytes.byteLength > MAX_FILE_BYTES) {
-      return Promise.reject(
-        new ProjectReferenceCommandError('File is too large to reference.')
-      )
-    }
+    const bytes = await deps.fileOperations.readFile(
+      absolute,
+      READ_FILE_OPTIONS
+    )
     const digest = await crypto.subtle.digest(
       'SHA-256',
       new Uint8Array(bytes).buffer
@@ -519,6 +526,12 @@ export function createProjectReferenceCommands(deps: {
         return true
       }
       const apiToken = deps.getApiToken()
+      const projectId = request.arguments.project_id
+      const projectPath =
+        request.command_id === 'projects.list_files' ||
+        request.command_id === 'projects.read_file'
+          ? resolveProject(projectId)?.localProjectPath
+          : undefined
       const task = execute(request)
       void task.then(
         (result) => {
@@ -528,14 +541,23 @@ export function createProjectReferenceCommands(deps: {
           ) {
             return
           }
+          let error: string | undefined
           if (apiToken !== deps.getApiToken()) {
+            error = 'The account changed. Search again.'
+          } else if (
+            projectPath !== undefined &&
+            resolveProject(projectId)?.localProjectPath !== projectPath
+          ) {
+            error = 'The library project changed. Search again.'
+          }
+          if (error) {
             ws.send(
               JSON.stringify({
                 type: 'client_command_response',
                 request_id: request.request_id,
                 catalog_revision: request.catalog_revision,
                 status: 'rejected',
-                error: 'The account changed. Search again.',
+                error,
               })
             )
             return

@@ -3,16 +3,21 @@ import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const workerRead = vi.hoisted(() =>
-  vi.fn<(path: string) => Promise<Uint8Array<ArrayBuffer>>>()
+  vi.fn<(path: string, maxBytes?: number) => Promise<Uint8Array<ArrayBuffer>>>()
 )
 
 vi.mock('@src/lib/fs-zds/opfsWorker.ts?worker&inline', () => ({
   default: class MockOPFSWorker {
     onmessage: ((event: MessageEvent<unknown>) => void) | null = null
 
-    postMessage(request: { id: number; type: string; targetPath: string }) {
+    postMessage(request: {
+      id: number
+      type: string
+      targetPath: string
+      maxBytes?: number
+    }) {
       if (request.type === 'read-file')
-        void workerRead(request.targetPath).then(
+        void workerRead(request.targetPath, request.maxBytes).then(
           (data) =>
             this.onmessage?.({
               data: { id: request.id, ok: true, data },
@@ -216,7 +221,7 @@ describe('opfs', () => {
     await opfs.impl.detach()
   })
 
-  test('waits for a writable stream to close before reading the same file', async () => {
+  test('waits for a writable stream to close before a bounded read', async () => {
     enableWriteLocks()
     const file = addProjectWithMeta('{"mtimeMs":1}').addFile(
       'main.kcl',
@@ -240,12 +245,13 @@ describe('opfs', () => {
     )
     await started.promise
     workerRead.mockClear()
-    const reading = opfs.impl.readFile(target, 'utf8')
+    const reading = opfs.impl.readFileBounded?.(target, 5)
     await Promise.resolve()
     expect(workerRead).not.toHaveBeenCalled()
     release.resolve(undefined)
     await writing
-    await expect(reading).resolves.toBe('after')
+    await expect(reading).resolves.toEqual(new TextEncoder().encode('after'))
+    expect(workerRead).toHaveBeenCalledExactlyOnceWith(target, 5)
   })
 
   test('propagates worker read failures', async () => {

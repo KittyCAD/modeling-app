@@ -175,6 +175,14 @@ export function createMemoryFileSystem(
       for (const [path, entry] of next) entries.set(path, entry)
     },
     readFile,
+    readFileBounded: async (path, maxBytes) => {
+      const data = get(path).data
+      if (!data) return Promise.reject(error('EISDIR', path))
+      if (data.byteLength > maxBytes) {
+        return Promise.reject(error('EFBIG', path))
+      }
+      return new Uint8Array(data)
+    },
     writeFile,
     mkdir,
     rm,

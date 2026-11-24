@@ -101,17 +101,24 @@ const writeFileViaWorker = (
 }
 
 const readFileViaWorker = (
-  targetPath: string
+  targetPath: string,
+  maxBytes?: number
 ): Promise<Uint8Array<ArrayBuffer>> => {
   const worker = getOPFSWorker()
   const id = workerRequestId++
+  const request: OPFSWorkerRequest = {
+    id,
+    type: 'read-file',
+    targetPath,
+    maxBytes,
+  }
   return new Promise((resolve, reject) => {
     pendingWorkerRequests.set(id, {
       resolve: (data) =>
         data ? resolve(data) : reject(new Error('Missing OPFS read response')),
       reject,
     })
-    worker.postMessage({ id, type: 'read-file', targetPath })
+    worker.postMessage(request)
   })
 }
 
@@ -257,19 +264,26 @@ type ReadFileReturn<T> = T extends 'utf8' | { encoding: 'utf-8' }
   ? string
   : Uint8Array
 
+const readFileBytes = (
+  targetPath: string,
+  maxBytes?: number
+): Promise<Uint8Array<ArrayBuffer>> => {
+  // Sync access handles exclude writable streams too. Use the existing writer
+  // lock so metadata reads cannot race a write through Window.createWritable.
+  const read = () => readFileViaWorker(targetPath, maxBytes)
+  return navigator.locks
+    ? navigator.locks.request(
+        `zds-opfs-write:${path.resolve(targetPath)}`,
+        read
+      )
+    : read()
+}
+
 const readFile = async <T extends ReadFileOptions>(
   targetPath: string,
   options?: T
 ): Promise<ReadFileReturn<T>> => {
-  // Sync access handles exclude writable streams too. Use the existing writer
-  // lock so metadata reads cannot race a write through Window.createWritable.
-  const read = () => readFileViaWorker(targetPath)
-  const data = navigator.locks
-    ? await navigator.locks.request(
-        `zds-opfs-write:${path.resolve(targetPath)}`,
-        read
-      )
-    : await read()
+  const data = await readFileBytes(targetPath)
   return (
     options === 'utf8' || options?.encoding === 'utf-8'
       ? new TextDecoder().decode(data)
@@ -562,6 +576,7 @@ const impl: IZooDesignStudioFS = {
   access,
   cp,
   readFile,
+  readFileBounded: readFileBytes,
   rename,
   writeFile,
   readdir,

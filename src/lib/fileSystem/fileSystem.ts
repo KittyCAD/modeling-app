@@ -2,6 +2,7 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type {
   IStat as BackingFileStat,
   IZooDesignStudioFS,
+  ReadFileOptions,
   StatOptions,
 } from '@src/lib/fs-zds/interface'
 import * as Context from 'effect/Context'
@@ -10,7 +11,7 @@ import * as Effect from 'effect/Effect'
 import * as Layer from 'effect/Layer'
 
 export type FileKind = 'file' | 'directory' | 'symlink'
-export type { StatOptions } from '@src/lib/fs-zds/interface'
+export type { ReadFileOptions, StatOptions } from '@src/lib/fs-zds/interface'
 
 declare const ownedFileContentsBrand: unique symbol
 
@@ -114,7 +115,8 @@ export interface FileSystemService {
     path: string
   ) => Effect.Effect<readonly string[], FileSystemError>
   readonly readFile: (
-    path: string
+    path: string,
+    options?: ReadFileOptions
   ) => Effect.Effect<Uint8Array, FileSystemError>
   readonly copy: (
     source: string,
@@ -271,8 +273,17 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
       Effect.catchTag('FilePermissionDenied', () => Effect.succeed(false))
     )
 
-  const readFile = (path: string) =>
-    tryBacking('read-file', path, () => backing.readFile(path))
+  const readFile = (path: string, options?: ReadFileOptions) =>
+    tryBacking('read-file', path, () => {
+      if (!options) return backing.readFile(path)
+      if (!Number.isSafeInteger(options.maxBytes) || options.maxBytes < 0) {
+        return Promise.reject('EINVAL')
+      }
+      return (
+        backing.readFileBounded?.(path, options.maxBytes) ??
+        Promise.reject('ENOTSUP')
+      )
+    })
 
   const makeDirectory = (path: string) =>
     tryBacking('create-directory', path, () =>
@@ -356,8 +367,10 @@ export const readDirectory = (path: string) =>
     Effect.flatMap((fileSystem) => fileSystem.readDirectory(path))
   )
 
-export const readFile = (path: string) =>
-  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.readFile(path)))
+export const readFile = (path: string, options?: ReadFileOptions) =>
+  FileSystem.pipe(
+    Effect.flatMap((fileSystem) => fileSystem.readFile(path, options))
+  )
 
 export const copy = (
   source: string,

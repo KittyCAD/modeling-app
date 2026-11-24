@@ -97,8 +97,8 @@ export function createFileOperationsScheduler(
     exists: (path) => runFileOperationsPromise('exists', existsOperation(path)),
     readDirectory: (path) =>
       runFileOperationsPromise('read-directory', readDirectoryOperation(path)),
-    readFile: (path) =>
-      runFileOperationsPromise('read-file', readFileOperation(path)),
+    readFile: (path, options) =>
+      runFileOperationsPromise('read-file', readFileOperation(path, options)),
     copy: (source, destination, options) =>
       runFileOperationsPromise(
         'copy',

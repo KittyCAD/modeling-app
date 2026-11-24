@@ -218,6 +218,26 @@ describe('Zookeeper project reference commands', () => {
     })
   })
 
+  it('rejects an in-flight file read after the project leaves the library', async () => {
+    const { entries, readFile, request } = fixture()
+    const projectId = await searchProjectId(request, 'TRUCK')
+    const delayedRead = Promise.withResolvers<Uint8Array<ArrayBuffer>>()
+    readFile.mockReturnValueOnce(delayedRead.promise)
+
+    const read = request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    await vi.waitFor(() => expect(readFile).toHaveBeenCalledOnce())
+    entries.value = [cloudProject]
+    delayedRead.resolve(new TextEncoder().encode('wheel = circle(10)'))
+
+    expect(await read).toMatchObject({
+      status: 'rejected',
+      error: 'The library project changed. Search again.',
+    })
+  })
+
   it('ignores requests and in-flight results from an earlier socket', async () => {
     const { commands, entries, readDirectory, request, sent, stat, ws } =
       fixture()
@@ -295,6 +315,19 @@ describe('Zookeeper project reference commands', () => {
     expect(second.result?.next_offset).toBeNull()
   })
 
+  it('truncates a project title before a character split by the limit', async () => {
+    const prefix = 'x'.repeat(299)
+    const { request } = fixture({
+      initialEntries: [{ ...localProject, name: `${prefix}😀` }],
+    })
+
+    const response = await request('projects.search', { query: '' })
+
+    expect(response.result?.projects).toEqual([
+      expect.objectContaining({ name: prefix }),
+    ])
+  })
+
   it('lists and reads nested KCL without opening or writing the source', async () => {
     const { fileOperations, readFile, request } = fixture()
     const absolutePath = '/private/library/TRUCK/parts/wheel.kcl'
@@ -314,7 +347,9 @@ describe('Zookeeper project reference commands', () => {
       path: 'parts/wheel.kcl',
     })
     expect(read.result?.content).toBe(content)
-    expect(readFile).toHaveBeenCalledWith(absolutePath)
+    expect(readFile).toHaveBeenCalledWith(absolutePath, {
+      maxBytes: 256 * 1024,
+    })
     expect(fileOperations.stat).toHaveBeenCalledWith(absolutePath, {
       followSymlinks: false,
       readOnly: true,
@@ -356,8 +391,34 @@ describe('Zookeeper project reference commands', () => {
         path,
       })
       expect(read.status).toBe('rejected')
-      expect(readFile).not.toHaveBeenCalledWith(`${root}/${path}`)
+      expect(readFile.mock.calls.map(([filePath]) => filePath)).not.toContain(
+        `${root}/${path}`
+      )
     }
+  })
+
+  it('rejects listing and direct reads when the bounded rules read fails', async () => {
+    const ignorePath = '/private/library/TRUCK/.gitignore'
+    const { readFile, request } = fixture({
+      gitignoreFiles: { [ignorePath]: '/main.kcl\n' },
+    })
+    readFile.mockRejectedValue(new Error('EFBIG'))
+    const projectId = await searchProjectId(request, 'TRUCK')
+
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+
+    expect(listing.status).toBe('rejected')
+    expect(read.status).toBe('rejected')
+    expect(readFile.mock.calls).toEqual([
+      [ignorePath, { maxBytes: 256 * 1024 }],
+      [ignorePath, { maxBytes: 256 * 1024 }],
+    ])
   })
 
   it('rejects traversal, hidden files, and a project removed from the library', async () => {
