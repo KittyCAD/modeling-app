@@ -199,6 +199,8 @@ function ProjectMenuPopover({
 }) {
   useSignals()
   const { machineManager, commands, settings } = app
+  const isExecuting =
+    app.projectSession.executingEditor.value?.isExecuting.value ?? false
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
@@ -252,6 +254,7 @@ function ProjectMenuPopover({
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
+      const exportModelDisabled = isExecuting || !findCommand(exportCommandInfo)
       const items: ProjectMenuItem[] = [
         {
           id: 'settings',
@@ -357,17 +360,19 @@ function ProjectMenuPopover({
               <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>
-              {!findCommand(exportCommandInfo) && (
+              {exportModelDisabled && (
                 <Tooltip
                   position="right"
                   wrapperClassName="!max-w-none min-w-fit"
                 >
-                  Awaiting engine connection
+                  {isExecuting
+                    ? 'Waiting for KCL execution'
+                    : 'Awaiting engine connection'}
                 </Tooltip>
               )}
             </>
           ),
-          disabled: !findCommand(exportCommandInfo),
+          disabled: exportModelDisabled,
           onClick: () => selectCommand(commands, exportCommandInfo),
         },
         {
@@ -467,6 +472,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      isExecuting,
       machineApiEnabled,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,

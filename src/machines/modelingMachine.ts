@@ -5065,10 +5065,17 @@ export const modelingMachine = setup({
 
         // Modeling actions
 
-        Export: {
-          target: 'Exporting',
-          guard: 'Has exportable geometry',
-        },
+        Export: [
+          {
+            guard: ({ context: { kclManager } }) => kclManager.isExecuting,
+            actions: () =>
+              toast.error('Wait for KCL execution to finish before exporting.'),
+          },
+          {
+            target: 'Exporting',
+            guard: 'Has exportable geometry',
+          },
+        ],
 
         Make: {
           target: 'Making',
