@@ -34,6 +34,21 @@ describe('PlaneRenderer default planes', () => {
     return { scene, planes, root: scene.children[0] }
   }
 
+  it('uses visible drawn bounds and zoom scaling for depth clipping', () => {
+    const { planes } = fixture()
+    planes.setDefaultVisibility({ xy: true, yz: false, xz: false })
+    const initial = planes.getDrawnBounds().getSize(new Vector3())
+    planes.updateScale(100000)
+    const zoomed = planes.getDrawnBounds().getSize(new Vector3())
+    expect(zoomed.x).toBeGreaterThan(initial.x)
+    expect(zoomed.z).toBeGreaterThan(initial.z)
+    // Hidden perpendicular planes must not inflate depth range for a flat view.
+    expect(zoomed.y).toBeLessThan(1e-8)
+    planes.setDefaultVisibility({ xy: false, yz: false, xz: false })
+    expect(planes.getDrawnBounds().isEmpty()).toBe(true)
+    planes.dispose()
+  })
+
   it('populates IDs when available and rekeys defaults without recreating their visuals', () => {
     const planes = new PlaneRenderer(Themes.Light)
     planes.updateDefaultPlanes(null)
@@ -43,10 +58,12 @@ describe('PlaneRenderer default planes', () => {
     planes.updateDefaultPlanes({ xy: 'xy-2', yz: 'yz-2', xz: 'xz-2' })
     expect([...planes.planes.keys()]).toEqual(['xy-2', 'yz-2', 'xz-2'])
     expect([...planes.planes.values()]).toEqual(originals)
-    expect(originals.map(({ mesh }) => mesh.name)).toEqual([
-      'xy-2',
-      'yz-2',
-      'xz-2',
+    expect(
+      originals.map(({ meshes }) => meshes.map(({ name }) => name))
+    ).toEqual([
+      Array(4).fill('xy-2'),
+      Array(4).fill('yz-2'),
+      Array(4).fill('xz-2'),
     ])
     planes.dispose()
   })
@@ -70,16 +87,16 @@ describe('PlaneRenderer default planes', () => {
     planes.setDefaultVisibility({ xy: false, yz: true, xz: true })
     planes.updateOffsetPlanes(new Map([['offset', offset]]))
     const oldOffset = planes.planes.get('offset')
-    expect(oldOffset?.mesh.geometry).toBe(defaults[0].mesh.geometry)
+    expect(oldOffset?.meshes[0].geometry).toBe(defaults[0].meshes[0].geometry)
     expect(oldOffset?.group.visible).toBe(true)
-    const dispose = vi.spyOn(defaults[0].mesh.geometry, 'dispose')
+    const dispose = vi.spyOn(defaults[0].meshes[0].geometry, 'dispose')
     planes.updateOffsetPlanes(new Map([['offset', offset]]))
     expect(planes.planes.get('offset')).not.toBe(oldOffset)
     expect(oldOffset?.group.parent).toBeNull()
     planes.updateOffsetPlanes(new Map())
     expect([...planes.planes.values()]).toEqual(defaults)
     expect(defaults[0].group.visible).toBe(false)
-    expect(defaults[0].group.children).toHaveLength(4)
+    expect(defaults[0].group.children).toHaveLength(7)
     expect(dispose).not.toHaveBeenCalled()
     planes.dispose()
     expect(dispose).toHaveBeenCalledOnce()
@@ -103,7 +120,7 @@ describe('PlaneRenderer default planes', () => {
     })
     expect(
       root.children.map((plane) =>
-        plane.children.slice(2).map((label) => label.name)
+        plane.children.slice(5).map((label) => label.name)
       )
     ).toEqual([
       ['XY', 'Top'],
@@ -127,7 +144,7 @@ describe('PlaneRenderer default planes', () => {
     ]
     root.children.forEach((plane, index) => {
       const fill = plane.children[0]
-      const border = plane.children[1]
+      const border = plane.children[4]
       expect(fill).toBeInstanceOf(Mesh)
       expect(border).toBeInstanceOf(LineSegments2)
       if (
@@ -150,7 +167,7 @@ describe('PlaneRenderer default planes', () => {
       expect(border.material.transparent).toBe(false)
       expect(border.material.depthTest).toBe(true)
       expect(border.material.depthWrite).toBe(true)
-      for (const label of plane.children.slice(2)) {
+      for (const label of plane.children.slice(5)) {
         if (!(label instanceof Mesh) || !(label.material instanceof Material))
           throw new Error('Missing plane label')
         expect(label.material.transparent).toBe(false)
@@ -185,6 +202,9 @@ describe('PlaneRenderer default planes', () => {
       'reference-planes',
       'YZ',
       'plane-yz',
+      'plane-yz',
+      'plane-yz',
+      'plane-yz',
       'YZ-border',
       'YZ',
       'Side',
@@ -206,12 +226,13 @@ describe('PlaneRenderer default planes', () => {
 
   it.each([
     [0.1, 0.000001],
-    [1, 0.00001],
-    [10, 0.0001],
-    [100, 0.001],
-    [1000, 0.01],
-    [10000, 0.1],
-    [100000, 1],
+    [1, 0.000003],
+    [10, 0.00003],
+    [100, 0.0003],
+    [300, 0.001],
+    [1000, 0.003],
+    [10000, 0.03],
+    [100000, 0.3],
   ])(
     'scales with camera distance %s mm without rebuilding geometry',
     (distance, scale) => {
@@ -242,7 +263,7 @@ describe('PlaneRenderer default planes', () => {
       }
       planes.updateScale(1000)
       root.updateMatrixWorld(true)
-      expect(root.children[0].getWorldScale(new Vector3()).x).toBe(0.01)
+      expect(root.children[0].getWorldScale(new Vector3()).x).toBe(0.003)
       planes.dispose()
     }
   )

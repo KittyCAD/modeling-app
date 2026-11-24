@@ -13,12 +13,11 @@ export const cloudProjectsExtension: Factory = defineFactory({
   dependencies: { auth: authObservations },
   key: 'cloud-projects-storage',
   create: ({ auth: authInputs }) => {
+    const auth = authInputs.authService.current
     const services = createCloudProjectsServices(fsZds, () => ({
       enabled: true,
-      token: authInputs.authService.current.value?.token.peek(),
-      accountId:
-        authInputs.authService.current.value?.user.peek()?.id ||
-        authInputs.authService.current.value?.token.peek(),
+      token: auth.value?.token.value,
+      accountId: auth.value?.user.value?.id || auth.value?.token.value,
     }))
     return {
       items: [

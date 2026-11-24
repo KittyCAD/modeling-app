@@ -43,9 +43,9 @@ export function withHomeProjectActionStatus(
       run(project, 'Deleting', () => actions.delete(project)),
     duplicate: (project) =>
       run(project, 'Duplicating', () => actions.duplicate(project)),
-    cloneToLibrary: (project, libraryId, options) =>
-      run(project, 'Cloning', () =>
-        actions.cloneToLibrary(project, libraryId, options)
+    duplicateToLibrary: (project, libraryId, options) =>
+      run(project, 'Duplicating', () =>
+        actions.duplicateToLibrary(project, libraryId, options)
       ),
     deleteDuplicateRealizations: (project, paths) =>
       run(project, 'Deleting', () =>

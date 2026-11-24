@@ -1,0 +1,22 @@
+// Local bindings in a sketch shadow solver exports. A return in a nested
+// ordinary function must leave the sketch running.
+
+line = 123
+parentValue = 5
+variableShadow = sketch(on = XY) {
+  line = 456
+  parentValue = 6
+  result = line + parentValue
+}
+functionShadow = sketch(on = XZ) {
+  fn line(start, end) {
+    return 789
+  }
+  result = line(start = [0mm, 0mm], end = [5mm, 0mm])
+  afterNestedReturn = 7
+}
+parentAfter = line + parentValue
+assert(variableShadow.result, isEqualTo = 462)
+assert(functionShadow.result, isEqualTo = 789)
+assert(functionShadow.afterNestedReturn, isEqualTo = 7)
+assert(parentAfter, isEqualTo = 128)

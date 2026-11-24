@@ -1,0 +1,13 @@
+// Call through a function to check that the interpreter rejects nested sketch
+// execution even when the sketch blocks are not nested in the source.
+
+fn nestedSketch() {
+  return sketch(on = XZ) {}
+}
+
+before = 17
+outer = sketch(on = XY) {
+  local = 18
+  inner = nestedSketch()
+}
+after = 99

@@ -138,6 +138,8 @@ class CameraFrame {
 }
 
 export class CameraControls {
+  private disposed = false
+  private readonly subscriptions: (() => void)[] = []
   engineCommandManager: ConnectionManager
   private _syncDirection: CameraSyncDirection = 'engineToClient'
   get syncDirection() {
@@ -496,26 +498,50 @@ export class CameraControls {
       this.notifyCameraSubscribers()
     }
 
-    this.engineCommandManager.subscribeTo({
-      event: 'camera_drag_end',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeToUnreliable({
-      event: 'default_camera_zoom',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeTo({
-      event: 'default_camera_get_settings',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeTo({
-      event: 'zoom_to_fit',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeToUnreliable({
-      event: 'camera_drag_move',
-      callback: cb,
-    })
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeTo({
+        event: 'camera_drag_end',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeToUnreliable({
+        event: 'default_camera_zoom',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeTo({
+        event: 'default_camera_get_settings',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeTo({
+        event: 'zoom_to_fit',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeToUnreliable({
+        event: 'camera_drag_move',
+        callback: cb,
+      })
+    )
+  }
+
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.cancelSketchCameraTransition()
+    this.cancelPendingUpdates()
+    this.domElement.removeEventListener('pointerdown', this.onMouseDown)
+    this.domElement.removeEventListener('pointermove', this.onMouseMove)
+    this.domElement.removeEventListener('pointerup', this.onMouseUp)
+    this.domElement.removeEventListener('wheel', this.onMouseWheel)
+    this.touchControlManager?.destroy()
+    this.touchControlManager = null
+    for (const unsubscribe of this.subscriptions.splice(0)) unsubscribe()
   }
 
   // This is only needed for local, streamed camera gets this from engine.
@@ -1194,6 +1220,11 @@ export class CameraControls {
     }
 
     return modelingResponse.data.view
+  }
+
+  /** Last synchronized pose, available even after the streamed connection has closed. */
+  snapshotCameraView(): CameraViewState {
+    return getLocalCameraView(this.camera, this.target, this.lastPerspectiveFov)
   }
 
   async setCameraView(view: CameraViewState): Promise<void> {

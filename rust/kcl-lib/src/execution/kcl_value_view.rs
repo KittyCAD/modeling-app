@@ -6,6 +6,8 @@ use crate::execution::Metadata;
 use crate::execution::TagIdentifier;
 use crate::execution::geometry as runtime;
 use crate::parsing::ast::types::TagNode;
+use crate::std::drawing::Sheet;
+use crate::std::drawing::SheetSize;
 
 fn json_view<T: Serialize>(value: &T) -> serde_json::Value {
     serde_json::to_value(value).unwrap_or(serde_json::Value::Null)
@@ -323,6 +325,28 @@ fn solid_view(solid: runtime::Solid) -> SolidView {
     }
 }
 
+fn sheet_view(sheet: &Sheet) -> SheetView {
+    let size = sheet.size();
+    let size_source = match size {
+        SheetSize::Standard { preset } => SheetSizeSourceView::Standard { preset: *preset },
+        SheetSize::Custom(_) => SheetSizeSourceView::Custom,
+    };
+    let (width, height) = sheet.dimensions();
+    SheetView {
+        size_source,
+        name: size.info().name.to_owned(),
+        orientation: sheet.orientation(),
+        width: NumericValueView {
+            n: width.n,
+            ty: width.ty,
+        },
+        height: NumericValueView {
+            n: height.n,
+            ty: height.ty,
+        },
+    }
+}
+
 impl From<KclValue> for KclValueView {
     fn from(full: KclValue) -> Self {
         match full {
@@ -374,6 +398,9 @@ impl From<KclValue> for KclValueView {
             },
             KclValue::NamedView { value } => Self::NamedView {
                 value: json_view(&value),
+            },
+            KclValue::Sheet { value } => Self::Sheet {
+                value: Box::new(sheet_view(&value)),
             },
             KclValue::Plane { value } => Self::Plane {
                 value: Box::new(plane_view(*value)),

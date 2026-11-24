@@ -23,6 +23,55 @@ import { decode } from '@msgpack/msgpack'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
 
+test(
+  'opens a read-only cloud project without initializing project metadata',
+  { tag: ['@web', '@browsers'] },
+  async ({ context, page }, testInfo) => {
+    await mockClientErrorReports(context)
+    const remote = await mockCloudStorage(context)
+    remote.project.files['project.toml'] =
+      'default_file = "main.kcl"\n[settings.modeling]\nbase_unit = "cm"\n'
+    const originalFiles = { ...remote.project.files }
+    const project = {
+      ...cloudProjectResponse(remote.project),
+      library_id: 'dataset',
+      access: {
+        scope: 'organization',
+        can_edit: false,
+        can_delete: false,
+        can_manage_organization: false,
+      },
+    }
+    await context.route('**/user/project-libraries**', (route) =>
+      route.fulfill({
+        json: {
+          items: [{ id: 'dataset', name: 'Dataset', source: 'org_dataset' }],
+          next_page: null,
+        },
+      })
+    )
+    await context.route('**/user/projects**', async (route) => {
+      const request = route.request()
+      const path = new URL(request.url()).pathname
+      if (request.method() === 'GET' && path === `/user/projects/${projectId}`)
+        return route.fulfill({ json: project })
+      if (request.method() === 'GET' && path === '/user/projects')
+        return route.fulfill({ json: { items: [project], next_page: null } })
+      return route.fallback()
+    })
+    await setup(context, page, testInfo)
+    await page.goto('/home')
+    await waitForAppLoad(page)
+    await page.getByText(remote.project.title, { exact: true }).dblclick()
+    await expect(page.locator('.cm-content').first()).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Create an editable copy' })
+    ).toBeVisible()
+    expect(remote.uploads).toEqual([])
+    expect(remote.project.files).toEqual(originalFiles)
+  }
+)
+
 for (const startEmpty of [false, true]) {
   test(
     `shows initial project loading but keeps the ${startEmpty ? 'empty list' : 'project cards'} visible during refresh`,

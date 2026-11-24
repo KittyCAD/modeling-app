@@ -1,4 +1,7 @@
-// Match the engine's distance-based scale for clipping and reference planes.
+// The scale stops shrinking here, which also fixes the closest near plane.
+export const MIN_CAMERA_SCENE_SCALE = 0.001
+
+// Match the engine's distance-based scale for clipping.
 // Camera-to-target distance is in mm.
 export function getLocalCameraSceneScale(distance: number) {
   if (distance > 20000) return 1000
@@ -7,5 +10,5 @@ export function getLocalCameraSceneScale(distance: number) {
   if (distance > 20) return 1
   if (distance > 2) return 0.1
   if (distance > 0.2) return 0.01
-  return 0.001
+  return MIN_CAMERA_SCENE_SCALE
 }

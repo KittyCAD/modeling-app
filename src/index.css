@@ -237,11 +237,7 @@ code,
 }
 
 :is(#code-mirror-override, .code-mirror-override) .cm-gutters {
-  @apply bg-chalkboard-10/30;
-}
-
-.dark :is(#code-mirror-override, .code-mirror-override) .cm-gutters {
-  @apply bg-chalkboard-110/50;
+  @apply bg-default;
 }
 
 :is(#code-mirror-override, .code-mirror-override) .cm-content {

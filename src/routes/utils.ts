@@ -14,7 +14,7 @@ export {
   getReleaseUrl,
 } from '@src/lib/appVersion'
 
-export function generateSignInUrl() {
+export function generateSignInUrl(callbackUrl?: string) {
   const queryParamsNext =
     typeof window !== 'undefined'
       ? getRouterSearchFromRequestUrl(
@@ -23,11 +23,12 @@ export function generateSignInUrl() {
         ).replace(IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM, '')
       : ''
   const finalURL =
-    typeof window !== 'undefined' &&
-    (window.location.origin + encodeURIComponent(queryParamsNext)).replace(
-      '?&',
-      '?'
-    )
+    callbackUrl ??
+    (typeof window !== 'undefined' &&
+      (window.location.origin + encodeURIComponent(queryParamsNext)).replace(
+        '?&',
+        '?'
+      ))
 
   return withSiteBaseURL(
     `${PATHS.SIGN_IN}?callbackUrl=${encodeURIComponent(finalURL)}`
