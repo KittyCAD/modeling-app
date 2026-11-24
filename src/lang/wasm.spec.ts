@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
@@ -35,8 +36,7 @@ import type RustContext from '@src/lib/rustContext'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -77,30 +77,14 @@ function normalizeOperation(operation: unknown): unknown {
   return normalized
 }
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-})
-
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, engineCommandManager, rustContext }) => {
+    instanceInThisFile = instance
+    engineCommandManagerInThisFile = engineCommandManager
+    rustContextInThisFile = rustContext
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 it('can execute parsed AST', async () => {
   const code = `x = 1
@@ -121,6 +105,44 @@ it('can execute parsed AST', async () => {
     throw new Error('Expected KCL value Number')
   }
   expect(x.value).toEqual(1)
+})
+
+it('returns resolved views from actual execution and no batch from mock execution', async () => {
+  const ast = assertParse(
+    `@settings(kclVersion = 3.0)
+plane = offsetPlane(XY, offset = 10mm)
+front = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [plane],
+)
+`,
+    instanceInThisFile
+  )
+
+  const actual = await rustContextInThisFile.execute(ast, {})
+  expect(actual.namedViews).toMatchObject({
+    namedViews: [
+      {
+        info: { name: 'Front', moduleId: 0 },
+        cameraIntent: { look: { type: 'oriented', orientation: 'front' } },
+      },
+    ],
+    failures: [],
+  })
+  expect(Object.keys(actual.namedViews?.defaultView ?? {})).toHaveLength(1)
+  expect(actual.namedViews?.namedViews[0].visibility).toEqual(
+    actual.namedViews?.defaultView
+  )
+
+  const mock = await rustContextInThisFile.executeMock(
+    ast,
+    {},
+    undefined,
+    false
+  )
+  expect(mock.namedViews).toBeNull()
 })
 
 it('applies operation callbacks to operations-by-module incrementally', () => {
@@ -650,8 +672,7 @@ body = extrude(region(segments = [profile.perimeter]), length = height)
     )
     expect(commands).not.toContain('set_kcl_version')
     expect(commands).not.toContain('scene_clear_all')
-  }, 90_000)
-
+  })
   it('accepts open, update, and get requests', async () => {
     const projectFiles: ApiFile[] = [
       { id: 0, path: 'some/path/main.kcl', text: 'The first file!' },

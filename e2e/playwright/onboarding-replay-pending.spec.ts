@@ -1,3 +1,4 @@
+import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page, TestInfo } from '@playwright/test'
 
@@ -69,72 +70,98 @@ async function expectHome(page: Page) {
 
 test.use({ trace: 'on' })
 
-test.describe('Onboarding replay pending state', { tag: ['@desktop'] }, () => {
-  test('disables Settings and Help replay while the tutorial project initializes', async ({
-    page,
-    toolbar,
-  }, testInfo) => {
-    await expectHome(page)
+test.use({ useTestSettings: true })
 
-    await test.step('Settings Replay shows pending state', async () => {
-      await toolbar.userSidebarButton.click()
-      await page.getByRole('button', { name: 'User settings' }).click()
+test.describe(
+  'Onboarding replay pending state',
+  { tag: ['@web', '@localRenderer'] },
+  () => {
+    test('disables Settings and Help replay while the tutorial project initializes', async ({
+      context,
+      page,
+      toolbar,
+    }, testInfo) => {
+      const { remote } = await prepareStorage(
+        'cloud',
+        page,
+        context,
+        testInfo,
+        {
+          modeling: true,
+        }
+      )
+      await expectHome(page)
+
+      await test.step('Settings Replay shows pending state', async () => {
+        await toolbar.userSidebarButton.click()
+        await page.getByRole('button', { name: 'User settings' }).click()
+        await expect(
+          page.getByRole('heading', { name: 'Settings', exact: true })
+        ).toBeVisible()
+
+        const releaseProjectCreation =
+          await holdNextOnboardingProjectCreation(page)
+        const replayButton = page.getByRole('button', {
+          name: 'Replay Onboarding',
+        })
+        await replayButton.click()
+
+        const pendingButton = page.getByRole('button', {
+          name: 'Starting Onboarding...',
+        })
+        await expect(pendingButton).toBeDisabled()
+        await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+        expect(remote.creates).toHaveLength(0)
+        await capturePendingScreenshot(
+          page,
+          testInfo,
+          'settings-replay-pending'
+        )
+
+        await releaseProjectCreation()
+        await expect.poll(() => remote.creates.length).toBe(1)
+        await expect(page).toHaveURL(new RegExp(remote.creates[0].id))
+        await expect(toolbar.projectName).toHaveText('tutorial-project')
+        await expect(
+          page.getByText('Welcome to Zoo Design Studio')
+        ).toBeVisible()
+        await page.keyboard.press('Escape')
+        await expectHome(page)
+      })
+
+      await test.step('Help Replay shows pending state', async () => {
+        const releaseProjectCreation =
+          await holdNextOnboardingProjectCreation(page)
+        await page.getByRole('button', { name: 'Help and resources' }).click()
+        await page
+          .getByRole('button', { name: 'Replay onboarding tutorial' })
+          .click()
+
+        const pendingButton = page.getByRole('button', {
+          name: 'Starting onboarding tutorial...',
+        })
+        await expect(pendingButton).toBeDisabled()
+        await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+        expect(remote.creates).toHaveLength(1)
+        await capturePendingScreenshot(page, testInfo, 'help-replay-pending')
+
+        await releaseProjectCreation()
+        await expect.poll(() => remote.creates.length).toBe(2)
+        expect(remote.creates[1].id).not.toBe(remote.creates[0].id)
+        await expect(page).toHaveURL(new RegExp(remote.creates[1].id))
+        await expect(toolbar.projectName).toHaveText('tutorial-project')
+        await expect(
+          page.getByText('Welcome to Zoo Design Studio')
+        ).toBeVisible()
+        await page.keyboard.press('Escape')
+        await expectHome(page)
+      })
+
       await expect(
-        page.getByRole('heading', { name: 'Settings', exact: true })
-      ).toBeVisible()
-
-      const releaseProjectCreation =
-        await holdNextOnboardingProjectCreation(page)
-      const replayButton = page.getByRole('button', {
-        name: 'Replay Onboarding',
-      })
-      await replayButton.click()
-
-      const pendingButton = page.getByRole('button', {
-        name: 'Starting Onboarding...',
-      })
-      await expect(pendingButton).toBeDisabled()
-      await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
-      await capturePendingScreenshot(page, testInfo, 'settings-replay-pending')
-
-      await releaseProjectCreation()
-      await expect(toolbar.projectName).toHaveText('tutorial-project')
-      await expect(page.getByText('Welcome to Zoo Design Studio')).toBeVisible()
-      await page.keyboard.press('Escape')
-      await expectHome(page)
+        page
+          .getByTestId('project-title')
+          .filter({ hasText: /^tutorial-project$/ })
+      ).toHaveCount(2)
     })
-
-    await test.step('Help Replay shows pending state', async () => {
-      const releaseProjectCreation =
-        await holdNextOnboardingProjectCreation(page)
-      await page.getByRole('button', { name: 'Help and resources' }).click()
-      await page
-        .getByRole('button', { name: 'Replay onboarding tutorial' })
-        .click()
-
-      const pendingButton = page.getByRole('button', {
-        name: 'Starting onboarding tutorial...',
-      })
-      await expect(pendingButton).toBeDisabled()
-      await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
-      await capturePendingScreenshot(page, testInfo, 'help-replay-pending')
-
-      await releaseProjectCreation()
-      await expect(toolbar.projectName).toHaveText('tutorial-project-1')
-      await expect(page.getByText('Welcome to Zoo Design Studio')).toBeVisible()
-      await page.keyboard.press('Escape')
-      await expectHome(page)
-    })
-
-    await expect(
-      page
-        .getByTestId('project-title')
-        .filter({ hasText: /^tutorial-project$/ })
-    ).toHaveCount(1)
-    await expect(
-      page
-        .getByTestId('project-title')
-        .filter({ hasText: /^tutorial-project-1$/ })
-    ).toHaveCount(1)
-  })
-})
+  }
+)

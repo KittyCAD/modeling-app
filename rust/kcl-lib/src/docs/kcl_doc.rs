@@ -895,6 +895,8 @@ pub struct ExampleProperties {
     pub norun: bool,
     #[allow(dead_code)]
     pub no3d: bool,
+    /// Request GPU snapshots for this individual example.
+    pub gpu: bool,
     pub inline: bool,
     pub sketch_syntax: ExampleSketchSyntax,
     pub sketch_syntax_explicit: bool,
@@ -1348,6 +1350,7 @@ trait ApplyMeta {
                     let mut inline = false;
                     let mut norun = false;
                     let mut no3d = false;
+                    let mut gpu = false;
                     let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
                     let mut sketch_syntax_explicit = false;
                     for a in args {
@@ -1355,6 +1358,7 @@ trait ApplyMeta {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
                             "no3d" | "no_3d" => no3d = true,
+                            "gpu" => gpu = true,
                             other => {
                                 if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
                                     sketch_syntax = tag;
@@ -1368,6 +1372,7 @@ trait ApplyMeta {
                         ExampleProperties {
                             norun,
                             no3d,
+                            gpu,
                             inline,
                             sketch_syntax,
                             sketch_syntax_explicit,
@@ -1939,21 +1944,22 @@ export FOO = 1
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
 
-            let result =
-                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d, eg.1.norun).await {
-                    Err(crate::errors::ExecError::Kcl(e)) => {
-                        panic!(
-                            "Error testing example {NAME} for {owner_name} in {}: {}",
-                            source_path.display(),
-                            e.error.message()
-                        );
-                    }
-                    Err(other_err) => panic!(
-                        "Error testing example {NAME} for {owner_name} in {}: {other_err}",
-                        source_path.display()
-                    ),
-                    Ok(img) => img,
-                };
+            let graphics =
+                crate::test_server::TestGraphicsParams::from_kcl_sample_spec(eg.1.no3d, eg.1.norun, eg.1.gpu);
+            let result = match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, graphics).await {
+                Err(crate::errors::ExecError::Kcl(e)) => {
+                    panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {}",
+                        source_path.display(),
+                        e.error.message()
+                    );
+                }
+                Err(other_err) => panic!(
+                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                    source_path.display()
+                ),
+                Ok(img) => img,
+            };
 
             let assert_images_match = |img: image::DynamicImage| {
                 if let Err(err) = twenty_twenty::try_assert_image(

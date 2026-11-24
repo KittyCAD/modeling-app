@@ -1,4 +1,3 @@
-import os from 'os'
 import { defineConfig, devices } from '@playwright/test'
 import type { ReporterDescription } from '@playwright/test'
 
@@ -52,12 +51,12 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'Google Chrome',
+      name: 'chrome',
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome',
         contextOptions: {
-          /* Chromium is the only one with these permission types */
+          // Chromium is the only one with these permission types
           permissions: ['clipboard-write', 'clipboard-read'],
         },
         launchOptions: {
@@ -73,34 +72,21 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    // {
-    //   name: 'chromium', // compat issue with encoding atm, so we're using the branded 'Google Chrome' instead
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        // Headless Firefox on Linux CI blocks WebGL2
+        headless: !(process.env.CI && process.platform === 'linux'),
+        launchOptions: {
+          firefoxUserPrefs: {
+            'webgl.disabled': false,
+            'webgl.enable-webgl2': true,
+            'webgl.force-enabled': true,
+          },
+        },
+      },
+    },
   ],
 
   /* Start the local web server unless we're testing against a Vercel deployment. */
@@ -108,7 +94,12 @@ export default defineConfig({
     ? {}
     : {
         webServer: {
-          command: 'npm start',
+          command:
+            process.env.E2E_USE_PREBUILT_APP === '1'
+              ? 'npm run start:prod -- --strictPort'
+              : 'npm start',
+          env: { BROWSER: 'none' },
+          url: 'http://localhost:3000',
           reuseExistingServer: !process.env.CI,
         },
       }),

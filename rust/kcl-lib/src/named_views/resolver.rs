@@ -1,5 +1,10 @@
+use std::collections::HashMap;
+
 use indexmap::IndexMap;
+use itertools::Itertools;
 use kcl_api::artifact::NamedViewArtifact;
+use kcl_error::SourceRange;
+use serde::Serialize;
 use uuid::Uuid;
 
 use super::Artifact;
@@ -9,10 +14,12 @@ use super::ArtifactId;
 use super::ModuleId;
 use super::ModulePath;
 use super::Operation;
-use super::visibility;
+use super::visibility::VisibilityTargets;
 
 /// A declared view's identity and source-file metadata.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Eq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct NamedViewInfo {
     pub artifact_id: ArtifactId,
     pub name: String,
@@ -29,10 +36,15 @@ pub enum ViewTarget {
     Named { name: String, module_id: ModuleId },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Eq, thiserror::Error)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum ViewResolutionError {
     #[error("No module path is available for named-view module {module_id}")]
-    MissingModulePath { module_id: ModuleId },
+    MissingModulePath {
+        #[serde(rename = "moduleId")]
+        module_id: ModuleId,
+    },
     #[error("No named view matches the requested selection")]
     NotFound,
     /// The supplied graph contains multiple matches for the complete target.
@@ -40,101 +52,194 @@ pub enum ViewResolutionError {
     Ambiguous { candidates: Vec<NamedViewInfo> },
 }
 
-/// The data a consumer of Named Views needs to apply a selected view.
-#[derive(Debug, Clone, PartialEq)]
-pub enum ResolvedView {
-    /// Default is populated programmatically and for a valid execution.
-    /// There is no explicit camera -- use what the camera settings are
-    Default { visibility: IndexMap<Uuid, bool> },
-    /// A declared view with its authored camera settings.
-    Named {
-        visibility: IndexMap<Uuid, bool>,
-        camera_intent: Box<ArtifactCameraView>,
-    },
+/// A resolved named view contains its identity and the data required for activation.
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolvedNamedView {
+    pub info: NamedViewInfo,
+    pub visibility: IndexMap<Uuid, bool>,
+    pub camera_intent: Box<ArtifactCameraView>,
 }
 
-impl ResolvedView {
-    /// Complete decisions keyed by engine object UUID. A value of `true` hides the object.
+/// A borrowed resolved view from execution output.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ResolvedView<'a> {
+    /// The program's Default visibility, with no authored camera settings.
+    Default { visibility: &'a IndexMap<Uuid, bool> },
+    /// A declared view with its authored camera settings.
+    Named(&'a ResolvedNamedView),
+}
+
+impl ResolvedView<'_> {
+    /// Returns object visibility by engine UUID after applying the view's baseline and exceptions.
+    ///
+    /// - `true`: hide the object.
+    /// - `false`: show the object.
     pub fn visibility(&self) -> &IndexMap<Uuid, bool> {
         match self {
-            Self::Default { visibility } | Self::Named { visibility, .. } => visibility,
+            Self::Default { visibility } => visibility,
+            Self::Named(view) => &view.visibility,
         }
     }
 }
 
-/// Resolves named views from explicit execution data without engine calls.
-#[derive(Debug)]
-pub struct NamedViewResolver<'a> {
-    artifact_graph: &'a ArtifactGraph,
-    operations: &'a IndexMap<ModuleId, Vec<Operation>>,
-    named_views: Vec<(&'a NamedViewArtifact, NamedViewInfo)>,
+/// Resolved views and individual failures from an execution.
+///
+/// Collection order is unspecified.
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolvedViewBatch {
+    default_view: IndexMap<Uuid, bool>,
+    named_views: Vec<ResolvedNamedView>,
+    failures: Vec<NamedViewResolutionFailure>,
 }
 
-impl<'a> NamedViewResolver<'a> {
-    /// Validates module paths before constructing complete named-view metadata.
-    pub fn new(
-        artifact_graph: &'a ArtifactGraph,
-        operations: &'a IndexMap<ModuleId, Vec<Operation>>,
-        filenames: &IndexMap<ModuleId, ModulePath>,
-    ) -> Result<Self, ViewResolutionError> {
-        let mut named_views = Vec::new();
-        for artifact in artifact_graph.values() {
-            let Artifact::NamedView(view) = artifact else {
-                continue;
-            };
-            let module_id = view.declaring_module_id;
-            let module_path = filenames
-                .get(&module_id)
-                .ok_or(ViewResolutionError::MissingModulePath { module_id })?;
-            named_views.push((
-                view,
-                NamedViewInfo {
-                    artifact_id: view.id,
-                    name: view.name.clone(),
-                    module_id,
-                    module_path: module_path.clone(),
-                },
-            ));
-        }
-        Ok(Self {
-            artifact_graph,
-            operations,
-            named_views,
-        })
+impl ResolvedViewBatch {
+    /// Returns the program's calculated Default visibility.
+    pub fn default_view(&self) -> &IndexMap<Uuid, bool> {
+        &self.default_view
     }
 
-    /// Returns declared views in graph order.
+    /// Returns successfully resolved named views.
+    pub fn named_views(&self) -> &[ResolvedNamedView] {
+        &self.named_views
+    }
+
+    /// Returns failures from resolving declared named views.
+    pub fn failures(&self) -> &[NamedViewResolutionFailure] {
+        &self.failures
+    }
+
+    /// Returns metadata for successfully resolved named views.
     ///
     /// - Views from imported modules are included.
-    /// - Repeated display names remain separate entries.
-    /// - The computed default is excluded because it is not declared.
-    pub fn list(&self) -> Vec<NamedViewInfo> {
-        self.named_views.iter().map(|(_, info)| info.clone()).collect()
+    /// - The computed Default view is excluded.
+    /// - Failed views are available through [`Self::failures`].
+    pub fn list_named_views(&self) -> Vec<NamedViewInfo> {
+        self.named_views.iter().map(|view| view.info.clone()).collect()
     }
 
-    pub fn resolve(&self, target: &ViewTarget) -> Result<ResolvedView, ViewResolutionError> {
+    /// Returns a stored result or the recorded failure for the requested view.
+    pub fn get(&self, target: &ViewTarget) -> Result<ResolvedView<'_>, ViewResolutionError> {
         match target {
             ViewTarget::Default => Ok(ResolvedView::Default {
-                visibility: visibility::visibility_for_default(self.artifact_graph, self.operations),
+                visibility: &self.default_view,
             }),
             ViewTarget::Named { name, module_id } => {
-                let candidates: Vec<_> = self
-                    .named_views
+                if let Some(failure) = self
+                    .failures
                     .iter()
-                    .filter(|(_, info)| info.name == *name && info.module_id == *module_id)
-                    .collect();
-
-                match candidates.as_slice() {
-                    [] => Err(ViewResolutionError::NotFound),
-                    [(view, _)] => Ok(ResolvedView::Named {
-                        visibility: visibility::visibility_for_view(self.artifact_graph, view),
-                        camera_intent: Box::new(view.camera.clone()),
-                    }),
-                    _ => Err(ViewResolutionError::Ambiguous {
-                        candidates: candidates.iter().map(|(_, info)| info.clone()).collect(),
-                    }),
+                    .find(|failure| failure.name == *name && failure.module_id == *module_id)
+                {
+                    return Err(failure.error.clone());
                 }
+                self.named_views
+                    .iter()
+                    .find(|view| view.info.name == *name && view.info.module_id == *module_id)
+                    .map(ResolvedView::Named)
+                    .ok_or(ViewResolutionError::NotFound)
             }
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Eq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct NamedViewResolutionFailure {
+    pub artifact_id: ArtifactId,
+    pub name: String,
+    pub module_id: ModuleId,
+    pub source_range: SourceRange,
+    pub error: ViewResolutionError,
+}
+
+impl NamedViewResolutionFailure {
+    fn new(view: &NamedViewArtifact, error: ViewResolutionError) -> Self {
+        Self {
+            artifact_id: view.id,
+            name: view.name.clone(),
+            module_id: view.declaring_module_id,
+            source_range: view.code_ref.range,
+            error,
+        }
+    }
+}
+
+fn declared_views(artifact_graph: &ArtifactGraph) -> impl Iterator<Item = &NamedViewArtifact> {
+    artifact_graph.values().filter_map(|artifact| match artifact {
+        Artifact::NamedView(view) => Some(view),
+        _ => None,
+    })
+}
+
+fn named_view_info(
+    view: &NamedViewArtifact,
+    filenames: &IndexMap<ModuleId, ModulePath>,
+) -> Result<NamedViewInfo, ViewResolutionError> {
+    let module_id = view.declaring_module_id;
+    let module_path = filenames
+        .get(&module_id)
+        .ok_or(ViewResolutionError::MissingModulePath { module_id })?;
+    Ok(NamedViewInfo {
+        artifact_id: view.id,
+        name: view.name.clone(),
+        module_id,
+        module_path: module_path.clone(),
+    })
+}
+
+/// Resolves every view using the same visibility targets from completed execution data.
+pub(crate) fn resolve_all(
+    artifact_graph: &ArtifactGraph,
+    operations: &IndexMap<ModuleId, Vec<Operation>>,
+    filenames: &IndexMap<ModuleId, ModulePath>,
+) -> ResolvedViewBatch {
+    let targets = VisibilityTargets::new(artifact_graph);
+    let named_views: Vec<_> = declared_views(artifact_graph).collect();
+    let views_by_identity = named_views
+        .iter()
+        .map(|view| ((view.declaring_module_id, view.name.as_str()), *view))
+        .into_group_map();
+    let (resolved_named_views, failures) = named_views
+        .into_iter()
+        .map(|view| {
+            resolve_named_view(view, &views_by_identity, filenames, &targets)
+                .map_err(|error| NamedViewResolutionFailure::new(view, error))
+        })
+        .partition_result();
+
+    ResolvedViewBatch {
+        default_view: targets.for_default_view(&super::visibility::hidden_ids_from_operations(operations)),
+        named_views: resolved_named_views,
+        failures,
+    }
+}
+
+fn resolve_named_view(
+    view: &NamedViewArtifact,
+    views_by_identity: &HashMap<(ModuleId, &str), Vec<&NamedViewArtifact>>,
+    filenames: &IndexMap<ModuleId, ModulePath>,
+    targets: &VisibilityTargets,
+) -> Result<ResolvedNamedView, ViewResolutionError> {
+    let info = named_view_info(view, filenames)?;
+    let candidates = views_by_identity
+        .get(&(view.declaring_module_id, view.name.as_str()))
+        .ok_or(ViewResolutionError::NotFound)?;
+    if candidates.len() > 1 {
+        return Err(ViewResolutionError::Ambiguous {
+            candidates: candidates
+                .iter()
+                .map(|view| named_view_info(view, filenames))
+                .collect::<Result<_, _>>()?,
+        });
+    }
+
+    Ok(ResolvedNamedView {
+        info,
+        visibility: targets.for_named_view(view),
+        camera_intent: Box::new(view.camera.clone()),
+    })
 }

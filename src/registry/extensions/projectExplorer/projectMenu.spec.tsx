@@ -1,55 +1,62 @@
-import { Registry } from '@kittycad/registry'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
+import { createProjectForTest } from '@src/lib/projectTestUtils'
 import getDesktopAppExtension from '@src/registry/extensions/getDesktopApp'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { contribute, provide, Registry, type InputOf } from 'plankton'
+import { signal } from '@preact/signals-core'
+import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import { homeProjectEntriesFacet } from '@src/registry/contracts/homeProjects'
+import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
+import {
+  settingsService,
+  type SettingsRegistryService,
+} from '@src/registry/contracts/settings'
+import {
+  commandSystemService,
+  type CommandSystemService,
+} from '@src/registry/contracts/commands'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 import projectExplorerExtension from '.'
-
 const originalElectron = window.electron
-
 afterEach(() => {
   window.electron = originalElectron
   vi.restoreAllMocks()
 })
-
 const now = Date.now()
-const projectWellFormed = {
-  name: '550e8400-e29b-41d4-a716-446655440000',
-  title: 'Simple Box',
-  path: '/some/path/550e8400-e29b-41d4-a716-446655440000',
-  children: [
-    {
-      name: 'main.kcl',
-      path: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
-      children: [],
+const projectWellFormed = createProjectForTest(
+  '/some/path/550e8400-e29b-41d4-a716-446655440000',
+  {
+    name: '550e8400-e29b-41d4-a716-446655440000',
+    title: 'Simple Box',
+    children: [
+      {
+        name: 'main.kcl',
+        path: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
+        children: [],
+      },
+    ],
+    metadata: {
+      created: now,
+      modified: now,
+      size: 32,
+      accessed: null,
+      type: null,
+      permission: null,
     },
-  ],
-  readWriteAccess: true,
-  metadata: {
-    created: now,
-    modified: now,
-    size: 32,
-    accessed: null,
-    type: null,
-    permission: null,
-  },
-  kcl_file_count: 1,
-  directory_count: 0,
-  default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
-} satisfies Project
-
+    kcl_file_count: 1,
+    default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
+  }
+) satisfies Project
 function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
 }
-
-function createProjectMenuApp() {
+async function createProjectMenuApp() {
   const registry = new Registry()
-  registry.configure([projectExplorerExtension, getDesktopAppExtension])
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -57,18 +64,63 @@ function createProjectMenuApp() {
       },
     })
   ).start()
-
+  const commands = { actor: commandsActor, send: vi.fn() }
+  await registry.configure([
+    projectExplorerExtension,
+    getDesktopAppExtension,
+    homeProjectsExtension,
+    contribute(
+      homeProjectEntriesFacet,
+      () =>
+        ({
+          id: 'current-project',
+          name: projectWellFormed.name,
+          title: projectWellFormed.title,
+          source: 'local',
+          status: 'local',
+          localProjectPath: projectWellFormed.path,
+          readWriteAccess: true,
+          libraryId: 'default-project-directory',
+        }) satisfies InputOf<typeof homeProjectEntriesFacet>
+    ),
+    contribute(projectLibraryTypesFacet, () => ({
+      type: 'directory',
+      title: 'Directory',
+      operations: {
+        cloneProjectFrom: { run: async () => undefined },
+        cloneProjectTo: { run: async () => undefined },
+      },
+    })),
+    provide(settingsService, {
+      current: signal({
+        app: {
+          libraries: {
+            current: [
+              {
+                type: 'directory',
+                title: 'Local projects',
+                path: '/some/path',
+              },
+            ],
+          },
+        },
+      }),
+    } as unknown as SettingsRegistryService),
+    provide(commandSystemService, commands as unknown as CommandSystemService),
+  ])
   return {
     app: {
       machineManager: {
         machines: [],
       },
-      commands: {
-        actor: commandsActor,
-        send: vi.fn(),
+      commands,
+      projectOperations: {
+        duplicateProject: vi.fn(async () => ({
+          path: '/projects/duplicated',
+        })),
       },
-      systemIOActor: {
-        send: vi.fn(),
+      projectSession: {
+        openFile: vi.fn(async () => undefined),
       },
       settings: {
         actor: {},
@@ -82,28 +134,24 @@ function createProjectMenuApp() {
       },
       registry,
     } as unknown as App,
-    dispose: () => {
+    dispose: async () => {
       commandsActor.stop()
-      registry[Symbol.dispose]()
+      await registry.dispose()
     },
   }
 }
-
 describe('project explorer project menu', () => {
   test('shows the contributed desktop app link on web', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Chrome')
-    const { app, dispose } = createProjectMenuApp()
-
+    const { app, dispose } = await createProjectMenuApp()
     try {
       renderWithRouter(
         <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
       )
-
       fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
       const downloadLink = await screen.findByTestId(
         'project-menu-get-desktop-app'
       )
-
       expect(downloadLink).toHaveAttribute(
         'href',
         expect.stringContaining('/design-studio/download')
@@ -113,61 +161,49 @@ describe('project explorer project menu', () => {
         screen.getByText('Go to Home').closest('li')
       )
     } finally {
-      dispose()
+      await dispose()
     }
   })
-
   test('hides the contributed desktop app link on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
-    const { app, dispose } = createProjectMenuApp()
-
+    const { app, dispose } = await createProjectMenuApp()
     try {
       renderWithRouter(
         <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
       )
-
       fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-
       expect(
         screen.queryByTestId('project-menu-get-desktop-app')
       ).not.toBeInTheDocument()
     } finally {
-      dispose()
+      await dispose()
     }
   })
-
-  test('duplicates the current project', async () => {
-    const { app, dispose } = createProjectMenuApp()
-
-    try {
-      renderWithRouter(
-        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
-      )
-
-      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-      const duplicateButton = (
-        await screen.findByTestId('project-sidebar-duplicate-project')
-      ).closest('button')
-
-      expect(duplicateButton).not.toBeNull()
-      if (!duplicateButton) {
-        return
+  test.each(['Chrome', 'Electron'])(
+    'omits Duplicate project from the modeling-view menu in %s',
+    async (userAgent) => {
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
+      const { app, dispose } = await createProjectMenuApp()
+      try {
+        renderWithRouter(
+          <ProjectSidebarMenu
+            app={app}
+            enableMenu
+            project={projectWellFormed}
+          />
+        )
+        fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+        expect(
+          screen.getByRole('button', { name: /Project settings/ })
+        ).toBeVisible()
+        expect(
+          screen.queryByRole('button', { name: 'Duplicate project' })
+        ).not.toBeInTheDocument()
+      } finally {
+        await dispose()
       }
-      fireEvent.click(duplicateButton)
-
-      expect(app.systemIOActor.send).toHaveBeenCalledWith({
-        type: 'duplicate project',
-        data: {
-          projectName: projectWellFormed.name,
-          projectPath: projectWellFormed.path,
-          requestedProjectName: projectWellFormed.title,
-        },
-      })
-    } finally {
-      dispose()
     }
-  })
-
+  )
   test('reveals the current project from the contributed menu item on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     const showInFolder = vi.fn()
@@ -178,21 +214,18 @@ describe('project explorer project menu', () => {
         isMac: false,
       },
     } as unknown as Window['electron']
-    const { app, dispose } = createProjectMenuApp()
-
+    const { app, dispose } = await createProjectMenuApp()
     try {
       renderWithRouter(
         <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
       )
-
       fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
       fireEvent.click(
         await screen.findByTestId('project-sidebar-reveal-in-file-explorer')
       )
-
       expect(showInFolder).toHaveBeenCalledWith(projectWellFormed.path)
     } finally {
-      dispose()
+      await dispose()
     }
   })
 })

@@ -1,3 +1,7 @@
+import {
+  parseCloudProjectToolChange,
+  type CloudProjectToolChange,
+} from '@src/lib/zookeeper/cloudProjectTools'
 import type {
   AttachmentRef,
   MlCopilotAccessDeniedCode,
@@ -17,12 +21,20 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { cleanErrs, isErr } from '@src/lib/trap'
-import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 import ms from 'ms'
 import type { ActorRefFrom } from 'xstate'
-import { assertEvent, assign, createActor, fromPromise, setup } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  cancel,
+  createActor,
+  enqueueActions,
+  fromPromise,
+  setup,
+} from 'xstate'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -33,10 +45,12 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { constructZookeeperUserPromptRequest } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import {
-  constructZookeeperUserPromptRequest,
-  type KittyCadLibFile,
-} from '@src/lib/zookeeper/zookeeperPromptRequest'
+  encodeLegacyCurrentFiles,
+  encodeLegacyProjectFiles,
+} from '@src/lib/zookeeper/registry/legacy/currentFiles'
+import { usesCloudProjectTools } from '@src/lib/zookeeper/projectFileTransport'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import toast from 'react-hot-toast'
@@ -96,6 +110,7 @@ type MlCopilotUserRequest = Omit<
   // The generated client still narrows this to the initially-known mode ids,
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
+  project_id?: string
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
@@ -112,6 +127,7 @@ type MlCopilotProjectContextRequest = Extract<
   MlCopilotClientMessage,
   { type: 'project_context' }
 > & {
+  project_id?: string
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
@@ -215,7 +231,7 @@ export function parseMlCopilotModesResult(
 export function isMlCopilotUserRequest(
   x: unknown
 ): x is MlCopilotClientMessageUser {
-  return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
+  return isRecord(x) && x.type === 'user' && typeof x.content === 'string'
 }
 
 export enum ZookeeperManagerStates {
@@ -230,8 +246,10 @@ export enum ZookeeperManagerStates {
 export enum ZookeeperManagerTransitions {
   AuthTokenChanged = 'auth-token-changed',
   MessageSend = 'message-send',
+  UserReceive = 'user-receive',
   ResponseReceive = 'response-receive',
   EditApplied = 'edit-applied',
+  CloudProjectChanged = 'cloud-project-changed',
   ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
@@ -243,6 +261,10 @@ export enum ZookeeperManagerTransitions {
   BackendShutdown = 'backend-shutdown',
   SetupProgress = 'setup-progress',
   AttachmentFetch = 'attachment-fetch',
+  ReplayPageFetch = 'replay-page-fetch',
+  ReplayPageTimeout = 'replay-page-timeout',
+  ReplayPageReceive = 'replay-page-receive',
+  ReplayPageError = 'replay-page-error',
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
@@ -250,10 +272,14 @@ export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 60_000
 export const ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS = 120_000
 export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
 export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
+export const ZOOKEEPER_REPLAY_PAGE_TIMEOUT_MS = 30_000
 export const ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE = 4409
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
 // Matches text-to-cad's --ws-max-size.
 export const ZOOKEEPER_MAX_MESSAGE_BYTES = 128 * 1024 * 1024
+
+const ZOOKEEPER_REPLAY_SETUP_FAILURE_REASON =
+  'Unable to load conversation history.'
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
@@ -282,6 +308,8 @@ class ZookeeperSetupConnectionError extends Error {
     this.retryable = retryable
   }
 }
+
+class ZookeeperReplayPaginationUnavailableError extends Error {}
 
 function getSetupFailureReason(event: unknown): string | undefined {
   if (typeof event !== 'object' || event === null) {
@@ -379,14 +407,23 @@ export type ZookeeperManagerEvents =
     }
   | {
       type: ZookeeperManagerStates.ContinueCheck
+      projectId?: string
       projectName: string
       projectFiles: FileMeta[]
       activeFile?: string
       engineApiCallId?: string
     }
   | {
+      type: ZookeeperManagerTransitions.UserReceive
+      request: MlCopilotUserRequest
+    }
+  | {
       type: ZookeeperManagerTransitions.ResponseReceive
       response: MlCopilotServerMessage
+    }
+  | {
+      type: ZookeeperManagerTransitions.CloudProjectChanged
+      change: CloudProjectToolChange
     }
   | {
       type: ZookeeperManagerTransitions.EditApplied
@@ -427,6 +464,24 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.AttachmentFetch
       attachmentRef: AttachmentRef
+    }
+  | { type: ZookeeperManagerTransitions.ReplayPageFetch }
+  | { type: ZookeeperManagerTransitions.ReplayPageTimeout; requestId: string }
+  | {
+      type: ZookeeperManagerTransitions.ReplayPageReceive
+      webSocket: WebSocket
+      page: Extract<
+        MlCopilotServerMessage,
+        { replay_page: unknown }
+      >['replay_page']
+    }
+  | {
+      type: ZookeeperManagerTransitions.ReplayPageError
+      webSocket: WebSocket
+      pageError: Extract<
+        MlCopilotServerMessage,
+        { replay_page_error: unknown }
+      >['replay_page_error']
     }
 
 export interface Exchange {
@@ -515,7 +570,12 @@ export interface ZookeeperManagerContext {
   closeReason?: string
   conversation?: Conversation
   conversationId?: string
+  useLegacyReplay: boolean
+  replayNextCursor?: string
+  replayPageRequestId?: string
+  replayPageError?: string
   lastMessageId?: number
+  cloudProjectChange?: CloudProjectToolChange
   lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
@@ -546,6 +606,10 @@ export const zookeeperDefaultContext = (args: {
   accessDeniedCode: undefined,
   closeReason: undefined,
   conversation: undefined,
+  useLegacyReplay: false,
+  replayNextCursor: undefined,
+  replayPageRequestId: undefined,
+  replayPageError: undefined,
   cachedSetup: undefined,
   lastMessageId: undefined,
   lastMessageType: undefined,
@@ -834,6 +898,107 @@ function isMlCopilotServerMessage(
   return true
 }
 
+function isCurrentReplayRequest(
+  context: ZookeeperManagerContext,
+  webSocket: WebSocket,
+  requestId: string | undefined
+): boolean {
+  return (
+    context.ws === webSocket &&
+    Boolean(context.replayPageRequestId) &&
+    context.replayPageRequestId === requestId
+  )
+}
+
+export function appendReplayMessages(
+  exchanges: Exchange[],
+  messages: number[][]
+): void {
+  for (const byteMessage of messages) {
+    const data: Uint8Array = Uint8Array.from(Object.values(byteMessage))
+    const responseReplay: unknown = Object.freeze(
+      JSON.parse(new TextDecoder().decode(data))
+    )
+    if (!isMlCopilotServerMessage(responseReplay)) continue
+
+    // Don't show deltas because they are aggregated in the end_of_stream
+    if ('delta' in responseReplay) continue
+
+    if ('type' in responseReplay && responseReplay.type === 'user') {
+      if (isMlCopilotUserRequest(responseReplay)) {
+        exchanges.push({
+          request: responseReplay,
+          responses: [],
+          deltasAggregated: '',
+        })
+      }
+      continue
+    }
+
+    // Find the last exchange or create an empty one and add it
+    let lastExchange = exchanges.at(-1)
+    if (lastExchange === undefined) {
+      lastExchange = {
+        responses: [],
+        deltasAggregated: '',
+      }
+      exchanges.push(lastExchange)
+    }
+
+    // The UI reads answer text from deltasAggregated. Replay skips
+    // individual deltas, so restore that field from the full answer.
+    if ('end_of_stream' in responseReplay) {
+      lastExchange.deltasAggregated =
+        responseReplay.end_of_stream.whole_response ?? ''
+    }
+
+    lastExchange.responses.push(responseReplay)
+  }
+}
+
+export function prependReplayMessages(
+  exchanges: Exchange[],
+  messages: number[][]
+): Exchange[] {
+  const older: Exchange[] = []
+  appendReplayMessages(older, messages)
+  const first = exchanges[0]
+  const last = older.at(-1)
+  if (!first || first.request || !last) return [...older, ...exchanges]
+
+  older[older.length - 1] = {
+    ...last,
+    ...first,
+    request: last.request,
+    responses: [...last.responses, ...first.responses],
+    deltasAggregated:
+      first.responses.some((response) => 'end_of_stream' in response) ||
+      first.deltasAggregated
+        ? first.deltasAggregated
+        : last.deltasAggregated,
+  }
+  return [...older, ...exchanges.slice(1)]
+}
+
+function appendReceivedUser(
+  exchanges: Exchange[],
+  request: MlCopilotUserRequest
+): Exchange[] {
+  if (
+    request.correlation_id &&
+    exchanges.some(
+      (exchange) =>
+        isMlCopilotUserRequest(exchange.request) &&
+        exchange.request.correlation_id === request.correlation_id
+    )
+  )
+    return exchanges
+  return [
+    ...exchanges,
+    { request, responses: [], deltasAggregated: '', startedAt: new Date() },
+  ]
+}
+
 export const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
   const lastExchange = exchanges.at(-1)
   if (lastExchange === undefined) {
@@ -895,6 +1060,156 @@ export const zookeeperManagerMachine = setup({
     },
   },
   actions: {
+    receiveResponse: assign(({ event, context }) => {
+      assertEvent(event, [ZookeeperManagerTransitions.ResponseReceive])
+
+      if ('attachments_error' in event.response) {
+        const { prompt_id, seq, indices, detail } =
+          event.response.attachments_error
+
+        const attachmentFetches = { ...context.attachmentFetches }
+
+        for (const index of indices) {
+          const key = getZookeeperAttachmentKey({
+            prompt_id,
+            seq,
+            index,
+          })
+
+          if (attachmentFetches[key]?.status !== 'loading') {
+            continue
+          }
+
+          attachmentFetches[key] = {
+            status: 'error',
+            message: detail,
+          }
+        }
+
+        // Attachment failures must not change conversation or generation state.
+        return { attachmentFetches }
+      }
+
+      if ('attachments' in event.response) {
+        const attachmentFetches: Record<string, ZookeeperAttachmentFetchState> =
+          {
+            ...context.attachmentFetches,
+          }
+
+        for (const file of event.response.attachments.files) {
+          if (file.attachment_ref === undefined) {
+            continue
+          }
+
+          const key = getZookeeperAttachmentKey(file.attachment_ref)
+
+          attachmentFetches[key] = {
+            status: 'loaded',
+            file,
+          }
+        }
+        // This early return is needed because attachment response
+        // is just a bookkeeping, not a message.
+        // It should not create a conversation exchange, increment lastMessageId,
+        // change awaitingResponse, or affect active Zookeeper generation.
+        return { attachmentFetches }
+      }
+
+      const lastMessageId = (context.lastMessageId ?? -1) + 1
+      const responseComplete = isResponseComplete(event.response)
+
+      const conversation: Conversation = {
+        exchanges: Array.from(context.conversation?.exchanges ?? []),
+      }
+
+      // Errors are considered their own
+      // exchanges because they have no end_of_stream signal.
+      // It is assumed `info` messages are followed up
+      // with an end_of_stream signal.
+      if ('error' in event.response) {
+        conversation.exchanges.push({
+          responses: [event.response],
+          deltasAggregated: '',
+        })
+        return {
+          conversation,
+          lastMessageId,
+          awaitingResponse: false,
+          attachmentsLoadedForCurrentPrompt: true,
+          pendingBackendShutdown: responseComplete
+            ? false
+            : context.pendingBackendShutdown,
+        }
+      }
+
+      if (isAttachmentsLoadedMessage(event.response)) {
+        return {
+          lastMessageId,
+          attachmentsLoadedForCurrentPrompt: true,
+          awaitingResponse: context.awaitingResponse,
+          pendingBackendShutdown: responseComplete
+            ? false
+            : context.pendingBackendShutdown,
+        }
+      }
+
+      let lastExchange: Exchange | undefined =
+        conversation.exchanges[conversation.exchanges.length - 1]
+
+      if (lastExchange === undefined) {
+        lastExchange = {
+          responses: [event.response],
+          deltasAggregated: '',
+        }
+        conversation.exchanges.push(lastExchange)
+
+        // OPTIMIZATION: `delta` responses are aggregated instead
+        // of being included in the responses list.
+      } else if ('delta' in event.response) {
+        lastExchange.deltasAggregated += event.response.delta.delta
+      } else {
+        lastExchange.responses.push(event.response)
+      }
+
+      if ('end_of_stream' in event.response) {
+        conversation.exchanges[conversation.exchanges.length - 1] =
+          compactAppliedEdits(lastExchange)
+      }
+
+      // This sucks but must be done because we can't
+      // enumerate the message types.
+      const r = event.response
+      const ts: TypeVariant<MlCopilotServerMessage>[] = [
+        'info',
+        'error',
+        'end_of_stream',
+        'session_data',
+        'conversation_id',
+        'delta',
+        'tool_output',
+        'reasoning',
+        'files',
+        'replay',
+      ]
+      const lastMessageType: TypeVariant<MlCopilotServerMessage> | undefined =
+        ts.find((t) => t in r)
+
+      // Defensive: possible we hit messages we don't handle -
+      // don't add to context!
+      if (lastMessageType === undefined) {
+        return context
+      }
+
+      return {
+        conversation,
+        lastMessageId,
+        lastMessageType,
+        awaitingResponse: responseComplete ? false : context.awaitingResponse,
+        pendingBackendShutdown: responseComplete
+          ? false
+          : context.pendingBackendShutdown,
+      }
+    }),
     assignApiToken: assign(({ event }) => {
       assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
       return { apiToken: event.apiToken }
@@ -967,6 +1282,9 @@ export const zookeeperManagerMachine = setup({
       }
       return {
         abruptlyClosed: true,
+        replayNextCursor: undefined,
+        replayPageRequestId: undefined,
+        replayPageError: undefined,
         setupFailed: accessDeniedCode !== undefined,
         setupFailureReason: undefined,
         accessDeniedCode,
@@ -979,6 +1297,9 @@ export const zookeeperManagerMachine = setup({
       })
       return {
         abruptlyClosed: true,
+        replayNextCursor: undefined,
+        replayPageRequestId: undefined,
+        replayPageError: undefined,
         setupFailed: false,
         setupFailureReason: undefined,
         accessDeniedCode: undefined,
@@ -988,6 +1309,10 @@ export const zookeeperManagerMachine = setup({
     prepareSetupRetry: assign(({ event, context }) => {
       return {
         setupAttempt: context.setupAttempt + 1,
+        useLegacyReplay:
+          context.useLegacyReplay ||
+          ('error' in event &&
+            event.error instanceof ZookeeperReplayPaginationUnavailableError),
         setupFailureReason:
           getSetupFailureReason(event) ?? context.setupFailureReason,
         accessDeniedCode:
@@ -1084,6 +1409,10 @@ export const zookeeperManagerMachine = setup({
         lastMessageId: undefined,
         lastMessageType: undefined,
         conversation: undefined,
+        useLegacyReplay: false,
+        replayNextCursor: undefined,
+        replayPageRequestId: undefined,
+        replayPageError: undefined,
         conversationId: event.conversationId || undefined,
         defaultMode: undefined,
         modeOptions: undefined,
@@ -1163,6 +1492,9 @@ export const zookeeperManagerMachine = setup({
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
         queryParams.set('replay_attachment_mode', 'metadata_only')
+        if (!args.input.context.useLegacyReplay) {
+          queryParams.set('replay_pagination', 'true')
+        }
       }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
@@ -1189,6 +1521,7 @@ export const zookeeperManagerMachine = setup({
       })
 
       let maybeReplayedExchanges: Exchange[] = []
+      let replayNextCursor: string | undefined
       let maybeModeOptions: MlCopilotModeOption[] | undefined
       let maybeDefaultMode: MlCopilotModeId | undefined
       let setupResolved = false
@@ -1337,6 +1670,23 @@ export const zookeeperManagerMachine = setup({
               })
             }
 
+            // Other sockets' accepted prompts are client frames, not replies.
+            if (isRecord(response) && 'type' in response) {
+              if (!isMlCopilotUserRequest(response)) return
+              if (!setupResolved) {
+                maybeReplayedExchanges = appendReceivedUser(
+                  maybeReplayedExchanges,
+                  response
+                )
+              } else {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.UserReceive,
+                  request: response,
+                })
+              }
+              return
+            }
+
             const modesResult = parseMlCopilotModesResult(response)
             if (modesResult !== null) {
               maybeModeOptions = modesResult.modeOptions
@@ -1388,7 +1738,96 @@ export const zookeeperManagerMachine = setup({
               return
             }
 
+            const cloudChange = parseCloudProjectToolChange(response)
+            if (cloudChange) {
+              theRefParentSend({
+                type: ZookeeperManagerTransitions.CloudProjectChanged,
+                change: cloudChange,
+              })
+            }
+            if (
+              isRecord(response) &&
+              'zookeeper_recovery_tool_output' in response
+            )
+              return
             if (!isMlCopilotServerMessage(response)) return
+
+            if ('replay_page' in response) {
+              const page = {
+                ...response.replay_page,
+                conversation_id: binaryToUuid(
+                  response.replay_page.conversation_id
+                ),
+                next_cursor:
+                  response.replay_page.next_cursor == null
+                    ? undefined
+                    : binaryToUuid(response.replay_page.next_cursor),
+              }
+              if (setupResolved) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.ReplayPageReceive,
+                  webSocket: ws,
+                  page,
+                })
+                return
+              }
+              if (page.request_id != null) return
+              if (page.conversation_id !== maybeConversationId) {
+                cancelSetupAttempt()
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    'Replay page belongs to another conversation',
+                    ZOOKEEPER_REPLAY_SETUP_FAILURE_REASON
+                  )
+                )
+                return
+              }
+              try {
+                appendReplayMessages(maybeReplayedExchanges, page.messages)
+              } catch (error) {
+                cancelSetupAttempt()
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    isErr(error)
+                      ? error.message
+                      : 'Failed to decode replay page',
+                    ZOOKEEPER_REPLAY_SETUP_FAILURE_REASON
+                  )
+                )
+                return
+              }
+              replayNextCursor = page.next_cursor ?? undefined
+              return
+            }
+
+            if ('replay_page_error' in response) {
+              if (setupResolved) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.ReplayPageError,
+                  webSocket: ws,
+                  pageError: response.replay_page_error,
+                })
+                return
+              }
+              if (response.replay_page_error.request_id == null) {
+                cancelSetupAttempt()
+                if (response.replay_page_error.code === 'unavailable') {
+                  onRejected(
+                    new ZookeeperReplayPaginationUnavailableError(
+                      response.replay_page_error.detail
+                    )
+                  )
+                  return
+                }
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    response.replay_page_error.detail,
+                    ZOOKEEPER_REPLAY_SETUP_FAILURE_REASON
+                  )
+                )
+              }
+              return
+            }
 
             // Ignore the authorization bug
             if (
@@ -1433,51 +1872,34 @@ export const zookeeperManagerMachine = setup({
             // If it's a replay, we'll unravel it and process as if they are real
             // messages being sent from the server.
             if ('replay' in response) {
-              for (let byteMessage of response.replay.messages) {
-                const data: Uint8Array = Uint8Array.from(
-                  Object.values(byteMessage)
-                )
-                const responseReplay: unknown = Object.freeze(
-                  JSON.parse(new TextDecoder().decode(data))
-                )
-                if (!isMlCopilotServerMessage(responseReplay)) continue
+              appendReplayMessages(
+                maybeReplayedExchanges,
+                response.replay.messages
+              )
+            }
 
-                // Don't show deltas because they are aggregated in the end_of_stream
-                if ('delta' in responseReplay) continue
-
-                if (
-                  'type' in responseReplay &&
-                  responseReplay.type === 'user'
-                ) {
-                  if (isMlCopilotUserRequest(responseReplay)) {
-                    maybeReplayedExchanges.push({
-                      request: responseReplay,
-                      responses: [],
-                      deltasAggregated: '',
-                    })
-                  }
-                  continue
-                }
-
-                if ('error' in responseReplay || 'info' in responseReplay) {
-                  maybeReplayedExchanges.push({
-                    responses: [responseReplay],
-                    deltasAggregated: '',
-                  })
-                  continue
-                }
-
-                const lastExchange = maybeReplayedExchanges.slice(-1)[0] ?? {
-                  responses: [],
-                }
-
-                // Instead we transform a end_of_stream into a delta!
-                if ('end_of_stream' in responseReplay) {
-                  lastExchange.deltasAggregated =
-                    responseReplay.end_of_stream.whole_response ?? ''
-                }
-                lastExchange.responses.push(responseReplay)
+            // Fanout may arrive while replay/setup is still completing.
+            if (
+              !setupResolved &&
+              !('conversation_id' in response) &&
+              !('replay' in response)
+            ) {
+              let exchange = maybeReplayedExchanges.at(-1)
+              if (!exchange) {
+                exchange = { responses: [], deltasAggregated: '' }
+                maybeReplayedExchanges.push(exchange)
               }
+              if ('delta' in response) {
+                exchange.deltasAggregated += response.delta.delta
+              } else {
+                exchange.responses.push(response)
+                if ('end_of_stream' in response) {
+                  exchange.deltasAggregated =
+                    response.end_of_stream.whole_response ??
+                    exchange.deltasAggregated
+                }
+              }
+              return
             }
 
             // We're only considered setup when a conversation_id is assigned
@@ -1502,6 +1924,7 @@ export const zookeeperManagerMachine = setup({
                   exchanges: maybeReplayedExchanges,
                 },
                 conversationId: response.conversation_id.conversation_id,
+                replayNextCursor,
                 defaultMode: maybeDefaultMode,
                 modeOptions: maybeModeOptions,
                 ws,
@@ -1596,12 +2019,17 @@ export const zookeeperManagerMachine = setup({
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
 
+      const projectId = event.projectForPromptOutput.cloudProjectId
+        ? `cloud:${event.projectForPromptOutput.cloudProjectId}`
+        : `local:${event.projectForPromptOutput.projectId ?? event.projectForPromptOutput.path}`
+      const cloudProjectTools = usesCloudProjectTools(projectId)
       const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
         projectFiles: event.projectFiles,
+        includeProjectFiles: !cloudProjectTools,
         artifactGraph: event.artifactGraph,
         projectName: event.projectForPromptOutput.name,
         currentFile: event.fileSelectedDuringPrompting,
@@ -1612,13 +2040,9 @@ export const zookeeperManagerMachine = setup({
       })
       if (isErr(requestData)) return Promise.reject(requestData)
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-
-      for (let file of requestData.files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const filesAsByteArrays = cloudProjectTools
+        ? {}
+        : await encodeLegacyCurrentFiles(requestData.files)
 
       let additionalFiles: MlCopilotFile[] | undefined
       if (event.additionalFiles && event.additionalFiles.length > 0) {
@@ -1632,6 +2056,7 @@ export const zookeeperManagerMachine = setup({
 
       const request: MlCopilotUserRequest = {
         type: 'user',
+        project_id: projectId,
         ...createZookeeperCorrelation(event.engineCommandManager.apiCallId),
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
@@ -1683,31 +2108,13 @@ export const zookeeperManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-      const files: KittyCadLibFile[] = []
-
-      event.projectFiles.forEach((file) => {
-        let data: Blob
-        if (file.type === 'other') {
-          data = file.data
-        } else {
-          // file.type === 'kcl'
-          data = new Blob([file.fileContents], { type: 'text/kcl' })
-        }
-        files.push({
-          name: file.relPath,
-          data,
-        })
-      })
-
-      for (let file of files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const filesAsByteArrays = usesCloudProjectTools(event.projectId)
+        ? {}
+        : await encodeLegacyProjectFiles(event.projectFiles)
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
+        ...(event.projectId ? { project_id: event.projectId } : {}),
         ...createZookeeperCorrelation(event.engineApiCallId),
         project_name: event.projectName,
         current_files: filesAsByteArrays,
@@ -1779,6 +2186,131 @@ export const zookeeperManagerMachine = setup({
     closeZookeeperWebSocket(args.context?.ws)
   },
   on: {
+    [ZookeeperManagerTransitions.ReplayPageFetch]: {
+      actions: enqueueActions(({ context, self, enqueue }) => {
+        if (
+          !context.replayNextCursor ||
+          context.replayPageRequestId ||
+          !context.conversation ||
+          context.ws?.readyState !== WebSocket.OPEN
+        )
+          return
+        const request: Extract<
+          MlCopilotClientMessage,
+          { type: 'fetch_replay_page' }
+        > = {
+          type: 'fetch_replay_page',
+          request_id: uuidv4(),
+          cursor: context.replayNextCursor,
+        }
+        try {
+          context.ws.send(JSON.stringify(request))
+        } catch {
+          enqueue.assign({
+            replayNextCursor: undefined,
+            replayPageError: 'Unable to load older messages. Please reconnect.',
+          })
+          return
+        }
+        enqueue.assign({
+          replayPageRequestId: request.request_id,
+          replayPageError: undefined,
+        })
+        enqueue.cancel('replay-page-timeout')
+        enqueue.sendTo(
+          self,
+          {
+            type: ZookeeperManagerTransitions.ReplayPageTimeout,
+            requestId: request.request_id,
+          },
+          { id: 'replay-page-timeout', delay: ZOOKEEPER_REPLAY_PAGE_TIMEOUT_MS }
+        )
+      }),
+    },
+    [ZookeeperManagerTransitions.ReplayPageReceive]: {
+      actions: enqueueActions(({ context, event, enqueue }) => {
+        if (
+          !isCurrentReplayRequest(
+            context,
+            event.webSocket,
+            event.page.request_id
+          ) ||
+          event.page.conversation_id !== context.conversationId ||
+          !context.conversation
+        )
+          return
+        enqueue.cancel('replay-page-timeout')
+        try {
+          enqueue.assign({
+            conversation: {
+              ...context.conversation,
+              exchanges: prependReplayMessages(
+                context.conversation.exchanges,
+                event.page.messages
+              ),
+            },
+            replayNextCursor: event.page.next_cursor ?? undefined,
+            replayPageRequestId: undefined,
+            replayPageError: undefined,
+          })
+        } catch {
+          enqueue.assign({
+            replayNextCursor: undefined,
+            replayPageRequestId: undefined,
+            replayPageError: 'Unable to read older messages. Please reconnect.',
+          })
+        }
+      }),
+    },
+    [ZookeeperManagerTransitions.ReplayPageError]: {
+      actions: enqueueActions(({ context, event, enqueue }) => {
+        if (
+          !isCurrentReplayRequest(
+            context,
+            event.webSocket,
+            event.pageError.request_id
+          )
+        )
+          return
+        enqueue.cancel('replay-page-timeout')
+        enqueue.assign({
+          replayNextCursor:
+            event.pageError.code === 'load_failed'
+              ? context.replayNextCursor
+              : undefined,
+          replayPageRequestId: undefined,
+          replayPageError: event.pageError.detail,
+        })
+      }),
+    },
+    [ZookeeperManagerTransitions.ReplayPageTimeout]: {
+      actions: assign(({ context, event }) => {
+        if (event.requestId !== context.replayPageRequestId) return {}
+        return {
+          replayNextCursor: undefined,
+          replayPageRequestId: undefined,
+          replayPageError:
+            'Loading older messages timed out. Please reconnect.',
+        }
+      }),
+    },
+    [ZookeeperManagerTransitions.ResponseReceive]: {
+      actions: ['disconnectIfPendingBackendShutdown', 'receiveResponse'],
+    },
+    [ZookeeperManagerTransitions.UserReceive]: {
+      actions: assign(({ context, event }) => {
+        const previous = context.conversation?.exchanges ?? []
+        const exchanges = appendReceivedUser(previous, event.request)
+        if (exchanges === previous) return {}
+        return {
+          conversation: { ...context.conversation, exchanges },
+          awaitingResponse: true,
+          attachmentsLoadedForCurrentPrompt: true,
+          lastMessageId: (context.lastMessageId ?? -1) + 1,
+          lastMessageType: undefined,
+        }
+      }),
+    },
     [ZookeeperManagerTransitions.EditApplied]: {
       actions: assign(({ context, event }) => {
         // Identity fences late acknowledgements after clear/reconnect. An
@@ -1808,6 +2340,9 @@ export const zookeeperManagerMachine = setup({
         return { conversation: { ...context.conversation, exchanges } }
       }),
     },
+    [ZookeeperManagerTransitions.CloudProjectChanged]: {
+      actions: assign(({ event }) => ({ cloudProjectChange: event.change })),
+    },
     [ZookeeperManagerTransitions.AuthTokenChanged]: {
       actions: ['assignApiToken'],
     },
@@ -1816,16 +2351,16 @@ export const zookeeperManagerMachine = setup({
     },
     [ZookeeperManagerTransitions.AbruptClose]: {
       target: '#zookeeper-abrupt-close',
-      actions: ['handleAbruptClose'],
+      actions: [cancel('replay-page-timeout'), 'handleAbruptClose'],
     },
     [ZookeeperManagerTransitions.ResumeSuperseded]: {
       guard: 'isCurrentZookeeperWebSocket',
       target: '#zookeeper-abrupt-close',
-      actions: ['handleAbruptClose'],
+      actions: [cancel('replay-page-timeout'), 'handleAbruptClose'],
     },
     [ZookeeperManagerTransitions.NetworkOffline]: {
       target: '#zookeeper-abrupt-close',
-      actions: ['handleNetworkOffline'],
+      actions: [cancel('replay-page-timeout'), 'handleNetworkOffline'],
     },
   },
   states: {
@@ -2040,7 +2575,7 @@ export const zookeeperManagerMachine = setup({
                 ]),
                 [ZookeeperManagerTransitions.AbruptClose]: {
                   target: ZookeeperManagerTransitions.AbruptClose,
-                  actions: ['handleAbruptClose'],
+                  actions: [cancel('replay-page-timeout'), 'handleAbruptClose'],
                 },
               },
             },
@@ -2056,169 +2591,7 @@ export const zookeeperManagerMachine = setup({
                 target: S.Await,
                 actions: [
                   'disconnectIfPendingBackendShutdown',
-                  assign(({ event, context }) => {
-                    assertEvent(event, [
-                      ZookeeperManagerTransitions.ResponseReceive,
-                    ])
-
-                    if ('attachments_error' in event.response) {
-                      const { prompt_id, seq, indices, detail } =
-                        event.response.attachments_error
-
-                      const attachmentFetches = { ...context.attachmentFetches }
-
-                      for (const index of indices) {
-                        const key = getZookeeperAttachmentKey({
-                          prompt_id,
-                          seq,
-                          index,
-                        })
-
-                        if (attachmentFetches[key]?.status !== 'loading') {
-                          continue
-                        }
-
-                        attachmentFetches[key] = {
-                          status: 'error',
-                          message: detail,
-                        }
-                      }
-
-                      // Attachment failures must not change conversation or generation state.
-                      return { attachmentFetches }
-                    }
-
-                    if ('attachments' in event.response) {
-                      const attachmentFetches: Record<
-                        string,
-                        ZookeeperAttachmentFetchState
-                      > = {
-                        ...context.attachmentFetches,
-                      }
-
-                      for (const file of event.response.attachments.files) {
-                        if (file.attachment_ref === undefined) {
-                          continue
-                        }
-
-                        const key = getZookeeperAttachmentKey(
-                          file.attachment_ref
-                        )
-
-                        attachmentFetches[key] = {
-                          status: 'loaded',
-                          file,
-                        }
-                      }
-                      // This early return is needed because attachment response
-                      // is just a bookkeeping, not a message.
-                      // It should not create a conversation exchange, increment lastMessageId,
-                      // change awaitingResponse, or affect active Zookeeper generation.
-                      return { attachmentFetches }
-                    }
-
-                    const lastMessageId = (context.lastMessageId ?? -1) + 1
-                    const responseComplete = isResponseComplete(event.response)
-
-                    const conversation: Conversation = {
-                      exchanges: Array.from(
-                        context.conversation?.exchanges ?? []
-                      ),
-                    }
-
-                    // Errors are considered their own
-                    // exchanges because they have no end_of_stream signal.
-                    // It is assumed `info` messages are followed up
-                    // with an end_of_stream signal.
-                    if ('error' in event.response) {
-                      conversation.exchanges.push({
-                        responses: [event.response],
-                        deltasAggregated: '',
-                      })
-                      return {
-                        conversation,
-                        lastMessageId,
-                        awaitingResponse: false,
-                        attachmentsLoadedForCurrentPrompt: true,
-                        pendingBackendShutdown: responseComplete
-                          ? false
-                          : context.pendingBackendShutdown,
-                      }
-                    }
-
-                    if (isAttachmentsLoadedMessage(event.response)) {
-                      return {
-                        lastMessageId,
-                        attachmentsLoadedForCurrentPrompt: true,
-                        awaitingResponse: context.awaitingResponse,
-                        pendingBackendShutdown: responseComplete
-                          ? false
-                          : context.pendingBackendShutdown,
-                      }
-                    }
-
-                    let lastExchange: Exchange | undefined =
-                      conversation.exchanges[conversation.exchanges.length - 1]
-
-                    if (lastExchange === undefined) {
-                      lastExchange = {
-                        responses: [event.response],
-                        deltasAggregated: '',
-                      }
-                      conversation.exchanges.push(lastExchange)
-
-                      // OPTIMIZATION: `delta` responses are aggregated instead
-                      // of being included in the responses list.
-                    } else if ('delta' in event.response) {
-                      lastExchange.deltasAggregated +=
-                        event.response.delta.delta
-                    } else {
-                      lastExchange.responses.push(event.response)
-                    }
-
-                    if ('end_of_stream' in event.response) {
-                      conversation.exchanges[
-                        conversation.exchanges.length - 1
-                      ] = compactAppliedEdits(lastExchange)
-                    }
-
-                    // This sucks but must be done because we can't
-                    // enumerate the message types.
-                    const r = event.response
-                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
-                      'info',
-                      'error',
-                      'end_of_stream',
-                      'session_data',
-                      'conversation_id',
-                      'delta',
-                      'tool_output',
-                      'reasoning',
-                      'files',
-                      'replay',
-                    ]
-                    const lastMessageType:
-                      | TypeVariant<MlCopilotServerMessage>
-                      | undefined = ts.find((t) => t in r)
-
-                    // Defensive: possible we hit messages we don't handle -
-                    // don't add to context!
-                    if (lastMessageType === undefined) {
-                      return context
-                    }
-
-                    return {
-                      conversation,
-                      lastMessageId,
-                      lastMessageType,
-                      awaitingResponse: responseComplete
-                        ? false
-                        : context.awaitingResponse,
-                      pendingBackendShutdown: responseComplete
-                        ? false
-                        : context.pendingBackendShutdown,
-                    }
-                  }),
+                  'receiveResponse',
                 ],
               },
             },
@@ -2332,6 +2705,7 @@ export const zookeeperManagerMachine = setup({
       always: {
         target: S.Await,
         actions: [
+          cancel('replay-page-timeout'),
           ({ context }) => {
             // Close before clearing context so the live socket is still reachable.
             closeZookeeperWebSocket(context.ws)
@@ -2347,6 +2721,10 @@ export const zookeeperManagerMachine = setup({
               accessDeniedCode: undefined,
               conversation: undefined,
               conversationId: undefined,
+              useLegacyReplay: false,
+              replayNextCursor: undefined,
+              replayPageRequestId: undefined,
+              replayPageError: undefined,
               cachedSetup: undefined,
               lastMessageId: undefined,
               lastMessageType: undefined,

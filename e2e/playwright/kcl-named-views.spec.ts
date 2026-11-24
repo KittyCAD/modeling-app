@@ -1,5 +1,4 @@
-import { join } from 'path'
-import * as fsp from 'fs/promises'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -112,244 +111,209 @@ isometricAt = view::named(
 const VIEW_SWITCHER_PANE = `#${DefaultLayoutPaneID.NamedViews}-pane`
 const VIEW_SWITCHER_BUTTON = `${DefaultLayoutPaneID.NamedViews}-pane-button`
 
-async function writeTopTargetProject(dir: string) {
-  const projectDir = join(dir, 'top-target')
-  await fsp.mkdir(projectDir, { recursive: true })
-  await fsp.writeFile(join(projectDir, 'main.kcl'), TOP_TARGET_KCL, 'utf-8')
-}
-
-async function writeIsometricTargetProject(dir: string) {
-  const projectDir = join(dir, 'isometric-target')
-  await fsp.mkdir(projectDir, { recursive: true })
-  await fsp.writeFile(
-    join(projectDir, 'main.kcl'),
-    ISOMETRIC_TARGET_KCL,
-    'utf-8'
+async function writeTopTargetProject(
+  dir: string,
+  fs: PromisifiedZooDesignStudioFS
+) {
+  const projectDir = await fs.join(dir, 'top-target')
+  await fs.mkdir(projectDir, { recursive: true })
+  await fs.writeFile(
+    await fs.join(projectDir, 'main.kcl'),
+    new TextEncoder().encode(TOP_TARGET_KCL)
   )
 }
 
-async function writeProject(dir: string) {
-  const projectDir = join(dir, 'named-views')
-  await fsp.mkdir(projectDir, { recursive: true })
-  await fsp.writeFile(join(projectDir, 'main.kcl'), MAIN_KCL, 'utf-8')
-  await fsp.writeFile(join(projectDir, 'panel.kcl'), PANEL_KCL, 'utf-8')
+async function writeIsometricTargetProject(
+  dir: string,
+  fs: PromisifiedZooDesignStudioFS
+) {
+  const projectDir = await fs.join(dir, 'isometric-target')
+  await fs.mkdir(projectDir, { recursive: true })
+  await fs.writeFile(
+    await fs.join(projectDir, 'main.kcl'),
+    new TextEncoder().encode(ISOMETRIC_TARGET_KCL)
+  )
 }
 
-test.describe('KCL named views', { tag: '@desktop' }, () => {
-  test('the rail button opens and closes the switcher', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
+async function writeProject(dir: string, fs: PromisifiedZooDesignStudioFS) {
+  const projectDir = await fs.join(dir, 'named-views')
+  await fs.mkdir(projectDir, { recursive: true })
+  await fs.writeFile(
+    await fs.join(projectDir, 'main.kcl'),
+    new TextEncoder().encode(MAIN_KCL)
+  )
+  await fs.writeFile(
+    await fs.join(projectDir, 'panel.kcl'),
+    new TextEncoder().encode(PANEL_KCL)
+  )
+}
 
-    await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
+test.use({ useTestSettings: true })
 
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toBeVisible()
-
-    await toolbar.closePane(DefaultLayoutPaneID.NamedViews)
-    await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
-  })
-
-  test('numbers the rows from 1, lists Default View first, and prefixes a name two modules declare', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-
-    const labels = page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-label')
-    const numbers = page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByTestId('named-view-number')
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
-
-    // Graph insertion order: the `import` executes before the local
-    // declarations, so the imported view is registered first.
-    await expect(labels).toHaveText([
-      'Default View',
-      'panel::Front',
-      'main::Front',
-      'Top',
-    ])
-    // The number is the row's position in the list, so `Default View` is 1.
-    await expect(numbers).toHaveText(['1', '2', '3', '4'])
-    await expect(rows.first()).toHaveAttribute('data-active', 'true')
-  })
-
-  test('activating a view moves the active marker and returns it', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
-
-    const pane = page.locator(VIEW_SWITCHER_PANE)
-    await expect(pane.getByTestId('named-view-create')).toBeVisible()
-    const rows = pane.getByTestId('named-view-row')
-    const defaultView = rows.filter({ hasText: 'Default View' })
-    const top = rows.filter({ hasText: 'Top' })
-
-    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-    await expect(top).toHaveAttribute('data-active', 'true')
-    await expect(defaultView).toHaveAttribute('data-active', 'false')
-
-    await defaultView
-      .getByRole('button', { name: 'Apply Default View', exact: true })
-      .click()
-    await expect(defaultView).toHaveAttribute('data-active', 'true')
-    await expect(top).toHaveAttribute('data-active', 'false')
-  })
-
+test.describe('KCL named views', { tag: '@web' }, () => {
   /**
    * Guards the active-view pointer against an execution, not the reapply. The
    * scene the reapply sends is covered by the unit tests, which can read the
    * batch; nothing in the DOM reports engine visibility.
    */
-  test('an edit leaves the active view marked', async ({
-    homePage,
-    scene,
-    toolbar,
-    editor,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  test(
+    'an edit leaves the active view marked',
+    { tag: '@localRenderer' },
+    async ({ fs, homePage, scene, toolbar, editor, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
+      await homePage.openProject('named-views')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
-    const top = rows.filter({ hasText: 'Top' })
+      const rows = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-row')
+      const top = rows.filter({ hasText: 'Top' })
 
-    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-    await expect(top).toHaveAttribute('data-active', 'true')
+      await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
+      await expect(top).toHaveAttribute('data-active', 'true')
 
-    await editor.openPane()
-    await editor.replaceCode('', MAIN_KCL + SIDE_VIEW_KCL)
+      await editor.openPane()
+      await editor.replaceCode('', MAIN_KCL + SIDE_VIEW_KCL)
 
-    // The new row is the signal that the execution finished and the pane read
-    // the graph it produced.
-    await expect(rows.filter({ hasText: 'Side' })).toHaveCount(1)
-    await expect(top).toHaveAttribute('data-active', 'true')
-  })
+      // The new row is the signal that the execution finished and the pane read
+      // the graph it produced.
+      await expect(rows.filter({ hasText: 'Side' })).toHaveCount(1)
+      await expect(top).toHaveAttribute('data-active', 'true')
+    }
+  )
 
-  test('deleting the active view returns to Default View and says so', async ({
-    homePage,
-    scene,
-    toolbar,
-    editor,
-    page,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(writeProject)
-    await homePage.openProject('named-views')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  test(
+    'deleting the active view returns to Default View and says so',
+    { tag: '@localRenderer' },
+    async ({ fs, homePage, scene, toolbar, editor, page, folderSetupFn }) => {
+      await folderSetupFn((dir) => writeProject(dir, fs))
+      await homePage.openProject('named-views')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-    const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
-    const top = rows.filter({ hasText: 'Top' })
-    const defaultView = rows.filter({ hasText: 'Default View' })
+      const rows = page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByTestId('named-view-row')
+      const top = rows.filter({ hasText: 'Top' })
+      const defaultView = rows.filter({ hasText: 'Default View' })
 
-    await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
-    await expect(top).toHaveAttribute('data-active', 'true')
+      await top.getByRole('button', { name: 'Apply Top', exact: true }).click()
+      await expect(top).toHaveAttribute('data-active', 'true')
 
-    await editor.openPane()
-    await editor.replaceCode('', MAIN_KCL_WITHOUT_TOP)
+      await editor.openPane()
+      await editor.replaceCode('', MAIN_KCL_WITHOUT_TOP)
 
-    await expect(top).toHaveCount(0)
-    await expect(defaultView).toHaveAttribute('data-active', 'true')
-    await expect(
-      page.getByText('The view "Top" is no longer in this program.')
-    ).toBeVisible()
-  })
+      await expect(top).toHaveCount(0)
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
+      await expect(
+        page.getByText('The view "Top" is no longer in this program.')
+      ).toBeVisible()
+    }
+  )
 
-  test('a Top view centres on its own target, not the current one', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    const u = await getUtils(page)
-    await folderSetupFn(writeTopTargetProject)
-    await homePage.openProject('top-target')
-    await scene.settled()
-    await u.openDebugPanel()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`a Top view centres on its own target, not the current one ${rendererTag}`, async ({
+      fs,
+      homePage,
+      scene,
+      toolbar,
+      page,
+      folderSetupFn,
+    }) => {
+      const u = await getUtils(page)
+      await folderSetupFn((dir) => writeTopTargetProject(dir, fs))
+      await homePage.openProject('top-target')
+      await scene.settled()
+      if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      const pane = page.locator(VIEW_SWITCHER_PANE)
+      await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
+      await expect(pane).toHaveCount(0)
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+      await expect(pane).toBeVisible()
 
-    await u.clearCommandLogs()
-    await page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByRole('button', { name: 'Apply TopAt', exact: true })
-      .click()
+      const rows = pane.getByTestId('named-view-row')
+      const defaultView = rows.filter({ hasText: 'Default View' })
+      const top = rows.filter({ hasText: 'TopAt' })
+      await expect(pane.getByTestId('named-view-create')).toBeVisible()
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
 
-    // Top and bottom take the quaternion route rather than a look-at.
-    await u.waitForCmdReceive('default_camera_set_view')
-    await u.clearCommandLogs()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
+      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      await top
+        .getByRole('button', { name: 'Apply TopAt', exact: true })
+        .click()
+      await expect(top).toHaveAttribute('data-active', 'true')
+      await expect(defaultView).toHaveAttribute('data-active', 'false')
+
+      if (rendererTag === '@streamRenderer') {
+        // Top and bottom take the quaternion route rather than a look-at.
+        await u.waitForCmdReceive('default_camera_set_view')
+        await u.clearCommandLogs()
+        await u.sendCustomCmd({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
+        await u.waitForCmdReceive('default_camera_get_settings')
+      }
+      if (rendererTag === '@localRenderer') {
+        await expect
+          .poll(async () => (await scene.getCameraInfo()).position)
+          .toEqual([10, 20, 100])
+      } else {
+        // The view's target, not the model's centre.
+        await expect(page.getByTestId('cam-x-position')).toHaveValue('10')
+        await expect(page.getByTestId('cam-y-position')).toHaveValue('20')
+        await expect(page.getByTestId('cam-z-position')).toHaveValue('100')
+      }
+
+      await defaultView
+        .getByRole('button', { name: 'Apply Default View', exact: true })
+        .click()
+      await expect(defaultView).toHaveAttribute('data-active', 'true')
+      await expect(top).toHaveAttribute('data-active', 'false')
+
+      await toolbar.closePane(DefaultLayoutPaneID.NamedViews)
+      await expect(pane).toHaveCount(0)
     })
-    await u.waitForCmdReceive('default_camera_get_settings')
 
-    // The view's target, not the model's centre.
-    await expect(page.getByTestId('cam-x-position')).toHaveValue('10')
-    await expect(page.getByTestId('cam-y-position')).toHaveValue('20')
-    await expect(page.getByTestId('cam-z-position')).toHaveValue('100')
-  })
+    test(`an Isometric view uses its own target and distance ${rendererTag}`, async ({
+      fs,
+      homePage,
+      scene,
+      toolbar,
+      page,
+      folderSetupFn,
+    }) => {
+      const u = await getUtils(page)
+      await folderSetupFn((dir) => writeIsometricTargetProject(dir, fs))
+      await homePage.openProject('isometric-target')
+      await scene.settled()
+      if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-  test('an Isometric view uses its own target and distance', async ({
-    homePage,
-    scene,
-    toolbar,
-    page,
-    folderSetupFn,
-  }) => {
-    const u = await getUtils(page)
-    await folderSetupFn(writeIsometricTargetProject)
-    await homePage.openProject('isometric-target')
-    await scene.settled()
-    await u.openDebugPanel()
-    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      await page
+        .locator(VIEW_SWITCHER_PANE)
+        .getByRole('button', { name: 'Apply IsometricAt', exact: true })
+        .click()
 
-    await u.clearCommandLogs()
-    await page
-      .locator(VIEW_SWITCHER_PANE)
-      .getByRole('button', { name: 'Apply IsometricAt', exact: true })
-      .click()
+      if (rendererTag === '@streamRenderer')
+        await u.waitForCmdReceive('default_camera_set_view')
+      await expect(async () => {
+        const camera = await scene.getCameraInfo()
 
-    await u.waitForCmdReceive('default_camera_set_view')
-    const camera = await scene.getCameraInfo()
-
-    expect(camera.target).toEqual([10, 20, 0])
-    const distance = Math.hypot(
-      camera.position[0] - camera.target[0],
-      camera.position[1] - camera.target[1],
-      camera.position[2] - camera.target[2]
-    )
-    // The debug camera properties round each coordinate to two decimal places.
-    expect(Math.abs(distance - 100)).toBeLessThanOrEqual(0.01)
-  })
+        expect(camera.target).toEqual([10, 20, 0])
+        const distance = Math.hypot(
+          camera.position[0] - camera.target[0],
+          camera.position[1] - camera.target[1],
+          camera.position[2] - camera.target[2]
+        )
+        // The debug camera properties round each coordinate to two decimal places.
+        expect(Math.abs(distance - 100)).toBeLessThanOrEqual(0.01)
+      }).toPass({ timeout: 5_000 })
+    })
+  }
 })

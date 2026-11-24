@@ -1,0 +1,36 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_compatibility_bindings.kcl
+---
+@settings(experimentalFeatures = allow)
+
+// Return only sketch-local bindings and generated metadata, with no parent
+// bindings or solver exports. An empty sketch returns {}. A sketch with only
+// local values returns those bindings without sketch metadata.
+
+on = XY
+parentValue = 5mm
+sketch = 123
+// Formatting and a JSON round trip must keep the shorthand argument and its comment.
+profile = sketch(
+  on,
+  // plane
+) {
+  // Only local bindings belong to the result.
+  label = "local"
+  length = parentValue
+  x = var 0mm
+  edge = line(start = [x, 0mm], end = [parentValue, 0mm])
+  x == 0mm
+}
+empty = sketch(on = XZ) {
+}
+localsOnly = sketch(on = YZ) {
+  value = 9
+}
+parentAfter = sketch
+segment = profile.edge
+geometry = profile.meta.sketch
+assert(profile.length, isEqualTo = parentValue)
+assert(localsOnly.value, isEqualTo = 9)
+assert(parentAfter, isEqualTo = 123)

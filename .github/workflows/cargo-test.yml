@@ -1,10 +1,17 @@
 name: cargo test
 
+# Due to test infrastructure scaling limitations, we do not automatically run
+# E2E tests on every push. Instead, PRs opt-in by applying the `run-e2e` label
+# once local development is complete. Remove the label to save CI costs if a PR
+# needs to undergo further changes. Consider only applying the label to the top
+# of large PR stacks.
+
 on:
   push:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
   schedule:
     - cron: 0 * * * * # hourly
@@ -18,12 +25,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  e2e-enabled:
+    if: >-
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'run-e2e')
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - run: echo "E2E is enabled for this event"
+
   build-test-artifacts:
     name: Build test artifacts
+    needs: [e2e-enabled]
     # Keep host-user Cargo outputs separate from the root-run MUSL build.
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
-      - uses: runs-on/action@v2.5.0
+      - uses: runs-on/action@v2.7.1
       - uses: actions/create-github-app-token@v3
         id: app-token
         with:
@@ -47,7 +63,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -163,18 +179,18 @@ jobs:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
   check-bindings:
-    name: Check TypeScript-facing bindings against expected
+    name: Check bindings
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     needs: build-test-artifacts
     steps:
-      - uses: runs-on/action@v2.5.0
+      - uses: runs-on/action@v2.7.1
       - uses: actions/checkout@v7.0.1
       - name: Use correct Rust toolchain
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -206,7 +222,7 @@ jobs:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
     steps:
-      - uses: runs-on/action@v2.5.0
+      - uses: runs-on/action@v2.7.1
       - uses: actions/create-github-app-token@v3
         id: app-token
         with:
@@ -221,7 +237,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.1
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -260,7 +276,6 @@ jobs:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
-          TWENTY_TWENTY: store-artifact-on-mismatch
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}

@@ -1,3 +1,4 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -26,7 +27,6 @@ import {
   assertParse,
   recast,
 } from '@src/lang/wasm'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -38,38 +38,20 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-})
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, kclManager, rustContext }) => {
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+    rustContextInThisFile = rustContext
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 const executeCode = async (
   code: string,
@@ -291,7 +273,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg02')
       expect(newCode).toContain('tag = $seg03')
       // Should create three separate GDT annotations (one per face)
-      const gdtCalls = newCode.match(/note\d{3} = gdt::flatness/g)
+      const gdtCalls = newCode.match(/annotation\d{3} = gdt::flatness/g)
       expect(gdtCalls).toHaveLength(3)
       // Verify each face has its own annotation
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
@@ -2119,7 +2101,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       // A note is standalone: no faces/edges selection, just the text.
-      expect(newCode).toContain('note001 = gdt::note(note = "Note:")')
+      expect(newCode).toContain('annotation001 = gdt::note(note = "Note:")')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

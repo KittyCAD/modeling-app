@@ -1,0 +1,44 @@
+# Keep block values opaque and reusable
+
+The [KCL Blocks RFC](https://github.com/KittyCAD/kcl-experiments/pull/32) makes
+generalized blocks opaque values whose consumers control evaluation. These
+user-facing capabilities apply to KCL 4, including `4.0-preview`, and later; the
+shared implementation preserves earlier sketch semantics as described in [ADR
+0001](0001-kcl-4-generalized-blocks.md). Blocks follow ordinary KCL storage and
+transport rules: they may be bound to variables, stored in arrays or objects,
+and returned from ordinary functions. KCL cannot execute or inspect them. Rust
+consumers may execute a block zero, one, or multiple times, with fresh local
+bindings on each execution. This preserves ordinary value transport without
+introducing one-shot consumption.
+
+Blocks inherit ordinary closure capture: their lexical scope is captured as a
+snapshot when the value is created and remains available if the value escapes
+its defining call. Forwarding preserves the block's original source identity. In
+KCL 4 and later, lookup follows the RFC's order: local bindings, captured
+lexical parents, the consumer-opened module, then the prelude. Giving lexical
+bindings precedence allows DSL modules to add exports without taking over
+existing names; placing the opened module before the prelude allows solver
+functions to shadow older sketch functions. In particular, a parent-scope
+variable or function named `line` shadows `std::solver::line` only in KCL 4 and
+later. KCL 3 and earlier retain their existing sketch lookup order, where the
+solver export wins over those parent bindings. Simulation tests must pin both
+cases as well as the version-specific return behavior before the implementation
+changes, then add KCL 4 expectations during feature enablement.
+
+In KCL 4 and later, a `return` belonging to a block is rejected when that block
+value is created, including returns in dead branches and blocks the consumer
+will never execute. Returns belonging to nested ordinary functions remain legal.
+This makes the restriction independent of consumer behavior and reserves block
+control-flow semantics for future work. The same implementation preserves the
+earlier versions' sketch-return behavior through version-dependent execution.
+
+In KCL 4 and later, generic block parsing does not impose sketch-only
+restrictions. The sketch consumer checks sketch-specific validity when executing
+its block, so a block forwarded through an ordinary KCL wrapper can contain
+sketch code such as `var` expressions. Context-specific checks must follow the
+consumer rather than the spelling of the receiving call. Earlier versions retain
+their existing sketch validation behavior through the shared representation and
+version-aware processing. Existing sketch result bindings and metadata, reserved
+sketch bindings, and restrictions on nested sketch execution and engine
+communication remain sketch-consumer behavior; they do not become restrictions
+on all blocks.

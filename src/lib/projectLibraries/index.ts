@@ -29,7 +29,7 @@ export function getProjectLibrarySummaryDescription(
   library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
 ) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return 'Projects in this library sync to your Zoo account'
+    return 'Projects in this library are saved to your Zoo account'
   }
 
   if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
@@ -44,7 +44,7 @@ export function getProjectLibraryDetailsDescription(
 ) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
     return [
-      'Projects in this library sync to your Zoo account.',
+      'Projects in this library are saved to your Zoo account.',
       'Storage type and model-training controls depend on your plan.',
     ].join(' ')
   }
@@ -97,6 +97,7 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
   icon?: string
   order?: number
+  hiddenByDefault?: boolean
 }
 
 export interface ProjectLibraryInitialProject {
@@ -452,15 +453,24 @@ export function projectLibraryFromSetting(
 }
 
 export function projectLibrariesFromSettings(
-  libraries: readonly ProjectLibrarySetting[]
+  libraries: readonly ProjectLibrarySetting[],
+  libraryTypes?: ReadonlyMap<string, { libraries?: readonly ProjectLibrary[] }>
 ): ProjectLibrary[] {
   const defaultProjectDirectory =
     getDefaultDirectoryProjectLibraryPath(libraries)
-  return libraries.map((library, index) =>
-    projectLibraryFromSetting(library, index, {
-      defaultProjectDirectory,
-    })
+  const configured = libraries.some(
+    (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
   )
+    ? libraries
+    : [...libraries, getDefaultCloudProjectLibrarySetting()]
+  const result = configured.map((library, index) =>
+    projectLibraryFromSetting(library, index, { defaultProjectDirectory })
+  )
+  const byId = new Map(result.map((library) => [library.id, library]))
+  for (const type of libraryTypes?.values() ?? [])
+    for (const library of type.libraries ?? [])
+      if (!byId.has(library.id)) byId.set(library.id, library)
+  return [...byId.values()]
 }
 
 export function updateDefaultDirectoryProjectLibrarySetting(

@@ -9,6 +9,7 @@ pub mod chamfer;
 pub mod clone;
 pub mod constraints;
 pub mod csg;
+pub mod drawing;
 pub mod edge;
 pub mod extrude;
 pub mod faces;
@@ -20,7 +21,6 @@ pub mod ids;
 pub mod loft;
 pub mod math;
 pub mod mirror;
-pub mod operation;
 pub mod patterns;
 pub mod planes;
 pub(crate) mod region_consumption;
@@ -224,8 +224,8 @@ impl StdFnProps {
 ///   compatibility exception that warns instead of rejecting the call.
 ///
 /// Region and solid policies are independent, so their modifiers may be chained.
-pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
-    match (path, fn_name) {
+pub(crate) fn std_fn(path: &str, fn_name: &str) -> Result<(crate::std::StdFn, StdFnProps), KclError> {
+    Ok(match (path, fn_name) {
         ("gdt", "datum") => (
             |e, a| Box::pin(crate::std::gdt::datum(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::gdt::datum"),
@@ -916,14 +916,20 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::normal))),
             StdFnProps::default("std::view::named"),
         ),
-        ("operation", "facing") => (
-            |e, a| Box::pin(crate::std::operation::facing(e, a).map(|r| r.map(KclValue::normal))),
-            StdFnProps::default("std::operation::facing"),
+        ("drawing", "standardSheet") => (
+            |e, a| Box::pin(crate::std::drawing::create_sheet(e, a).map(|r| r.map(KclValue::normal))),
+            StdFnProps::default("std::drawing::standardSheet"),
+        ),
+        ("drawing", "customSheet") => (
+            |e, a| Box::pin(crate::std::drawing::create_custom_sheet(e, a).map(|r| r.map(KclValue::normal))),
+            StdFnProps::default("std::drawing::customSheet"),
         ),
         (module, fn_name) => {
-            panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
+            return Err(KclError::internal(format!(
+                "No implementation found for {module}::{fn_name}, this is not a recognized KCL standard library function"
+            )));
         }
-    }
+    })
 }
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
@@ -949,6 +955,7 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ),
         ("view", "CameraView") => (PrimitiveType::CameraView, StdFnProps::default("std::view::CameraView")),
         ("view", "NamedView") => (PrimitiveType::NamedView, StdFnProps::default("std::view::NamedView")),
+        ("drawing", "Sheet") => (PrimitiveType::Sheet, StdFnProps::default("std::drawing::Sheet")),
         _ => unreachable!(),
     }
 }

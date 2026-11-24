@@ -1,4 +1,6 @@
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
 import type { KclManager } from '@src/lang/KclManager'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -42,42 +44,21 @@ import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import {
-  buildTheWorldAndConnectToEngine,
-  buildTheWorldAndNoEngineConnection,
-} from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine({ webrtc: false, geometryOnly: true })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-})
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown({
-    route: 'user-requested',
-    initiatedBy: 'client',
-  })
-})
+setupEngineTestWorld(
+  ({ instance, kclManager, rustContext }) => {
+    instanceInThisFile = instance
+    kclManagerInThisFile = kclManager
+    rustContextInThisFile = rustContext
+  },
+  { webrtc: false, geometryOnly: true }
+)
 
 // TODO: two different methods for the same thing. Why?
 async function getAstAndArtifactGraphEngineless(
@@ -908,7 +889,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add an extrude call with bodyType "surface"', async () => {
+    it('should add a tagged surface extrude from a sketch v1 profile', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
@@ -924,6 +905,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
         sketches,
         length,
         bodyType: 'SURFACE',
+        tagEnd: 'myEndTag',
         artifactGraph,
         wasmInstance: instanceInThisFile,
       })
@@ -931,7 +913,12 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(
-        `extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
+        `extrude001 = extrude(
+  profile001,
+  length = 1,
+  tagEnd = $myEndTag,
+  bodyType = SURFACE,
+)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
@@ -1999,7 +1986,47 @@ profile003 = startProfile(sketch002, at = [0, 0])
 )`)
     })
 
-    // Note: helix sweep will be done in e2e since helix artifacts aren't created by the engineless executor
+    it('should sweep a sketch v1 profile along a helix', async () => {
+      const code = `helix001 = helix(
+  axis = X,
+  radius = 1,
+  length = 10,
+  revolutions = 10,
+  angleStart = 0,
+  ccw = false,
+)
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, -1], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const helix = [...artifactGraph.values()].find((a) => a.type === 'helix')
+      if (!helix) throw new Error('Helix artifact not found')
+
+      const result = addSweep({
+        ast,
+        artifactGraph,
+        sketches,
+        path: createSelectionFromArtifacts([helix], artifactGraph),
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `sweep001 = sweep(
+  profile001,
+  path = helix001,
+  bodyType = SURFACE,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
 
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -2300,8 +2327,13 @@ mixedLoft = loft(
     })
 
     it('should add a basic loft call with surface bodyType', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+plane001 = offsetPlane(XZ, offset = 50)
+sketch002 = startSketchOn(plane001)
+  |> circle(center = [0, 0], radius = 20)`
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
-        twoCirclesCode,
+        code,
         instanceInThisFile,
         kclManagerInThisFile
       )
@@ -2315,9 +2347,9 @@ mixedLoft = loft(
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(twoCirclesCode)
+      expect(newCode).toContain(code)
       expect(newCode).toContain(
-        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+        `loft001 = loft([sketch001, sketch002], bodyType = SURFACE)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -2739,7 +2771,7 @@ revolve001 = revolve(
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add revolve call around edge', async () => {
+    it('should add and edit a surface revolve with a sketch v1 axis', async () => {
       const code = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
   |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
@@ -2779,6 +2811,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         sketches,
         angle,
         edge,
+        bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -2786,8 +2819,50 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(code)
       expect(newCode).toContain(
-        `revolve001 = revolve(sketch002, angle = 20, axis = rectangleSegmentA001`
+        `revolve001 = revolve(
+  sketch002,
+  angle = 20,
+  axis = rectangleSegmentA001,
+  bodyType = SURFACE,
+)`
       )
+
+      const editAngle = await getKclCommandValue(
+        '180deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const edited = addRevolve({
+        ast: result.modifiedAst,
+        artifactGraph,
+        sketches,
+        angle: {
+          ...editAngle,
+          variableName: 'angle001',
+          variableDeclarationAst: createVariableDeclaration(
+            'angle001',
+            editAngle.valueAst
+          ),
+          variableIdentifierAst: createLocalName('angle001'),
+          insertIndex: result.modifiedAst.body.length - 1,
+        },
+        axis: 'X',
+        bodyType: 'SURFACE',
+        nodeToEdit: result.pathToNode,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(edited)) throw edited
+
+      expect(recast(edited.modifiedAst, instanceInThisFile)).toContain(
+        `angle001 = 180deg
+revolve001 = revolve(
+  sketch002,
+  angle = angle001,
+  axis = X,
+  bodyType = SURFACE,
+)`
+      )
+      await enginelessExecutor(edited.modifiedAst, rustContextInThisFile)
     })
 
     it('should add revolve call around line segment from sketch', async () => {

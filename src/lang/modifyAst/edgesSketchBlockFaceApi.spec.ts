@@ -1,4 +1,5 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
+import { describe, expect, it } from 'vitest'
 
 import env from '@src/env'
 import type { KclManager } from '@src/lang/KclManager'
@@ -17,13 +18,10 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let rustContextInThisFile: RustContext = null!
-let engineCommandManagerInThisFile: ConnectionManager | null = null
 
 const sketchBlockBooleanFilletFaceApi = `startX = 2
 
@@ -65,24 +63,17 @@ function getRegionTagName(expr: Expr): string | null {
 const describeWithEngine = env().VITE_ZOO_API_TOKEN ? describe : describe.skip
 
 describeWithEngine('edges sketch block face api regression', () => {
-  beforeAll(async () => {
-    const { instance, kclManager, engineCommandManager, rustContext } =
-      await buildTheWorldAndConnectToEngine({
-        webrtc: false,
-        geometryOnly: true,
-      })
-    instanceInThisFile = instance
-    kclManagerInThisFile = kclManager
-    engineCommandManagerInThisFile = engineCommandManager
-    rustContextInThisFile = rustContext
-  }, 60_000)
-
-  afterAll(() => {
-    engineCommandManagerInThisFile?.tearDown({
-      route: 'user-requested',
-      initiatedBy: 'client',
-    })
-  })
+  setupEngineTestWorld(
+    ({ instance, kclManager, rustContext }) => {
+      instanceInThisFile = instance
+      kclManagerInThisFile = kclManager
+      rustContextInThisFile = rustContext
+    },
+    {
+      webrtc: false,
+      geometryOnly: true,
+    }
+  )
 
   it('emits baseRegion.tags.* sideFaces for sketch block boolean fillet codemod', async () => {
     const { artifactGraph, ast } = await getAstAndArtifactGraph(
@@ -159,5 +150,5 @@ describeWithEngine('edges sketch block face api regression', () => {
       'edges = [ { sideFaces = [ baseRegion.tags.yoyo, baseRegion.tags.hi ] } ]'
     )
     await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-  }, 30_000)
+  })
 })

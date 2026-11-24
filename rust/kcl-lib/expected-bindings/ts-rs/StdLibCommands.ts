@@ -1532,6 +1532,108 @@ export default {
       }
     ]
   },
+  "drawing::customSheet": {
+    "name": "customSheet",
+    "preferredName": "drawing::customSheet",
+    "qualName": "std::drawing::customSheet",
+    "moduleName": "drawing",
+    "returnType": "Sheet",
+    "addedIn": "4.0",
+    "summary": "Create a drawing sheet from two side lengths and a name.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "width",
+        "ty": "number(Length)",
+        "docs": "The width of the paper before applying the orientation.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "height",
+        "ty": "number(Length)",
+        "docs": "The height of the paper before applying the orientation.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "orientation",
+        "ty": "SheetOrientation",
+        "docs": "The orientation of the sheet.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "name",
+        "ty": "string",
+        "docs": "A human-readable name that must be nonblank after trimming whitespace.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "drawing::standardSheet": {
+    "name": "standardSheet",
+    "preferredName": "drawing::standardSheet",
+    "qualName": "std::drawing::standardSheet",
+    "moduleName": "drawing",
+    "returnType": "Sheet",
+    "addedIn": "4.0",
+    "summary": "Create a drawing sheet from a standard paper size.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "size",
+        "ty": "SheetSize",
+        "docs": "The standard paper size.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "orientation",
+        "ty": "SheetOrientation",
+        "docs": "The orientation of the sheet.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "edgeId": {
     "name": "edgeId",
     "preferredName": "edgeId",
@@ -3116,7 +3218,7 @@ export default {
       {
         "name": "from",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center.",
+        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3128,7 +3230,7 @@ export default {
       {
         "name": "to",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center.",
+        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3140,7 +3242,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`.",
+        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3164,7 +3266,7 @@ export default {
       {
         "name": "framePosition",
         "ty": "Point2d",
-        "docs": "The position of the distance label relative to the measured geometry. The default is `[100mm, 100mm]`.",
+        "docs": "The distance label's local offset `[along, setback]`, in length units. `along` moves the label from the measurement midpoint, positive toward `from` and negative toward `to`; `0` centers it when the text fits. `setback` sets the perpendicular leader extent in `framePlane`; the dimension line lies at 80% of this extent. Its sign chooses the side. When omitted, the label is centered with a setback equal to the average of the positive dimensions of the measured entities' bounding box, matching the scale used by other GD&T annotations. If the selected bounds are unavailable, the model bounds are used, then `[0mm, 20mm]` as a fallback. Point-and-click writes the calculated position as literal lengths. Explicit positions are preserved, including `[0, 0]`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3176,7 +3278,7 @@ export default {
       {
         "name": "framePlane",
         "ty": "Plane",
-        "docs": "The plane in which to display the distance. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The distance may be displayed in a plane parallel to the given plane.",
+        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6862,56 +6964,6 @@ export default {
         "name": "offset",
         "ty": "number(Length)",
         "docs": "Distance from the standard plane this new plane will be created at.",
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      }
-    ]
-  },
-  "operation::facing": {
-    "name": "facing",
-    "preferredName": "operation::facing",
-    "qualName": "std::operation::facing",
-    "moduleName": "operation",
-    "returnType": "number(_)",
-    "addedIn": null,
-    "deprecated": false,
-    "deprecatedSince": null,
-    "experimental": true,
-    "docHidden": false,
-    "args": [
-      {
-        "name": "solid",
-        "ty": "Solid",
-        "docs": null,
-        "required": true,
-        "special": true,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      },
-      {
-        "name": "toolDiameter",
-        "ty": "number(Length)",
-        "docs": null,
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      },
-      {
-        "name": "stepOver",
-        "ty": "number",
-        "docs": null,
         "required": true,
         "special": false,
         "experimental": false,
@@ -11470,6 +11522,22 @@ export default {
 } as const
 
 export const STD_LIB_ENUMS = {
+  "drawing::SheetOrientation": [
+    "Landscape",
+    "Portrait"
+  ],
+  "drawing::SheetSize": [
+    "AnsiA",
+    "AnsiB",
+    "AnsiC",
+    "AnsiD",
+    "AnsiE",
+    "IsoA0",
+    "IsoA1",
+    "IsoA2",
+    "IsoA3",
+    "IsoA4"
+  ],
   "view::Orientation": [
     "Front",
     "Back",

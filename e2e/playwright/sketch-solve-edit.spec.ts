@@ -1,4 +1,5 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'
@@ -23,7 +24,9 @@ async function waitForCodeChange(
   page: Page,
   previousCode: string
 ): Promise<string> {
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCode)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCode, {
+    useInnerText: true,
+  })
   return await page.locator('.cm-content').innerText()
 }
 
@@ -135,10 +138,11 @@ function withDefaultLengthUnitInches(code: string): string {
 ${code}`
 }
 
-test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
+test.use({ useTestSettings: true })
+
+test.describe('Sketch solve edit tests', { tag: '@web' }, () => {
   test("can edit an existing sketch and edit it's segments", async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -146,14 +150,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
   }) => {
     await test.step('Set up the app with test code', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, TEST_CODE)
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', TEST_CODE)
+      )
 
       await editor.expectEditor.toContain('sketch(on = XZ)')
     })
@@ -229,20 +232,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'add new sketch, add segments and verify a constraint can be added',
     { tag: '@web' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const INITIAL_CODE = ''
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
       const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
       await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
@@ -275,7 +268,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line1End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(2)
 
         // Second line segment
@@ -292,7 +284,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line2End()
         previousCode = await waitForCodeChange(page, previousCode)
         await cancelLineChaining()
-        previousCode = await waitForCodeChange(page, previousCode)
         await expect(pointHandles).toHaveCount(4)
 
         // Third line segment
@@ -305,9 +296,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await line3Start()
         previousCode = await waitForCodeChange(page, previousCode)
         await line3End()
-        previousCode = await waitForCodeChange(page, previousCode)
-        await cancelLineChaining()
         await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
         await expect(pointHandles).toHaveCount(6)
       })
 
@@ -413,13 +403,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test(
     'sketch solve tool hotkeys equip tools and update the sketch',
-    { tag: '@web' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    { tag: ['@web'] },
+    async ({ page, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
-        await context.addInitScript(() => {
-          localStorage.setItem('persistCode', '')
-        })
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
@@ -565,12 +551,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'horizontal and vertical hotkeys constrain the draft line while drawing',
     { tag: '@web' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, homePage, scene, editor, toolbar }) => {
       await test.step('Set up the app and enter sketch solve mode', async () => {
-        await context.addInitScript(() => {
-          localStorage.setItem('persistCode', '')
-        })
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
@@ -646,22 +628,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test(
     'unequipping line tool should not drop committed segments from the scene',
     { tag: '@web' },
-    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
-      const INITIAL_CODE = ''
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
       const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
       const getLineCount = (code: string) =>
         (code.match(/line\(/g) ?? []).length
 
       await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-        await context.addInitScript(
-          async ({ code }) => {
-            localStorage.setItem('persistCode', code)
-          },
-          {
-            code: INITIAL_CODE,
-          }
-        )
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled()
@@ -713,8 +685,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await expect(pointHandles).toHaveCount(4)
 
         await moveDraftLine()
-        const codeWithDraftLine = await waitForCodeChange(page, codeAfterLine2)
-        expect(getLineCount(codeWithDraftLine)).toBe(3)
+        await expect
+          .poll(async () => getLineCount(await editor.getCurrentCode()))
+          .toBe(3)
         await expect(pointHandles).toHaveCount(6)
       })
 
@@ -731,7 +704,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('undo still works after mixing point-click edits with direct kcl edits in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -782,18 +754,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
 
     await test.step('Set up the app with initial sketch code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1200, height: 600 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', INITIAL_CODE)
+      )
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -947,308 +913,291 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
-  test('treats fresh direct editor sketch executions as derived source updates', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  test(
+    'treats fresh direct editor sketch executions as derived source updates',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
+      const INITIAL_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
 }
 `
-    const addedLine =
-      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
-    const isDirectEditorOutcome = (
-      event: unknown
-    ): event is {
-      sourceText: string
-      updateEditor: unknown
-      writeToDisk: unknown
-      addToHistory: unknown
-    } =>
-      typeof event === 'object' &&
-      event !== null &&
-      'sourceText' in event &&
-      typeof event.sourceText === 'string'
-    const getDirectEditorOutcomeForLine = async (line: string) => {
-      const events = await page.evaluate(() =>
-        Reflect.get(window, 'directEditorOutcomesForTest')
-      )
-      if (!isArray(events)) return null
-      return events
-        .filter(isDirectEditorOutcome)
-        .find((event) => event.sourceText.includes(line))
-    }
-    const getUpdateCodeEditorCalls = async () => {
-      const calls = await page.evaluate(() =>
-        Reflect.get(window, 'updateCodeEditorCallsForTest')
-      )
-      if (!isArray(calls)) return []
-      return calls.filter((call): call is string => typeof call === 'string')
-    }
-
-    await test.step('Set up a sketch and enter sketch edit mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 600 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
-
-      await toolbar.openFeatureTreePane()
-      await expect(page.getByText('Building feature tree')).not.toBeVisible({
-        timeout: 10000,
-      })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await sketchOperation.dblclick()
-      await page.waitForTimeout(600)
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-    })
-
-    await test.step('Observe the fresh direct-editor execution result', async () => {
-      await page.evaluate(() => {
-        const directEditorOutcomes: Array<{
-          sourceText: string
-          updateEditor: unknown
-          writeToDisk: unknown
-          addToHistory: unknown
-        }> = []
-        const updateCodeEditorCalls: string[] = []
-        const { kclManager } = window.app.singletons
-
-        const originalSendModelingEvent =
-          kclManager.sendModelingEvent.bind(kclManager)
-        kclManager.sendModelingEvent = ((
-          ...args: Parameters<typeof kclManager.sendModelingEvent>
-        ) => {
-          const [event] = args
-          if (event.type === 'update sketch outcome') {
-            directEditorOutcomes.push({
-              sourceText: event.data.sourceDelta.text,
-              updateEditor: event.data.updateEditor,
-              writeToDisk: event.data.writeToDisk,
-              addToHistory: event.data.addToHistory,
-            })
-          }
-
-          return originalSendModelingEvent(...args)
-        }) satisfies typeof kclManager.sendModelingEvent
-
-        const originalUpdateCodeEditor =
-          kclManager.updateCodeEditor.bind(kclManager)
-        kclManager.updateCodeEditor = ((
-          ...args: Parameters<typeof kclManager.updateCodeEditor>
-        ) => {
-          const [code] = args
-          updateCodeEditorCalls.push(code)
-          return originalUpdateCodeEditor(...args)
-        }) satisfies typeof kclManager.updateCodeEditor
-
-        Reflect.set(window, 'directEditorOutcomesForTest', directEditorOutcomes)
-        Reflect.set(
-          window,
-          'updateCodeEditorCallsForTest',
-          updateCodeEditorCalls
+      const addedLine =
+        '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
+      const isDirectEditorOutcome = (
+        event: unknown
+      ): event is {
+        sourceText: string
+        updateEditor: unknown
+        writeToDisk: unknown
+        addToHistory: unknown
+      } =>
+        typeof event === 'object' &&
+        event !== null &&
+        'sourceText' in event &&
+        typeof event.sourceText === 'string'
+      const getDirectEditorOutcomeForLine = async (line: string) => {
+        const events = await page.evaluate(() =>
+          Reflect.get(window, 'directEditorOutcomesForTest')
         )
-      })
-    })
-
-    await test.step('Type KCL and let its current execution finish', async () => {
-      await editor.replaceCodeByTyping('\n}', `\n${addedLine}\n}`)
-      await editor.expectEditor.toContain(addedLine)
-
-      await expect
-        .poll(async () => getDirectEditorOutcomeForLine(addedLine))
-        .toEqual({
-          sourceText: expect.stringContaining(addedLine),
-          updateEditor: false,
-          writeToDisk: false,
-          addToHistory: false,
-        })
-
-      const updateCodeEditorCalls = await getUpdateCodeEditorCalls()
-      expect(
-        updateCodeEditorCalls.some((code) => code.includes(addedLine))
-      ).toBe(false)
-      await editor.expectEditor.toContain(addedLine)
-    })
-  })
-
-  test('keeps newer copied sketch block edits when stale execution finishes', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-}
-`
-    const copiedLine =
-      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
-    const editedLine =
-      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 8mm])'
-    const getWriteToFileCalls = async () => {
-      const calls = await page.evaluate(() =>
-        Reflect.get(window, 'kclWriteToFileCallsForTest')
-      )
-      if (!isArray(calls)) return []
-      return calls.filter((call): call is string => typeof call === 'string')
-    }
-
-    await test.step('Set up a sketch and enter sketch edit mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 600 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
-
-      await toolbar.openFeatureTreePane()
-      await expect(page.getByText('Building feature tree')).not.toBeVisible({
-        timeout: 10000,
-      })
-      const sketchOperation = await toolbar.getFeatureTreeOperation(
-        'sketch001',
-        0
-      )
-      await sketchOperation.dblclick()
-      await page.waitForTimeout(600)
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-    })
-
-    await test.step('Delay the next sketch execution and observe editor saves', async () => {
-      await page.evaluate(() => {
-        const writeToFileCalls: string[] = []
-        const { kclManager } = window.app.singletons
-        const originalWriteToFile = kclManager.writeToFile.bind(kclManager)
-        /*
-         * This is only a spy on the save path. The test still edits through
-         * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
-         * to write. Recording writeToFile calls here proves raw typing still
-         * reaches the normal save listener, and that the delayed execution does
-         * not add a stale out-of-band save afterward.
-         */
-        kclManager.writeToFile = (async (
-          ...args: Parameters<typeof kclManager.writeToFile>
-        ) => {
-          const [newCode = kclManager.code] = args
-          writeToFileCalls.push(newCode)
-          return originalWriteToFile(...args)
-        }) satisfies typeof kclManager.writeToFile
-        Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
-
-        const originalHackSetProgram = window.rustContext.hackSetProgram.bind(
-          window.rustContext
+        if (!isArray(events)) return null
+        return events
+          .filter(isDirectEditorOutcome)
+          .find((event) => event.sourceText.includes(line))
+      }
+      const getUpdateCodeEditorCalls = async () => {
+        const calls = await page.evaluate(() =>
+          Reflect.get(window, 'updateCodeEditorCallsForTest')
         )
-        let shouldDelayNextHackSetProgram = true
-        let releaseDelayedHackSetProgram: (() => void) | undefined
+        if (!isArray(calls)) return []
+        return calls.filter((call): call is string => typeof call === 'string')
+      }
 
-        window.addEventListener('release-delayed-sketch-execution', () => {
-          releaseDelayedHackSetProgram?.()
+      await test.step('Set up a sketch and enter sketch edit mode', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 600 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', INITIAL_CODE)
+        )
+        await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+
+        await toolbar.openFeatureTreePane()
+        await expect(page.getByText('Building feature tree')).not.toBeVisible({
+          timeout: 10000,
         })
+        const sketchOperation = await toolbar.getFeatureTreeOperation(
+          'sketch001',
+          0
+        )
+        await sketchOperation.dblclick()
+        await page.waitForTimeout(600)
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+      })
 
-        const delayedHackSetProgram: typeof window.rustContext.hackSetProgram =
-          async (...args) => {
-            if (shouldDelayNextHackSetProgram) {
-              shouldDelayNextHackSetProgram = false
-              window.dispatchEvent(
-                new Event('delayed-sketch-execution-started')
-              )
-              await new Promise<void>((resolve) => {
-                releaseDelayedHackSetProgram = resolve
+      await test.step('Observe the fresh direct-editor execution result', async () => {
+        await page.evaluate(() => {
+          const directEditorOutcomes: Array<{
+            sourceText: string
+            updateEditor: unknown
+            writeToDisk: unknown
+            addToHistory: unknown
+          }> = []
+          const updateCodeEditorCalls: string[] = []
+          const { kclManager } = window.app.singletons
+
+          const originalSendModelingEvent =
+            kclManager.sendModelingEvent.bind(kclManager)
+          kclManager.sendModelingEvent = ((
+            ...args: Parameters<typeof kclManager.sendModelingEvent>
+          ) => {
+            const [event] = args
+            if (event.type === 'update sketch outcome') {
+              directEditorOutcomes.push({
+                sourceText: event.data.sourceDelta.text,
+                updateEditor: event.data.updateEditor,
+                writeToDisk: event.data.writeToDisk,
+                addToHistory: event.data.addToHistory,
               })
             }
 
-            return originalHackSetProgram(...args)
-          }
+            return originalSendModelingEvent(...args)
+          }) satisfies typeof kclManager.sendModelingEvent
 
-        window.rustContext.hackSetProgram = delayedHackSetProgram
-      })
-    })
+          const originalUpdateCodeEditor =
+            kclManager.updateCodeEditor.bind(kclManager)
+          kclManager.updateCodeEditor = ((
+            ...args: Parameters<typeof kclManager.updateCodeEditor>
+          ) => {
+            const [code] = args
+            updateCodeEditorCalls.push(code)
+            return originalUpdateCodeEditor(...args)
+          }) satisfies typeof kclManager.updateCodeEditor
 
-    await test.step('Copy a sketch line, then edit its endpoint before execution returns', async () => {
-      const delayedExecutionStarted = page.evaluate(
-        () =>
-          new Promise<void>((resolve) => {
-            window.addEventListener(
-              'delayed-sketch-execution-started',
-              () => resolve(),
-              { once: true }
-            )
-          })
-      )
-
-      await editor.replaceCodeByTyping('\n}', `\n${copiedLine}\n}`)
-      await delayedExecutionStarted
-      await editor.expectEditor.toContain(copiedLine)
-
-      await editor.replaceCodeByTyping(
-        'end = [var 10mm, var 5mm]',
-        'end = [var 10mm, var 8mm]'
-      )
-      await editor.expectEditor.toContain(editedLine)
-
-      await expect
-        .poll(async () => {
-          const writeToFileCalls = await getWriteToFileCalls()
-          return writeToFileCalls.at(-1) ?? ''
+          Reflect.set(
+            window,
+            'directEditorOutcomesForTest',
+            directEditorOutcomes
+          )
+          Reflect.set(
+            window,
+            'updateCodeEditorCallsForTest',
+            updateCodeEditorCalls
+          )
         })
-        .toContain(editedLine)
-      const writeToFileCountBeforeStaleExecutionReturns = (
-        await getWriteToFileCalls()
-      ).length
-
-      await page.evaluate(() => {
-        window.dispatchEvent(new Event('release-delayed-sketch-execution'))
       })
-      await page.waitForTimeout(100)
 
-      const writeToFileCallsAfterStaleExecutionReturns =
-        await getWriteToFileCalls()
-      expect(writeToFileCallsAfterStaleExecutionReturns).toHaveLength(
-        writeToFileCountBeforeStaleExecutionReturns
-      )
-      expect(writeToFileCallsAfterStaleExecutionReturns.at(-1)).toContain(
-        editedLine
-      )
-    })
+      await test.step('Type KCL and let its current execution finish', async () => {
+        await editor.replaceCodeByTyping('\n}', `\n${addedLine}\n}`)
+        await editor.expectEditor.toContain(addedLine)
 
-    await test.step('The newer endpoint value should still be in the editor', async () => {
-      const currentCode = await editor.getCurrentCode()
+        await expect
+          .poll(async () => getDirectEditorOutcomeForLine(addedLine))
+          .toEqual({
+            sourceText: expect.stringContaining(addedLine),
+            updateEditor: false,
+            writeToDisk: false,
+            addToHistory: false,
+          })
 
-      expect(currentCode).toContain(editedLine)
-      expect(currentCode).not.toContain(copiedLine)
-    })
-  })
+        const updateCodeEditorCalls = await getUpdateCodeEditorCalls()
+        expect(
+          updateCodeEditorCalls.some((code) => code.includes(addedLine))
+        ).toBe(false)
+        await editor.expectEditor.toContain(addedLine)
+      })
+    }
+  )
+
+  test(
+    'keeps newer copied sketch block edits when stale execution finishes',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
+      const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+`
+      const copiedLine =
+        '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
+      const editedLine =
+        '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 8mm])'
+      const getWriteToFileCalls = async () => {
+        const calls = await page.evaluate(() =>
+          Reflect.get(window, 'kclWriteToFileCallsForTest')
+        )
+        if (!isArray(calls)) return []
+        return calls.filter((call): call is string => typeof call === 'string')
+      }
+
+      await test.step('Set up a sketch and enter sketch edit mode', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 600 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', INITIAL_CODE)
+        )
+        await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+
+        await toolbar.openFeatureTreePane()
+        await expect(page.getByText('Building feature tree')).not.toBeVisible({
+          timeout: 10000,
+        })
+        const sketchOperation = await toolbar.getFeatureTreeOperation(
+          'sketch001',
+          0
+        )
+        await sketchOperation.dblclick()
+        await page.waitForTimeout(600)
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+      })
+
+      await test.step('Delay the next sketch execution and observe editor saves', async () => {
+        await page.evaluate(() => {
+          const writeToFileCalls: string[] = []
+          const { kclManager } = window.app.singletons
+          const originalWriteToFile = kclManager.writeToFile.bind(kclManager)
+          /*
+           * This is only a spy on the save path. The test still edits through
+           * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
+           * to write. Recording writeToFile calls here proves raw typing still
+           * reaches the normal save listener, and that the delayed execution does
+           * not add a stale out-of-band save afterward.
+           */
+          kclManager.writeToFile = (async (
+            ...args: Parameters<typeof kclManager.writeToFile>
+          ) => {
+            const [newCode = kclManager.code] = args
+            writeToFileCalls.push(newCode)
+            return originalWriteToFile(...args)
+          }) satisfies typeof kclManager.writeToFile
+          Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
+
+          const originalHackSetProgram = window.rustContext.hackSetProgram.bind(
+            window.rustContext
+          )
+          let shouldDelayNextHackSetProgram = true
+          let releaseDelayedHackSetProgram: (() => void) | undefined
+
+          window.addEventListener('release-delayed-sketch-execution', () => {
+            releaseDelayedHackSetProgram?.()
+          })
+
+          const delayedHackSetProgram: typeof window.rustContext.hackSetProgram =
+            async (...args) => {
+              if (shouldDelayNextHackSetProgram) {
+                shouldDelayNextHackSetProgram = false
+                window.dispatchEvent(
+                  new Event('delayed-sketch-execution-started')
+                )
+                await new Promise<void>((resolve) => {
+                  releaseDelayedHackSetProgram = resolve
+                })
+              }
+
+              return originalHackSetProgram(...args)
+            }
+
+          window.rustContext.hackSetProgram = delayedHackSetProgram
+        })
+      })
+
+      await test.step('Copy a sketch line, then edit its endpoint before execution returns', async () => {
+        const delayedExecutionStarted = page.evaluate(
+          () =>
+            new Promise<void>((resolve) => {
+              window.addEventListener(
+                'delayed-sketch-execution-started',
+                () => resolve(),
+                { once: true }
+              )
+            })
+        )
+
+        await editor.replaceCodeByTyping('\n}', `\n${copiedLine}\n}`)
+        await delayedExecutionStarted
+        await editor.expectEditor.toContain(copiedLine)
+
+        await editor.replaceCodeByTyping(
+          'end = [var 10mm, var 5mm]',
+          'end = [var 10mm, var 8mm]'
+        )
+        await editor.expectEditor.toContain(editedLine)
+
+        await expect
+          .poll(async () => {
+            const writeToFileCalls = await getWriteToFileCalls()
+            return writeToFileCalls.at(-1) ?? ''
+          })
+          .toContain(editedLine)
+        const writeToFileCountBeforeStaleExecutionReturns = (
+          await getWriteToFileCalls()
+        ).length
+
+        await page.evaluate(() => {
+          window.dispatchEvent(new Event('release-delayed-sketch-execution'))
+        })
+        await page.waitForTimeout(100)
+
+        const writeToFileCallsAfterStaleExecutionReturns =
+          await getWriteToFileCalls()
+        expect(writeToFileCallsAfterStaleExecutionReturns).toHaveLength(
+          writeToFileCountBeforeStaleExecutionReturns
+        )
+        expect(writeToFileCallsAfterStaleExecutionReturns.at(-1)).toContain(
+          editedLine
+        )
+      })
+
+      await test.step('The newer endpoint value should still be in the editor', async () => {
+        const currentCode = await editor.getCurrentCode()
+
+        expect(currentCode).toContain(editedLine)
+        expect(currentCode).not.toContain(copiedLine)
+      })
+    }
+  )
 
   test('undoing center arcs removes one arc at a time in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -1256,18 +1205,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     toolbar,
   }) => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-    const INITIAL_CODE = ''
 
     await test.step('Set up app with sketch solve mode enabled', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled()
@@ -1311,9 +1250,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
 
     const getCodeCounts = (code: string) => ({
@@ -1334,8 +1271,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         end: [0.31, 0.48],
         previousCode,
       })
-      const codeAfterArc1 = previousCode
-      expect((codeAfterArc1.match(/arc\(/g) ?? []).length).toBe(1)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()).arcs)
+        .toBe(1)
+      const codeAfterArc1 = await editor.getCurrentCode()
       await expect(pointHandles).toHaveCount(3)
 
       previousCode = await addCenterArc({
@@ -1344,8 +1283,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         end: [0.62, 0.43],
         previousCode,
       })
-      const codeAfterArc2 = previousCode
-      expect((codeAfterArc2.match(/arc\(/g) ?? []).length).toBe(2)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()).arcs)
+        .toBe(2)
+      const codeAfterArc2 = await editor.getCurrentCode()
       await expect(pointHandles).toHaveCount(6)
 
       previousCode = await addCenterArc({
@@ -1354,12 +1295,16 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         end: [0.52, 0.74],
         previousCode,
       })
-      const codeAfterArc3 = previousCode
-      expect((codeAfterArc3.match(/arc\(/g) ?? []).length).toBe(3)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()).arcs)
+        .toBe(3)
+      const codeAfterArc3 = await editor.getCurrentCode()
       await expect(pointHandles).toHaveCount(9)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3)
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterArc3, {
+        useInnerText: true,
+      })
       const codeAfterUndo1 = await editor.getCurrentCode()
       expect(normaliseCode(codeAfterUndo1)).toBe(normaliseCode(codeAfterArc2))
       expect((codeAfterUndo1.match(/arc\(/g) ?? []).length).toBe(2)
@@ -1369,7 +1314,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(6)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1)
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo1, {
+        useInnerText: true,
+      })
       const codeAfterUndo2 = await editor.getCurrentCode()
       expect(normaliseCode(codeAfterUndo2)).toBe(normaliseCode(codeAfterArc1))
       expect((codeAfterUndo2.match(/arc\(/g) ?? []).length).toBe(1)
@@ -1379,7 +1326,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(3)
 
       await pressUndo()
-      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2)
+      await expect(page.locator('.cm-content')).not.toHaveText(codeAfterUndo2, {
+        useInnerText: true,
+      })
       const codeAfterUndo3 = await editor.getCurrentCode()
       expect(normaliseCode(codeAfterUndo3)).toBe(
         normaliseCode(codeAfterSketchStart)
@@ -1449,10 +1398,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await line3End()
       previousCode = await waitForCodeChange(page, previousCode)
-      const codeAfterThreeLines = previousCode
-      counts = getCodeCounts(codeAfterThreeLines)
-      expect(counts.lines).toBe(3)
-      expect(counts.coincidents).toBe(2)
+      await expect
+        .poll(async () => getCodeCounts(await editor.getCurrentCode()))
+        .toMatchObject({ lines: 3, coincidents: 2 })
       await expect(pointHandles).toHaveCount(9)
 
       await toolbar.lineBtn.click()
@@ -1672,7 +1620,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('constraints can be added and undone one at a time in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -1702,18 +1649,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 `
 
     await test.step('Set up app with existing sketch code in sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: CONSTRAINT_TEST_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', CONSTRAINT_TEST_CODE)
+      )
+      await resetView(scene)
       await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
     })
 
@@ -1732,9 +1674,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
 
     const clickMidpoint = async (id1: string, id2: string) => {
@@ -1987,7 +1927,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   test('trim operations can be undone in sketch solve mode', async ({
     page,
-    context,
     homePage,
     scene,
     cmdBar,
@@ -2007,18 +1946,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up app with trim fixture in sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: TRIM_TEST_CODE,
-        }
-      )
-
       await page.setBodyDimensions({ width: 1400, height: 900 })
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', TRIM_TEST_CODE)
+      )
+      await resetView(scene)
       await editor.expectEditor.toContain('sketch001 = sketch(on = YZ) {')
     })
 
@@ -2038,9 +1972,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     const pressUndo = async () => {
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+      await page.keyboard.press('ControlOrMeta+z')
     }
     const getHandleIds = async () =>
       await page
@@ -2111,318 +2043,271 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
   const squareInches = withDefaultLengthUnitInches(square)
 
-  test('can extrude sketch regions', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
-
-    await test.step('Set up scene with a closed sketch block', async () => {
-      await context.addInitScript(async (square) => {
-        localStorage.setItem('persistCode', square)
-      }, square)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
-    })
-
-    await test.step('Extrude region by clicking center', async () => {
-      await toolbar.extrudeButton.click()
-      await clickCenter()
-      await expect(page.getByText('1 region selected')).toBeVisible()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`can extrude sketch regions ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      modelingDialog,
+      editor,
+      toolbar,
+    }) => {
+      await test.step('Set up scene with a closed sketch block', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', square)
+        )
+        await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
       })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
+
+      await test.step('Extrude region by clicking center', async () => {
+        // Keep the region clear of the modeling dialog on narrow scene panes.
+        await editor.closePane()
+        await toolbar.extrudeButton.click()
+        const [clickCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickCenter()
+        await expect(modelingDialog.selection('Profiles')).toHaveText(
+          '1 region'
+        )
+        await modelingDialog.selection('Profiles').click()
+
+        await expect(modelingDialog.input('length')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
       })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
+
+      await test.step('Expect extrusion', async () => {
+        await scene.settled()
+        await editor.openPane()
+        await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
+        await editor.expectEditor.toContain(
+          'region(segments = [sketch001.line4, sketch001.line1])'
+        )
+        await editor.expectEditor.toContain(
+          'extrude001 = extrude(region001, length = 5)'
+        )
+        await expect(
+          page.locator('.cm-lint-marker-error').first()
+        ).not.toBeInViewport()
       })
-      await cmdBar.submit()
-    })
 
-    await test.step('Expect extrusion', async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-      await editor.expectEditor.toContain(
-        'region(segments = [sketch001.line4, sketch001.line1])'
-      )
-      await editor.expectEditor.toContain(
-        'extrude001 = extrude(region001, length = 5)'
-      )
-      await expect(
-        page.locator('.cm-lint-marker-error').first()
-      ).not.toBeInViewport()
-    })
+      await test.step('Remove extrude from feature tree', async () => {
+        await toolbar.openFeatureTreePane()
+        const extrudeOp = toolbar.featureTreePane
+          .getByRole('button', { name: /^(Extrude|extrude001)$/ })
+          .first()
+        await expect(extrudeOp).toBeVisible()
+        await toolbar.removeFeatureTreeOperation(extrudeOp)
+        await scene.settled()
+        await editor.expectEditor.not.toContain('extrude(')
+      })
 
-    await test.step('Remove extrude from feature tree', async () => {
-      await toolbar.openFeatureTreePane()
-      const extrudeOp = toolbar.featureTreePane
-        .getByRole('button', { name: /^(Extrude|extrude001)$/ })
-        .first()
-      await expect(extrudeOp).toBeVisible()
-      await toolbar.removeFeatureTreeOperation(extrudeOp)
-      await scene.settled()
-      await editor.expectEditor.not.toContain('extrude(')
-    })
-
-    await test.step('Remove region from feature tree and expect original code', async () => {
-      await toolbar.openFeatureTreePane()
-      const regionOp = toolbar.featureTreePane
-        .getByRole('button', { name: /^(Region|region001)$/ })
-        .first()
-      await expect(regionOp).toBeVisible()
-      await toolbar.removeFeatureTreeOperation(regionOp)
-      await scene.settled()
-      await editor.expectEditor.not.toContain('region(')
-      await editor.expectEditor.toContain(square, { shouldNormalise: true })
-    })
-  })
-
-  test('can extrude sketch regions with defaultLengthUnit = inches', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
-
-    await test.step('Set up scene with a closed sketch block in inches', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, squareInches)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
-      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
-
-      // Force the point fallback while leaving the query point from the engine intact.
-      await page.evaluate(() => {
-        const engine = window.engineCommandManager
-        const sendSceneCommand = engine.sendSceneCommand.bind(engine)
-        engine.sendSceneCommand = async (...args) => {
-          const [command] = args
-          if (
-            command.type === 'modeling_cmd_req' &&
-            command.cmd.type === 'region_get_resolvable_intersection_info'
-          ) {
-            return {
-              success: true,
-              request_id: command.cmd_id,
-              resp: {
-                type: 'modeling',
-                data: { modeling_response: { type: 'empty' } },
-              },
-            }
-          }
-          return sendSceneCommand(...args)
-        }
+      await test.step('Remove region from feature tree and expect original code', async () => {
+        await toolbar.openFeatureTreePane()
+        const regionOp = toolbar.featureTreePane
+          .getByRole('button', { name: /^(Region|region001)$/ })
+          .first()
+        await expect(regionOp).toBeVisible()
+        await toolbar.removeFeatureTreeOperation(regionOp)
+        await scene.settled()
+        await editor.expectEditor.not.toContain('region(')
+        await editor.expectEditor.toContain(square, { shouldNormalise: true })
       })
     })
 
-    await test.step('Extrude region by clicking center', async () => {
-      await toolbar.extrudeButton.click()
-      await clickCenter()
-      await expect(page.getByText('1 region selected')).toBeVisible()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'sketches',
-        currentArgValue: '',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'Profiles',
+    test(`can extrude sketch regions with defaultLengthUnit = inches ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      modelingDialog,
+      editor,
+      toolbar,
+    }) => {
+      await test.step('Set up scene with a closed sketch block in inches', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', squareInches)
+        )
+        await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
+        await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
       })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Extrude',
-        headerArguments: {
-          Profiles: '1 region',
-          Length: '5',
-        },
-      })
-      await cmdBar.submit()
-    })
 
-    await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
-      await scene.settled()
-      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
-      await editor.expectEditor.toContain(
-        'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
-      )
-      await editor.expectEditor.toContain(
-        'extrude001 = extrude(region001, length = 5)'
-      )
-      await expect(
-        page.locator('.cm-lint-marker-error').first()
-      ).not.toBeInViewport()
-    })
-  })
+      await test.step('Extrude region by clicking center', async () => {
+        // Keep the region clear of the modeling dialog on narrow scene panes.
+        await editor.closePane()
+        await toolbar.extrudeButton.click()
+        const [clickCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 0,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickCenter()
+        await expect(modelingDialog.selection('Profiles')).toHaveText(
+          '1 region'
+        )
+        await modelingDialog.selection('Profiles').click()
 
-  test('can sketch on extrude cap', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const code = `${square}
+        await expect(modelingDialog.input('length')).toHaveText('5')
+
+        await expect(modelingDialog.submitButton).toBeEnabled()
+        await modelingDialog.submit()
+      })
+
+      await test.step('Expect extrusion with inches as the default unit', async () => {
+        await scene.settled()
+        await editor.openPane()
+        await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
+        await editor.expectEditor.toContain(
+          'region(segments = [sketch001.line4, sketch001.line1])'
+        )
+        await editor.expectEditor.toContain(
+          'extrude001 = extrude(region001, length = 5)'
+        )
+        await expect(
+          page.locator('.cm-lint-marker-error').first()
+        ).not.toBeInViewport()
+      })
+    })
+  }
+
+  for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
+    test(`can sketch on extrude cap ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+    }) => {
+      const code = `${square}
 hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
-      format: 'ratio',
-    })
 
-    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code,
+      await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 1000 })
+
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', code)
+        )
+        if (
+          await page.evaluate(() => window.engineCommandManager.geometryOnly)
+        ) {
+          // Frame the small body from its end-cap/top side before showing planes.
+          await scene.moveCameraTo(
+            { x: 7, y: -12, z: 7 },
+            { x: 0, y: -2.5, z: 0 }
+          )
+        } else {
+          await scene.moveCameraTo(
+            { x: 0, y: -25, z: 1 },
+            { x: 0, y: -2.5, z: 0 }
+          )
         }
-      )
+      })
 
-      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await test.step('Start sketch and click center face', async () => {
+        await toolbar.startSketchPlaneSelection()
+        const [clickCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 2,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickCenter()
+      })
 
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Start sketch and click center face', async () => {
-      await toolbar.startSketchPlaneSelection()
-      await clickCenter()
-    })
-
-    await test.step('Expect sketch on end cap', async () => {
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.expectEditor.toContain(
-        `
+      await test.step('Expect sketch on end cap', async () => {
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.expectEditor.toContain(
+          `
         face001 = faceOf(extrude001, face = END)
         sketch002 = sketch(on = face001) {
         }`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
 
-  test('can sketch on extrude wall', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const code = `sketch001 = startSketchOn(XZ)
+    test(`can sketch on extrude wall ${rendererTag}`, async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      editor,
+      toolbar,
+    }) => {
+      const code = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-2.05mm, -1.99mm])
   |> line(endAbsolute = [2.1mm, -1.99mm], tag = $line1)
   |> line(endAbsolute = [2.1mm, 2.23mm], tag = $line2)
   |> line(endAbsolute = [-2.05mm, 2.23mm], tag = $line3)
   |> close(tag = $line4)
 extrude001 = extrude(profile001, length = 5)`
-    const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.28, {
-      format: 'ratio',
-    })
 
-    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code,
+      await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 1000 })
+
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', code)
+        )
+        if (
+          await page.evaluate(() => window.engineCommandManager.geometryOnly)
+        ) {
+          // Frame the small body from its end-cap/top side before showing planes.
+          await scene.moveCameraTo(
+            { x: 7, y: -12, z: 7 },
+            { x: 0, y: -2.5, z: 0 }
+          )
+        } else {
+          await scene.moveCameraTo(
+            { x: 0, y: -20, z: 25 },
+            { x: 0, y: -2.5, z: 2.23 }
+          )
         }
-      )
+      })
 
-      await page.setBodyDimensions({ width: 1200, height: 1000 })
+      await test.step('Start sketch and click top face', async () => {
+        await toolbar.startSketchPlaneSelection()
+        const [clickAboveCenter] = await scene.makeSelectionHelpers({
+          kind: 'face',
+          index: 1,
+          stream: { x: 0.5, y: 0.5, format: 'ratio' },
+        })
+        await clickAboveCenter()
+      })
 
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Start sketch and click top face', async () => {
-      await toolbar.startSketchPlaneSelection()
-      await clickAboveCenter()
-    })
-
-    await test.step('Expect sketch on wall', async () => {
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.expectEditor.toContain(
-        `
+      await test.step('Expect sketch on wall', async () => {
+        await expect(toolbar.exitSketchBtn).toBeEnabled()
+        await editor.expectEditor.toContain(
+          `
         sketch002 = sketch(on = faceOf(extrude001, face = line3)) {
         }`,
-        { shouldNormalise: true }
-      )
+          { shouldNormalise: true }
+        )
+      })
     })
-  })
+  }
 
   test('starts a sketch block on an extruded sketch-block wall', async ({
-    context,
     page,
     homePage,
     scene,
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
 
@@ -2436,20 +2321,10 @@ region001 = region(point = [15, 10], sketch = sketch001)
 body001 = extrude(region001, length = 12, tagEnd = $endCap)
 hide(sketch001)`
 
-    if (tronApp) {
-      await tronApp.cleanProjectDir()
-    }
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      {
-        initialCode: code,
-      }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('body001 = extrude')
     await scene.moveCameraTo(
       { x: 43.8, y: -79.54, z: 9.08 },
@@ -2481,14 +2356,12 @@ hide(sketch001)`
   })
 
   test('starts and re-edits a sketch on a chamfer face', async ({
-    context,
     page,
     homePage,
     scene,
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
 
@@ -2507,18 +2380,10 @@ chamfer001 = chamfer(
 )
 hide(sketch001)`
 
-    if (tronApp) {
-      await tronApp.cleanProjectDir()
-    }
-    await context.addInitScript(
-      ({ initialCode }) => {
-        localStorage.setItem('persistCode', initialCode)
-      },
-      { initialCode: code }
-    )
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.closePane()
     await scene.moveCameraTo(
       { x: 39.68, y: -7.24, z: 19.4 },

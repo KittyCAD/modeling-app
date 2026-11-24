@@ -3,9 +3,9 @@ import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import { CustomIcon } from '@src/components/CustomIcon'
-import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { useProjectSearch } from '@src/components/ProjectSearchBar'
+import { Spinner } from '@src/components/Spinner'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -24,7 +24,10 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { selectCommand } from '@src/lib/commandUtils'
+import { canReadWriteDirectory } from '@src/lib/desktop'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -36,43 +39,42 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { shouldShowFreeCloudProjectTrainingDisclosure } from '@src/lib/projectLibraries/trainingDisclosure'
+import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import { getSortFunction } from '@src/lib/sorting'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  useCanReadWriteProjectDirectory,
-  useFolders,
-  useState as useSystemIOState,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
   homeProjectActionsService,
-  homeProjectEntriesValueSpec,
+  homeProjectEntriesFacet,
+  homeProjectLoadingLibraryIdsFacet,
+  homeProjectSettledLibraryIdsFacet,
 } from '@src/registry/contracts/homeProjects'
-import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
+import { homeSidebarItemsFacet } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
-  keymapScopesValueSpec,
+  keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  getProjectLibraryCreateProjectOperation,
+  getProjectLibraryOperation,
   type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
-  projectLibraryTypesValueSpec,
+  projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
+  statusBarGlobalItemsFacet,
+  statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { HomeHeader } from '@src/routes/HomeHeader'
@@ -106,17 +108,15 @@ import {
 
 const HOME_PROJECT_CARD_DRAG_MIME = 'application/x-zoo-home-project'
 const HOME_PROJECT_CARD_DRAG_PREVIEW_ID = 'home-project-card-drag-preview'
-
 interface HomeProjectCardDragData {
   projectId: string
 }
-
 function writeHomeProjectCardDragData(
   dataTransfer: DataTransfer,
   project: HomeProjectEntry
 ) {
   dataTransfer.clearData()
-  dataTransfer.effectAllowed = 'move'
+  dataTransfer.effectAllowed = 'copy'
   dataTransfer.setData(
     HOME_PROJECT_CARD_DRAG_MIME,
     JSON.stringify({
@@ -125,7 +125,6 @@ function writeHomeProjectCardDragData(
   )
   dataTransfer.setData('text/plain', getHomeProjectDisplayName(project))
 }
-
 function readHomeProjectCardDragData(
   dataTransfer: DataTransfer
 ): HomeProjectCardDragData | undefined {
@@ -133,27 +132,26 @@ function readHomeProjectCardDragData(
   if (!serialized) {
     return undefined
   }
-
   try {
     const data = JSON.parse(serialized) as Partial<HomeProjectCardDragData>
     return typeof data.projectId === 'string'
-      ? { projectId: data.projectId }
+      ? {
+          projectId: data.projectId,
+        }
       : undefined
   } catch {
     return undefined
   }
 }
-
 interface UseProjectLibraryDragOptions {
   projects: HomeProjectEntry[]
   projectActions: HomeProjectActionsService
-  onMoveToLibrary: (project: HomeProjectEntry, libraryId: string) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry, libraryId: string) => void
 }
-
 function useProjectLibraryDrag({
   projects,
   projectActions,
-  onMoveToLibrary,
+  onDuplicateToLibrary,
 }: UseProjectLibraryDragOptions): ProjectLibraryDragController {
   const [draggedProjectId, setDraggedProjectId] = useState<string>()
   const [dragOverLibraryId, setDragOverLibraryId] = useState<string>()
@@ -169,40 +167,40 @@ function useProjectLibraryDrag({
     setDraggedProjectId(undefined)
     setDragOverLibraryId(undefined)
   }, [])
-  const canMoveProjectToLibrary = useCallback(
+  const canDuplicateProjectToLibrary = useCallback(
     (project: HomeProjectEntry | undefined, library: ProjectLibrary) =>
       Boolean(
         project &&
           projectActions
-            .getMoveToLibraryTargets(project)
+            .getDuplicateToLibraryTargets(project)
             .some((target) => target.library.id === library.id)
       ),
     [projectActions]
   )
   const canDropOnLibrary = useCallback(
     (library: ProjectLibrary) =>
-      canMoveProjectToLibrary(draggedProject, library),
-    [canMoveProjectToLibrary, draggedProject]
+      canDuplicateProjectToLibrary(draggedProject, library),
+    [canDuplicateProjectToLibrary, draggedProject]
   )
   const getProjectCardDragProps = useCallback(
     (project: HomeProjectEntry): ProjectCardDragProps => {
-      if (!projectActions.canMoveToLibrary(project)) {
-        return { draggable: false }
+      if (!projectActions.canDuplicateToLibrary(project)) {
+        return {
+          draggable: false,
+        }
       }
-
       return {
         draggable: true,
         onDragStart: (event) => {
-          if (!projectActions.canMoveToLibrary(project)) {
+          if (!projectActions.canDuplicateToLibrary(project)) {
             event.preventDefault()
             return
           }
-
           const projectDisplayName = getHomeProjectDisplayName(project)
           writeHomeProjectCardDragData(event.dataTransfer, project)
           setDragPreview(event.dataTransfer, {
             id: HOME_PROJECT_CARD_DRAG_PREVIEW_ID,
-            text: `Move ${projectDisplayName}`,
+            text: `Duplicate ${projectDisplayName}`,
             offsetX: 12,
             offsetY: 12,
           })
@@ -220,9 +218,8 @@ function useProjectLibraryDrag({
         if (!canDropOnLibrary(library)) {
           return
         }
-
         event.preventDefault()
-        event.dataTransfer.dropEffect = 'move'
+        event.dataTransfer.dropEffect = 'copy'
         setDragOverLibraryId(library.id)
       },
       onDragLeave: (event) => {
@@ -232,7 +229,6 @@ function useProjectLibraryDrag({
         ) {
           return
         }
-
         setDragOverLibraryId((currentLibraryId) =>
           currentLibraryId === library.id ? undefined : currentLibraryId
         )
@@ -241,29 +237,27 @@ function useProjectLibraryDrag({
         if (!canDropOnLibrary(library)) {
           return
         }
-
         const droppedProjectId =
           readHomeProjectCardDragData(event.dataTransfer)?.projectId ??
           draggedProject?.id
         const project = projects.find((entry) => entry.id === droppedProjectId)
-        if (!project || !canMoveProjectToLibrary(project, library)) {
+        if (!project || !canDuplicateProjectToLibrary(project, library)) {
           finishProjectDrag()
           return
         }
-
         event.preventDefault()
         event.stopPropagation()
-        event.dataTransfer.dropEffect = 'move'
-        onMoveToLibrary(project, library.id)
+        event.dataTransfer.dropEffect = 'copy'
+        onDuplicateToLibrary(project, library.id)
         finishProjectDrag()
       },
     }),
     [
       canDropOnLibrary,
-      canMoveProjectToLibrary,
+      canDuplicateProjectToLibrary,
       draggedProject?.id,
       finishProjectDrag,
-      onMoveToLibrary,
+      onDuplicateToLibrary,
       projects,
     ]
   )
@@ -272,11 +266,9 @@ function useProjectLibraryDrag({
       dragOverLibraryId === library.id && canDropOnLibrary(library),
     [canDropOnLibrary, dragOverLibraryId]
   )
-
   useEffect(() => {
     return () => removeDragPreviewElement(HOME_PROJECT_CARD_DRAG_PREVIEW_ID)
   }, [])
-
   return useMemo(
     () => ({
       getProjectCardDragProps,
@@ -292,42 +284,63 @@ function useProjectLibraryDrag({
 const Home = () => {
   useSignals()
   const app = useApp()
+  const projectShellEnabled = app.userFeatures.useHas(
+    PROJECT_SHELL_FEATURE,
+    false
+  )
   const { auth, billing, commands, settings, registry } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useQueryParamEffects()
-
   useEffect(() => {
     if (!keymap) {
       return
     }
-
     keymap.applyScope(HOME_COMMAND_SCOPE)
-
     return () => {
       keymap.removeScope(HOME_COMMAND_SCOPE)
     }
   }, [keymap])
-
   const navigate = useNavigate()
   const location = useLocation()
-  const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
+    value: boolean
+    error: unknown
+  }>({
+    value: true,
+    error: undefined,
+  })
+  const directory = app.projectLibraries.projectDirectoryPath
+  useEffect(() => {
+    let active = true
+    if (directory)
+      void canReadWriteDirectory(app.fileOperations, directory)
+        .then((access) => {
+          if (active) setReadWriteProjectDir(access)
+        })
+        .catch(reportRejection)
+    return () => {
+      active = false
+    }
+  }, [app, directory])
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-
-  const projects = useFolders()
-  const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
-  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
-  const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
+  const homeProjectEntries = registry.observe(homeProjectEntriesFacet).value
+  const projectStatuses = useProjectStatuses(
+    registry.required(cloudStorageService),
+    homeProjectEntries,
+    apiToken
+  )
+  const homeSidebarItems = registry.observe(homeSidebarItemsFacet).value
   const settingsValues = settings.useSettings()
-  const projectLibraryTypes = registry.signal(
-    projectLibraryTypesValueSpec
-  ).value
+  const [searchParams, setSearchParams] = useSearchParams()
+  const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
   const projectLibraries = projectLibrariesFromSettings(
-    settingsValues.app.libraries.current
+    settingsValues.app.libraries.current,
+    projectLibraryTypes
   ).map((library) => ({
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
@@ -340,19 +353,66 @@ const Home = () => {
       [library.id, library.type, library.path, library.source ?? ''].join(':')
     )
     .join('|')
-  const homeProjectActions = registry.get(homeProjectActionsService)
-  const session = registry.get(projectSession)
+  const homeProjectActions = registry.required(homeProjectActionsService)
+  const visibleProjectLibraries = projectLibraries.filter(
+    (library) => !library.hiddenByDefault
+  )
+  const session = registry.required(projectSession)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
     : undefined
   const singleProjectLibrary =
-    !libraryId && projectLibraries.length === 1
-      ? projectLibraries[0]
+    !libraryId && visibleProjectLibraries.length === 1
+      ? visibleProjectLibraries[0]
       : undefined
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
   const selectedProjectLibraryId = selectedProjectLibrary?.id
+  const loadingLibraryIds = registry.observe(
+    homeProjectLoadingLibraryIdsFacet
+  ).value
+  const settledLibraryIds = registry.observe(
+    homeProjectSettledLibraryIdsFacet
+  ).value
+  const visibleLibraries = selectedProjectLibrary
+    ? [selectedProjectLibrary]
+    : visibleProjectLibraries
+  const projectsInitiallyLoaded = visibleLibraries.every((library) =>
+    settledLibraryIds.includes(library.id)
+  )
+  const projectsLoaded =
+    app.projectOperations.pending.value === 0 &&
+    projectsInitiallyLoaded &&
+    !loadingLibraryIds.some(
+      (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
+    )
+  const refreshProjectList = () => {
+    if (!projectsLoaded) return
+    void Promise.all(
+      visibleLibraries.map((library) => {
+        const operation = getProjectLibraryOperation(
+          projectLibraryTypes.get(library.type),
+          library,
+          'refresh'
+        )
+        if (operation)
+          return Promise.resolve(
+            operation.run({
+              library,
+            })
+          )
+        projectLibraryRealizations?.invalidate({
+          libraryId: library.id,
+        })
+        return Promise.resolve()
+      })
+    )
+      .then((results) => {
+        for (const result of results) trap(result)
+      })
+      .catch(reportRejection)
+  }
   const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
@@ -360,8 +420,11 @@ const Home = () => {
       )
     : libraryId
       ? []
-      : homeProjectEntries
-  const [searchParams, setSearchParams] = useSearchParams()
+      : homeProjectEntries.filter((project) =>
+          project.libraryIds?.some((id) =>
+            visibleProjectLibraries.some((library) => library.id === id)
+          )
+        )
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
@@ -371,7 +434,7 @@ const Home = () => {
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusProjects,
           [HOME_COMMAND_SCOPE],
-          registry.signal(keymapScopesValueSpec).value
+          registry.observe(keymapScopesFacet).value
         )?.keystrokes
       : undefined,
     platform()
@@ -379,21 +442,21 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-  const moveProjectToLibrary = useCallback(
+  const duplicateProjectToLibrary = useCallback(
     (project: HomeProjectEntry, libraryId?: string) => {
-      if (!homeProjectActions.canMoveToLibrary(project)) {
+      if (!homeProjectActions.canDuplicateToLibrary(project)) {
         return
       }
-
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Move project',
-          argDefaultValues: {
-            project: project.id,
-            ...(libraryId ? { library: libraryId } : {}),
-          },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Duplicate project',
+        argDefaultValues: {
+          project: project.id,
+          ...(libraryId
+            ? {
+                library: libraryId,
+              }
+            : {}),
         },
       })
     },
@@ -402,27 +465,29 @@ const Home = () => {
   const projectLibraryDrag = useProjectLibraryDrag({
     projects: homeProjectEntries,
     projectActions: homeProjectActions,
-    onMoveToLibrary: moveProjectToLibrary,
+    onDuplicateToLibrary: duplicateProjectToLibrary,
   })
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   useEffect(() => {
-    return projectLibraryRealizations?.watchConfiguredLibraries({
-      libraries: projectLibraries,
-    })
+    for (const library of projectLibraries) {
+      projectLibraryRealizations?.invalidate({ libraryId: library.id })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
-  }, [projectLibraryRealizations, projectLibraryWatchKey])
+  }, [
+    projectLibraryRealizations,
+    projectLibraryWatchKey,
+    selectedProjectLibraryId,
+  ])
 
   useEffect(() => {
     session.setCurrentProjectLibraryId(selectedProjectLibraryId)
-
     return () => {
       if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
         session.setCurrentProjectLibraryId(undefined)
       }
     }
   }, [session, selectedProjectLibraryId])
-
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
@@ -430,14 +495,12 @@ const Home = () => {
       '',
       [HOME_COMMAND_SCOPE]
     )
-
     commands.send({
       type: 'Add commands',
       data: {
         commands: [RouteTelemetryCommand, RouteSettingsCommand],
       },
     })
-
     return () => {
       commands.send({
         type: 'Remove commands',
@@ -459,11 +522,12 @@ const Home = () => {
         .catch(reportRejection)
     }
   }, [])
-
   useEffect(() => {
-    billing.send({ type: BillingTransition.Update, apiToken })
+    billing.send({
+      type: BillingTransition.Update,
+      apiToken,
+    })
   }, [apiToken, billing])
-
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const machineApiEnabled = settingsValues.app.machineApi.current
@@ -472,56 +536,35 @@ const Home = () => {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.Create project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Create project',
-          argDefaultValues: {
-            name: settingsValues.projects.defaultProjectName.current,
-          },
-        },
-      })
+      openCreateProjectCommand()
     } else if (data.menuLabel === 'File.Open project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Open project',
-        },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Open project',
       })
     } else if (data.menuLabel === 'Edit.Rename project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Rename project',
-          argDefaultValues: {
-            oldName: currentProject?.name,
-            newName: currentProject?.name,
-          },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Rename project',
+        argDefaultValues: {
+          oldName: currentProject?.name,
+          newName: currentProject?.name,
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Delete project',
-          argDefaultValues: {
-            name: currentProject?.name,
-          },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Delete project',
+        argDefaultValues: {
+          name: currentProject?.name,
         },
       })
     } else if (data.menuLabel === 'File.Import file from URL') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Import file from URL',
-        },
+      selectCommand(commands, {
+        groupId: 'projects',
+        name: 'Import file from URL',
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
       void navigate(PATHS.HOME + PATHS.SETTINGS)
@@ -532,30 +575,41 @@ const Home = () => {
     } else if (data.menuLabel === 'Edit.Change project directory') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#libraries`)
     } else if (data.menuLabel === 'File.Sign out') {
-      auth.send({ type: 'Log out' })
+      auth.send({
+        type: 'Log out',
+      })
     } else if (
       data.menuLabel === 'View.Command Palette...' ||
       data.menuLabel === 'Help.Command Palette...'
     ) {
-      commands.send({ type: 'Open' })
-    } else if (data.menuLabel === 'File.Preferences.Theme') {
       commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'settings',
-          name: 'app.theme',
-        },
+        type: 'Open',
+      })
+    } else if (data.menuLabel === 'File.Preferences.Theme') {
+      selectCommand(commands, {
+        groupId: 'settings',
+        name: 'app.theme',
       })
     } else if (data.menuLabel === 'File.Add file to project') {
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          name: 'add-kcl-file-to-project',
-          groupId: 'application',
-        },
+      selectCommand(commands, {
+        name: 'add-kcl-file-to-project',
+        groupId: 'application',
       })
     }
   }
+  const openCreateProjectCommand = () =>
+    selectCommand(commands, {
+      groupId: 'projects',
+      name: 'Create project',
+      argDefaultValues:
+        selectedProjectLibrary &&
+        getProjectLibraryCreateProjectOperation(
+          projectLibraryTypes.get(selectedProjectLibrary.type),
+          selectedProjectLibrary
+        )
+          ? { libraryId: selectedProjectLibrary.id }
+          : undefined,
+    })
   useMenuListener(cb)
 
   // Cancel all KCL executions while on the home page
@@ -563,7 +617,6 @@ const Home = () => {
     markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
   }, [kclManager])
-
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
@@ -573,6 +626,8 @@ const Home = () => {
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           data-testid="home-header"
+          onRefresh={refreshProjectList}
+          isRefreshing={!projectsLoaded}
           title={
             selectedProjectLibrary
               ? selectedProjectLibrary.title
@@ -647,20 +702,7 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'projects',
-                      name: 'Create project',
-                      argDefaultValues: selectedProjectLibrary
-                        ? {
-                            libraryId: selectedProjectLibrary.id,
-                          }
-                        : undefined,
-                    },
-                  })
-                }
+                onClick={openCreateProjectCommand}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'plus',
@@ -675,17 +717,16 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commands.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
-                      name: 'create-a-sample',
-                      argDefaultValues: {
-                        source: 'kcl-samples',
-                        ...(selectedProjectLibrary
-                          ? { libraryId: selectedProjectLibrary.id }
-                          : {}),
-                      },
+                  selectCommand(commands, {
+                    groupId: 'application',
+                    name: 'create-a-sample',
+                    argDefaultValues: {
+                      source: 'kcl-samples',
+                      ...(selectedProjectLibrary
+                        ? {
+                            libraryId: selectedProjectLibrary.id,
+                          }
+                        : {}),
                     },
                   })
                 }
@@ -747,9 +788,10 @@ const Home = () => {
         </aside>
         {selectedProjectLibrary || libraryId ? (
           <ProjectGrid
+            projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -757,23 +799,24 @@ const Home = () => {
             fileOperations={app.fileOperations}
             showCloudSyncUi
             showSourceStatusBadges={false}
-            onMoveToLibrary={moveProjectToLibrary}
+            onDuplicateToLibrary={duplicateProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
         ) : (
           <ProjectLibraryOverview
-            libraries={projectLibraries}
+            projectShellEnabled={projectShellEnabled}
+            libraries={visibleProjectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
             showCloudSyncUi
-            onMoveToLibrary={moveProjectToLibrary}
+            onDuplicateToLibrary={duplicateProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
@@ -791,13 +834,13 @@ const Home = () => {
             },
           }),
           ...filterStatusBarItemsForScopes(
-            registry.signal(statusBarGlobalItemsValueSpec).value,
+            registry.observe(statusBarGlobalItemsFacet).value,
             ['home']
           ),
         ]}
         localItems={[
           ...filterStatusBarItemsForScopes(
-            registry.signal(statusBarLocalItemsValueSpec).value,
+            registry.observe(statusBarLocalItemsFacet).value,
             ['home']
           ),
           ...defaultLocalStatusBarItems,
@@ -806,49 +849,51 @@ const Home = () => {
     </div>
   )
 }
-
+function ProjectsLoading() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading projects"
+      className="flex items-center justify-center gap-2 py-4"
+    >
+      <Spinner aria-hidden="true" className="h-5 w-5" />
+      <span>Loading projects...</span>
+    </div>
+  )
+}
 interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
+  projectShellEnabled: boolean
   libraries: ProjectLibrary[]
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
-  localProjectsLoaded: boolean
+  projectsLoaded: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
-
-function shouldShowLoadingMoreProjects(
-  state: ReturnType<typeof useSystemIOState>
-) {
-  return (
-    state.matches(SystemIOMachineStates.readingFolders) &&
-    !state.context.hasListedProjects
-  )
-}
-
 function ProjectLibraryOverview({
+  projectShellEnabled,
   libraries,
   searchResults,
   projects,
-  localProjectsLoaded,
+  projectsLoaded,
   query,
   sort,
   projectStatuses,
   projectActions,
   fileOperations,
   showCloudSyncUi,
-  onMoveToLibrary,
+  onDuplicateToLibrary,
   projectLibraryDrag,
   projectLibraryTypes,
   ...rest
 }: ProjectLibraryOverviewProps) {
-  const state = useSystemIOState()
   const libraryRows = libraries
     .map((library) => {
       const libraryProjects = getHomeProjectEntriesForLibrary(
@@ -861,7 +906,6 @@ function ProjectLibraryOverview({
               getSortFunction(sort)
             )
           : libraryProjects
-
       return {
         library,
         libraryProjects,
@@ -869,26 +913,25 @@ function ProjectLibraryOverview({
       }
     })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !projectsLoaded ? (
     <div className="py-4">
-      <Loading isDummy={true}>Loading more projects...</Loading>
+      <ProjectsLoading />
     </div>
   ) : null
-
   if (libraries.length === 0) {
     return <ProjectLibrariesEmptyState {...rest} />
   }
-
   return (
     <section data-testid="home-section" {...rest}>
-      {!localProjectsLoaded && projects.length === 0 ? (
-        <Loading isDummy={true}>Loading your Projects...</Loading>
+      {!projectsLoaded && projects.length === 0 ? (
+        <ProjectsLoading />
       ) : (
         <>
           {libraryRows.length > 0 ? (
             <div className="flex flex-col gap-8">
               {libraryRows.map(({ library, libraryProjects, projects }) => (
                 <ProjectLibraryPreviewRow
+                  projectShellEnabled={projectShellEnabled}
                   key={library.id}
                   library={library}
                   projects={projects}
@@ -898,7 +941,7 @@ function ProjectLibraryOverview({
                   projectActions={projectActions}
                   fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
-                  onMoveToLibrary={onMoveToLibrary}
+                  onDuplicateToLibrary={onDuplicateToLibrary}
                   projectLibraryDrag={projectLibraryDrag}
                   projectLibraryTypes={projectLibraryTypes}
                 />
@@ -921,7 +964,6 @@ function ProjectLibraryOverview({
     </section>
   )
 }
-
 function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
   return (
     <section data-testid="home-section" {...props}>
@@ -953,59 +995,58 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
     </section>
   )
 }
-
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
+  projectShellEnabled: boolean
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
-  localProjectsLoaded: boolean
+  projectsLoaded: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
-
 function ProjectGrid({
+  projectShellEnabled,
   searchResults,
   projects,
-  localProjectsLoaded,
+  projectsLoaded,
   query,
   sort,
   projectStatuses,
   projectActions,
   fileOperations,
   showCloudSyncUi,
-  onMoveToLibrary,
+  onDuplicateToLibrary,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
 }: ProjectGridProps) {
-  const state = useSystemIOState()
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
+  const loadingMore = !projectsLoaded ? (
     <div className="py-4">
-      <Loading isDummy={true}>Loading more projects...</Loading>
+      <ProjectsLoading />
     </div>
   ) : null
-
   return (
     <section data-testid="home-section" {...rest}>
-      {!localProjectsLoaded && projects.length === 0 ? (
-        <Loading isDummy={true}>Loading your Projects...</Loading>
+      {!projectsLoaded && projects.length === 0 ? (
+        <ProjectsLoading />
       ) : (
         <>
           {searchResults.length > 0 ? (
             <ProjectCardList
+              projectShellEnabled={projectShellEnabled}
               projects={sortedSearchResults}
               projectStatuses={projectStatuses}
               projectActions={projectActions}
               fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
-              onMoveToLibrary={onMoveToLibrary}
+              onDuplicateToLibrary={onDuplicateToLibrary}
               showSourceStatusBadges={showSourceStatusBadges}
             />
           ) : (
@@ -1027,5 +1068,4 @@ function ProjectGrid({
     </section>
   )
 }
-
 export default Home

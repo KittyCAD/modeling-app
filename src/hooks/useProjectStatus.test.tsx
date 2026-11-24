@@ -1,3 +1,4 @@
+import * as publication from '@src/lib/publishing/publication'
 import { Client } from '@kittycad/lib'
 import { useProjectStatuses } from '@src/hooks/useProjectStatus'
 import { renderHook, waitFor } from '@testing-library/react'
@@ -14,6 +15,13 @@ vi.mock('@src/lib/kcClient', () => ({
     }),
 }))
 
+const cloud = {
+  getProjectStatus: (id: string) =>
+    publication.getCloudPublicationStatus(id, 'token-123'),
+  getProjectStatuses: () =>
+    publication.getCloudPublicationStatuses('token-123'),
+}
+
 function respond(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -23,28 +31,32 @@ function respond(body: unknown, status = 200) {
 
 beforeEach(() => {
   fetchMock.mockReset()
-  fetchMock.mockResolvedValue(respond([]))
+  fetchMock.mockResolvedValue(respond({ items: [], next_page: null }))
 })
 
 describe('useProjectStatuses', () => {
   test('fetches once and maps publication details by remote project ID', async () => {
     fetchMock.mockResolvedValue(
-      respond([
-        {
-          id: 'project-pending',
-          publication_status: 'pending_review',
-          publication: { feedback: null },
-        },
-        {
-          id: 'project-changes-requested',
-          publication_status: 'changes_requested',
-          publication: { feedback: 'Add another view.' },
-        },
-      ])
+      respond({
+        items: [
+          {
+            id: 'project-pending',
+            publication_status: 'pending_review',
+            publication: { feedback: null },
+          },
+          {
+            id: 'project-changes-requested',
+            publication_status: 'changes_requested',
+            publication: { feedback: 'Add another view.' },
+          },
+        ],
+        next_page: null,
+      })
     )
 
     const { result } = renderHook(() =>
       useProjectStatuses(
+        cloud,
         [
           { remoteProjectId: 'project-pending' },
           { remoteProjectId: 'project-changes-requested' },
@@ -81,7 +93,7 @@ describe('useProjectStatuses', () => {
     },
   ])('skips fetching without authentication or a remote project', (args) => {
     const { result } = renderHook(() =>
-      useProjectStatuses(args.homeProjects, args.token)
+      useProjectStatuses(cloud, args.homeProjects, args.token)
     )
 
     expect(result.current.size).toBe(0)
@@ -91,31 +103,38 @@ describe('useProjectStatuses', () => {
   test('refetches when the set of linked Home projects changes', async () => {
     fetchMock
       .mockResolvedValueOnce(
-        respond([
-          {
-            id: 'project-a',
-            publication_status: 'pending_review',
-            publication: { feedback: null },
-          },
-        ])
+        respond({
+          items: [
+            {
+              id: 'project-a',
+              publication_status: 'pending_review',
+              publication: { feedback: null },
+            },
+          ],
+          next_page: null,
+        })
       )
       .mockResolvedValueOnce(
-        respond([
-          {
-            id: 'project-a',
-            publication_status: 'pending_review',
-            publication: { feedback: null },
-          },
-          {
-            id: 'project-b',
-            publication_status: 'published',
-            publication: { feedback: null },
-          },
-        ])
+        respond({
+          items: [
+            {
+              id: 'project-a',
+              publication_status: 'pending_review',
+              publication: { feedback: null },
+            },
+            {
+              id: 'project-b',
+              publication_status: 'published',
+              publication: { feedback: null },
+            },
+          ],
+          next_page: null,
+        })
       )
 
     const { result, rerender } = renderHook(
-      ({ homeProjects }) => useProjectStatuses(homeProjects, 'token-123'),
+      ({ homeProjects }) =>
+        useProjectStatuses(cloud, homeProjects, 'token-123'),
       {
         initialProps: {
           homeProjects: [{ remoteProjectId: 'project-a' }],
@@ -168,7 +187,7 @@ test('includes statuses on later pages without publishing a partial list', async
         })
     )
   const { result } = renderHook(() =>
-    useProjectStatuses([{ remoteProjectId: 'last' }], 'token-123')
+    useProjectStatuses(cloud, [{ remoteProjectId: 'last' }], 'token-123')
   )
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
   expect(result.current.size).toBe(0)
@@ -210,7 +229,7 @@ test('does not publish first-page statuses when a later page fails', async () =>
     )
     .mockResolvedValueOnce(respond({ message: 'temporarily unavailable' }, 503))
   const { result } = renderHook(() =>
-    useProjectStatuses([{ remoteProjectId: 'first' }], 'token-123')
+    useProjectStatuses(cloud, [{ remoteProjectId: 'first' }], 'token-123')
   )
   await waitFor(() => expect(console.error).toHaveBeenCalled())
   expect(result.current.size).toBe(0)

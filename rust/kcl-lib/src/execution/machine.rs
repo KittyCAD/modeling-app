@@ -156,6 +156,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::KclVersion;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::SketchSurface;
@@ -1154,7 +1155,7 @@ async fn step_eval(
         // ---- access / control ----
         Expr::MemberExpression(node) => {
             let node = node.arc();
-            if exec_state.entry_point_version_is_v3_or_higher() {
+            if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
                 // KCL 3.0: evaluate in source order, the object before the
                 // property.
                 let object = EvalRequest::expr(&node.object);
@@ -1642,7 +1643,7 @@ async fn step_block(
                         Vec::new(),
                     )));
                 };
-                if exec_state.entry_point_version_is_v3_or_higher() {
+                if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
                     // KCL 3.0: early return. The rest of this block is
                     // abandoned (this continuation is already popped and holds
                     // no ambient state); unwind_return absorbs the value at the
@@ -2710,6 +2711,33 @@ mod tests {
 
     async fn run_machine(code: &str) -> Result<crate::execution::ExecTestResults, KclError> {
         parse_execute(code).await
+    }
+
+    #[tokio::test]
+    async fn unknown_rust_std_fn_returns_internal_error() {
+        let code = "@settings(kclVersion = 3.0)\n@(impl = std_rust)\nfn missing() {}";
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::execution::new_mock_executor_context(None);
+        let mut exec_state = ExecState::new(&ctx);
+        exec_state.mod_local.path = crate::execution::ModulePath::Std {
+            value: "math".to_owned(),
+        };
+        exec_state.mod_local.inside_stdlib = true;
+        ctx.handle_annotations(program.ast.inner_attrs.iter(), BodyType::Root, &mut exec_state)
+            .await
+            .unwrap();
+        exec_state.mut_stack().push_new_root_env(false).unwrap();
+
+        let error = ctx
+            .exec_block(&program.ast, &mut exec_state, BodyType::Root)
+            .await
+            .unwrap_err();
+
+        assert!(matches!(error, KclError::Internal { .. }));
+        assert!(error.message().contains("math::missing"));
+        assert_eq!(error.source_ranges().len(), 1);
+        let range = error.source_ranges()[0];
+        assert_eq!(&code[range.start()..range.end()], "() {}");
     }
 
     /// A program whose trailing modeling commands are still sitting in the
