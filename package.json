@@ -242,7 +242,7 @@
     "typescript": "7.0.2",
     "typescript-eslint": "^8.60.0",
     "typescript-eslint-typescript": "npm:typescript@5.9.3",
-    "vite": "^7.3.2",
+    "vite": "^7.3.7",
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-tsconfig-paths": "^4.3.2",
