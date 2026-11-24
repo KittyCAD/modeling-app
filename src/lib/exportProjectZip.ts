@@ -1,4 +1,4 @@
-import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { exportSave } from '@src/lib/exportSave'
 import {
   EXPORT_TOAST_MESSAGES,
   PROJECT_SETTINGS_FILE_NAME,
@@ -50,7 +50,12 @@ export async function exportProjectZip({
     return
   }
 
-  await browserSaveFile(archive.blob, archive.fileName, toastId)
+  await exportSave({
+    fileOperations,
+    files: [{ name: archive.fileName, contents: archive.contents }],
+    fileName: archive.fileName,
+    toastId,
+  })
 }
 
 export async function createProjectZipArchive({
@@ -65,7 +70,7 @@ export async function createProjectZipArchive({
   currentFilePath?: string | null
   currentFileContents?: string
   wasmInstance: ModuleType
-}): Promise<{ blob: Blob; fileName: string } | Error> {
+}): Promise<{ contents: ArrayBuffer; fileName: string } | Error> {
   if (!project) {
     return new Error('You need an open project to download a project ZIP.')
   }
@@ -91,9 +96,8 @@ export async function createProjectZipArchive({
     zip.file(archivePath, entry.data, { binary: true })
   }
 
-  const blob = await zip.generateAsync({ type: 'blob' })
   return {
-    blob,
+    contents: await zip.generateAsync({ type: 'arraybuffer' }),
     fileName: `${archiveRoot}.zip`,
   }
 }
