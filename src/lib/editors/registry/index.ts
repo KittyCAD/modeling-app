@@ -326,7 +326,7 @@ const extension: Factory = defineFactory({
           onSubmit: () => {
             const editor = service.createEditor()
             if (isErr(editor)) return editor
-            const view = service.createView(editor, 'editors.code')
+            const view = service.createView(editor)
             if (isErr(view)) {
               service.closeEditor(editor.id)
               return view

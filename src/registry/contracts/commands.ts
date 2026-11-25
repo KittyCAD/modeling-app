@@ -9,6 +9,7 @@ import type { SnapshotFrom } from 'xstate'
 export { commandKey } from '@src/lib/commandUtils'
 
 export const BASE_COMMAND_SCOPE = 'base'
+export const EDITOR_FOCUSED_COMMAND_SCOPE = 'editor-focused'
 export const CODE_EDITOR_FOCUSED_COMMAND_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE = 'code-editor-not-focused'
 export const EDITABLE_FOCUSED_COMMAND_SCOPE = 'editable-focused'
@@ -54,6 +55,12 @@ export type CommandScope = {
 }
 
 export const DEFAULT_COMMAND_SCOPES: readonly CommandScope[] = [
+  {
+    id: EDITOR_FOCUSED_COMMAND_SCOPE,
+    displayName: 'Editor focused',
+    priority: 900,
+    userEditable: false,
+  },
   {
     id: BASE_COMMAND_SCOPE,
     displayName: 'Base',

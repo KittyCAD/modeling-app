@@ -45,6 +45,11 @@ export interface OpenProjectSession {
   readonly files: ProjectFiles
 }
 
+/** A completed backing operation whose file membership can be recorded without more I/O. */
+export type ProjectFileMutation =
+  | { type: 'created'; path: string }
+  | { type: 'renamed'; source: string; destination: string }
+
 /** Project selection for `/local/:path` and `/project/:id`; the legacy `/file/:id` route retains its separate project service. */
 export interface ProjectSessionService {
   /** Selected opening for the project UI; async operations capture this value once rather than selecting a project again after awaiting. */
@@ -57,6 +62,11 @@ export interface ProjectSessionService {
   updateProject: (
     session: OpenProjectSession,
     project: Project
+  ) => Error | undefined
+  /** Amend this opening's latest file tree after a successful backing operation; stale openings are ignored. */
+  applyFileMutation: (
+    session: OpenProjectSession,
+    mutation: ProjectFileMutation
   ) => Error | undefined
   /** Update the current opening's title/default-file metadata without replacing its file tree; ignore a retired `session`. */
   updateMetadata: (

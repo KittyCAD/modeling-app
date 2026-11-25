@@ -9,6 +9,14 @@ The runtime uses `fs-zds/memory` for owned bytes and directory entries and imple
 `IZooDesignStudioFS`. Generic filesystem implementations retain their own storage
 resources; cloud project identity, persistence policy, and lifecycle live here.
 
+## File naming failures
+
+The cloud mount runs strict file creation and renaming in a batch with
+`rollbackOnFailure`. An upload rejection restores the previous local snapshot,
+so the editor can retry with its original source path. Revision conflicts reject
+these mutations rather than reporting a reconciled snapshot as a successful
+creation or rename. The editor adopts a new path after the upload is acknowledged.
+
 ## Upload content types
 
 Project creation and updates send every file as `application/octet-stream`,

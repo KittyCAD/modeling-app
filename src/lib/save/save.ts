@@ -1,24 +1,24 @@
-import { Text, type Extension } from '@codemirror/state'
-import { ViewPlugin, keymap } from '@codemirror/view'
+import { Text } from '@codemirror/state'
 import { batch, computed, signal } from '@preact/signals-core'
 import type {
   Editor,
   EditorResourceHost,
-  CodeEditorHost,
 } from '@src/lib/editors/registry/contract'
 import type { EditorSave, EditorOnSave } from '@src/lib/save/registry/contract'
 import { matchesEditor } from '@src/lib/editors/matching'
-import { isErr, trap, reportRejection } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 
 /** In-flight writes share a source's adoption revision, including across buffers. */
 interface SourceSaveQueue {
   adoption: number
   pending?: Promise<undefined | Error>
+  mutation?: Promise<undefined | Error>
 }
 
 /** A document baseline survives capability reconfiguration; attached entries own subscriptions. */
 export function createEditorSave(
-  getSaveHandlers: () => readonly EditorOnSave[]
+  getSaveHandlers: () => readonly EditorOnSave[],
+  nameEditor?: (editor: Editor) => Promise<undefined | Error>
 ) {
   const entries = new WeakMap<Editor, ReturnType<typeof createEntry>>()
   const attached = new Set<Editor>()
@@ -74,10 +74,18 @@ export function createEditorSave(
         return error
       }
       const src = editor.src.peek()
+      if (!src && nameEditor)
+        return nameEditor(editor).then((result) => {
+          if (isErr(result)) return fail(result)
+          if (!editor.src.peek()) return undefined
+          return service.save(editor)
+        })
       if (!src)
         return Promise.resolve(
           fail(new Error('Assign a file path before saving this buffer'))
         )
+      const mutation = saves.get(src)?.mutation
+      if (mutation) return mutation.then(() => service.save(editor))
       const document: Text = editor.state.doc
       const saved = {
         editor,
@@ -153,6 +161,31 @@ export function createEditorSave(
   }
   return {
     service,
+    /** Serialize a source mutation with writes already requested for that source. */
+    withSourceLock: (
+      src: string,
+      operation: () => Promise<undefined | Error>
+    ) => {
+      const queue = saves.get(src) ?? { adoption: 0 }
+      saves.set(src, queue)
+      const previous = queue.pending
+      const result = (async () => {
+        await previous
+        try {
+          return await operation()
+        } catch (cause) {
+          return isErr(cause)
+            ? cause
+            : new Error('Unable to rename the editor', { cause })
+        }
+      })().finally(() => {
+        if (queue.mutation === result) queue.mutation = undefined
+        if (queue.pending === result) saves.delete(src)
+      })
+      queue.pending = result
+      queue.mutation = result
+      return result
+    },
     focus,
     setup: ({ editor, onDispose }: EditorResourceHost) => {
       const entry = entryFor(editor)
@@ -171,28 +204,6 @@ export function createEditorSave(
       })
       return undefined
     },
-    codeExtensions: ({ editor }: CodeEditorHost): Extension => [
-      ViewPlugin.define(() => ({
-        update: (update) => {
-          if (update.view.hasFocus) focus(editor)
-        },
-      })),
-      keymap.of([
-        {
-          key: 'Mod-s',
-          run: () => {
-            if (!attached.has(editor)) return false
-            void service
-              .save(editor)
-              .then((result) => {
-                if (isErr(result)) trap(result)
-              })
-              .catch(reportRejection)
-            return true
-          },
-        },
-      ]),
-    ],
     dispose: () => {
       disposed = true
       attached.clear()

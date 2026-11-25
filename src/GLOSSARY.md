@@ -128,6 +128,10 @@ A live text buffer managed by the editors service. An editor has a stable identi
 
 **Search anchors:** `Editor`, `EditorsService` in the [editors contract](lib/editors/registry/contract.ts).
 
+### Unnamed buffer
+
+An [Editor](#editor) without a source path, shown as Untitled until its first save assigns one. An unnamed buffer can contain working text and undo history before it has a backing file.
+
 ## Editor view instance
 
 One presentation of an editor, with its own selected mode, selection, and viewport. Closing the last view closes the backing editor; changing modes retains the view and document.

@@ -1,3 +1,5 @@
+import { editorViewForTarget } from '@src/lib/editors/focus'
+import { observations as editorsObservations } from '@src/lib/editors/registry/contract'
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
@@ -16,6 +18,7 @@ import {
   commandScopesFacet,
   DEFAULT_COMMAND_SCOPES,
   EDITABLE_FOCUSED_COMMAND_SCOPE,
+  EDITOR_FOCUSED_COMMAND_SCOPE,
   GLOBAL_COMMAND_SCOPES,
   getEffectiveCommandScopeSet,
   isCommandAvailable,
@@ -66,12 +69,14 @@ const keymapExtension: Factory = defineFactory({
     fileOperations: fileOperationsObservations,
     keymap: keymapObservations,
     commands: commandsObservations,
+    editors: editorsObservations,
   },
   key: 'keymap-extension',
   create: ({
     fileOperations: fileOperationsInputs,
     keymap: keymapInputs,
     commands: commandsInputs,
+    editors: editorsInputs,
   }) => {
     const fileOperations = () =>
       fileOperationsInputs.fileOperationsService.required()
@@ -158,6 +163,7 @@ const keymapExtension: Factory = defineFactory({
       }),
     }
     const focusScopes = new Set([
+      EDITOR_FOCUSED_COMMAND_SCOPE,
       CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
       CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
       EDITABLE_FOCUSED_COMMAND_SCOPE,
@@ -174,18 +180,26 @@ const keymapExtension: Factory = defineFactory({
       } else if (isEventFromContentEditableTarget(target)) {
         nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
       }
+      const editorFocused =
+        editorViewForTarget(
+          editorsInputs.editorsService.current.value?.views.peek() ?? [],
+          target
+        ) !== undefined
+      const nextFocusScopes = editorFocused
+        ? [nextFocusScope, EDITOR_FOCUSED_COMMAND_SCOPE]
+        : [nextFocusScope]
       const currentFocusScopes = activeScopes.value.filter((scope) =>
         focusScopes.has(scope)
       )
       if (
-        currentFocusScopes.length === 1 &&
-        currentFocusScopes[0] === nextFocusScope
+        currentFocusScopes.length === nextFocusScopes.length &&
+        nextFocusScopes.every((scope) => currentFocusScopes.includes(scope))
       ) {
         return
       }
       activeScopes.value = [
         ...activeScopes.value.filter((scope) => !focusScopes.has(scope)),
-        nextFocusScope,
+        ...nextFocusScopes,
       ]
     }
     const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {

@@ -1,3 +1,5 @@
+import { applyProjectFileMutation } from '@src/lib/projectSession/next/fileTree'
+import { isErr } from '@src/lib/trap'
 import { batch, computed, signal, type Signal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/projectSession/next/types'
@@ -120,6 +122,18 @@ export function createProjectSessionService(
       )
         return new Error('A snapshot cannot change the project identity')
       current.project.value = project
+    },
+    applyFileMutation: (session, mutation) => {
+      const current = currentSession.peek()
+      if (current !== session || session.signal.aborted) return
+      const project = current.project.peek()
+      const contents = applyProjectFileMutation(
+        project.contents,
+        mutation,
+        project.storage?.type === 'cloud'
+      )
+      if (isErr(contents)) return contents
+      current.project.value = { ...project, contents }
     },
     updateMetadata: (session, metadata) => {
       const current = currentSession.peek()
