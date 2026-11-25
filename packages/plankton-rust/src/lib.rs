@@ -14,11 +14,12 @@ pub use contract::{
 pub use factory::{
     Dependencies, Extension, Factory, HookError, HookResult, Instance, Scope, ScopedSlot, slot,
 };
+pub use planner::{ItemKind, PlannedItem, plan};
 pub use plugins::{
     PluginActivity, PluginController, PluginRecord, PluginSpec, Plugins, create_plugin,
 };
 pub use registry::{
-    HookFailure, HookPhase, ItemPath, Observation, ObservationError, Origin, PathStep, Registry,
-    RegistryError,
+    HookFailure, HookPhase, InspectedItem, ItemPath, Observation, ObservationError, Origin,
+    PathStep, Registry, RegistryError, RegistryInspection,
 };
 pub use signal::{ReadSignal, Signal, Subscription};

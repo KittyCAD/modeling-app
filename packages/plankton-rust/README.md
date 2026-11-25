@@ -92,6 +92,23 @@ handle is tied to the registry and acquired instance that created it. It works
 while that instance owns the slot as a direct child, including through a static
 group. Removing and reacquiring the owner invalidates the old handle.
 
+## Planning and inspection
+
+Call `plan(&roots)` to preview the declared extensions. It flattens groups,
+selects the first occurrence of each declaration, and lists dependencies before
+their consumers. Each item includes its path in the input. The dry run
+reports declared cycles and leaves constructor-created children and source
+values for runtime.
+
+Call `registry.inspect()` for the currently published graph, including children
+returned by constructors. It lists selected items and counts factories,
+installed bindings, and facets with contributions. Binding counts include
+contributions shadowed by a key. Use `snapshot.debug::<F>()` for the bindings
+that contribute to a particular facet. Inspection includes both an item's
+current path and its origin, which preserves a retained factory's original
+acquisition path. `snapshot.inspect()` reads the inventory captured with that
+snapshot.
+
 ## Ownership and lifecycle
 
 A constructor declares a concrete dependency with `factory.dependency("name")`.

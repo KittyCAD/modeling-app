@@ -8,12 +8,18 @@ use crate::{
     factory::{ExtensionKind, FactoryItem, FactoryKey},
 };
 
-/// Expand declared dependencies before any constructor reveals its children.
-pub(crate) fn plan(
+/// Expand declared dependencies before their consumers and flatten static groups.
+/// Returns the first selected occurrence of each factory and binding. This
+/// dry run does not evaluate constructors, factory children, or binding sources.
+pub fn plan(items: &[Extension]) -> Result<Vec<PlannedItem>, RegistryError> {
+    plan_selected(items, None, &mut HashMap::new())
+}
+
+pub(crate) fn plan_selected(
     items: &[Extension],
     parent: Option<&ItemPath>,
     selected: &mut HashMap<FactoryKey, FactoryItem>,
-) -> Result<Vec<Planned>, RegistryError> {
+) -> Result<Vec<PlannedItem>, RegistryError> {
     let mut plan = Plan::default();
     for (index, item) in items.iter().enumerate() {
         let path = match parent {
@@ -28,15 +34,69 @@ pub(crate) fn plan(
     Ok(plan.entries)
 }
 
+/// The kind of declaration and its explicit key, when one was supplied.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ItemKind {
+    Binding { contribution_key: Option<String> },
+    Factory { key: Option<Rc<str>> },
+}
+
+impl ItemKind {
+    pub(crate) fn binding(binding: &Binding) -> Self {
+        Self::Binding {
+            contribution_key: binding.options.key.clone(),
+        }
+    }
+
+    pub(crate) fn factory(factory: &FactoryItem) -> Self {
+        Self::Factory {
+            key: factory.0.key.clone(),
+        }
+    }
+}
+
+/// A declaration selected by the dry-run planner and its path in the input.
+pub struct PlannedItem {
+    pub path: ItemPath,
+    pub(crate) item: Planned,
+}
+
+impl PlannedItem {
+    pub fn kind(&self) -> ItemKind {
+        match &self.item {
+            Planned::Binding(binding) => ItemKind::binding(binding),
+            Planned::Factory(factory) => ItemKind::factory(factory),
+        }
+    }
+
+    /// Get the selected declaration as an extension, preserving its identity.
+    pub fn extension(&self) -> Extension {
+        match &self.item {
+            Planned::Binding(binding) => binding.clone().into(),
+            Planned::Factory(factory) => Extension(ExtensionKind::Factory(factory.clone())),
+        }
+    }
+}
+
+impl std::fmt::Debug for PlannedItem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PlannedItem")
+            .field("path", &self.path)
+            .field("kind", &self.kind())
+            .finish()
+    }
+}
+
 pub(crate) enum Planned {
-    Binding(Binding, ItemPath),
-    Factory(FactoryItem, ItemPath),
+    Binding(Binding),
+    Factory(FactoryItem),
 }
 
 /// Select declared definitions before any constructor reveals its children.
 #[derive(Default)]
 struct Plan {
-    entries: Vec<Planned>,
+    entries: Vec<PlannedItem>,
+    bindings: HashSet<usize>,
     complete: HashSet<FactoryKey>,
     active: Vec<(FactoryKey, ItemPath)>,
 }
@@ -55,7 +115,12 @@ impl Plan {
                 }
             }
             ExtensionKind::Binding(binding) => {
-                self.entries.push(Planned::Binding(binding.clone(), path))
+                if self.bindings.insert(binding.identity()) {
+                    self.entries.push(PlannedItem {
+                        path,
+                        item: Planned::Binding(binding.clone()),
+                    });
+                }
             }
             ExtensionKind::Factory(factory) => self.factory(factory, path, selected)?,
         }
@@ -86,7 +151,10 @@ impl Plan {
         }
         self.active.pop();
         self.complete.insert(key);
-        self.entries.push(Planned::Factory(item.clone(), path));
+        self.entries.push(PlannedItem {
+            path,
+            item: Planned::Factory(item.clone()),
+        });
         Ok(())
     }
 }

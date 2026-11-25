@@ -6,7 +6,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::{Origin, ReadSignal, signal::Notifier};
+use crate::{Origin, ReadSignal, RegistryInspection, signal::Notifier};
 
 /// A marker type identifies one contract. Its associated types pair the input
 /// accepted by a binding with the output returned to readers.
@@ -124,6 +124,10 @@ pub struct Binding {
 }
 
 impl Binding {
+    pub(crate) fn identity(&self) -> usize {
+        Rc::as_ptr(&self.options) as usize
+    }
+
     pub fn new<F: Facet>(source: impl Source<F::Input> + 'static) -> Self {
         Self::with_options::<F>(source, BindingOptions::default())
     }
@@ -237,12 +241,22 @@ pub(crate) struct SignalDependents {
 /// demand, so application state captured by those sources can still change.
 #[derive(Default)]
 pub struct Snapshot {
+    pub(crate) inspection: RegistryInspection,
     facets: HashMap<TypeId, Box<dyn Any>>,
     effective: HashMap<TypeId, EffectiveBindings>,
     pub(crate) signal_dependents: HashMap<*const Notifier, SignalDependents>,
 }
 
 impl Snapshot {
+    /// Inspect the graph captured by this snapshot without evaluating sources.
+    pub fn inspect(&self) -> &RegistryInspection {
+        &self.inspection
+    }
+
+    pub(crate) fn facet_count(&self) -> usize {
+        self.facets.len()
+    }
+
     pub fn get<F: Facet>(&self) -> F::Output {
         let entries = self.entries::<F>();
         F::combine(

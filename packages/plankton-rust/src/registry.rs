@@ -8,11 +8,11 @@ use std::{
 };
 
 use crate::{
-    Binding, ContributionInfo, Extension, Facet, Factory, HookError, Resolution, Scope, ScopedSlot,
-    Service, ServiceResolutionError, Snapshot, Subscription,
+    Binding, ContributionInfo, Extension, Facet, Factory, HookError, ItemKind, Resolution, Scope,
+    ScopedSlot, Service, ServiceResolutionError, Snapshot, Subscription,
     contract::Providers,
     factory::{Cleanup, ExtensionKind, FactoryItem, FactoryKey, Start},
-    planner::{Planned, cycle, plan},
+    planner::{Planned, PlannedItem, cycle, plan_selected},
     signal::Notifier,
 };
 
@@ -54,6 +54,26 @@ impl fmt::Display for ItemPath {
         }
         Ok(())
     }
+}
+
+/// A selected item in the published graph. A retained factory's origin
+/// preserves its acquisition location even if its current path has moved.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InspectedItem {
+    pub kind: ItemKind,
+    pub path: ItemPath,
+    pub origin: Origin,
+}
+
+/// An inventory of the published graph, independent of contribution reads.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct RegistryInspection {
+    pub factories: usize,
+    /// Installed bindings, including those shadowed by a contribution key.
+    pub bindings: usize,
+    /// Facets with installed contributions, including service provider facets.
+    pub facets: usize,
+    pub items: Rc<[InspectedItem]>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -409,6 +429,11 @@ impl Registry {
         self.published.snapshot.borrow().clone()
     }
 
+    /// Inspect the currently published graph without evaluating any sources.
+    pub fn inspect(&self) -> RegistryInspection {
+        self.snapshot().inspect().clone()
+    }
+
     pub fn get<F: Facet>(&self) -> F::Output {
         self.snapshot().get::<F>()
     }
@@ -581,6 +606,7 @@ struct Draft {
     active: Vec<(FactoryKey, ItemPath)>,
     bindings: Vec<(Binding, ContributionInfo)>,
     seen_bindings: HashSet<usize>,
+    items: Vec<InspectedItem>,
 }
 
 impl Draft {
@@ -591,25 +617,27 @@ impl Draft {
         owner: Option<&Origin>,
         registry: &Registry,
     ) -> Result<(), RegistryError> {
-        for item in plan(items, parent, &mut self.selected)? {
+        for PlannedItem { path, item } in plan_selected(items, parent, &mut self.selected)? {
             match item {
-                Planned::Binding(binding, path) => {
-                    if self
-                        .seen_bindings
-                        .insert(Rc::as_ptr(&binding.options) as usize)
-                    {
+                Planned::Binding(binding) => {
+                    if self.seen_bindings.insert(binding.identity()) {
                         let info = ContributionInfo {
                             origin: owner.cloned().unwrap_or_else(|| Origin {
                                 name: path.to_string(),
-                                path,
+                                path: path.clone(),
                             }),
                             key: binding.options.key.clone(),
                             precedence: binding.options.precedence,
                         };
+                        self.items.push(InspectedItem {
+                            kind: ItemKind::binding(&binding),
+                            path,
+                            origin: info.origin.clone(),
+                        });
                         self.bindings.push((binding, info));
                     }
                 }
-                Planned::Factory(factory, path) => self.mount(factory, path, registry)?,
+                Planned::Factory(factory) => self.mount(factory, path, registry)?,
             }
         }
         Ok(())
@@ -642,6 +670,7 @@ impl Draft {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
+        let kind = ItemKind::factory(&factory);
         let mut mounted = match registry.mounted.get(&key) {
             Some(retained) => {
                 let instance = &retained.instance;
@@ -710,6 +739,11 @@ impl Draft {
         self.exports
             .insert(key.clone(), mounted.instance.exports.clone());
         self.mounted.insert(key.clone(), mounted.clone());
+        self.items.push(InspectedItem {
+            kind,
+            path: path.clone(),
+            origin: mounted.instance.origin.clone(),
+        });
         self.active.push((key, path.clone()));
         let result = self.acquire(
             &mounted.children,
@@ -723,10 +757,17 @@ impl Draft {
 
     fn snapshot(&mut self) -> Snapshot {
         let mut snapshot = Snapshot::default();
+        let bindings = self.bindings.len();
         self.bindings.sort_by_key(|(_, info)| info.precedence);
         for (binding, info) in std::mem::take(&mut self.bindings) {
             (binding.install)(&binding, &mut snapshot, info);
         }
+        snapshot.inspection = RegistryInspection {
+            factories: self.mounted.len(),
+            bindings,
+            facets: snapshot.facet_count(),
+            items: std::mem::take(&mut self.items).into(),
+        };
         snapshot
     }
 
