@@ -4430,6 +4430,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     unlabeled,
                     mut arguments,
                     mut non_code_meta,
+                    block: _,
                     digest: _,
                 },
         } = fn_call;
@@ -4506,6 +4507,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     arguments: Default::default(),
                     digest: None,
                     non_code_meta: Default::default(),
+                    block: None,
                 },
                 start,
                 end,
@@ -4636,6 +4638,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             arguments: args,
             digest: None,
             non_code_meta,
+            block: None,
         },
         start,
         end,

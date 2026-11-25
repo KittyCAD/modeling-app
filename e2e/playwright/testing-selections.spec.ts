@@ -1,5 +1,6 @@
 import { resetView, sansWhitespace } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import fs from 'fs'
 import path from 'path'
 
@@ -101,6 +102,9 @@ part001 = startSketchOn(XZ)
       await editor.scrollToText(bracket.trimStart().split('\n')[0])
 
       const laterCode = page.getByText('finalBracket = hole::holes(')
+      await expect(laterCode).not.toBeInViewport()
+      await editor.closePane()
+
       const menuItems = page.locator(
         '[data-testid="view-controls-menu"] button'
       )
@@ -118,26 +122,19 @@ part001 = startSketchOn(XZ)
 
       await test.step('Right click on bracket navigates to its source', async () => {
         await expect(laterCode).not.toBeInViewport()
-        {
-          const [clickBracket] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            index: 1,
-            stream: { x: 0.45, y: 0.45, format: 'ratio' },
-          })
-          await clickBracket()
-        }
+        const [clickBracket] = (await page.evaluate(
+          () => window.engineCommandManager.geometryOnly
+        ))
+          ? await scene.findEntity('bodyFace', 0)
+          : scene.makeMouseHelpers(0.45, 0.45, { format: 'ratio' })
+        await clickBracket()
         await expect(page.getByText('1 face')).toBeVisible()
-        {
-          const [clickBracket] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            index: 1,
-            stream: { x: 0.45, y: 0.45, format: 'ratio' },
-          })
-          await clickBracket({ shouldRightClick: true })
-        }
+        await clickBracket({ shouldRightClick: true })
         await expect(viewKclSourceCodeOption).toBeVisible()
         await expect(viewKclSourceCodeOption).toBeEnabled()
+        await expect(editor.codeContent).not.toBeVisible()
         await viewKclSourceCodeOption.click()
+        await expect(editor.codeContent).toBeVisible()
         await expect(page.locator('.cm-activeLine')).toBeVisible()
         await expect(page.locator('.cm-activeLine')).not.toContainText(
           'Shelf Bracket'
@@ -172,6 +169,7 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
       await scene.waitForExecutionDoneAfter(() =>
         editor.replaceCode('', innerShellCode)
       )
+      await resetView(scene)
 
       // Two dumb hardcoded screen ratio values
 
@@ -180,9 +178,23 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
       })
 
       await test.step(`Click a primitive face and expect the selection to be set to it`, async () => {
+        let innerFaceId: string | undefined
+        if (rendererTag === '@localRenderer') {
+          const faces = await scene.getProjectedEntities()
+          innerFaceId = await page.evaluate((faces) => {
+            const { artifactGraph } = window.app.singletons.kclManager
+            return faces.find(
+              (face) =>
+                face.visible &&
+                face.kind === 'bodyFace' &&
+                !artifactGraph.has(face.id)
+            )?.id
+          }, faces)
+          if (!innerFaceId) throw new Error('No visible primitive shell face')
+        }
         const [clickOnFace] = await scene.makeSelectionHelpers({
           kind: 'face',
-          index: 0,
+          id: innerFaceId,
           stream: { x: 0.6, y: 0.6, format: 'ratio' },
         })
         await clickOnFace()
@@ -229,16 +241,42 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
       await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
       await resetView(scene)
 
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.app.singletons.kclManager.read())
+        )
+        .toBe(code)
+
+      let innerFaceId: string | undefined
       if (await page.evaluate(() => window.engineCommandManager.geometryOnly)) {
         await scene.moveCameraTo(
           { x: 7, y: -5, z: 8 },
           { x: 1.76, y: 2.635, z: 0.5 }
         )
+        const response = await page.evaluate(async () => {
+          const shell = window.app.singletons.kclManager.variables.shell001
+          if (shell?.type !== 'Solid')
+            throw new Error('Expected shell001 to be a solid')
+          return window.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: crypto.randomUUID(),
+            cmd: {
+              type: 'solid3d_get_face_uuid',
+              object_id: shell.value.id,
+              face_index: 7,
+            },
+          })
+        })
+        const result =
+          isModelingResponse(response) && response.resp.data.modeling_response
+        if (!result || result.type !== 'solid3d_get_face_uuid') {
+          throw new Error('Could not resolve faceId(shell001, index = 7)')
+        }
+        innerFaceId = result.data.face_id
       }
-      // Visible face 3 is the original inner face, topology primitive index 7.
       const [clickOnInnerFace] = await scene.makeSelectionHelpers({
         kind: 'face',
-        index: 3,
+        id: innerFaceId,
         stream: { x: 0.6, y: 0.4, format: 'ratio' },
       })
 

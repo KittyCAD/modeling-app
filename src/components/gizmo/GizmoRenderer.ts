@@ -38,7 +38,7 @@ export default class GizmoRenderer {
   private readonly renderer: WebGLRenderer
   private readonly scene: Scene
   private readonly dprDetector: DprDetector
-  private readonly sceneInfra: SceneInfra
+  private readonly sceneInfra: Pick<SceneInfra, 'camControls'>
   private camera: PerspectiveCamera | OrthographicCamera
   private clickableObjects: StandardMesh[] = []
   private theme: 'light' | 'dark'
@@ -75,7 +75,7 @@ export default class GizmoRenderer {
     canvas: HTMLCanvasElement,
     isPerspective: boolean,
     theme: 'light' | 'dark',
-    sceneInfra: SceneInfra
+    sceneInfra: Pick<SceneInfra, 'camControls'>
   ) {
     this.canvas = canvas
     this.renderer = new WebGLRenderer({
@@ -628,7 +628,7 @@ function orientationQuaternionForName(name: string): Quaternion | null {
 
 async function setCameraToQuaternion(
   targetQuat: Quaternion,
-  sceneInfra: SceneInfra
+  sceneInfra: Pick<SceneInfra, 'camControls'>
 ) {
   const camControls = sceneInfra.camControls
   if (!camControls.localCameraMode) {

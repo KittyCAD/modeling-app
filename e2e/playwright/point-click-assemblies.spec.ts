@@ -266,10 +266,10 @@ test.describe(
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
+          // This bracket wall stays clear of the dialog after scaling.
           const [clickBracketInScene] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            // The end cap stays visible when the bracket rotates.
-            index: 2,
+            kind: 'bodyFace',
+            id: 'de06675a-22ea-58f0-8413-18c53d9c17f9',
             stream: { x: 0.75, y: 0.92, format: 'ratio' },
           })
           await clickBracketInScene()

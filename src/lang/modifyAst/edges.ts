@@ -1,3 +1,4 @@
+import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
@@ -1393,6 +1394,12 @@ function walkExpr(
     for (const arg of callExpr.arguments ?? []) {
       visitExpr(arg.arg, visitor, options, pathPrefix)
     }
+    if (callExpr.block) {
+      visitBodyExpressions(callExpr.block, visitor, options, [
+        ...(pathPrefix ?? []),
+        ['block', 'CallExpressionKw'],
+      ])
+    }
     return
   }
 
@@ -1423,25 +1430,28 @@ function walkExpr(
     walkExpr(expr.object, visitor, options, pathPrefix)
     walkExpr(expr.property, visitor, options, pathPrefix)
   } else if (expr.type === 'FunctionExpression') {
-    visitProgramExpressions(expr.body, visitor, options, [
+    visitBodyExpressions(expr.body, visitor, options, [
       ...(pathPrefix ?? []),
       ['body', 'FunctionExpression'],
     ])
   }
 }
 
-function visitProgramExpressions(
-  program: Program,
+function visitBodyExpressions(
+  container: Program | Block,
   visitor: ExprVisitor,
   options: ExprWalkOptions,
   pathPrefix: PathToNode = []
 ): void {
-  const body = program.body ?? []
+  const body =
+    container.type === 'Block' ? container.items : (container.body ?? [])
+  const bodyStep: PathToNode[number] =
+    container.type === 'Block' ? ['items', 'Block'] : ['body', '']
   for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
     const item = body[statementIndex]
     const statementPathPrefix: PathToNode = [
       ...pathPrefix,
-      ['body', ''],
+      bodyStep,
       [statementIndex, 'index'],
     ]
     if (item.type === 'VariableDeclaration' && item.declaration?.init) {
@@ -1644,7 +1654,7 @@ function findFilletChamferCallsToFixUnified(
     walk(expr)
   }
 
-  visitProgramExpressions(program, processExpr, { includeCallUnlabeled: true })
+  visitBodyExpressions(program, processExpr, { includeCallUnlabeled: true })
 
   return results
 }
@@ -1703,11 +1713,23 @@ function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
 }
 
 function getCallPathFromExpr(
+  program: Program,
   expr: Expr,
   pathPrefix?: PathToNode
 ): PathToNode | undefined {
   if (!pathPrefix?.length) return undefined
-  if (expr.type === 'CallExpressionKw') return [...pathPrefix]
+  if (expr.type === 'CallExpressionKw') {
+    // The custom walker carries statement paths through pipes and arguments.
+    // A call inside a trailing block needs the full path through those expressions.
+    if (pathPrefix.some(([, owner]) => owner === 'Block')) {
+      return getNodePathFromSourceRange(program, [
+        expr.start,
+        expr.end,
+        expr.moduleId,
+      ])
+    }
+    return [...pathPrefix]
+  }
   return undefined
 }
 
@@ -1726,7 +1748,7 @@ export function findRevolveHelixCallsToFix(
       walk(expr)
       return
     }
-    const callPath = getCallPathFromExpr(expr, pathPrefix)
+    const callPath = getCallPathFromExpr(program, expr, pathPrefix)
     const calleeName = getCalleeName(call)
     if (!calleeName) {
       walk(expr)
@@ -1789,7 +1811,7 @@ export function findRevolveHelixCallsToFix(
     walk(expr)
   }
 
-  visitProgramExpressions(program, processExpr, {
+  visitBodyExpressions(program, processExpr, {
     resolveWrappedCalls: true,
     includeCallUnlabeled: true,
   })
@@ -1852,7 +1874,7 @@ export function findExtrudeEdgeCallsToFix(
       walk(expr)
       return
     }
-    const callPath = getCallPathFromExpr(expr, pathPrefix)
+    const callPath = getCallPathFromExpr(program, expr, pathPrefix)
     const calleeName = getCalleeName(call)
     if (!calleeName || !isExtrude(calleeName)) {
       walk(expr)
@@ -1955,7 +1977,7 @@ export function findExtrudeEdgeCallsToFix(
     walk(expr)
   }
 
-  visitProgramExpressions(program, processExpr, {
+  visitBodyExpressions(program, processExpr, {
     resolveWrappedCalls: true,
     includeCallUnlabeled: true,
   })

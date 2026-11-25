@@ -253,7 +253,7 @@ impl ProgramMemory {
 
     /// The number of environments currently retaining bindings. A test-only
     /// observable for memory reclamation.
-    #[cfg(test)]
+    #[cfg(any(test, feature = "lsp-test-util"))]
     pub(crate) fn envs_with_bindings(&self) -> usize {
         match &self.backend {
             ProgramMemoryBackend::Arena(memory) => memory.envs_with_bindings(),

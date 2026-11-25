@@ -1,109 +1,155 @@
-# KCL scene connections and refresh settings
+# KCL scenes
 
-This module connects KCL scenes to the engine and defines which preference
-changes require KCL execution. It uses `ConnectionManager` for transport and
-provides the refresh policy consumed by `KclManager` in the file route.
+This module connects KCL scenes to streamed or local rendering, applies scene
+settings, and manages selection for Modeling views. The legacy file route uses
+the same connection, viewport, and settings helpers through adapters.
 
-## Connection ownership
+See [KCL editors](../README.md) for source capture, execution, and view lifetime,
+and [ADR 0001](../../../dev-docs/adr/0001-app-owned-scene-host.md) for the scene-host
+design and planned SDK integration.
 
-`connectScene` opens a supplied `ConnectionManager` in one of two presentations:
-`streamed` receives rendered video; `local` requests a geometry-only connection
-for the local renderer. It returns a `SceneConnection` handle or an `Error`.
+## Connections and rendering
 
-The caller owns the handle and calls `dispose` when the scene closes. An optional
-abort signal can also end the connection, including during startup. The startup
-timeout covers browser codec inspection and connection establishment.
+[`connectScene`](connection.ts) opens a supplied `ConnectionManager` in one of two
+presentations: `streamed` receives rendered video; `local` requests geometry for
+the local renderer. It returns a `SceneConnection` handle or an `Error`.
 
-Each handle captures one connection. Its commands, resizing, and disposal cannot
-act on a replacement connection opened on the same manager. `attachVideo` binds
-that connection's media to a video element and returns a detach callback.
-Detaching releases the presentation without closing the connection; an older
-callback cannot detach media attached by a newer handle.
+The caller disposes the handle when the scene closes. An abort signal can cancel
+startup or close an established connection. The startup timeout includes browser
+codec inspection and connection establishment.
 
-[`useTryConnect`](../../../hooks/network/useTryConnect.tsx) supplies the file route's React
-state, DOM references, reconnect policy, and error reporting. Those decisions
-remain with the caller of `connectScene`.
+Each handle controls the connection it opened. It cannot send commands to, resize,
+or close a replacement connection on the same manager. `attachVideo` attaches its
+media to a video element and returns a detach callback. Detaching leaves the
+connection open, and an old callback cannot detach a newer attachment.
 
-## Local renderer inputs
+The caller decides when to reconnect and how to report errors. The legacy route
+supplies these decisions through
+[`useTryConnect`](../../../hooks/network/useTryConnect.tsx); Modeling views use
+[`createKclSession`](../modeling/session.ts).
 
-[`LocalRendererHost`](../../../clientSideScene/localRenderer/host.ts) supplies
-`LocalWebGPUSceneView` with execution events, artifacts, native export, camera and
-selection resources, and settings. The view does not need application providers.
-`legacyLocalRendererHost` adapts `KclManager` and the file route's resources to
-these inputs.
+[`LocalRendererHost`](../../../clientSideScene/localRenderer/host.ts) supplies the
+local renderer with native export, execution events, artifacts, camera, selection,
+and settings. `legacyLocalRendererHost` supplies these inputs from `KclManager`
+and the file route. The renderer uses the host's model generations to wait until
+geometry and its artifact graph belong to the same execution.
 
-The host distinguishes the latest native model from the model published with its
-artifact graph. Execution can finish before the graph is published; the renderer
-uses those model generations to avoid displaying geometry with an older graph.
-`SceneExecutionEvents` in this module defines the execution notifications that
-presentations consume.
+## Viewport and presentation preferences
 
-## Shared viewport behavior
+Both hosts share the resize and pixel-density observers in
+[`viewport.ts`](viewport.ts). They also share camera-input preferences and sketch
+foreground themes through [`applyPreferences.ts`](applyPreferences.ts).
 
-The legacy file route and Modeling editor views use the same canvas resize,
-pixel-density, streamed-video sizing, camera-input, and overlay-theme helpers.
-[`viewport.ts`](viewport.ts) owns the resize observers and browser sizing rule;
-[`applyPreferences.ts`](applyPreferences.ts) applies mouse/touch preferences and
-sketch foreground themes.
-
-The hosts retain their lifecycle and application policy. `ClientSideScene` observes
-its container size, while Modeling sessions own pane resizing. The legacy route
-keeps its sketch-mode projection guard and segment-color updates; Modeling views
-keep their per-connection projection and render-resume callbacks. Engine reconnect
-and idle scheduling remain outside these helpers.
+The hosts decide when to attach and release these helpers. They also retain their
+own sketch projection, render-resume, reconnect, and idle behavior. The shared
+helpers do not schedule execution or recovery.
 
 ## KCL refresh policy
 
-KCL extensions contribute refresh inputs through
-`kclExecutionInputsFacet`. Each input has a stable ID, a reader of its
-effective value, and a refresh rule. Generic `Setting` definitions do not need to
-know which executors consume them.
+KCL extensions declare settings that require execution through
+`kclExecutionInputsFacet`. Each contribution supplies a stable ID, a function
+reading the effective setting value, and a refresh rule. The generic `Setting`
+type does not need to know about KCL.
 
-For example, the core KCL policy includes:
+For example, edge highlighting requests execution in either renderer:
 
 ```ts
 provideKclExecutionInput({
   id: 'modeling.highlightEdges',
   read: (settings) => settings.modeling.highlightEdges.currentSignal.value,
   refresh: 'execute',
+  legacyRefresh: 'direct',
 })
 ```
 
-The two rules select which presentations request execution:
+The two rules select which Modeling views request execution:
 
-- `execute` reruns KCL with the existing native cache. Default units, edge
+- `execute`: request execution for both presentations. Default units, edge
   highlighting, and scale-grid visibility and size use this rule.
-- `execute-streamed` requests execution only for streamed scenes. Backface color
-  uses this rule. Rust reapplies the color to existing streamed geometry without
-  clearing the scene or cache. The local renderer applies it directly.
+- `execute-streamed`: request execution for streamed scenes. Backface color uses
+  this rule because the local renderer applies it directly.
 
-`createSceneExecutionSettings` in `executionSettings.ts` reads the registry's live contribution signal and
-the effective preferences. It provides native configuration through the existing
-`jsAppSettings` conversion, plus comparison keys for deciding when to refresh.
-Adding or removing a contribution updates those keys. Project overrides retain
-their normal precedence, and replacing settings with equivalent values does not
-request another execution.
+The legacy file route uses `legacyRefresh: 'direct'` for edge highlighting,
+scale-grid visibility and size, and backface color. `KclManager` applies these
+through engine APIs without executing KCL. Default units and contributed inputs
+without this override retain their execution rules in both hosts.
 
-`kclExecutionSettingsService` exposes the composed settings to `KclManager`. The
-core contributions remain installed when project-shell editing is disabled,
-because the file route also needs them.
+[`createSceneExecutionSettings`](executionSettings.ts) combines the contributed
+values into comparison keys and converts settings to native configuration through
+`jsAppSettings`. Adding or removing contributions changes the keys. Replacing a
+setting with an equivalent value does not. Project overrides keep their normal
+precedence.
 
-## Applying changes to the active scene
+`kclExecutionSettingsService` publishes these settings to both KCL consumers. The
+core contributions remain installed when the project-shell feature is disabled
+because the legacy file route needs them too.
 
-`observeLegacySceneExecutionSettings` in `legacyExecutionSettings.ts` watches the
-comparison keys.
-`KclManager.watchSettings` supplies callbacks bound to the active file, project,
-and connection: execute the model and check whether those resources are still
-current. Rust owns cache invalidation and graphics-setting application; the
-observer does not clear scenes before requesting execution.
+For that route,
+[`observeLegacySceneExecutionSettings`](legacyExecutionSettings.ts) watches the
+legacy comparison keys, which exclude inputs applied directly. It requests
+execution when a key changes while the scene is active and connected.
+`KclManager.watchSettings` supplies the execution callback and a check that its
+file, project, and connection are still current. Changes while inactive or
+disconnected update the comparison baseline; opening and reconnecting request
+their own initial execution. Rust decides whether to reuse cached geometry and
+reapply graphics settings. The observer does not clear the scene or native cache.
 
-The observer records preference changes while inactive or disconnected without
-executing. File opening and reconnecting own their initial execution, so simply
-activating the observer does not request another one.
+Presentation preferences have separate consumers. Theme and camera preferences
+update the presentation directly. Viewport-style and SSAO changes restart the
+connection rather than becoming KCL execution inputs.
 
-Presentation preferences use their existing consumers: theme and camera controls
-update presentation, and viewport-style/SSAO changes request a connection restart.
-They do not become KCL refresh inputs merely because they are settings.
+## View selection
 
-The SDK integration direction and adapter constraints are documented in
-[ADR 0001](../../../dev-docs/adr/0001-app-owned-scene-host.md).
+[`createSceneSelection`](selection.ts) manages selection for one Modeling view.
+Two views of the same editor have independent selections. Each selected reference
+records the scene and execution that produced it. Re-execution clears selections,
+including when native execution uses its cache. Closing the scene prevents pending
+pick or highlight results from updating it.
+
+A click selects one entity; Shift-click toggles its membership. Clicking the
+background clears selection, while Shift-clicking the background leaves it
+unchanged. Camera drags do not select. Escape and Clear selection clear the view's
+selection when no dialog owns picking.
+
+[`sceneSelectionAdapter`](selectionAdapter.ts) uses the shared
+[point-query helper](picking.ts) with the clicked view's canvas and connection.
+`ConnectionManager` sends the query to the streamed engine or the existing local
+GPU picker. The adapter uses the same selection and filter commands for both
+renderers. It replaces highlights in one command to avoid a visible clear between
+updates, and resends filters when they change or the model re-executes. Hover also
+uses the owning view's canvas.
+
+[Entity-reference helpers](entityReference.ts) can be imported without loading AST
+or WASM modules. `queryAst` re-exports them for existing callers.
+
+## Dialog picking
+
+A dialog registers its selection fields with `beginPicking`:
+
+```ts
+const picking = scene.selection.beginPicking({
+  arguments: [profilesArgument],
+  seed: 'profiles',
+})
+if (picking instanceof Error) return picking
+picking.activate('profiles')
+```
+
+Each field supplies its `id`, allowed entity types (`filter`), whether it accepts
+multiple selections (`multiple`), a compatibility check (`accepts`), and its
+current value and setter (`value` and `setValue`). Accepted picks update the
+field through that setter. The view's selection stays unchanged.
+
+The optional `seed` names the field that receives compatible copies of the view's
+initial selection. The active field supplies the scene highlights. With no active
+field, selection clicks and hover are disabled; camera navigation remains
+available. Closing the session restores highlights from the view's selection.
+
+Re-execution clears the registered fields and invalidates the dialog's model
+target. To resume picking, the dialog calls `bindCurrentModel()` and activates a
+field again. Before using picked geometry, command adapters call the session's
+`validate(values)` during preparation and again at commit, alongside their source
+and execution checks. Validation rejects references from a replaced model or a
+closed session, including an empty argument whose session is no longer valid.
+An engine reference alone does not establish which scene and execution it belongs
+to.

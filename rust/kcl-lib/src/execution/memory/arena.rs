@@ -582,7 +582,7 @@ impl ProgramMemory {
     /// The number of environments currently retaining bindings. Compacted,
     /// truly popped, and never-bound environments don't count. A test-only
     /// observable for memory reclamation.
-    #[cfg(test)]
+    #[cfg(any(test, feature = "lsp-test-util"))]
     pub(crate) fn envs_with_bindings(&self) -> usize {
         self.environments
             .read()

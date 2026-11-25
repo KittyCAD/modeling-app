@@ -1,3 +1,8 @@
+import { fitOrthographicDepthRange } from '@src/clientSideScene/localRenderer/orthographicDepth'
+import {
+  applyFaceDepthBiasDeferred,
+  exportedFacePlane,
+} from '@src/clientSideScene/localRenderer/faceDepthBias'
 import type {
   EntityReference,
   EntityType,
@@ -11,7 +16,8 @@ import {
   LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
 } from '@src/clientSideScene/localRenderer/config'
 import {
-  getEntityPoint,
+  getEntityPoints,
+  nearbyViewportPixels,
   projectEntityPoint,
 } from '@src/clientSideScene/localRenderer/projectEntityPoint'
 import {
@@ -55,8 +61,10 @@ import {
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
+  type Plane,
   Scene,
   Texture,
+  Vector2,
   Vector3,
 } from 'three'
 import {
@@ -118,6 +126,14 @@ function addToGroup<K>(groups: Map<K, Mesh[]>, key: K, mesh: Mesh) {
 
 // A frame size in device pixels.
 export type FrameSize = { width: number; height: number }
+
+export type ProjectedEntity = {
+  id: string
+  kind: 'edge' | 'bodyFace' | 'sketchFace'
+  x: number
+  y: number
+  visible: boolean
+}
 
 // Changes the camera to the aspect ratio, still showing all it shows now.
 function widenCameraToAspect(
@@ -233,6 +249,7 @@ export class LocalRenderer {
   private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
+  private readonly modelBounds = new Box3()
   private readonly gltfLoader = new GLTFLoader()
   // Shared by all model materials, so a new color doesn't rebuild their shaders.
   private readonly backfaceColor = uniform(new Color())
@@ -248,7 +265,10 @@ export class LocalRenderer {
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
+  private depthDirty = true
   private disposed = false
+  private readonly frameListeners = new Set<() => void>()
+  private readonly lifetime = new AbortController()
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
   private selectedEntityIds: string[] = []
@@ -284,7 +304,8 @@ export class LocalRenderer {
     this.onModelLoadSettled = props.onModelLoadSettled
     this.onRendererFailed = props.onRendererFailed
     this.backfaceColor.value.set(props.backfaceColor)
-    this.gltfLoader.register(() => backfaceColorPlugin(this.backfaceColor))
+    const backfacePlugin = backfaceColorPlugin(this.backfaceColor)
+    this.gltfLoader.register(() => backfacePlugin)
 
     this.container.style.opacity = '0'
     host.executionEvents.addEventListener(
@@ -569,6 +590,7 @@ export class LocalRenderer {
         !this.camera
       )
         return {}
+      this.prepareDepth()
       const requestVersion = isHover
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
@@ -716,6 +738,8 @@ export class LocalRenderer {
     }
 
     this.disposed = true
+    this.lifetime.abort()
+    this.frameListeners.clear()
     for (const dispose of this.disposers.splice(0)) {
       dispose()
     }
@@ -909,6 +933,19 @@ export class LocalRenderer {
     }
   }
 
+  private prepareDepth() {
+    if (!this.depthDirty) return
+    this.depthDirty = false
+    const { camera, gpu } = this
+    if (!gpu || !(camera instanceof OrthographicCamera)) return
+    const depthBounds = this.modelBounds.clone()
+    // Reference planes change size with zoom. Include their actual drawn
+    // bounds (and labels), while keeping model bounds cached across frames.
+    depthBounds.union(gpu.planeRenderer.getDrawnBounds())
+    fitOrthographicDepthRange(camera, depthBounds)
+    gpu.integerIdPicker.invalidate()
+  }
+
   // Draws at the viewport's size, or at the given size in device pixels.
   private render(size?: FrameSize) {
     const { camera, gpu } = this
@@ -929,6 +966,8 @@ export class LocalRenderer {
     ) {
       renderer.setDrawingBufferSize(width, height, pixelRatio)
     }
+
+    this.prepareDepth()
 
     const baseRendered = selectionHighlightRenderer.beginFrame(
       this.baseRenderDirty
@@ -1025,6 +1064,65 @@ export class LocalRenderer {
     selectionHighlightRenderer.render(camera)
   }
 
+  subscribeFrames(listener: () => void) {
+    this.frameListeners.add(listener)
+    return () => this.frameListeners.delete(listener)
+  }
+
+  getPickView() {
+    const { gpu, camera, executionVersion, currentModel } = this
+    if (
+      this.disposed ||
+      !gpu ||
+      !camera ||
+      !currentModel ||
+      !this.isLoadedSceneCurrent() ||
+      this.host.executing.peek()
+    ) {
+      return null
+    }
+    const { integerIdPicker: picker, renderer } = gpu
+    const { width, height } = renderer.domElement.getBoundingClientRect()
+    const size = renderer.getDrawingBufferSize(new Vector2())
+    const scratch = new Vector2()
+    const world = camera.matrixWorld.clone()
+    const projection = camera.projectionMatrix.clone()
+    return {
+      width,
+      height,
+      bufferWidth: size.x,
+      bufferHeight: size.y,
+      backend: renderer.backend.constructor.name,
+      buffer: picker.buffer,
+      pick: (x: number, y: number, buffer = picker.buffer) =>
+        picker.pick(
+          { x, y, streamWidth: width, streamHeight: height, camera },
+          buffer
+        ),
+      invalidate: () => picker.invalidate(),
+      capture: () => picker.captureDebugBuffer(camera),
+      container: this.container,
+      signal: this.lifetime.signal,
+      isCurrent: () => {
+        const rect = renderer.domElement.getBoundingClientRect()
+        return (
+          !this.disposed &&
+          this.gpu === gpu &&
+          this.camera === camera &&
+          rect.width === width &&
+          rect.height === height &&
+          renderer.getDrawingBufferSize(scratch).equals(size) &&
+          camera.matrixWorld.equals(world) &&
+          camera.projectionMatrix.equals(projection) &&
+          this.executionVersion === executionVersion &&
+          this.currentModel === currentModel &&
+          !this.host.executing.peek() &&
+          this.isLoadedSceneCurrent()
+        )
+      },
+    }
+  }
+
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
   async getProjectedEntities() {
     const camera = this.camera
@@ -1037,66 +1135,60 @@ export class LocalRenderer {
       this.host.executing.peek()
     )
       return []
+    this.prepareDepth()
     const version = this.executionVersion
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
-    const entities = []
-    for (const [id, [object]] of this.targetsByEntityId) {
+    const entities: ProjectedEntity[] = []
+    for (const [id, meshes] of this.targetsByEntityId) {
+      const { edgeUuid, isSketchRegion } = meshes[0].userData
       const kind =
-        typeof object.userData.edgeUuid === 'string' ? 'edge' : 'face'
-      object.updateWorldMatrix(true, false)
-      const point = getEntityPoint(object.geometry, kind)
-      if (!point) continue
-      point.applyMatrix4(object.matrixWorld)
-      const pointOnScreen = projectEntityPoint(point, camera, rect)
-      if (!pointOnScreen) continue
-      // The test mouse helpers use integer CSS pixels. Try the coordinates
-      // surrounding the projected center so rasterization does not hide a thin edge.
-      const xs = [
-        ...new Set([Math.floor(pointOnScreen.x), Math.ceil(pointOnScreen.x)]),
-      ]
-      const ys = [
-        ...new Set([Math.floor(pointOnScreen.y), Math.ceil(pointOnScreen.y)]),
-      ]
-      const candidates = xs
-        .flatMap((x) => ys.map((y) => ({ x, y })))
-        .filter(
-          ({ x, y }) =>
-            x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom
-        )
-        .sort(
-          (a, b) =>
-            (a.x - pointOnScreen.x) ** 2 +
-            (a.y - pointOnScreen.y) ** 2 -
-            ((b.x - pointOnScreen.x) ** 2 + (b.y - pointOnScreen.y) ** 2)
-        )
-      let projected = candidates[0]
-      if (!projected) continue
+        typeof edgeUuid === 'string'
+          ? 'edge'
+          : isSketchRegion === true
+            ? 'sketchFace'
+            : 'bodyFace'
+      const geometryKind = kind === 'edge' ? 'edge' : 'face'
+      let projected: { x: number; y: number } | undefined
       let visible = false
-      for (const candidate of candidates) {
-        const result = await this.gpu?.integerIdPicker.pick({
-          x: candidate.x - rect.left,
-          y: candidate.y - rect.top,
-          streamWidth: rect.width,
-          streamHeight: rect.height,
-          camera,
-        })
-        if (this.disposed || version !== this.executionVersion || result?.stale)
-          return []
-        if (result?.target === object) {
-          projected = candidate
-          visible = true
-          break
+      const tried = new Set<string>()
+      search: for (const mesh of meshes) {
+        mesh.updateWorldMatrix(true, false)
+        for (const point of getEntityPoints(mesh.geometry, geometryKind)) {
+          const screen = projectEntityPoint(
+            point.applyMatrix4(mesh.matrixWorld),
+            camera,
+            rect
+          )
+          if (!screen) continue
+          for (const pixel of nearbyViewportPixels(screen, rect)) {
+            const key = `${pixel.x},${pixel.y}`
+            if (tried.has(key)) continue
+            tried.add(key)
+            projected ??= pixel
+            const result = await this.gpu?.integerIdPicker.pick({
+              x: pixel.x - rect.left,
+              y: pixel.y - rect.top,
+              streamWidth: rect.width,
+              streamHeight: rect.height,
+              camera,
+            })
+            if (
+              this.disposed ||
+              version !== this.executionVersion ||
+              result?.stale
+            )
+              return []
+            if (result?.target && meshes.includes(result.target)) {
+              projected = pixel
+              visible = true
+              break search
+            }
+          }
         }
       }
-      entities.push({
-        id,
-        kind,
-        ...projected,
-        // This means the real picker would select this entity at its representative point.
-        visible,
-      })
+      if (projected) entities.push({ id, kind, ...projected, visible })
     }
     return entities
   }
@@ -1139,11 +1231,13 @@ export class LocalRenderer {
       }
 
       this.render()
+      this.frameListeners.forEach((listener) => listener())
     })
   }
 
   private invalidateBaseRender() {
     this.baseRenderDirty = true
+    this.depthDirty = true
     this.scheduleRender()
   }
 
@@ -1175,6 +1269,7 @@ export class LocalRenderer {
 
   private clearModel() {
     const { gpu } = this
+    this.modelBounds.makeEmpty()
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
     this.bodyFacesById.clear()
@@ -1225,6 +1320,8 @@ export class LocalRenderer {
     const renderer = new WebGPURenderer({
       antialias: true,
       alpha: false,
+      // Match the engine; Three also selects floating-point depth attachments.
+      reversedDepthBuffer: true,
       device,
     })
     // Covers both backends: a lost WebGPU device and a lost WebGL 2 context.
@@ -1429,12 +1526,13 @@ export class LocalRenderer {
         return
       }
 
-      const bytes = new Uint8Array(file.contents)
+      const bytes = file.contents
       const gltf = (await this.gltfLoader.parseAsync(
-        bytes.buffer,
+        bytes.byteLength === bytes.buffer.byteLength
+          ? bytes.buffer
+          : bytes.slice().buffer,
         ''
       )) as KITTYCAD_GLTF
-      console.log('local renderer glTF', gltf.parser.json, gltf)
       gltf.scene ??= new Group() // A sketch-only model has no scene
       fillEmptyBrepArrays(gltf)
 
@@ -1446,7 +1544,7 @@ export class LocalRenderer {
 
       this.clearModel()
 
-      assignFaceUuids(gltf)
+      const facePlanes = assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
       gpu?.scene.add(gltf.scene)
@@ -1461,12 +1559,27 @@ export class LocalRenderer {
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
+      this.modelBounds.copy(bounds)
       this.updateAmbientOcclusionScale(bounds)
       this.resetCameraIfPending()
       this.invalidateBaseRender()
       this.loadedSceneGeneration = sceneGeneration
       toast.dismiss(MODEL_LOAD_ERROR_TOAST_ID)
       this.onModelLoadSettled?.(true)
+      const model = gltf.scene
+      const isModelCurrent = () => !this.disposed && this.currentModel === model
+      void applyFaceDepthBiasDeferred(
+        model,
+        isModelCurrent,
+        undefined,
+        facePlanes
+      )
+        .then((applied) => {
+          if (!applied || !isModelCurrent()) return
+          this.rebuildSelectionTargets()
+          this.invalidateBaseRender()
+        })
+        .catch(reportRejection)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
     }
@@ -1519,16 +1632,13 @@ export class LocalRenderer {
 // in the backface color, which shows on open surfaces.
 // This makes GLTFLoaderbuild doubleSided materials.
 function backfaceColorPlugin(backfaceColor: Node<'color'>): GLTFLoaderPlugin {
+  const colorNode = select(frontFacing, color(materialColor), backfaceColor)
   return {
     name: 'zoo_backface_color',
     getMaterialType: () => MeshStandardNodeMaterial,
     extendMaterialParams: (_materialIndex, params) => {
       params.side = DoubleSide
-      params.colorNode = select(
-        frontFacing,
-        color(materialColor),
-        backfaceColor
-      )
+      params.colorNode = colorNode
       return null
     },
   }
@@ -1588,12 +1698,13 @@ function fillEmptyBrepArrays(gltf: KITTYCAD_GLTF) {
 
 /** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
 export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
+  const planes = new Map<Mesh, Plane>()
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   if (!brep) {
     console.warn(
       '[LocalRenderer] The model has no B-rep data, so its faces and edges cannot be selected.'
     )
-    return
+    return planes
   }
   const faceIdsBySolidMesh = new Map<number, number[]>()
 
@@ -1631,5 +1742,10 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
     const face = faceIndex === undefined ? undefined : brep.faces[faceIndex]
     const uuid = face?.extras?.KITTYCAD?.uuid
     if (uuid) object.userData.faceUuid = uuid
+    const plane = exportedFacePlane(
+      face ? brep.surfaces[face.surface[0]] : undefined
+    )
+    if (plane) planes.set(object, plane)
   })
+  return planes
 }

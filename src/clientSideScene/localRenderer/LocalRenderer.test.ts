@@ -1,3 +1,7 @@
+import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { sceneSelectionAdapter } from '@src/lib/kcl/scene/selectionAdapter'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -10,7 +14,7 @@ import { Themes } from '@src/lib/theme'
 import {
   Group,
   Mesh,
-  type OrthographicCamera,
+  OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -35,7 +39,10 @@ vi.mock('@src/lib/resetCameraPosition', () => ({
   resetCameraPosition: vi.fn(async () => {}),
 }))
 
-import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import {
+  LocalRenderer,
+  assignFaceUuids,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { reportClientError } from '@src/lib/clientErrors'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -188,6 +195,41 @@ function fixture(
   }
 }
 
+describe('exported face planes', () => {
+  it('associates analytic surface data with the matching face mesh', () => {
+    const mesh = new Mesh()
+    const scene = new Group()
+    scene.add(mesh)
+    const gltf = {
+      scene,
+      parser: {
+        json: { meshes: [{ primitives: [{}] }] },
+        associations: new Map([[mesh, { meshes: 0, primitives: 0 }]]),
+      },
+      userData: {
+        gltfExtensions: {
+          KITTYCAD_boundary_representation: {
+            solids: [{ mesh: 0, shells: [[0, 1]] }],
+            shells: [{ faces: [[0, 1]] }],
+            faces: [
+              {
+                surface: [0, 1],
+                extras: { KITTYCAD: { uuid: 'planar-face' } },
+              },
+            ],
+            surfaces: [
+              { type: 'plane', plane: { normal: [0, 0, 1], point: [0, 0, 2] } },
+            ],
+          },
+        },
+      },
+    } as unknown as KITTYCAD_GLTF
+    const planes = assignFaceUuids(gltf)
+    expect(mesh.userData.faceUuid).toBe('planar-face')
+    expect(planes.get(mesh)?.constant).toBe(-2)
+  })
+})
+
 describe('local GLB loading', () => {
   beforeEach(() => {
     const prototype = LocalRenderer.prototype as unknown as RendererInternals
@@ -250,6 +292,39 @@ describe('local GLB loading', () => {
       setDefaultVisibility,
     }
   }
+
+  it('lets the new picking adapter use the existing local GPU handler through ConnectionManager', async () => {
+    const f = planeFixture()
+    const commands = new ConnectionManager({
+      settingsActor: {} as SettingsActorType,
+    })
+    commands.streamDimensions = { width: 800, height: 600 }
+    const release = commands.setLocalSelectionCommandHandler(
+      f.state.handleLocalSelectionCommand
+    )
+    const canvas = document.createElement('canvas')
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(100, 50, 400, 300)
+    )
+    try {
+      const adapter = sceneSelectionAdapter(commands, canvas)
+      expect(await adapter.pick({ clientX: 200, clientY: 125 })).toEqual({
+        reference: { type: 'plane', plane_id: 'plane-xy' },
+      })
+      expect(f.picker.pick).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: 200,
+          y: 150,
+          streamWidth: 800,
+          streamHeight: 600,
+        })
+      )
+      expect(commands.connection).toBeUndefined()
+    } finally {
+      release()
+      f.renderer.dispose()
+    }
+  })
 
   it.each(['plane-xy', 'offset'])(
     'maps %s hits and selection to the same hover/click/highlight path',
@@ -391,36 +466,67 @@ describe('local GLB loading', () => {
     }
   )
 
-  it('exports once after successful execution and loads standard geometry/materials', async () => {
-    const f = fixture()
-    f.manager.isExecutingSignal.value = true
-    expect(f.manager.rustContext.export).not.toHaveBeenCalled()
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
-      {
-        type: 'gltf',
-        storage: 'binary',
-        presentation: 'compact',
-        include_uuids: true,
-        extras: ['sketches', 'regions'],
-      },
-      { settings: { modeling: { base_unit: 'mm' } } }
-    )
-    const mesh = f.state.currentModel?.children[0]
-    expect(mesh).toBeInstanceOf(Mesh)
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    expect(mesh.geometry.getAttribute('position').count).toBe(3)
-    expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
-    expect(mesh.material.metalness).toBe(0.3)
-    expect(mesh.material.roughness).toBe(0.4)
-    expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
-      sceneInfra: f.manager.sceneInfra,
-      settingsActor: f.manager.systemDeps.settings,
+  it('fits orthographic depth before a pick that arrives ahead of the next frame', async () => {
+    const f = planeFixture()
+    const camera = new OrthographicCamera(-16, 16, 16, -16, -10000, 10000)
+    camera.position.set(0, 30, 0)
+    camera.up.set(0, 0, -1)
+    camera.lookAt(0, 0, 0)
+    f.state.camera = camera
+    // scheduleRender is mocked: the pointer event arrives before the queued
+    // animation frame can prepare the camera used by the visible render.
+    f.picker.pick.mockImplementationOnce(async () => {
+      expect(camera.near).toBeGreaterThan(0)
+      expect(camera.far).toBeLessThan(100)
+      return { target: null, stale: false }
     })
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
-    f.renderer.dispose()
+    await f.pick()
+    const invalidations = f.picker.invalidate.mock.calls.length
+    await f.pick()
+    expect(f.picker.invalidate).toHaveBeenCalledTimes(invalidations)
   })
+
+  it.each([false, true])(
+    'loads standard geometry/materials with a partial buffer view: %s',
+    async (partialView) => {
+      const f = fixture()
+      if (partialView) {
+        const file = triangleGlb()
+        const padded = new Uint8Array(file.contents.length + 2)
+        padded.set(file.contents, 1)
+        f.manager.rustContext.export.mockResolvedValue([
+          { ...file, contents: padded.subarray(1, -1) },
+        ])
+      }
+      f.manager.isExecutingSignal.value = true
+      expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
+        {
+          type: 'gltf',
+          storage: 'binary',
+          presentation: 'compact',
+          include_uuids: true,
+          extras: ['sketches', 'regions'],
+        },
+        { settings: { modeling: { base_unit: 'mm' } } }
+      )
+      const mesh = f.state.currentModel?.children[0]
+      expect(mesh).toBeInstanceOf(Mesh)
+      if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+      expect(mesh.geometry.getAttribute('position').count).toBe(3)
+      expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
+      expect(mesh.material.metalness).toBe(0.3)
+      expect(mesh.material.roughness).toBe(0.4)
+      expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+        sceneInfra: f.manager.sceneInfra,
+        settingsActor: f.manager.systemDeps.settings,
+      })
+      expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+      f.renderer.dispose()
+    }
+  )
 
   it('keeps the scene camera when a local presentation is recreated, while allowing explicit resets', async () => {
     const claimInitialCameraFrame = vi
@@ -760,5 +866,5 @@ function triangleGlb(): ModelingAppFile {
   header.setUint32(binOffset, vertices.byteLength, true)
   header.setUint32(binOffset + 4, 0x004e4942, true)
   bytes.set(new Uint8Array(vertices.buffer), binOffset + 8)
-  return { name: 'model.glb', contents: Array.from(bytes) }
+  return { name: 'model.glb', contents: bytes }
 }

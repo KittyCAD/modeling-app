@@ -10,8 +10,8 @@ import {
 } from '@src/lib/kcl/scene/executionSettingsContract'
 
 /**
- * The preferences that require KCL to execute again. Backface color refreshes
- * streamed execution only; local rendering applies it directly.
+ * Modeling views refresh native execution for these inputs. The legacy file
+ * route applies visual preferences directly; default units still execute.
  */
 export const coreKclExecutionInputDefinitions: readonly KclExecutionInput[] = [
   {
@@ -23,21 +23,25 @@ export const coreKclExecutionInputDefinitions: readonly KclExecutionInput[] = [
     id: 'modeling.highlightEdges',
     read: (s) => s.modeling.highlightEdges.currentSignal.value,
     refresh: 'execute',
+    legacyRefresh: 'direct',
   },
   {
     id: 'modeling.showScaleGrid',
     read: (s) => s.modeling.showScaleGrid.currentSignal.value,
     refresh: 'execute',
+    legacyRefresh: 'direct',
   },
   {
     id: 'modeling.fixedSizeGrid',
     read: (s) => s.modeling.fixedSizeGrid.currentSignal.value,
     refresh: 'execute',
+    legacyRefresh: 'direct',
   },
   {
     id: 'modeling.backfaceColor',
     read: (s) => s.modeling.backfaceColor.currentSignal.value,
     refresh: 'execute-streamed',
+    legacyRefresh: 'direct',
   },
 ]
 export const coreKclExecutionInputs = coreKclExecutionInputDefinitions.map(

@@ -711,6 +711,32 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  exportFolder: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="export folder"
+    >
+      <path
+        d="M15.5 9V6.5H9L7 4.5H3.5V15.5H9M3.5 8.5H15.5M11 13.5H17M14.5 11L17 13.5L14.5 16"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
+  exportModel: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="export model"
+    >
+      <path
+        d="M13.5 9V6.5L8.5 3.5L3.5 6.5V12.5L8.5 15.5L10 14.6M3.5 6.5L8.5 9.5L13.5 6.5M8.5 9.5V15.5M11 13.5H17M14.5 11L17 13.5L14.5 16"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   extrude: (
     <svg
       viewBox="0 0 20 20"

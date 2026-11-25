@@ -1,4 +1,5 @@
 import { Switch } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import {
   ContextMenu,
   ContextMenuDivider,
@@ -629,9 +630,15 @@ function ResolvedActionButton({
   side: Side
   resolvedAction: ActionTypeDefinition
 }) {
+  useSignals()
   const platform = usePlatform()
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()
+  const label = resolvedAction.label ?? action.label
+  const shortcutLabel = hotkeyDisplay(
+    resolvedAction.shortcutKeystrokes ?? resolvedAction.shortcut,
+    platform
+  )
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {
     scopes: ['modeling'],
     enabled: !!resolvedAction.shortcut?.length,
@@ -654,8 +661,12 @@ function ResolvedActionButton({
           onClick={() => resolvedAction.execute()}
           data-testid={`${action.id}-pane-button`}
         >
-          <CustomIcon name={action.icon} className="w-5 h-5" aria-hidden />
-          <span className="sr-only">{action.label}</span>
+          <CustomIcon
+            name={resolvedAction.icon ?? action.icon}
+            className="w-5 h-5"
+            aria-hidden
+          />
+          <span className="sr-only">{label}</span>
         </button>
         <Tooltip
           id={`tooltip-${action.id}`}
@@ -670,11 +681,9 @@ function ResolvedActionButton({
           hoverOnly
         >
           <div className="flex items-center gap-4">
-            <span className="flex-1">{action.label}</span>
-            {resolvedAction?.shortcut ? (
-              <kbd className="hotkey text-xs capitalize">
-                {hotkeyDisplay(resolvedAction.shortcut, platform)}
-              </kbd>
+            <span className="flex-1">{label}</span>
+            {shortcutLabel ? (
+              <kbd className="hotkey text-xs capitalize">{shortcutLabel}</kbd>
             ) : null}
           </div>
           {disabledReason !== undefined && (

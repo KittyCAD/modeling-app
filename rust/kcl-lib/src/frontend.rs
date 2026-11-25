@@ -2119,6 +2119,7 @@ impl FrontendState {
             }],
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2256,6 +2257,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2398,6 +2400,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2527,6 +2530,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2652,6 +2656,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| {
@@ -3808,6 +3813,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
@@ -3949,6 +3955,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
@@ -4234,6 +4241,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let constraint_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: call_ast,
@@ -4518,6 +4526,7 @@ impl FrontendState {
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         let (sketch_block_ref, _) = self.mutate_ast(
@@ -4609,6 +4618,7 @@ impl FrontendState {
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Add the constraint to the AST of the sketch block.
@@ -5675,6 +5685,7 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
         }],
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -5695,6 +5706,7 @@ fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
         }],
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -5998,7 +6010,7 @@ impl Visitor for AstMutateContext {
 
     fn finish(&mut self, node: NodeMut<'_>) {
         match &node {
-            NodeMut::Program(_) | NodeMut::SketchBlock(_) => {
+            NodeMut::Program(_) | NodeMut::SketchBlock(_) | NodeMut::Block(_) => {
                 self.defined_names_stack.pop();
             }
             _ => {}
@@ -6070,6 +6082,8 @@ fn filter_and_process(
             ctx.defined_names_stack.push(find_defined_names(*program));
         } else if let NodeMut::SketchBlock(block) = &node {
             ctx.defined_names_stack.push(find_defined_names(&block.body));
+        } else if let NodeMut::Block(block) = &node {
+            ctx.defined_names_stack.push(find_defined_names(*block));
         }
     }
 
@@ -7095,6 +7109,7 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7106,6 +7121,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7117,6 +7133,7 @@ pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7184,6 +7201,7 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         },
     ))))
 }
@@ -7203,6 +7221,7 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7220,6 +7239,7 @@ pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Exp
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7237,6 +7257,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7258,6 +7279,7 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
         arguments,
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7274,6 +7296,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
         arguments,
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -16297,6 +16320,53 @@ fn build(thing2) {
             panic!("expected a generated name");
         };
         assert_eq!(name, "thing2", "locals are avoided, but parameters are not");
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_trailing_block_uses_local_scope() {
+        let code = "draw(1)\nthing1 = 1\n10 + 20\n30 + 40";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let items: Vec<_> = ast.body.drain(1..3).collect();
+        let [inside, outside] = [&items[1], &ast.body[1]].map(|item| {
+            let ast::BodyItem::ExpressionStatement(stmt) = item else {
+                panic!("expected an expression statement");
+            };
+            SourceRef::new(SourceRange::from(&stmt.expression), None)
+        });
+        let ast::BodyItem::ExpressionStatement(stmt) = &mut ast.body[0] else {
+            panic!("expected a call statement");
+        };
+        let ast::Expr::CallExpressionKw(call) = &mut stmt.expression else {
+            panic!("expected a call");
+        };
+        // Attach the parsed statements until the parser supports trailing blocks.
+        let end = code.find("\n30").unwrap();
+        call.block = Some(ast::BoxNode::new(ast::Node::new(
+            ast::Block {
+                items,
+                ..Default::default()
+            },
+            code.find("thing1").unwrap(),
+            end,
+            crate::ModuleId::default(),
+        )));
+        call.end = end;
+        stmt.end = end;
+
+        for (target, expected) in [(inside, "thing2"), (outside, "thing1")] {
+            let (_, result) = mutate_ast_node_by_source_ref(
+                &mut ast,
+                &target,
+                AstMutateCommand::AddVariableDeclaration {
+                    prefix: "thing".to_owned(),
+                },
+            )
+            .unwrap();
+            let AstMutateCommandReturn::Name(name) = result else {
+                panic!("expected a generated name");
+            };
+            assert_eq!(name, expected);
+        }
     }
 
     #[test]

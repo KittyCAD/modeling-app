@@ -12,6 +12,8 @@ export interface KclExecutionInput {
   id: string
   read: (settings: SettingsType) => unknown
   refresh: 'execute' | 'execute-streamed'
+  /** The legacy file route applies this preference through its engine APIs. */
+  legacyRefresh?: 'direct'
 }
 
 export const executionSettingsContract = contract({

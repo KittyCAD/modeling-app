@@ -17,6 +17,7 @@ export default defineConfig(({ command, mode }) => {
         process.env.VERCEL_GIT_COMMIT_SHA
       ),
     },
+    optimizeDeps: { include: ['fzstd'] },
     server: {
       open: true,
       port: 3000,
