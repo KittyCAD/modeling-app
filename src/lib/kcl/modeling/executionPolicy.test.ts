@@ -1,3 +1,4 @@
+import type { KclSourceSnapshot } from '@src/lib/kcl/execution/sources'
 import type { Editor } from '@src/lib/editors/registry/contract'
 import { createProjectSources } from '@src/lib/projectSession/next/sources'
 import { createProjectSessionService } from '@src/lib/projectSession/next/session'
@@ -10,12 +11,34 @@ import { acquireKclExecutionPolicy } from '@src/lib/kcl/modeling/executionPolicy
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { emptyExecState } from '@src/lang/wasm'
 import type { KclSession } from '@src/lib/kcl/modeling/session'
-import { beforeAll, expect, it, onTestFinished, vi } from 'vitest'
+import { assert, beforeAll, expect, it, onTestFinished, vi } from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 })
-function fixture(automatic = false) {
+function createSession() {
+  const execute = vi.fn<KclSession['execute']>(async () => ({
+    result: emptyExecState(),
+  }))
+  return {
+    execute,
+    dispose: vi.fn(),
+    latestRequest: () => {
+      const call = execute.mock.calls.at(-1)
+      assert(call, 'Expected a native execution request')
+      const [sources, signal, configuration] = call
+      return { sources, signal, configuration }
+    },
+  }
+}
+
+function readFile(sources: Parameters<KclSession['execute']>[0], path: string) {
+  const contents = sources.files.get(path)
+  assert(contents, `Expected captured source for ${path}`)
+  return new TextDecoder().decode(contents)
+}
+
+function createModelingViews(automatic = false) {
   const source = createEditorDocument('original')
   const editor = {
     ...source.document,
@@ -27,22 +50,19 @@ function fixture(automatic = false) {
   const imported = signal('original import')
   const enabled = signal(automatic)
   const settings = signal(1)
-  const capture = vi.fn(async (text: string) => ({
-    src: '/main.kcl',
-    files: new Map([
-      ['/main.kcl', new TextEncoder().encode(text)],
-      ['/import.kcl', new TextEncoder().encode(imported.peek())],
-    ]),
-  }))
+  const capture = vi.fn(
+    async (text: string): Promise<KclSourceSnapshot> => ({
+      src: '/main.kcl',
+      files: new Map([
+        ['/main.kcl', new TextEncoder().encode(text)],
+        ['/import.kcl', new TextEncoder().encode(imported.peek())],
+      ]),
+    })
+  )
   const execution = createKclExecution((text) => capture(text), imported)
   const owned = createExecutor(editor, signal([execution.capability]), () => {})
   const views = Array.from({ length: 2 }, () => {
-    const session = {
-      execute: vi.fn<KclSession['execute']>(async () => ({
-        result: emptyExecState(),
-      })),
-      dispose: vi.fn(),
-    }
+    const session = createSession()
     const view = createKclViewExecution(
       owned.executor,
       execution.capability,
@@ -61,7 +81,7 @@ function fixture(automatic = false) {
       release()
       view.dispose()
     })
-    return { view, session }
+    return { ...view, session }
   })
   onTestFinished(() => {
     owned.dispose()
@@ -70,6 +90,8 @@ function fixture(automatic = false) {
   return {
     ...owned,
     views,
+    firstView: views[0],
+    secondView: views[1],
     imported,
     enabled,
     settings,
@@ -87,101 +109,101 @@ function fixture(automatic = false) {
 }
 
 it('renders the initial model with automation off, retaining stale geometry until an explicit request', async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views.every(({ view }) => view.state.peek().result)).toBe(true)
+    expect(model.views.every((view) => view.state.peek().result)).toBe(true)
   )
-  expect(f.capture).toHaveBeenCalledOnce()
-  const retained = f.views.map(({ view }) => view.state.peek().result)
-  f.edit('changed')
-  f.imported.value = 'changed import'
-  f.settings.value = 2
+  expect(model.capture).toHaveBeenCalledOnce()
+  const retained = model.views.map((view) => ({
+    view,
+    result: view.state.peek().result,
+  }))
+  model.edit('changed')
+  model.imported.value = 'changed import'
+  model.settings.value = 2
   await Promise.resolve()
-  for (const [index, { view, session }] of f.views.entries()) {
+  for (const { view, result } of retained) {
     expect(view.state.peek()).toMatchObject({
       stale: true,
       running: false,
-      result: retained[index],
+      result,
     })
-    expect(session.execute).toHaveBeenCalledOnce()
+    expect(view.session.execute).toHaveBeenCalledOnce()
   }
-  await f.executor.run(f.capability)
+  await model.executor.run(model.capability)
   await vi.waitFor(() =>
-    expect(f.views.every(({ view }) => !view.state.peek().stale)).toBe(true)
+    expect(model.views.every((view) => !view.state.peek().stale)).toBe(true)
   )
-  expect(f.capture).toHaveBeenCalledTimes(2)
-  for (const { session } of f.views) {
-    const [snapshot, , configuration] = session.execute.mock.calls[1]
-    expect(new TextDecoder().decode(snapshot.files.get('/main.kcl'))).toBe(
-      'changed'
-    )
-    expect(new TextDecoder().decode(snapshot.files.get('/import.kcl'))).toBe(
-      'changed import'
-    )
+  expect(model.capture).toHaveBeenCalledTimes(2)
+  for (const { session } of model.views) {
+    const { sources, configuration } = session.latestRequest()
+    expect(readFile(sources, '/main.kcl')).toBe('changed')
+    expect(readFile(sources, '/import.kcl')).toBe('changed import')
     expect(configuration).toEqual({ unit: 2 })
   }
 })
 
 it('replays retained source and settings on recovery while automatic rendering is off', async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views[0].view.state.peek().result).toBeDefined()
+    expect(model.firstView.state.peek().result).toBeDefined()
   )
-  const first = f.views[0].session.execute.mock.calls[0]
-  f.edit('unrequested')
-  f.settings.value = 2
-  f.views[0].view.refresh()
+  const originalRequest = model.firstView.session.latestRequest()
+  model.edit('unrequested')
+  model.settings.value = 2
+  model.firstView.refresh()
   await vi.waitFor(() =>
-    expect(f.views[0].session.execute).toHaveBeenCalledTimes(2)
+    expect(model.firstView.session.execute).toHaveBeenCalledTimes(2)
   )
-  expect(f.views[0].session.execute.mock.calls[1][0]).toBe(first[0])
-  expect(f.views[0].session.execute.mock.calls[1][2]).toEqual({ unit: 1 })
-  expect(f.views[1].session.execute).toHaveBeenCalledOnce()
-  expect(f.capture).toHaveBeenCalledOnce()
-  expect(f.views[0].view.state.peek().stale).toBe(true)
+  const recoveredRequest = model.firstView.session.latestRequest()
+  expect(recoveredRequest.sources).toBe(originalRequest.sources)
+  expect(recoveredRequest.configuration).toEqual({ unit: 1 })
+  expect(model.secondView.session.execute).toHaveBeenCalledOnce()
+  expect(model.capture).toHaveBeenCalledOnce()
+  expect(model.firstView.state.peek().stale).toBe(true)
 })
 
 it('catches up once when automatic rendering is enabled and stops scheduling when disabled', async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views[1].view.state.peek().result).toBeDefined()
+    expect(model.secondView.state.peek().result).toBeDefined()
   )
-  f.edit('latest')
-  f.settings.value = 2
-  f.enabled.value = true
+  model.edit('latest')
+  model.settings.value = 2
+  model.enabled.value = true
   await vi.waitFor(() => {
-    for (const { view } of f.views)
+    for (const view of model.views)
       expect(view.state.peek()).toMatchObject({ stale: false, running: false })
   })
-  expect(f.capture).toHaveBeenCalledTimes(2)
-  for (const { session } of f.views)
+  expect(model.capture).toHaveBeenCalledTimes(2)
+  for (const { session } of model.views)
     expect(session.execute).toHaveBeenCalledTimes(2)
-  f.enabled.value = false
-  f.edit('off again')
+  model.enabled.value = false
+  model.edit('off again')
   await Promise.resolve()
-  expect(f.capture).toHaveBeenCalledTimes(2)
-  expect(f.views[0].view.state.peek().stale).toBe(true)
+  expect(model.capture).toHaveBeenCalledTimes(2)
+  expect(model.firstView.state.peek().stale).toBe(true)
 })
 
 it('lets native work finish against captured input when the source changes with automation off', async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views[1].view.state.peek().result).toBeDefined()
+    expect(model.secondView.state.peek().result).toBeDefined()
   )
   const pending =
     Promise.withResolvers<Awaited<ReturnType<KclSession['execute']>>>()
-  f.views[0].session.execute.mockReturnValueOnce(pending.promise)
-  await f.executor.run(f.capability)
+  model.firstView.session.execute.mockReturnValueOnce(pending.promise)
+  await model.executor.run(model.capability)
   await vi.waitFor(() =>
-    expect(f.views[0].session.execute).toHaveBeenCalledTimes(2)
+    expect(model.firstView.session.execute).toHaveBeenCalledTimes(2)
   )
-  const signal = f.views[0].session.execute.mock.calls[1][1]
-  f.edit('newer')
+  const { signal } = model.firstView.session.latestRequest()
+  model.edit('newer')
   expect(signal.aborted).toBe(false)
   const result = emptyExecState()
   pending.resolve({ result })
   await vi.waitFor(() =>
-    expect(f.views[0].view.state.peek()).toMatchObject({
+    expect(model.firstView.state.peek()).toMatchObject({
       result,
       stale: true,
       running: false,
@@ -190,16 +212,18 @@ it('lets native work finish against captured input when the source changes with 
 })
 
 it('retains older geometry as stale when an explicit replacement fails', async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views[0].view.state.peek().result).toBeDefined()
+    expect(model.firstView.state.peek().result).toBeDefined()
   )
-  const retained = f.views[0].view.state.peek().result
-  f.edit('invalid')
-  f.views[0].session.execute.mockResolvedValueOnce(new Error('Invalid KCL'))
-  await f.executor.run(f.capability)
+  const retained = model.firstView.state.peek().result
+  model.edit('invalid')
+  model.firstView.session.execute.mockResolvedValueOnce(
+    new Error('Invalid KCL')
+  )
+  await model.executor.run(model.capability)
   await vi.waitFor(() =>
-    expect(f.views[0].view.state.peek()).toMatchObject({
+    expect(model.firstView.state.peek()).toMatchObject({
       result: retained,
       stale: true,
       error: new Error('Invalid KCL'),
@@ -209,48 +233,50 @@ it('retains older geometry as stale when an explicit replacement fails', async (
 })
 
 it('keeps the requested settings when source preparation finishes after a preference change', async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views.every(({ view }) => view.state.peek().result)).toBe(true)
+    expect(model.views.every((view) => view.state.peek().result)).toBe(true)
   )
-  const initialSources = await f.capture.mock.results[0].value
+  const initialSources = model.firstView.session.latestRequest().sources
   const pending = Promise.withResolvers<typeof initialSources>()
-  f.capture.mockReturnValueOnce(pending.promise)
-  const requested = f.executor.run(f.capability)
-  f.settings.value = 2
+  model.capture.mockReturnValueOnce(pending.promise)
+  const requested = model.executor.run(model.capability)
+  model.settings.value = 2
   pending.resolve(initialSources)
   await requested
   await vi.waitFor(() => {
-    for (const { session } of f.views)
+    for (const { session } of model.views)
       expect(session.execute).toHaveBeenCalledTimes(2)
   })
-  for (const { view, session } of f.views) {
-    expect(session.execute.mock.calls[1][2]).toEqual({ unit: 1 })
+  for (const view of model.views) {
+    expect(view.session.latestRequest().configuration).toEqual({ unit: 1 })
     expect(view.state.peek().stale).toBe(true)
   }
 })
 
 it("keeps a newer request's settings while the previous native execution finishes", async () => {
-  const f = fixture()
+  const model = createModelingViews()
   await vi.waitFor(() =>
-    expect(f.views.every(({ view }) => view.state.peek().result)).toBe(true)
+    expect(model.views.every((view) => view.state.peek().result)).toBe(true)
   )
   const pending =
     Promise.withResolvers<Awaited<ReturnType<KclSession['execute']>>>()
-  f.views[0].session.execute.mockReturnValueOnce(pending.promise)
-  await f.executor.run(f.capability)
+  model.firstView.session.execute.mockReturnValueOnce(pending.promise)
+  await model.executor.run(model.capability)
   await vi.waitFor(() =>
-    expect(f.views[0].session.execute).toHaveBeenCalledTimes(2)
+    expect(model.firstView.session.execute).toHaveBeenCalledTimes(2)
   )
-  f.settings.value = 2
-  await f.executor.run(f.capability)
-  f.settings.value = 3
+  model.settings.value = 2
+  await model.executor.run(model.capability)
+  model.settings.value = 3
   pending.resolve({ result: emptyExecState() })
   await vi.waitFor(() =>
-    expect(f.views[0].session.execute).toHaveBeenCalledTimes(3)
+    expect(model.firstView.session.execute).toHaveBeenCalledTimes(3)
   )
-  expect(f.views[0].session.execute.mock.calls[2][2]).toEqual({ unit: 2 })
-  expect(f.views[0].view.state.peek().stale).toBe(true)
+  expect(model.firstView.session.latestRequest().configuration).toEqual({
+    unit: 2,
+  })
+  expect(model.firstView.state.peek().stale).toBe(true)
 })
 
 it.each([false, true])(
@@ -305,12 +331,7 @@ it.each([false, true])(
       signal([execution.capability]),
       () => {}
     )
-    const session = {
-      execute: vi.fn<KclSession['execute']>(async () => ({
-        result: emptyExecState(),
-      })),
-      dispose: vi.fn(),
-    }
+    const session = createSession()
     const view = createKclViewExecution(
       owned.executor,
       execution.capability,
@@ -359,9 +380,7 @@ it.each([false, true])(
         })
       })
       expect(
-        new TextDecoder().decode(
-          session.execute.mock.calls[1][0].files.get('/model/module.kcl')
-        )
+        readFile(session.latestRequest().sources, '/model/module.kcl')
       ).toContain('width = 20')
     } finally {
       stop()
