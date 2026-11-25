@@ -81,6 +81,10 @@ _Avoid_: Label or string identifier for a geometry reference
 **Tag declaration**:
 The introduction of a tag name, written with a `$` prefix, at the modeling operation that assigns it to geometry.
 
+**Edge specifier**:
+A KCL reference to one or more **Edges** by the **Faces** that run along them.
+Faces touching the ends or an index can narrow the selection.
+
 ### Modeling and interpretation
 
 **Modeling operation**:
