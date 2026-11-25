@@ -15,7 +15,7 @@ import {
   promoteRecentToolbarItemId,
   recordRecentToolbarItemId,
   resolveRecentToolbarItems,
-} from '@src/lib/toolbarPresentation'
+} from '@src/components/Toolbar/presentation'
 import type { Platform } from '@src/lib/utils'
 import {
   memo,
@@ -34,7 +34,6 @@ export interface ToolbarViewItem {
   tooltipTitle?: string
   icon?: CustomIconName
   iconColor?: string
-  alwaysDark?: boolean
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: boolean
   disabledReason?: string
@@ -183,9 +182,7 @@ export function ToolbarView({
                   dropdownTooltipText="More constraints"
                   platform={platform}
                   className={
-                    (maybeIconConfig.array[0]?.alwaysDark
-                      ? 'dark bg-chalkboard-90 '
-                      : '!bg-transparent ') +
+                    '!bg-transparent ' +
                     'group/wrapper ' +
                     buttonBorderClassName +
                     ' relative group'
@@ -268,7 +265,6 @@ export function ToolbarView({
                         </span>
                       </ActionButton>
                       <ToolbarItemTooltip
-                        itemConfig={itemConfig}
                         wrapperClassName="ui-open:!hidden"
                         contentClassName={tooltipContentClassName}
                       >
@@ -306,9 +302,7 @@ export function ToolbarView({
                 name={maybeIconConfig.id}
                 platform={platform}
                 className={
-                  (maybeIconConfig.array[0].alwaysDark
-                    ? 'dark bg-chalkboard-90 '
-                    : '!bg-transparent ') +
+                  '!bg-transparent ' +
                   'group/wrapper ' +
                   buttonBorderClassName +
                   ' relative group !gap-0'
@@ -374,7 +368,6 @@ export function ToolbarView({
                       {selectedIcon.title}
                     </span>
                     <ToolbarItemTooltip
-                      itemConfig={selectedIcon}
                       wrapperClassName="ui-open:!hidden"
                       contentClassName={tooltipContentClassName}
                     >
@@ -404,7 +397,7 @@ export function ToolbarView({
           // A single button
           return (
             <div
-              className={`relative ${itemConfig.alwaysDark ? ' dark bg-chalkboard-90 ' : ''}`}
+              className="relative"
               key={itemConfig.id}
               // Mouse events do not fire on disabled buttons
               onMouseEnter={handleMouseEnter}
@@ -446,10 +439,7 @@ export function ToolbarView({
                   {itemConfig.title}
                 </span>
               </ActionButton>
-              <ToolbarItemTooltip
-                itemConfig={itemConfig}
-                contentClassName={tooltipContentClassName}
-              >
+              <ToolbarItemTooltip contentClassName={tooltipContentClassName}>
                 {showRichContent ? (
                   <ToolbarItemTooltipRichContent
                     itemConfig={itemConfig}
@@ -475,7 +465,6 @@ export function ToolbarView({
   )
 }
 interface ToolbarItemContentsProps extends React.PropsWithChildren {
-  itemConfig: ToolbarViewItem
   wrapperClassName?: string
   contentClassName?: string
 }
@@ -484,7 +473,6 @@ interface ToolbarItemContentsProps extends React.PropsWithChildren {
  * It contains a tooltip with the title, description, and links.
  */
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
-  itemConfig,
   wrapperClassName = '',
   contentClassName = '',
   children,

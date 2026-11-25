@@ -4,7 +4,7 @@ export {
   recordRecentToolbarItemId,
   resolveRecentToolbarItems,
   getToolbarDropdownDisplay,
-} from '@src/lib/toolbarPresentation'
+} from '@src/components/Toolbar/presentation'
 import { selectCommand } from '@src/lib/commandUtils'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
@@ -123,7 +123,6 @@ export type ToolbarItem = {
   icon?: CustomIconName
   sketchSolveToolName?: string
   iconColor?: string | ((props: ToolbarItemCallbackProps) => string | undefined)
-  alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: (
     state: StateFrom<typeof modelingMachine>,
