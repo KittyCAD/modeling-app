@@ -92,9 +92,22 @@ export function buildBodyOperationTree(
   identityNodes: OperationTreeNode[] = nodes
 ) {
   const operations: Operation[] = []
+  const trailingAnnotations = new Set<OperationTreeNode>()
   const modules = new Set([0])
   const importOwners = new Map<string, number>()
   function index(items: OperationTreeNode[], collected = operations) {
+    if (collected === operations) {
+      // Only move the final annotation streak; earlier annotations keep their placement.
+      const lastFeature = items.findLastIndex(
+        (node) =>
+          isArray(node) ||
+          isOperationTreeBranch(node) ||
+          node.type !== 'StdLibCall' ||
+          !node.name.startsWith('gdt::')
+      )
+      for (const node of items.slice(lastFeature + 1))
+        trailingAnnotations.add(node)
+    }
     for (const node of items) {
       if (isOperationTreeBranch(node)) {
         modules.add(node.parent.moduleId)
@@ -323,6 +336,7 @@ export function buildBodyOperationTree(
       function history(items: OperationTreeNode[]): OperationTreeNode[] {
         return items.flatMap((node): OperationTreeNode[] => {
           if (isOperationTreeBranch(node)) return history(node.children)
+          if (trailingAnnotations.has(node)) return []
           if (!(isArray(node) ? node.some(matches) : matches(node))) return []
           assigned.add(node)
           return [node]
@@ -378,13 +392,14 @@ export function buildBodyOperationTree(
             children: assemble(node.children, node.parent.moduleId),
           },
         ]
-      return assigned.has(node) ? [] : [node]
+      return assigned.has(node) || trailingAnnotations.has(node) ? [] : [node]
     })
     return [
       ...result,
       ...branches
         .filter((body) => body.ownerModuleId === moduleId)
         .map((body) => ({ body, children: body.operations })),
+      ...items.filter((node) => trailingAnnotations.has(node)),
     ]
   }
   return { branches, nodes: assemble(nodes, 0) }

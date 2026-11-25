@@ -350,6 +350,60 @@ describe('body feature hierarchy', () => {
     )
   })
 
+  it('places trailing GD&T and notes after bodies while keeping unused sketches above', () => {
+    const a = sweep('a', 10)
+    const feature = call(10)
+    const unused = { ...call(20), name: 'startSketchOn' }
+    const annotations = ['gdt::datum', 'gdt::flatness', 'gdt::note'].map(
+      (name, index) => ({ ...call(30 + index * 10, 'a'), name })
+    )
+    const tree = buildBodyOperationTree(
+      [feature, unused, ...annotations],
+      bodies(a),
+      graph(a)
+    )
+    expect(tree.branches[0].operations).toEqual([feature])
+    expect(tree.nodes).toEqual([
+      unused,
+      { body: tree.branches[0], children: [feature] },
+      ...annotations,
+    ])
+    expect(
+      buildBodyOperationTree(annotations, new Map(), graph()).nodes
+    ).toEqual(annotations)
+  })
+
+  it('keeps earlier annotations in their existing positions when more geometry follows', () => {
+    const a = sweep('a', 10)
+    const b = sweep('b', 50)
+    const feature = call(10)
+    const unattachedNote = { ...call(20), name: 'gdt::note' }
+    const attachedDatum = { ...call(30, 'a'), name: 'gdt::datum' }
+    const unusedSketch = { ...call(40), name: 'startSketchOn' }
+    const laterFeature = call(50)
+    const trailingNote = { ...call(60), name: 'gdt::note' }
+    const tree = buildBodyOperationTree(
+      [
+        feature,
+        unattachedNote,
+        attachedDatum,
+        unusedSketch,
+        laterFeature,
+        trailingNote,
+      ],
+      bodies(a, b),
+      graph(a, b)
+    )
+    expect(tree.branches[0].operations).toEqual([feature, attachedDatum])
+    expect(tree.nodes).toEqual([
+      unattachedNote,
+      unusedSketch,
+      { body: tree.branches[0], children: [feature, attachedDatum] },
+      { body: tree.branches[1], children: [laterFeature] },
+      trailingNote,
+    ])
+  })
+
   it('keeps a shared sketch accessible from both bodies without pulling in the other extrusion', () => {
     const a = sweep('a', 20, 'path')
     const b = sweep('b', 30, 'path')
@@ -712,6 +766,29 @@ describe('body feature hierarchy', () => {
         parent,
         children: [other, { body: tree.branches[0], children: [feature] }],
       },
+    ])
+
+    const annotation = {
+      ...call(30),
+      name: 'gdt::annotation',
+      sourceRange: codeRef(30, 1).range,
+    }
+    const assemblyNote = { ...call(40), name: 'gdt::note' }
+    const annotated = buildBodyOperationTree(
+      [{ parent, children: [feature, other, annotation] }, assemblyNote],
+      bodies(a),
+      graph(a)
+    )
+    expect(annotated.nodes).toEqual([
+      {
+        parent,
+        children: [
+          other,
+          { body: annotated.branches[0], children: [feature] },
+          annotation,
+        ],
+      },
+      assemblyNote,
     ])
   })
 
