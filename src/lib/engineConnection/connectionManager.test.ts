@@ -1,3 +1,4 @@
+import { previewFormat } from '@src/lang/std/artifactGraph'
 const reportClientError = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
@@ -198,6 +199,24 @@ function pendingWasmCommand(manager: ConnectionManager, requestId: string) {
 
 describe('ConnectionManager', () => {
   it.each([false, true])(
+    'opts into parallel exports when a preview scheduler is attached (%s)',
+    async (preview) => {
+      const manager = createConnectionManager()
+      const send = vi.fn()
+      addConnectedState(manager).send = send
+      if (preview) manager.executionBatchPreview = vi.fn()
+      const { response, acknowledgement } = pendingWasmCommand(manager, 'begin')
+      expect(send.mock.calls[0][0].cmd).toEqual({
+        type: 'begin_execution',
+        enable_render: true,
+        ...(preview ? { enable_parallel_export: true } : {}),
+      })
+      manager.createMessageHandler()(acknowledgement)
+      await response
+    }
+  )
+
+  it.each([false, true])(
     'retains ordinary exports but releases ephemeral native snapshots (native=%s)',
     async (native) => {
       const manager = createConnectionManager()
@@ -206,13 +225,12 @@ describe('ConnectionManager', () => {
       const cmd = {
         type: 'export' as const,
         entity_ids: [],
-        format: native
-          ? { type: 'native_brep' as const }
-          : { type: 'gltf' as const, storage: 'binary' as const },
+        format: previewFormat,
       }
       const result = manager.sendCommand(
         'snapshot',
         {
+          isPreview: native,
           command: { type: 'modeling_cmd_req', cmd_id: 'snapshot', cmd },
           range: [0, 0, 0],
           idToRangeMap: {},
@@ -228,7 +246,7 @@ describe('ConnectionManager', () => {
             data: {
               files: [
                 {
-                  name: native ? 'preview.brep.json' : 'model.glb',
+                  name: 'output.3dm',
                   contents: [123, 125],
                 },
               ],
@@ -966,13 +984,14 @@ describe('ConnectionManager', () => {
       .sendCommand(
         'native-timeout',
         {
+          isPreview: true,
           command: {
             type: 'modeling_cmd_req',
             cmd_id: 'native-timeout',
             cmd: {
               type: 'export',
               entity_ids: [],
-              format: { type: 'native_brep' },
+              format: previewFormat,
             },
           },
           range: [0, 0, 0],

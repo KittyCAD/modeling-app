@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.20)
+project(preview_reader LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 20)
+include(FetchContent)
+FetchContent_Declare(opennurbs
+  URL https://codeload.github.com/mcneel/opennurbs/tar.gz/2bd2e66e6397b6f55d7ccac8ca036921864a540e
+  URL_HASH SHA256=ab61f10f9deae7193a89e26694ab09fc7ed1b5337fea0db049ca4141af6d1675)
+set(OPENNURBS_BUILD_STATIC ON CACHE BOOL "")
+set(BUILD_TESTING OFF CACHE BOOL "")
+add_compile_options("-ffile-prefix-map=${CMAKE_BINARY_DIR}=build" "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=reader")
+FetchContent_MakeAvailable(opennurbs)
+add_executable(reader reader.cpp)
+target_include_directories(reader PRIVATE ${opennurbs_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/include)
+target_link_libraries(reader PRIVATE OpenNURBS)
+target_compile_options(reader PRIVATE -O3 -fexceptions)
+target_link_options(reader PRIVATE -O3 --bind -fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1 -sENVIRONMENT=worker,node -sALLOW_MEMORY_GROWTH=1)
+set_target_properties(reader PROPERTIES SUFFIX ".mjs")
+file(DOWNLOAD https://raw.githubusercontent.com/nlohmann/json/v3.11.3/single_include/nlohmann/json.hpp "${CMAKE_CURRENT_BINARY_DIR}/include/nlohmann/json.hpp" EXPECTED_HASH SHA256=9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6)

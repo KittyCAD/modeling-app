@@ -219,7 +219,7 @@ function nativeExportResponse() {
       success: true,
       resp: {
         type: 'export',
-        data: { files: [{ name: 'output.glb', contents: [123, 125] }] },
+        data: { files: [{ name: 'output.3dm', contents: [123, 125] }] },
       },
     },
   ]
@@ -806,7 +806,7 @@ describe('local GLB loading', () => {
         resp: {
           type: 'export',
           data: {
-            files: [{ name: 'output.glb', contents: Array.from(snapshot) }],
+            files: [{ name: 'output.3dm', contents: Array.from(snapshot) }],
           },
         },
       },
@@ -835,7 +835,7 @@ describe('local GLB loading', () => {
     const previewCommand =
       f.manager.engineCommandManager.sendCommand.mock.calls[0][1].command.cmd
     expect(previewCommand).toMatchObject({
-      format: { type: 'gltf', brep_only: true },
+      format: { type: 'rhino' },
     })
     expect(previewCommand).not.toHaveProperty('compression')
     const id = worker.postMessage.mock.calls[2][0].id as number
@@ -883,7 +883,7 @@ describe('local GLB loading', () => {
         resp: {
           type: 'export',
           data: {
-            files: [{ name: 'output.glb', contents: [123, 125] }],
+            files: [{ name: 'output.3dm', contents: [123, 125] }],
           },
         },
       },
@@ -966,7 +966,7 @@ describe('local GLB loading', () => {
           resp: {
             type: 'export',
             data: {
-              files: [{ name: 'output.glb', contents: [123, 125] }],
+              files: [{ name: 'output.3dm', contents: [123, 125] }],
             },
           },
         },

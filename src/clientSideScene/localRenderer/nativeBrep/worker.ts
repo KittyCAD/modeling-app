@@ -1,7 +1,3 @@
-import {
-  readPreviewGlb,
-  UnsupportedPreviewGlb,
-} from '@src/clientSideScene/localRenderer/nativeBrep/gltfPreview'
 import type { NativeBrepSceneSnapshot, NativeBrepSnapshot } from '@kittycad/lib'
 import init, {
   tessellate_snapshot,
@@ -11,6 +7,18 @@ import type {
   TessellationRequest,
   TessellationResponse,
 } from '@src/clientSideScene/localRenderer/nativeBrep/protocol'
+
+type RhinoReader = { readPreview(bytes: Uint8Array): string }
+let rhinoReader: Promise<RhinoReader> | undefined
+
+async function readRhinoPreview(bytes: Uint8Array): Promise<unknown> {
+  const url = new URL('/preview-rhino/reader.mjs', self.location.origin).href
+  rhinoReader ??= import(/* @vite-ignore */ url).then(
+    ({ default: initialize }) => initialize()
+  )
+  const reader = await rhinoReader
+  return JSON.parse(reader.readPreview(bytes))
+}
 
 const initialized = init({ module_or_path: wasmUrl }).then(
   () => undefined,
@@ -83,7 +91,7 @@ async function drain() {
         const input = (
           typeof request.snapshot === 'string'
             ? JSON.parse(request.snapshot)
-            : readPreviewGlb(request.snapshot)
+            : await readRhinoPreview(request.snapshot)
         ) as Partial<NativeBrepSceneSnapshot> & Partial<NativeBrepSnapshot>
         const { version } = input
         if (version !== 1) {
@@ -225,9 +233,6 @@ async function drain() {
       } catch (error) {
         const response: TessellationResponse = {
           id: request.id,
-          ...(error instanceof UnsupportedPreviewGlb
-            ? { unsupportedExport: true as const }
-            : {}),
           error: error instanceof Error ? error.message : String(error),
         }
         self.postMessage(response)

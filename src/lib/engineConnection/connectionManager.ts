@@ -131,19 +131,6 @@ export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
 
-function isPreviewExport(command: EngineCommand): boolean {
-  if (command.type !== 'modeling_cmd_req') return false
-  const cmd = command.cmd
-  if (cmd.type !== 'export' && cmd.type !== 'export3d') return false
-  const { format } = cmd
-  return (
-    format.type === 'native_brep' ||
-    (format.type === 'gltf' &&
-      'brep_only' in format &&
-      format.brep_only === true)
-  )
-}
-
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
@@ -1090,6 +1077,7 @@ export class ConnectionManager extends EventTarget {
   async sendCommand(
     id: string,
     message: {
+      isPreview?: boolean
       command: PendingMessage['command']
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
@@ -1148,6 +1136,7 @@ export class ConnectionManager extends EventTarget {
       range: message.range,
       idToRangeMap: message.idToRangeMap,
       isSceneCommand,
+      isPreview: message.isPreview,
     }
 
     // Final exports can be slow; only optional snapshots use the command timeout.
@@ -1155,7 +1144,7 @@ export class ConnectionManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        timeoutPendingCommand = isPreviewExport(message.command)
+        timeoutPendingCommand = message.isPreview === true
       }
     }
 
@@ -1173,7 +1162,17 @@ export class ConnectionManager extends EventTarget {
       }, PENDING_COMMAND_TIMEOUT)
     }
 
-    this.connection.send(message.command)
+    const outgoing = message.command
+    if (
+      outgoing.type === 'modeling_cmd_req' &&
+      outgoing.cmd.type === 'begin_execution' &&
+      this.executionBatchPreview
+    ) {
+      const cmd = { ...outgoing.cmd, enable_parallel_export: true }
+      this.connection.send({ ...outgoing, cmd })
+    } else {
+      this.connection.send(outgoing)
+    }
 
     return promise
   }
@@ -1223,12 +1222,14 @@ export class ConnectionManager extends EventTarget {
       }
 
       const pending = this.pendingCommands[message.request_id || '']
-      const isNativePreview =
-        (pending && isPreviewExport(pending.command)) ||
-        (isExportResponse(message) &&
-          message.resp.data.files.some((file) =>
-            file.name.endsWith('.brep.json')
-          ))
+      // A timed-out or superseded snapshot can arrive after its caller is gone.
+      if (
+        !pending &&
+        isExportResponse(message) &&
+        message.resp.data.files.some((file) => file.name.endsWith('.3dm'))
+      )
+        return
+      const isNativePreview = pending?.isPreview
 
       // Native previews are ephemeral; retaining their payloads in either response
       // history would keep every complete B-rep snapshot alive for the whole run.

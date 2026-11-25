@@ -369,6 +369,7 @@ export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
 }
 
 export interface PendingMessage {
+  isPreview?: boolean
   command: EngineCommand
   range: SourceRange
   idToRangeMap: { [key: string]: SourceRange }

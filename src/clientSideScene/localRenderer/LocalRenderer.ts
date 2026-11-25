@@ -30,7 +30,7 @@ import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/S
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import { type EngineCommand, previewFormat } from '@src/lang/std/artifactGraph'
 import { DprDetector } from '@src/lib/DprDetector'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -1291,18 +1291,14 @@ export class LocalRenderer {
       const [response] = await this.kclManager.engineCommandManager.sendCommand(
         id,
         {
+          isPreview: true,
           command: {
             type: 'modeling_cmd_req',
             cmd_id: id,
             cmd: {
               type: 'export3d',
               entity_ids: [],
-              format: {
-                type: 'gltf',
-                storage: 'binary',
-                presentation: 'compact',
-                brep_only: true,
-              },
+              format: previewFormat,
             },
           },
           range: [0, 0, 0],
@@ -1317,12 +1313,12 @@ export class LocalRenderer {
       )
         return
       const file = response.resp.data.files.find((file) =>
-        file.name.endsWith('.glb')
+        file.name.endsWith('.3dm')
       )
       if (!file) {
         this.nativePreviewUnavailable = true
         console.warn(
-          '[Native B-rep preview] Engine did not return a preview GLB.'
+          '[Native B-rep preview] Engine did not return a preview 3DM.'
         )
         return
       }
@@ -1746,18 +1742,14 @@ export class LocalRenderer {
       const responsePromise = this.kclManager.engineCommandManager.sendCommand(
         id,
         {
+          isPreview: true,
           command: {
             type: 'modeling_cmd_req',
             cmd_id: id,
             cmd: {
               type: 'export3d',
               entity_ids: [],
-              format: {
-                type: 'gltf',
-                storage: 'binary',
-                presentation: 'compact',
-                brep_only: true,
-              },
+              format: previewFormat,
             },
           },
           range: [0, 0, 0],
@@ -1773,7 +1765,7 @@ export class LocalRenderer {
       if (!isCurrent()) return
       const file =
         'resp' in response && response.resp.type === 'export'
-          ? response.resp.data.files.find((file) => file.name.endsWith('.glb'))
+          ? response.resp.data.files.find((file) => file.name.endsWith('.3dm'))
           : undefined
       if (!file) {
         console.warn('[Native B-rep preview] Final preview unavailable')
