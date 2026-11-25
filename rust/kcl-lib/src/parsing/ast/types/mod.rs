@@ -2792,6 +2792,12 @@ pub struct CallExpressionKw {
 
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
+
+    // Ordinary calls omit this field in JSON. The parser still emits SketchBlock
+    // for sketches until their Rust and TypeScript consumers migrate in #15147.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub block: Option<BoxNode<Block>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -2835,10 +2841,11 @@ impl CallExpressionKw {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })
     }
 
-    /// Iterate over all arguments (labeled or not)
+    /// Iterate over the arguments inside the call's parentheses in source order.
     pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
         self.unlabeled
             .iter()
@@ -2846,7 +2853,7 @@ impl CallExpressionKw {
             .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
-    /// Iterate over all arguments (labeled or not)
+    /// Yield mutable references to the labels and expressions returned by [`Self::iter_arguments`].
     pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
         self.unlabeled
             .iter_mut()
@@ -2866,6 +2873,9 @@ impl CallExpressionKw {
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
+        if let Some(block) = &mut self.block {
+            block.replace_value(source_range, new_value);
+        }
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2880,6 +2890,9 @@ impl CallExpressionKw {
 
         for arg in &mut self.arguments {
             arg.arg.rename_identifiers(old_name, new_name, excluded);
+        }
+        if let Some(block) = &mut self.block {
+            block.rename_identifiers(old_name, new_name, excluded);
         }
     }
 }

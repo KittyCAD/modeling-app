@@ -1,3 +1,4 @@
+import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page, TestInfo } from '@playwright/test'
 
@@ -69,14 +70,26 @@ async function expectHome(page: Page) {
 
 test.use({ trace: 'on' })
 
+test.use({ useTestSettings: true })
+
 test.describe(
   'Onboarding replay pending state',
-  { tag: ['@desktop', '@localRenderer'] },
+  { tag: ['@web', '@localRenderer'] },
   () => {
     test('disables Settings and Help replay while the tutorial project initializes', async ({
+      context,
       page,
       toolbar,
     }, testInfo) => {
+      const { remote } = await prepareStorage(
+        'cloud',
+        page,
+        context,
+        testInfo,
+        {
+          modeling: true,
+        }
+      )
       await expectHome(page)
 
       await test.step('Settings Replay shows pending state', async () => {
@@ -98,6 +111,7 @@ test.describe(
         })
         await expect(pendingButton).toBeDisabled()
         await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+        expect(remote.creates).toHaveLength(0)
         await capturePendingScreenshot(
           page,
           testInfo,
@@ -105,6 +119,8 @@ test.describe(
         )
 
         await releaseProjectCreation()
+        await expect.poll(() => remote.creates.length).toBe(1)
+        await expect(page).toHaveURL(new RegExp(remote.creates[0].id))
         await expect(toolbar.projectName).toHaveText('tutorial-project')
         await expect(
           page.getByText('Welcome to Zoo Design Studio')
@@ -126,10 +142,14 @@ test.describe(
         })
         await expect(pendingButton).toBeDisabled()
         await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+        expect(remote.creates).toHaveLength(1)
         await capturePendingScreenshot(page, testInfo, 'help-replay-pending')
 
         await releaseProjectCreation()
-        await expect(toolbar.projectName).toHaveText('tutorial-project-1')
+        await expect.poll(() => remote.creates.length).toBe(2)
+        expect(remote.creates[1].id).not.toBe(remote.creates[0].id)
+        await expect(page).toHaveURL(new RegExp(remote.creates[1].id))
+        await expect(toolbar.projectName).toHaveText('tutorial-project')
         await expect(
           page.getByText('Welcome to Zoo Design Studio')
         ).toBeVisible()
@@ -141,12 +161,7 @@ test.describe(
         page
           .getByTestId('project-title')
           .filter({ hasText: /^tutorial-project$/ })
-      ).toHaveCount(1)
-      await expect(
-        page
-          .getByTestId('project-title')
-          .filter({ hasText: /^tutorial-project-1$/ })
-      ).toHaveCount(1)
+      ).toHaveCount(2)
     })
   }
 )

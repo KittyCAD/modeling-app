@@ -138,6 +138,8 @@ class CameraFrame {
 }
 
 export class CameraControls {
+  private disposed = false
+  private readonly subscriptions: (() => void)[] = []
   engineCommandManager: ConnectionManager
   private _syncDirection: CameraSyncDirection = 'engineToClient'
   get syncDirection() {
@@ -157,6 +159,10 @@ export class CameraControls {
   wasDragging: boolean
   private orbitDragUpInverted = false
   hoverPickingDisabled = false
+  private readonly getHoverElement: () => Pick<
+    HTMLElement,
+    'getBoundingClientRect'
+  > | null
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
@@ -322,6 +328,7 @@ export class CameraControls {
 
   private queueHoverCommand(cmd: EngineCommand) {
     this.queueEngineInteraction(this.hoverFrame, () => {
+      if (this.hoverPickingDisabled) return
       this.engineCommandManager.sendSceneCommand(cmd).catch(reportRejection)
     })
   }
@@ -403,11 +410,16 @@ export class CameraControls {
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
     getSettings: typeof this.getSettings,
-    getLocalScene: typeof this.getLocalScene = () => null
+    getLocalScene: typeof this.getLocalScene = () => null,
+    getHoverElement: () => Pick<
+      HTMLElement,
+      'getBoundingClientRect'
+    > | null = () => document.getElementById('video-stream')
   ) {
     this.engineCommandManager = engineCommandManager
     this.getSettings = getSettings
     this.getLocalScene = getLocalScene
+    this.getHoverElement = getHoverElement
     this.camera = new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -496,26 +508,50 @@ export class CameraControls {
       this.notifyCameraSubscribers()
     }
 
-    this.engineCommandManager.subscribeTo({
-      event: 'camera_drag_end',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeToUnreliable({
-      event: 'default_camera_zoom',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeTo({
-      event: 'default_camera_get_settings',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeTo({
-      event: 'zoom_to_fit',
-      callback: cb,
-    })
-    this.engineCommandManager.subscribeToUnreliable({
-      event: 'camera_drag_move',
-      callback: cb,
-    })
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeTo({
+        event: 'camera_drag_end',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeToUnreliable({
+        event: 'default_camera_zoom',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeTo({
+        event: 'default_camera_get_settings',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeTo({
+        event: 'zoom_to_fit',
+        callback: cb,
+      })
+    )
+    this.subscriptions.push(
+      this.engineCommandManager.subscribeToUnreliable({
+        event: 'camera_drag_move',
+        callback: cb,
+      })
+    )
+  }
+
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.cancelSketchCameraTransition()
+    this.cancelPendingUpdates()
+    this.domElement.removeEventListener('pointerdown', this.onMouseDown)
+    this.domElement.removeEventListener('pointermove', this.onMouseMove)
+    this.domElement.removeEventListener('pointerup', this.onMouseUp)
+    this.domElement.removeEventListener('wheel', this.onMouseWheel)
+    this.touchControlManager?.destroy()
+    this.touchControlManager = null
+    for (const unsubscribe of this.subscriptions.splice(0)) unsubscribe()
   }
 
   // This is only needed for local, streamed camera gets this from engine.
@@ -640,14 +676,13 @@ export class CameraControls {
 
       // Clear any previous drag state
       this.wasDragging = false
-      if (this.syncDirection === 'engineToClient') {
+      if (
+        this.syncDirection === 'engineToClient' &&
+        !this.hoverPickingDisabled
+      ) {
         const newCmdId = uuidv4()
 
-        // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
-        // There will be only one of these in the page.
-        const videoElement = <HTMLVideoElement>(
-          document.getElementById('video-stream')
-        )
+        const videoElement = this.getHoverElement()
         // Nonsense to do anything until the video stream is established.
         if (!videoElement) return
 
@@ -689,30 +724,50 @@ export class CameraControls {
       this.queueEngineInteraction(this.moveFrame, () => {
         this.doMove(interaction, [point.clientX, point.clientY])
       })
-      return
+    } else {
+      // The client owns the camera, either with engine synchronization
+      // for sketch mode or without it for local rendering.
+      if (this.effectiveCameraMode === 'local') {
+        if (interaction === 'rotate') {
+          orbitLocalCamera(
+            this.camera,
+            this.target,
+            deltaMove,
+            this.domElement,
+            this.orbitDragUpInverted
+          )
+          this.update(true)
+        } else if (interaction === 'rotatetrackball') {
+          // The trackball turns about the canvas center, so it needs the
+          // drag's positions on the canvas, not only how far it moved.
+          const { left, top } = this.domElement.getBoundingClientRect()
+          const canvasOrigin = new Vector2(left, top)
+          trackballLocalCamera(
+            this.camera,
+            this.target,
+            this.mouseNewPosition.clone().sub(deltaMove).sub(canvasOrigin),
+            this.mouseNewPosition.clone().sub(canvasOrigin),
+            this.domElement
+          )
+          this.update(true)
+        } else {
+          this.addPendingDragMove(point, interaction, deltaMove)
+          this.update()
+        }
+      } else {
+        // clientToEngine: the client drives the engine's camera, in sketch
+        // mode or briefly while the gizmo turns it.
+        this.addPendingDragMove(point, interaction, deltaMove)
+      }
     }
+  }
 
-    if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
-      orbitLocalCamera(
-        this.camera,
-        this.target,
-        deltaMove,
-        this.domElement,
-        this.orbitDragUpInverted
-      )
-      this.update(true)
-      return
-    }
-
-    // Else the client owns the camera, either with engine synchronization
-    // for sketch mode or without it for local rendering.
-    // Implement camera movement logic here based on deltaMove
-    // For example, for rotating the camera around the target:
-    if (
-      interaction === 'rotate' ||
-      (this.effectiveCameraMode === 'local' &&
-        interaction === 'rotatetrackball')
-    ) {
+  private addPendingDragMove(
+    point: ScreenPoint,
+    interaction: CameraDragInteractionType,
+    deltaMove: Vector2
+  ) {
+    if (interaction === 'rotate') {
       this.pendingRotation = this.pendingRotation
         ? this.pendingRotation
         : new Vector2()
@@ -732,9 +787,6 @@ export class CameraControls {
         const newPosition = this.screenToWorld(point, this.cameraDown)
         this.pendingPan = newPosition.sub(this.worldDownPosition)
       }
-    }
-    if (this.effectiveCameraMode === 'local') {
-      this.update()
     }
   }
 
@@ -1177,6 +1229,11 @@ export class CameraControls {
     }
 
     return modelingResponse.data.view
+  }
+
+  /** Last synchronized pose, available even after the streamed connection has closed. */
+  snapshotCameraView(): CameraViewState {
+    return getLocalCameraView(this.camera, this.target, this.lastPerspectiveFov)
   }
 
   async setCameraView(view: CameraViewState): Promise<void> {
@@ -2298,6 +2355,57 @@ function orbitLocalCamera(
 
   camera.position.set(0, 0, distance).applyQuaternion(rotation).add(target)
   // The local renderer copies up as well as position; don't force Z-up here.
+  camera.up.set(0, 1, 0).applyQuaternion(rotation)
+}
+
+/** The engine's trackball radius, in halves of the viewport's shorter side. */
+const TRACKBALL_SIZE = 0.8
+
+/**
+ * Orbits like the engine's trackball: the drag from `from` to `to` turns a
+ * ball centered in the viewport, in the camera's own frame. Dragging near the
+ * ball's edge rolls the view. Points are in pixels from the viewport's top
+ * left.
+ */
+function trackballLocalCamera(
+  camera: Camera,
+  target: Vector3,
+  from: Vector2,
+  to: Vector2,
+  viewport: HTMLElement
+) {
+  const width = Math.max(viewport.clientWidth, 1)
+  const height = Math.max(viewport.clientHeight, 1)
+  const radius = Math.min(width, height)
+  // The point on the ball under `point`, with +Y up as in the camera's frame.
+  const onTrackball = (point: Vector2) => {
+    const x = (2 * point.x - width) / radius
+    const y = (height - 2 * point.y) / radius
+    // A sphere near the center, then a hyperbolic sheet that keeps edge
+    // drags turning smoothly.
+    const d = Math.hypot(x, y)
+    const z =
+      d < TRACKBALL_SIZE * Math.SQRT1_2
+        ? Math.sqrt(TRACKBALL_SIZE ** 2 - d * d)
+        : TRACKBALL_SIZE ** 2 / (2 * d)
+    return new Vector3(x, y, z)
+  }
+  const p1 = onTrackball(from)
+  const p2 = onTrackball(to)
+  const axis = new Vector3().crossVectors(p2, p1)
+  if (axis.lengthSq() === 0) return
+  let angle =
+    2 * Math.asin(Math.min(p1.distanceTo(p2) / (2 * TRACKBALL_SIZE), 1))
+  // 1.5 speed factor adjustment
+  angle *= 1.5
+
+  const distance = camera.position.distanceTo(target)
+  const rotation = camera.quaternion
+    .multiply(new Quaternion().setFromAxisAngle(axis.normalize(), angle))
+    .normalize()
+  camera.position.set(0, 0, distance).applyQuaternion(rotation).add(target)
+  // The local renderer orients its camera from up, position and target, so
+  // up must carry any roll the trackball adds.
   camera.up.set(0, 1, 0).applyQuaternion(rotation)
 }
 

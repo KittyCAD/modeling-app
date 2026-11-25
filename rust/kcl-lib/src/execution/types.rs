@@ -18,6 +18,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
+use crate::execution::KclVersion;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
@@ -354,7 +355,7 @@ impl RuntimeType {
             Type::Primitive(pt) => {
                 if matches!(pt, AstPrimitiveType::Never)
                     && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
-                    && !exec_state.entry_point_version_is_v3_or_higher()
+                    && !exec_state.entry_point_version_at_least(KclVersion::V3Preview)
                 {
                     return Err(crate::parsing::never_type_error(
                         source_range,
@@ -643,6 +644,7 @@ pub enum PrimitiveType {
     Function,
     CameraView,
     NamedView,
+    Sheet,
 }
 
 impl PrimitiveType {
@@ -674,6 +676,7 @@ impl PrimitiveType {
             PrimitiveType::TaggedFace => "tagged faces".to_owned(),
             PrimitiveType::CameraView => "camera views".to_owned(),
             PrimitiveType::NamedView => "named views".to_owned(),
+            PrimitiveType::Sheet => "drawing sheets".to_owned(),
         }
     }
 
@@ -720,6 +723,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Function => write!(f, "fn"),
             PrimitiveType::CameraView => write!(f, "CameraView"),
             PrimitiveType::NamedView => write!(f, "NamedView"),
+            PrimitiveType::Sheet => write!(f, "Sheet"),
         }
     }
 }
@@ -1599,6 +1603,10 @@ impl KclValue {
                 KclValue::NamedView { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Sheet => match self {
+                KclValue::Sheet { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Segment => match self {
                 KclValue::Segment { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1997,6 +2005,7 @@ impl KclValue {
             KclValue::GdtAnnotation { .. } => Some(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
             KclValue::CameraView { .. } => Some(RuntimeType::Primitive(PrimitiveType::CameraView)),
             KclValue::NamedView { .. } => Some(RuntimeType::Primitive(PrimitiveType::NamedView)),
+            KclValue::Sheet { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sheet)),
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),

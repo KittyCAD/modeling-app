@@ -183,7 +183,8 @@ describe('GDT tolerance defaults', () => {
 
       expect(commandConfig.args?.tolerance).toMatchObject({
         inputType: 'kcl',
-        defaultValue: getDefaultGdtTolerance,
+        defaultValue:
+          commandName === 'GDT Distance' ? undefined : getDefaultGdtTolerance,
       })
       expect(
         commandConfig.args?.tolerance?.valueSummary?.({
@@ -192,6 +193,18 @@ describe('GDT tolerance defaults', () => {
         } as KclCommandValue)
       ).toBe('0.1in')
     }
+  })
+
+  it('allows Distance tolerance to be omitted or cleared', () => {
+    const config = modelingMachineCommandConfig['GDT Distance']
+    if (!config || isArray(config)) {
+      throw new Error('GDT Distance should have a single command config')
+    }
+    expect(config.args?.tolerance).toMatchObject({
+      inputType: 'kcl',
+      required: false,
+      defaultValue: undefined,
+    })
   })
 
   it('requires datums for datum-axis GD&T commands', () => {

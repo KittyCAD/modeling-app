@@ -17,6 +17,7 @@ export default defineConfig(({ command, mode }) => {
         process.env.VERCEL_GIT_COMMIT_SHA
       ),
     },
+    optimizeDeps: { include: ['fzstd'] },
     server: {
       open: true,
       port: 3000,
@@ -99,7 +100,7 @@ export default defineConfig(({ command, mode }) => {
           find: /^vscode-languageserver-protocol$/,
           replacement: 'vscode-languageserver-protocol/browser',
         },
-        { find: '@kittycad/registry', replacement: '/packages/registry/src' },
+        { find: 'plankton', replacement: '/packages/plankton/src' },
         {
           find: '@kittycad/codemirror-lsp-client',
           replacement: '/packages/codemirror-lsp-client/src',

@@ -15,6 +15,7 @@ use crate::exec::IdGenerator;
 use crate::exec::KclValue;
 use crate::execution::EntityCloneInfo;
 use crate::execution::FaceParentSolid;
+use crate::execution::KclVersion;
 use crate::execution::Solid;
 use crate::std::Args;
 
@@ -170,7 +171,7 @@ impl ExecState {
     /// within a single execution because it is keyed on the entry point's
     /// declared version.
     pub(crate) fn edge_cuts_are_immediate(&self) -> bool {
-        IMMEDIATE_EDGE_CUTS_IN_V3 && self.entry_point_version_is_v3_or_higher()
+        IMMEDIATE_EDGE_CUTS_IN_V3 && self.entry_point_version_at_least(KclVersion::V3Preview)
     }
 
     /// Add an edge cut (fillet or chamfer) modeling command to the batch.

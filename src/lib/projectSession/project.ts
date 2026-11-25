@@ -1,35 +1,37 @@
-import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
-import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import type { SceneExecutionSettings } from '@src/lib/kcl/scene/executionSettings'
+import { kclExecutionSettingsService } from '@src/lib/kcl/scene/executionSettingsContract'
 import {
-  type Signal,
-  type ReadonlySignal,
-  signal,
   computed,
+  type ReadonlySignal,
+  type Signal,
+  signal,
 } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 import { KclManager } from '@src/lang/KclManager'
+import type { App } from '@src/lib/app'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
+import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
+import type { ConnectionManager } from '@src/lib/engineConnection'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
+import { File } from '@src/lib/projectSession/file'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import { resetCameraAfterExecution } from '@src/lib/resetCameraPosition'
+import type RustContext from '@src/lib/rustContext'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { UserFeaturesSettleService } from '@src/machines/userFeaturesMachine'
-import type { KeymapService } from '@src/registry/contracts/keymap'
-import type { ConnectionManager } from '@src/lib/engineConnection'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { App } from '@src/lib/app'
-import { File } from '@src/lib/projectSession/file'
-import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
-import {
-  projectSession,
-  type ProjectSessionService,
-} from '@src/registry/contracts/projectSession'
 import { type FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { KeymapService } from '@src/registry/contracts/keymap'
+import {
+  type ProjectSessionService,
+  projectSession,
+} from '@src/registry/contracts/projectSession'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
@@ -46,6 +48,7 @@ export interface ProjectSystemDeps {
   >
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
+  kclExecutionSettings: SceneExecutionSettings
   commandBar: CommandBarActorType
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
@@ -115,7 +118,7 @@ export class ZDSProject {
     return new ZDSProject(
       projectRef,
       app,
-      app.registry.get(projectSession).textFileIO
+      app.registry.required(projectSession).textFileIO
     )
   }
 
@@ -187,6 +190,9 @@ export class ZDSProject {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
+      kclExecutionSettings: this.app.registry.required(
+        kclExecutionSettingsService
+      ),
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
@@ -461,7 +467,12 @@ export class ZDSProject {
       this.app.fileOperations,
       this.path,
       await this.app.wasmPromise,
-      { createMissingEntrypoint: false }
+      {
+        createMissingEntrypoint: false,
+        readOnly: !this.app.projectSession
+          .storageFor(this.path)
+          .writeAvailability.peek().writable,
+      }
     )
     if (!isCurrent()) return
     const existing = new Map(this.files.map((file) => [file.path, file]))
