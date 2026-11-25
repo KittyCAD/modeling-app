@@ -8,12 +8,22 @@ type ToolbarDropdownLike<T extends ToolbarDropdownItemIdLike> = {
   visibleItemCount?: number
 }
 
+/**
+ * `ToolbarView` uses a split button for `default`: one remembered tool beside
+ * a menu arrow. `recent` shows several tool buttons beside an overflow menu.
+ * Omitting `display` keeps the split-button layout.
+ */
 export function getToolbarDropdownDisplay(dropdown: {
   display?: 'default' | 'recent'
 }): 'default' | 'recent' {
   return dropdown.display ?? 'default'
 }
 
+/**
+ * Choose the tool buttons shown before a recent dropdown has any saved choices.
+ * Prefer `defaultVisibleItemIds`, then the first tools in `array`, up to
+ * `visibleItemCount` (three by default). Removed IDs and duplicates are ignored.
+ */
 export function getDefaultRecentToolbarItemIds(
   dropdown: ToolbarDropdownLike<ToolbarDropdownItemIdLike>
 ): string[] {
@@ -32,6 +42,13 @@ export function getDefaultRecentToolbarItemIds(
     .slice(0, maxItems)
 }
 
+/**
+ * Make a tool chosen from overflow visible without rearranging the other buttons.
+ * `currentItemIds` is the visible row; `recentItemIds` ranks tools by last use.
+ * Replace the least recently used visible tool and put `itemId` first. Defaults
+ * and declaration order rank tools with no recorded use and fill remaining slots.
+ * An already-visible tool keeps its position.
+ */
 export function promoteRecentToolbarItemId(
   itemId: string,
   currentItemIds: readonly string[],
@@ -82,6 +99,13 @@ export function promoteRecentToolbarItemId(
   return [itemId, ...nextVisibleItemIds, ...fallbackItemIds].slice(0, maxItems)
 }
 
+/**
+ * Record a tool's use independently of its button's position. `currentItemIds`
+ * is the previous usage order, not the visible row. Return the chosen tool first,
+ * followed by earlier history and unused tools in default/declaration order.
+ * `ToolbarView` keeps this ranking to choose which button an overflow pick replaces;
+ * clicking a visible button updates its recency without moving it.
+ */
 export function recordRecentToolbarItemId(
   itemId: string,
   currentItemIds: readonly string[],
@@ -102,6 +126,13 @@ export function recordRecentToolbarItemId(
   )
 }
 
+/**
+ * Resolve the remembered visible IDs to the current tool objects for rendering.
+ * Fill missing slots from defaults and declaration order. If the first active
+ * tool is hidden, bring it into the row so activation outside the dropdown
+ * (for example, through a shortcut) still shows the active tool.
+ * This does not change `ToolbarView`'s saved visible IDs or usage history.
+ */
 export function resolveRecentToolbarItems<
   T extends ToolbarDropdownItemIdLike & { isActive?: boolean },
 >(
