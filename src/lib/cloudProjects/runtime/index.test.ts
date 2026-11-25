@@ -741,6 +741,7 @@ describe.each([
     const backing: IZooDesignStudioFS = fs
     await backing.attach()
     const root = await fs.openProject('one')
+    expect(fs.savedRevision('one')).toBe('1')
     const file = paths.join(root, 'main.kcl')
     const gate = Promise.withResolvers<typeof remote>()
     vi.mocked(api.updateRemoteProject).mockReturnValueOnce(gate.promise)
@@ -756,6 +757,7 @@ describe.each([
     expect(api.updateRemoteProject).toHaveBeenCalledOnce()
     expect(resolved).not.toHaveBeenCalled()
     expect(fs.pending()).toBe(1)
+    expect(fs.savedRevision('one')).toBeUndefined()
     expect(await backing.readFile(file, 'utf8')).toBe('changed')
     expect(await backing.readFile(file, { encoding: 'utf-8' })).toBe('changed')
     const copy = await backing.readFile(file)
@@ -763,6 +765,7 @@ describe.each([
     expect(await backing.readFile(file)).toEqual(encoder.encode('changed'))
     gate.resolve({ ...remote, revision: '2' })
     await write
+    expect(fs.savedRevision('one')).toBe('2')
     expect(fs.saves.value.get('one')?.state).toBe('saved')
     expect(api.updateRemoteProject).toHaveBeenCalledWith(
       expect.objectContaining({ expectedRevision: '1' })

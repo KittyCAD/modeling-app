@@ -903,6 +903,21 @@ export function createCloudProjectRuntime(
           )
         )
     ),
+    savedRevision: (id: string) => {
+      const project = opened.get(id)
+      if (
+        !project ||
+        project.owner !== config().accountId ||
+        isOffline() ||
+        pendingRequests ||
+        project.needsReconciliation ||
+        !canAdopt(id) ||
+        saves.peek().get(id)?.state !== 'saved' ||
+        !project.remote.revision
+      )
+        return
+      return String(project.remote.revision)
+    },
     isReadOnlyProject: (id: string) =>
       opened.get(id)?.remote.access?.can_edit === false,
     stageThumbnail: async (path: string, bytes: Uint8Array) => {

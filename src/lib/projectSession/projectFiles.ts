@@ -172,6 +172,7 @@ export const collectProjectFiles = async (args: {
   selectedFilePath?: string
   warnIfProjectExceeds64Mb?: boolean
   skipUnreadableFiles?: boolean
+  kclOnly?: boolean
 }) => {
   let projectFiles: FileMeta[] = [
     {
@@ -235,6 +236,11 @@ export const collectProjectFiles = async (args: {
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
     const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
+      if (
+        args.kclOnly &&
+        fsZds.extname(absolutePathToFileNameWithExtension) !== FILE_EXT
+      )
+        return
       // Normalize to forward slashes: this becomes the FileMeta.relPath that is
       // sent to the ML/Zookeeper service as the `current_files` keys and the
       // `source_ranges` file paths. On Windows fsZds.relative yields backslash

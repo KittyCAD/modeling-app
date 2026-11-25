@@ -1,3 +1,4 @@
+import { projectBuffersAreSaved } from '@src/lib/projectSession/projectBuffersAreSaved'
 import { effect } from '@preact/signals-core'
 import type { CloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
@@ -9,7 +10,6 @@ import { reportRejection } from '@src/lib/trap'
 import { createProjectPoller } from '@src/lib/cloudProjects/runtime/polling'
 import {
   activeTextFileSignal,
-  hasPendingActiveTextFileWrite,
   openActiveTextFile,
   clearActiveTextFile,
 } from '@src/lib/activeTextFile'
@@ -40,15 +40,7 @@ export function watchCloudProject({
     isCurrent() &&
     visible() &&
     !zookeeperPromptRunningSignal.peek() &&
-    !hasPendingActiveTextFileWrite(project.path) &&
-    [...project.editors.values()].every(
-      (editor) =>
-        !editor.hasUnsavedLocalChanges() &&
-        !editor.writingPromise.peek() &&
-        !project.files.some(
-          (file) => editor.getPendingFileCode(file.path) !== undefined
-        )
-    )
+    projectBuffersAreSaved(project)
   let snapshotGeneration = 0
   let snapshotRefresh = Promise.resolve()
   const refreshSnapshot = async (isSnapshotCurrent: () => boolean) => {

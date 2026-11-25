@@ -38,6 +38,7 @@ export function createCloudProjectStorageProvider(
             ? { writable: false, reason: 'Read-only project.' }
             : { writable: true }
       ),
+      savedRevision: () => cloud.savedRevision(id),
       saveState: computed(() => cloud.saves.value.get(id)),
       externalChanges: 'snapshot',
       removeWithHistory: async (path) => {

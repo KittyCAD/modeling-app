@@ -245,9 +245,24 @@ function createHarness({
     },
     zookeeperHistoryRecordingInProgress: false,
   }
+  const dirty = vi.fn(() => false)
+  const readFile = vi.fn(async () => new TextEncoder().encode(kclManager.code))
+  const savedRevision = vi.fn<() => string | undefined>(() => undefined)
   const executingEditor = signal<typeof kclManager | undefined>(kclManager)
   const reloadFiles = vi.fn(async () => undefined)
   const zdsProject = {
+    path: projectPath,
+    files: [loaderFile],
+    editors: new Map([
+      [
+        loaderFile.path,
+        {
+          hasUnsavedLocalChanges: dirty,
+          writingPromise: signal(undefined),
+          getPendingFileCode: () => undefined,
+        },
+      ],
+    ]),
     executingEditor,
     reloadFilesFromStorage: reloadFiles,
     executingFileEntry: signal(loaderFile),
@@ -266,7 +281,7 @@ function createHarness({
     billing: { send: billingSend },
     conversationStore,
     fileOperations: {
-      readFile: vi.fn(async () => new Uint8Array()),
+      readFile,
       exists: fileExists,
     },
     kclManager,
@@ -277,6 +292,7 @@ function createHarness({
       refreshProject: readFolders,
       openFile: navigateToFile,
       storageFor: () => ({
+        savedRevision,
         refresh: (isCurrent: () => boolean, revision?: string) =>
           refreshProject(cloudProjectId!, isCurrent, revision),
       }),
@@ -288,6 +304,9 @@ function createHarness({
 
   return {
     actor,
+    dirty,
+    readFile,
+    savedRevision,
     fileExists,
     reloadFiles,
     navigateToFile,
@@ -388,6 +407,57 @@ describe('Zookeeper session controller', () => {
     expect(h.reloadFiles).toHaveBeenCalledOnce()
     expect(h.readFolders).not.toHaveBeenCalled()
   })
+
+  it('leaves a newly dirty editor alone when a batch save is acknowledged', async () => {
+    const h = createHarness({ cloudProjectId: 'remote-one' })
+    const gate = Promise.withResolvers<undefined>()
+    h.refreshProject.mockReturnValueOnce(gate.promise)
+    h.actor.emit('ready', {
+      cloudProjectChange: {
+        callId: 'save',
+        projectId: 'remote-one',
+        revision: '2',
+        refreshLatest: true,
+      },
+    })
+    await waitFor(() => expect(h.refreshProject).toHaveBeenCalledOnce())
+    const [, isCurrent, revision] = h.refreshProject.mock.calls[0]
+    expect(revision).toBeUndefined()
+    h.dirty.mockReturnValue(true)
+    expect(isCurrent?.()).toBe(false)
+    gate.resolve(undefined)
+    await flushPromises()
+    expect(h.reloadFiles).not.toHaveBeenCalled()
+  })
+
+  it.each(['saved', 'dirty', 'different buffer', 'revision changed'] as const)(
+    'uses the saved revision only for matching editor contents (%s)',
+    async (state) => {
+      const h = createHarness({
+        cloudProjectId: 'remote-one',
+        actorState: 'ready-await',
+        actorContext: { cloudProjectSave: true },
+      })
+      h.savedRevision.mockReturnValue('1')
+      if (state === 'dirty') h.dirty.mockReturnValue(true)
+      if (state === 'different buffer')
+        h.readFile.mockResolvedValue(new Uint8Array())
+      if (state === 'revision changed') h.savedRevision.mockReturnValueOnce('0')
+      h.controller.sendOrQueue('edit this bracket', undefined, [])
+      await waitFor(() =>
+        expect(
+          sentEvents(h.actor, ZookeeperManagerTransitions.MessageSend)
+        ).toHaveLength(1)
+      )
+      expect(
+        sentEvents(h.actor, ZookeeperManagerTransitions.MessageSend)[0]
+          .savedCloudRevision
+      ).toBe(state === 'saved' ? '1' : undefined)
+      expect(
+        projectFilesMocks.collect.mock.lastCall?.[0].kclOnly ?? false
+      ).toBe(state === 'saved')
+    }
+  )
 
   it('supersedes an in-flight refresh when a newer mutation arrives', async () => {
     const h = createHarness({ cloudProjectId: 'remote-one' })

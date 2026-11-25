@@ -18,6 +18,7 @@ const result = (
 
 describe('cloud MCP mutation returns', () => {
   it.each([
+    'cloud_project_saved',
     'project_write_file',
     'project_mkdir',
     'project_rm',
@@ -28,6 +29,7 @@ describe('cloud MCP mutation returns', () => {
       callId: 'call-1',
       projectId: 'one',
       revision: '2',
+      ...(name === 'cloud_project_saved' && { refreshLatest: true }),
     })
   })
   it('reads the MCP structured and text result envelopes', () => {

@@ -25,6 +25,8 @@ export interface ProjectDeletion extends StorageDeletion {
 export interface ProjectStorage {
   readonly root: string
   readonly writeAvailability: ReadonlySignal<ProjectWriteAvailability>
+  /** The revision of the mounted files when cloud storage has acknowledged all writes. */
+  savedRevision?: () => string | undefined
   readonly saveState?: ReadonlySignal<
     | {
         readonly state: 'saved' | 'saving' | 'failed'
