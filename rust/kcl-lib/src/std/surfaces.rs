@@ -29,6 +29,7 @@ use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
+use crate::std::args::coerce_geometry_array;
 use crate::std::edge;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
@@ -269,14 +270,14 @@ async fn inner_delete_face(
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Pipeline arguments reach Rust without being coerced against the KCL
     // signature.
-    let _: KclValue = args.get_unlabeled_kw_arg(
+    let edges = args.get_unlabeled_kw_arg(
         "edges",
         &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::Known(2)),
         exec_state,
     )?;
-    let edges: Vec<KclValue> = args.get_unlabeled_kw_arg(
-        "edges",
-        &RuntimeType::Array(
+    let edges = coerce_geometry_array(
+        edges,
+        RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::Primitive(PrimitiveType::BoundedEdge),
                 RuntimeType::tagged_edge(),
@@ -284,6 +285,8 @@ pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             ])),
             ArrayLen::Known(2),
         ),
+        args.unlabeled_kw_arg_unconverted()
+            .map_or(args.source_range, |arg| arg.source_range),
         exec_state,
     )?;
     let mut bounded_edges = Vec::with_capacity(edges.len());

@@ -27,6 +27,7 @@ use uuid::Uuid;
 use super::DEFAULT_TOLERANCE_MM;
 use super::args::FromKclValue;
 use super::args::TyF64;
+use super::args::coerce_geometry_array;
 use super::utils::point_to_mm;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -74,9 +75,13 @@ fn must_be_lengths_err(source_range: crate::SourceRange) -> KclError {
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
-        "sketches",
-        &RuntimeType::Array(
+    let sketch_values = args.get_unlabeled_kw_arg("sketches", &RuntimeType::any_array(), exec_state)?;
+    let target_argument_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map_or(args.source_range, |arg| arg.source_range);
+    let sketch_values = coerce_geometry_array(
+        sketch_values,
+        RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::sketch(),
                 RuntimeType::face(),
@@ -87,12 +92,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             ])),
             ArrayLen::None,
         ),
+        target_argument_source_range,
         exec_state,
     )?;
-    let target_argument_source_range = args
-        .unlabeled_kw_arg_unconverted()
-        .map(|arg| arg.source_range)
-        .unwrap_or(args.source_range);
     if sketch_values.is_empty() {
         return Err(KclError::new_argument(KclErrorDetails::new(
             "The input argument of `extrude` requires one or more extrusion targets.".to_owned(),

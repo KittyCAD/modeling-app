@@ -55,6 +55,29 @@ use crate::std::sweep::SweepPath;
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
 
+pub(super) fn coerce_geometry_array(
+    mut value: KclValue,
+    target: RuntimeType,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+) -> Result<Vec<KclValue>, KclError> {
+    // These stdlib arguments need scalar geometry values. The array coercer's
+    // subtype shortcut can preserve typed singleton wrappers, so have it check
+    // the elements of this argument individually.
+    if let KclValue::HomArray { ty, .. } = &mut value {
+        *ty = RuntimeType::any();
+    }
+    value
+        .coerce(&target, CoercionMode::implicit(), exec_state)
+        .map(KclValue::into_array)
+        .map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!("Expected {} for this argument.", target.human_friendly_type()),
+                vec![source_range],
+            ))
+        })
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]

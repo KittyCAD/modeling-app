@@ -38,6 +38,7 @@ use crate::parsing::ast::types::BoxNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
+use crate::std::args::coerce_geometry_array;
 use crate::std::edge;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
@@ -288,20 +289,23 @@ async fn parse_distance_entity_arg(
 }
 
 async fn parse_gdt_edges_arg(exec_state: &mut ExecState, args: &Args) -> Result<Vec<GdtEdgeReference>, KclError> {
-    let Some(edges): Option<Vec<KclValue>> = args.get_kw_arg_opt(
-        "edges",
-        &RuntimeType::Array(
+    let Some(edges) = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)? else {
+        return Ok(Vec::new());
+    };
+    let edges = coerce_geometry_array(
+        edges,
+        RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::edge(),
                 edge::edge_specifier_type(),
             ])),
             ArrayLen::None,
         ),
+        args.labeled
+            .get("edges")
+            .map_or(args.source_range, |arg| arg.source_range),
         exec_state,
-    )?
-    else {
-        return Ok(Vec::new());
-    };
+    )?;
 
     if edges.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails::new(

@@ -542,14 +542,6 @@ impl RuntimeType {
             RuntimeType::Enum(id) => format!("`{}` values", id.declared_name()),
         }
     }
-
-    fn accepts_array_value(&self) -> bool {
-        match self {
-            Self::Array(..) | Self::Tuple(..) | Self::Primitive(PrimitiveType::Any) => true,
-            Self::Union(types) => types.iter().any(Self::accepts_array_value),
-            _ => false,
-        }
-    }
 }
 
 impl std::fmt::Display for RuntimeType {
@@ -1819,9 +1811,7 @@ impl KclValue {
             KclValue::HomArray { value, ty: aty, .. } => {
                 let satisfied_len = len.satisfied(value.len(), allow_shrink);
 
-                // Singleton arrays and tuples can be subtypes of scalar types, but
-                // their values still need to be unwrapped before returning them.
-                if aty.subtype(ty) && (!aty.accepts_array_value() || ty.accepts_array_value()) {
+                if aty.subtype(ty) {
                     // If the element type is a subtype of the target type and
                     // the length constraint is satisfied, we can just return
                     // the values unchanged, only adjusting the length. The new
