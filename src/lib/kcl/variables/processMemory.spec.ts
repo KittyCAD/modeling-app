@@ -1,5 +1,5 @@
 import { setupEngineTestWorld } from '@src/test-setup/engineTestWorld'
-import { processMemory } from '@src/components/layout/areas/MemoryPane'
+import { processMemory } from '@src/lib/kcl/variables/processMemory'
 import { assertParse } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
