@@ -15,9 +15,7 @@ it.each(['bytes', 'entries'] as const)(
   'keeps the %s limit toast visible until Dismiss is clicked',
   (limit) => {
     vi.useFakeTimers()
-    const archiveLimitFailure = signal<ProjectArchiveLimitError | undefined>(
-      new ProjectArchiveLimitError(limit)
-    )
+    const archiveLimitFailure = signal<ProjectArchiveLimitError | undefined>()
     const dismissArchiveLimitFailure = vi.fn(() => {
       archiveLimitFailure.value = undefined
     })
@@ -28,6 +26,15 @@ it.each(['bytes', 'entries'] as const)(
         <ProjectArchiveLimitToast cloud={cloud} />
       </>
     )
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    act(() => {
+      archiveLimitFailure.value = new ProjectArchiveLimitError(limit)
+    })
+    expect(
+      screen.getByRole('heading', {
+        name: `Project exceeds ${limit === 'bytes' ? '1 GiB' : '10,000 entries'}`,
+      })
+    ).toBeVisible()
     expect(screen.getByRole('alert')).toHaveTextContent(
       limit === 'bytes' ? '1 GiB' : '10,000'
     )
