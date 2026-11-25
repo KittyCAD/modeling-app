@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
 import type { ToolbarConfig } from '@src/lib/toolbar'
-import { attachSketchInput } from '@src/clientSideScene/sketchInput'
 import { selectCommand } from '@src/lib/commandUtils'
 import { Popover } from '@headlessui/react'
 import {
@@ -144,7 +143,11 @@ const ClientSideSceneContent = ({
     if (sceneInfra.labelRenderer.domElement.parentElement !== element)
       element.appendChild(sceneInfra.labelRenderer.domElement)
 
-    const detachInput = attachSketchInput(element, sceneInfra)
+    const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
+    const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
+    element.addEventListener('mousemove', onMouseMove)
+    element.addEventListener('mousedown', sceneInfra.onMouseDown)
+    element.addEventListener('mouseup', onMouseUp)
 
     const resizeCanvas = () => resizeSceneCanvas(sceneInfra)
     const stopSize = observeViewportSize(element, resizeCanvas)
@@ -157,7 +160,9 @@ const ClientSideSceneContent = ({
     }
 
     return () => {
-      detachInput()
+      element.removeEventListener('mousemove', onMouseMove)
+      element.removeEventListener('mousedown', sceneInfra.onMouseDown)
+      element.removeEventListener('mouseup', onMouseUp)
       if (!container) {
         sceneEntitiesManager.tearDownSketch({ removeAxis: true })
         cleanupSketchSolveGroup(sceneInfra)
