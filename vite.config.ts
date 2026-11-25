@@ -141,6 +141,7 @@ export default defineConfig(({ command, mode }) => {
       }),
     ],
     worker: {
+      format: 'es',
       plugins: () => [viteTsconfigPaths()],
     },
   }

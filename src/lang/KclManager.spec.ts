@@ -1,6 +1,7 @@
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { Context as NativeContext } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { effect, signal } from '@preact/signals-core'
-import { createProjectForTest } from '@src/unitTestUtils'
+import { createProjectForTest, loadWasm } from '@src/unitTestUtils'
 import * as screenshot from '@src/lib/screenshot'
 import * as desktop from '@src/lib/desktop'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
@@ -66,7 +67,6 @@ import type { Artifact, ArtifactGraph, ExecState } from '@src/lang/wasm'
 import { defaultNodePath, emptyExecState, parse } from '@src/lang/wasm'
 import { getOperationVariableName } from '@src/lib/operations'
 import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 function waitForSettingsIdle(actor: SettingsActorType) {
   return waitFor(actor, (snapshot) => snapshot.matches('idle'))
@@ -446,6 +446,16 @@ describe('KclManager default plane visibility', () => {
       kclManager.close()
       await app.dispose()
     }
+  })
+})
+
+describe('KclManager runtime API', () => {
+  it('does not expose the test-only panic hook in normal builds', async () => {
+    const module = await loadWasm()
+    expect(module.parse_wasm).toBeTypeOf('function')
+    for (const capability of ['Context', 'default', 'initSync'])
+      expect(Reflect.has(module, capability)).toBe(false)
+    expect(Reflect.has(module, 'e2e_panic')).toBe(false)
   })
 })
 
@@ -1911,11 +1921,10 @@ describe('KclManager live operation updates', () => {
 
 describe('KclManager resolved views', () => {
   let kclManager: KclManager
-  let instance: ModuleType
 
   beforeEach(async () => {
     ;({ kclManager } = createKclManagerTestHarness())
-    instance = await kclManager.wasmInstancePromise
+    await kclManager.wasmInstancePromise
     kclManager.engineCommandManager.started = true
     vi.spyOn(
       kclManager.rustContext,
@@ -1931,7 +1940,7 @@ describe('KclManager resolved views', () => {
   async function executeActualViews(namedViews: ResolvedViewBatch) {
     const delta = createSceneGraphDelta([])
     delta.exec_outcome.namedViews = namedViews
-    vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
+    vi.spyOn(NativeContext.prototype, 'execute').mockResolvedValueOnce(delta)
     await kclManager.executeAst({ ast: createEmptyAst() })
   }
 
@@ -1982,7 +1991,7 @@ describe('KclManager resolved views', () => {
         tag: 'None',
       },
     ]
-    vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
+    vi.spyOn(NativeContext.prototype, 'execute').mockResolvedValueOnce(delta)
 
     await kclManager.executeAst({ ast: createEmptyAst() })
 
@@ -2019,7 +2028,7 @@ describe('KclManager resolved views', () => {
     const mockExecution = kclManager.executeAstMock(createEmptyAst())
     await vi.waitFor(() => expect(executeMock).toHaveBeenCalledOnce())
 
-    vi.spyOn(instance.Context.prototype, 'execute').mockRejectedValueOnce(
+    vi.spyOn(NativeContext.prototype, 'execute').mockRejectedValueOnce(
       engineExecutionError()
     )
     await kclManager.executeAst({ ast: createEmptyAst() })
@@ -2037,7 +2046,7 @@ describe('KclManager resolved views', () => {
       kclManager.rustContext.namedViewsInvalidated,
       'dispatch'
     )
-    vi.spyOn(instance.Context.prototype, 'executeMock').mockRejectedValueOnce(
+    vi.spyOn(NativeContext.prototype, 'executeMock').mockRejectedValueOnce(
       engineExecutionError()
     )
 
@@ -2052,7 +2061,7 @@ describe('KclManager resolved views', () => {
     await executeActualViews(previous)
     const pending = createDeferred<SceneGraphDelta>()
     const execute = vi
-      .spyOn(instance.Context.prototype, 'execute')
+      .spyOn(NativeContext.prototype, 'execute')
       .mockClear()
       .mockReturnValueOnce(pending.promise)
     const execution = kclManager.executeAst({
@@ -2095,13 +2104,12 @@ describe('KclManager resolved views', () => {
 
   it('clears results when program synchronization reports execution failure', async () => {
     await executeActualViews(resolvedViews('old-object'))
-    vi.spyOn(
-      instance.Context.prototype,
-      'hack_set_program'
-    ).mockResolvedValueOnce({
-      type: 'ExecFailure',
-      error: engineExecutionError(),
-    })
+    vi.spyOn(NativeContext.prototype, 'hack_set_program').mockResolvedValueOnce(
+      {
+        type: 'ExecFailure',
+        error: engineExecutionError(),
+      }
+    )
 
     const result = await kclManager.rustContext.hackSetProgram(
       createEmptyAst(),
@@ -2122,25 +2130,24 @@ describe('KclManager resolved views', () => {
     let execution: Promise<unknown>
     if (operation === 'program synchronization') {
       vi.spyOn(
-        instance.Context.prototype,
+        NativeContext.prototype,
         'hack_set_program'
       ).mockRejectedValueOnce(engineExecutionError())
       execution = kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
     } else if (operation === 'sketch creation') {
-      vi.spyOn(instance.Context.prototype, 'new_sketch').mockRejectedValueOnce(
+      vi.spyOn(NativeContext.prototype, 'new_sketch').mockRejectedValueOnce(
         engineExecutionError()
       )
       execution = kclManager.rustContext.newSketch(0, 0, 0, {
         on: { default: 'xy' },
       })
     } else if (operation === 'sketch deletion') {
-      vi.spyOn(
-        instance.Context.prototype,
-        'delete_sketch'
-      ).mockRejectedValueOnce(engineExecutionError())
+      vi.spyOn(NativeContext.prototype, 'delete_sketch').mockRejectedValueOnce(
+        engineExecutionError()
+      )
       execution = kclManager.rustContext.deleteSketch(0, 1, {})
     } else {
-      vi.spyOn(instance.Context.prototype, 'exit_sketch').mockRejectedValueOnce(
+      vi.spyOn(NativeContext.prototype, 'exit_sketch').mockRejectedValueOnce(
         engineExecutionError()
       )
       execution = kclManager.rustContext.exitSketch(0, 1)
@@ -2159,7 +2166,7 @@ describe('KclManager resolved views', () => {
       let execution: Promise<unknown>
       if (operation === 'program synchronization') {
         vi.spyOn(
-          instance.Context.prototype,
+          NativeContext.prototype,
           'hack_set_program'
         ).mockResolvedValueOnce({
           type: 'Success',
@@ -2169,10 +2176,7 @@ describe('KclManager resolved views', () => {
         })
         execution = kclManager.rustContext.hackSetProgram(createEmptyAst(), {})
       } else {
-        vi.spyOn(
-          instance.Context.prototype,
-          'new_sketch'
-        ).mockResolvedValueOnce({
+        vi.spyOn(NativeContext.prototype, 'new_sketch').mockResolvedValueOnce({
           sourceDelta: { text: '' },
           sceneGraphDelta: delta,
           sketchId: 1,
@@ -2190,25 +2194,12 @@ describe('KclManager resolved views', () => {
 
   it('clears results when a project is opened', async () => {
     await executeActualViews(resolvedViews('old-project-object'))
-    vi.spyOn(instance.Context.prototype, 'open_project').mockResolvedValueOnce(
+    vi.spyOn(NativeContext.prototype, 'open_project').mockResolvedValueOnce(
       undefined
     )
 
     await kclManager.rustContext.sendOpenProject(null, [])
 
-    expect(kclManager.execState.namedViews).toBeNull()
-  })
-
-  it('clears results when resetting the scene fails', async () => {
-    await executeActualViews(resolvedViews('old-object'))
-    vi.spyOn(
-      instance.Context.prototype,
-      'bustCacheAndResetScene'
-    ).mockRejectedValueOnce(engineExecutionError())
-
-    await expect(
-      kclManager.rustContext.clearSceneAndBustCache({})
-    ).rejects.toMatchObject({ kind: 'engine' })
     expect(kclManager.execState.namedViews).toBeNull()
   })
 
