@@ -26,6 +26,12 @@ are ordered by descending `priority`, with registration order breaking ties. Eac
 view retains its explicit choice while that mode matches. Code is the wildcard
 fallback with priority `-100`; domain-specific modes can open by default.
 
+Unnamed buffers offer every registered mode, including modes with filename or
+content predicates. Priority chooses the initial mode without assigning a source
+or language; each view can select another mode independently. Once a path is
+assigned, normal matching resumes. A mode may supply `defaultExtension` for a
+first save without a suffix; extension matchers also provide that hint directly.
+
 Plain modes use `defineEditorView({ id, label, matches, Component })`. Modes with
 context use `defineEditorView(provider)({ id, label, matches, Component })`. The
 provider receives `editor`, the view `instance`, and `onDispose`; its return type

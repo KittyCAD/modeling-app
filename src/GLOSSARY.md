@@ -130,7 +130,7 @@ A live text buffer managed by the editors service. An editor has a stable identi
 
 ### Unnamed buffer
 
-An [Editor](#editor) without a source path, shown as Untitled until its first save assigns one. An unnamed buffer can contain working text and undo history before it has a backing file.
+An [Editor](#editor) without a source path, shown as Untitled until its first save assigns one. It can hold working text and undo history before a backing file exists, and offers every registered [Editor mode](#editor-mode) until naming establishes which modes match.
 
 ## Editor view instance
 

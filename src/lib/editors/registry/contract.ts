@@ -89,6 +89,8 @@ export interface EditorViewMetadata {
   id: string
   label: string
   matches: EditorMatcher
+  /** Optional filename hint when this mode saves an unnamed buffer; explicit extensions always win. */
+  defaultExtension?: `.${string}`
   /** Higher priorities are preferred by default; ties retain registration order. */
   priority?: number
 }

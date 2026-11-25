@@ -26,6 +26,13 @@ remain independent, including instances with the same source. Closing an editor
 or its project releases its executors; removing the last leased mode also closes
 its executor. Markdown demonstrates this pairing without an engine connection.
 
+An unnamed buffer has no filename to select a computation. `executionContext`
+requests its own registered capability when acquiring a lease, allowing a selected
+Markdown mode to render before the buffer has a path. Other nonmatching
+capabilities remain idle. Requests are shared across leases and withdrawn when
+their contexts are released; pending work is interrupted when its last request
+ends. Named buffers always use normal source matching.
+
 Multiple view instances of one document can use different modes while sharing
 this execution context. Editing its Code view updates a Modeling view immediately;
 saving only updates persistence and dirty state, not the execution input. Closing

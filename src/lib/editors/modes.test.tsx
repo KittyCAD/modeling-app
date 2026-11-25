@@ -346,3 +346,56 @@ it.each(['return', 'throw'] as const)(
     expect(released).toHaveLength(2)
   }
 )
+
+it('offers every mode for unnamed buffers and resumes normal matching after naming', async () => {
+  registry = new Registry()
+  await registry.configure([
+    editorsExtension,
+    ...[
+      defineEditorView({
+        id: 'modeling',
+        label: 'Modeling',
+        matches: '.kcl',
+        priority: 1000,
+        Component: () => null,
+      }),
+      defineEditorView({
+        id: 'markdown',
+        label: 'Markdown',
+        matches: '.md',
+        priority: 100,
+        Component: () => null,
+      }),
+      defineEditorView({
+        id: 'specialized',
+        label: 'Specialized',
+        matches: () => false,
+        priority: 50,
+        Component: () => null,
+      }),
+    ].map((view) => contribute(editorViewsFacet, () => view)),
+  ])
+  const editors = registry.required(editorsService)
+  const editor = requireSuccess(editors.createEditor('draft'))
+  const view = requireSuccess(editors.createView(editor))
+  expect(
+    editors
+      .viewState(view)
+      .peek()
+      .available.map(({ id }) => id)
+  ).toEqual(['modeling', 'markdown', 'specialized', 'editors.code'])
+  expect(editors.viewState(view).peek().selected?.id).toBe('modeling')
+  requireSuccess(editors.setView(view.id, 'markdown'))
+  expect(editors.viewState(view).peek().selected?.id).toBe('markdown')
+  expect(editor.src.peek()).toBeUndefined()
+  expect(editor.classification.peek()).toBeUndefined()
+  requireSuccess(editors.setSource(editor.id, '/project/notes.md'))
+  expect(
+    editors
+      .viewState(view)
+      .peek()
+      .available.map(({ id }) => id)
+  ).toEqual(['markdown', 'editors.code'])
+  expect(editors.viewState(view).peek().selected?.id).toBe('markdown')
+  expect(editor.contents.peek()).toBe('draft')
+})
