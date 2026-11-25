@@ -367,6 +367,30 @@ fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> Runtim
     original_ty
 }
 
+/// Restore typed-array flattening for stdlib geometry lists whose elements now accept `any`.
+pub(super) fn flatten_geometry_targets(targets: Vec<KclValue>) -> Vec<KclValue> {
+    let mut flattened = Vec::with_capacity(targets.len());
+    for target in targets {
+        match target {
+            KclValue::HomArray { value, .. } => flattened.extend(value.into_iter().map(unwrap_geometry_target)),
+            _ => flattened.push(unwrap_geometry_target(target)),
+        }
+    }
+    flattened
+}
+
+fn unwrap_geometry_target(mut target: KclValue) -> KclValue {
+    // Typed geometry values also accept singleton wrappers around individual targets.
+    loop {
+        match target {
+            KclValue::HomArray { mut value, .. } | KclValue::Tuple { mut value, .. } if value.len() == 1 => {
+                target = value.remove(0);
+            }
+            _ => return target,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::errors::Severity;

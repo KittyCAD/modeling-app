@@ -38,6 +38,7 @@ use crate::parsing::ast::types::BoxNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
+use crate::std::array::flatten_geometry_targets;
 use crate::std::edge;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
@@ -295,6 +296,7 @@ async fn parse_gdt_edges_arg(exec_state: &mut ExecState, args: &Args) -> Result<
         return Ok(Vec::new());
     };
 
+    let edges = flatten_geometry_targets(edges);
     if edges.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "`edges` must contain at least one edge.".to_owned(),
@@ -2387,6 +2389,31 @@ __GDT_CALL__
         let feature_control = feature_control(&commands[annotation_index])?;
         assert_feature_control_uses_edge_reference(feature_control);
         assert!(feature_control.control_frame.is_some());
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_flattens_nested_edges() -> Result<(), KclError> {
+        let code = gdt_face_api_edge_kcl(
+            r#"gdt::straightness(
+  edges = [[region001.tags.line2, { sideFaces = [region001.tags.line1, capStart001] }]],
+  tolerance = 0.1mm,
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)"#,
+        );
+        let commands = gdt_commands(&code).await;
+        let annotations: Vec<_> = commands
+            .iter()
+            .filter(|command| matches!(command, ModelingCmd::NewAnnotation(_)))
+            .map(feature_control)
+            .collect::<Result<_, _>>()?;
+        let [tagged_edge, specifier] = annotations.as_slice() else {
+            panic!("expected two annotations, got {annotations:?}");
+        };
+
+        assert!(tagged_edge.entity_id.is_some());
+        assert_feature_control_uses_edge_reference(specifier);
         Ok(())
     }
 

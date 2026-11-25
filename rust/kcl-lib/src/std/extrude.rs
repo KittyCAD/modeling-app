@@ -60,6 +60,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::array::flatten_geometry_targets;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
 use crate::std::axis_or_reference::Point3dOrEdgeReference;
 use crate::std::edge::{self};
@@ -82,6 +83,17 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ),
         exec_state,
     )?;
+    let sketch_values = flatten_geometry_targets(sketch_values);
+    let target_argument_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map(|arg| arg.source_range)
+        .unwrap_or(args.source_range);
+    if sketch_values.is_empty() {
+        return Err(KclError::new_argument(KclErrorDetails::new(
+            "The input argument of `extrude` requires one or more extrusion targets.".to_owned(),
+            vec![target_argument_source_range],
+        )));
+    }
 
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to_raw = args.get_kw_arg_opt(
@@ -160,10 +172,6 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
     let hide_seams: Option<bool> = args.get_kw_arg_opt("hideSeams", &RuntimeType::bool(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
-    let target_argument_source_range = args
-        .unlabeled_kw_arg_unconverted()
-        .map(|arg| arg.source_range)
-        .unwrap_or(args.source_range);
     let direct_target_edges = sketch_values
         .iter()
         .filter_map(|value| {
@@ -1779,10 +1787,54 @@ extrude(defaultRegion, length = 1mm)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn extrude_rejects_an_empty_target_array() {
-        let err = parse_execute("nothing = extrude([], length = 5)").await.unwrap_err();
+        for targets in ["[]", "[[], []]"] {
+            let err = parse_execute(&format!("nothing = extrude({targets}, length = 5)"))
+                .await
+                .unwrap_err();
 
-        assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
-        assert!(err.message().contains("requires one or more"), "{err:?}");
+            assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
+            assert!(err.message().contains("requires one or more"), "{err:?}");
+        }
+    }
+
+    const PATTERNED_EXTRUDE_TARGETS: &str = r#"
+@settings(kclVersion = 3.0)
+
+profiles = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  circle2 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
+}
+a = region(segments = [profiles.circle1])
+  |> patternLinear2d(instances = 2, distance = 10mm, axis = X)
+b = region(segments = [profiles.circle2])
+  |> patternLinear2d(instances = 2, distance = 10mm, axis = X)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_flattens_nested_targets() {
+        for (call, count) in [
+            ("extrude([a, b], length = 5mm)", 4),
+            ("extrude([a], length = 5mm)", 2),
+            ("extrude([a[0], [], b], length = 5mm)", 3),
+            ("extrude([[[a[0]], [b[0]]]], length = 5mm)", 2),
+            ("[a, b] |> extrude(length = 5mm)", 4),
+        ] {
+            let code = format!("{PATTERNED_EXTRUDE_TARGETS}\nbodies = {call}\nassertIs(count(bodies) == {count})");
+            parse_execute(&code)
+                .await
+                .unwrap_or_else(|err| panic!("{call}: {err:?}"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_invalid_nested_targets() {
+        for targets in ["[[a]]", "[a, [1]]"] {
+            let code = format!("{PATTERNED_EXTRUDE_TARGETS}\nextrude({targets}, length = 5mm)");
+            let err = parse_execute(&code).await.unwrap_err();
+
+            assert!(matches!(err, KclError::Type { .. }), "{err:?}");
+            assert!(err.message().contains("Expected sketches, faces"), "{err:?}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
