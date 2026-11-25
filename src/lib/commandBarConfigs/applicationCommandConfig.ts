@@ -40,21 +40,24 @@ import toast from 'react-hot-toast'
 
 // The cached project list can miss projects created elsewhere, so a new
 // project's folder is reserved against storage instead.
-function createNewProjectDirectory(app: App, requestedName: string) {
-  return app.fileOperations.createUniqueDirectory(
-    app.projectLibraries.projectDirectoryPath,
-    requestedName
-  )
+function createNewProjectDirectory(
+  app: App,
+  libraryPath: string,
+  requestedName: string
+) {
+  return app.fileOperations.createUniqueDirectory(libraryPath, requestedName)
 }
 
 async function onSubmitKCLSampleCreation({
   sample,
   projectName,
+  libraryPath,
   app,
   isProjectNew,
 }: {
   sample: string
   projectName: string
+  libraryPath: string
   app: App
   isProjectNew: boolean
 }) {
@@ -65,12 +68,11 @@ async function onSubmitKCLSampleCreation({
   const existingProjectRoot =
     openedProject?.name === projectName
       ? openedProject.path
-      : (existing?.path ??
-        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName))
+      : (existing?.path ?? fsZds.join(libraryPath, projectName))
   const { requestedProjectName: sampleName, initialProject } =
     await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
   const projectRoot = isProjectNew
-    ? await createNewProjectDirectory(app, projectName)
+    ? await createNewProjectDirectory(app, libraryPath, projectName)
     : existingProjectRoot
   // Every sample gets its own folder in an existing project, including samples
   // containing only main.kcl. Allocate against storage so repeated imports and
@@ -127,6 +129,8 @@ export function createApplicationCommands({
         const error = "The command couldn't be submitted, check the arguments."
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
+        // Read before any await: switching projects meanwhile can change it.
+        const libraryPath = app.projectLibraries.projectDirectoryPath
 
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
@@ -136,6 +140,7 @@ export function createApplicationCommands({
             void onSubmitKCLSampleCreation({
               sample: data.sample,
               projectName: requestedProjectName,
+              libraryPath,
               app,
               isProjectNew,
             }).catch(reportError)
@@ -161,11 +166,12 @@ export function createApplicationCommands({
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await app.fileOperations.readFile(selectedFile)
             const root = isProjectNew
-              ? await createNewProjectDirectory(app, requestedProjectName)
-              : joinOSPaths(
-                  app.projectLibraries.projectDirectoryPath,
+              ? await createNewProjectDirectory(
+                  app,
+                  libraryPath,
                   requestedProjectName
                 )
+              : joinOSPaths(libraryPath, requestedProjectName)
             const paths = await app.projectOperations.writeFiles(root, [
               { path: fileNameWithExtension, contents: content },
             ])
