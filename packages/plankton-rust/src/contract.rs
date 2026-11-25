@@ -1,15 +1,36 @@
 use std::{
     any::{Any, TypeId, type_name},
+    cell::Cell,
     collections::{HashMap, HashSet},
     fmt,
     marker::PhantomData,
     rc::Rc,
 };
 
-use crate::{
-    Origin, ReadSignal, RegistryInspection, ServiceHandle, service::FacetEvaluation,
-    signal::Notifier,
-};
+use crate::{Origin, ReadSignal, RegistryInspection, ServiceHandle, signal::Notifier};
+
+thread_local! {
+    static EVALUATING_FACET: Cell<bool> = const { Cell::new(false) };
+}
+
+/// Marks synchronous source and combiner execution on the current thread.
+pub(crate) struct FacetEvaluation(bool);
+
+impl FacetEvaluation {
+    pub(crate) fn is_active() -> bool {
+        EVALUATING_FACET.with(Cell::get)
+    }
+
+    fn enter() -> Self {
+        Self(EVALUATING_FACET.with(|evaluating| evaluating.replace(true)))
+    }
+}
+
+impl Drop for FacetEvaluation {
+    fn drop(&mut self) {
+        EVALUATING_FACET.with(|evaluating| evaluating.set(self.0));
+    }
+}
 
 /// A marker type identifies one contract. Its associated types pair the input
 /// accepted by a binding with the output returned to readers.

@@ -51,7 +51,8 @@ The handle lends the implementation to the callback. Calls return
 `ServiceCallError` while a Facet source or combiner runs, including calls made
 through a previously resolved handle or an older snapshot. Async calls check
 each poll. The guard applies across registries on the current thread and
-survives nested Facet reads.
+survives nested Facet reads. It also rejects registry mutations during evaluation,
+including attempts to resume pending cleanup from a captured snapshot.
 
 This boundary covers calls through service handles. Providers choose what
 owned values and capabilities their methods return. For reactive Facet inputs,

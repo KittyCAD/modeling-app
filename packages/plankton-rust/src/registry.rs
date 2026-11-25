@@ -7,13 +7,13 @@ use std::{
     future::{Future, poll_fn},
     pin::{Pin, pin},
     rc::{Rc, Weak},
-    task::{Context, Waker},
+    task::{Context, Poll, Waker},
 };
 
 use crate::{
     Binding, ContributionInfo, Extension, Facet, Factory, HookError, ItemKind, Resolution, Scope,
     ScopedSlot, Service, ServiceHandle, ServiceResolutionError, Snapshot, Subscription,
-    contract::Providers,
+    contract::{FacetEvaluation, Providers},
     factory::{Cleanup, ExtensionKind, FactoryItem, FactoryKey, Start},
     planner::{Planned, PlannedItem, cycle, plan_selected},
     signal::Notifier,
@@ -95,6 +95,8 @@ pub struct HookFailure {
 
 #[derive(Debug)]
 pub enum RegistryError {
+    /// A registry mutation was attempted while a Facet source or combiner ran.
+    FacetEvaluation,
     Disposed,
     Unmounted,
     WrongRegistry,
@@ -118,6 +120,9 @@ pub enum RegistryError {
 impl fmt::Display for RegistryError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::FacetEvaluation => {
+                f.write_str("cannot mutate a registry during Facet evaluation")
+            }
             Self::Disposed => f.write_str("registry is disposed"),
             Self::Unmounted => f.write_str("factory is not mounted"),
             Self::WrongRegistry => {
@@ -609,22 +614,24 @@ impl Registry {
     /// Finish cleanup, startup, or rollback left by a dropped operation.
     /// The next mutation also calls this before beginning its own work.
     pub async fn finish_pending(&mut self) -> Result<(), RegistryError> {
-        if self.pending.is_none() {
-            return Ok(());
-        }
-        let result = poll_fn(|cx| {
+        poll_fn(|cx| {
+            if FacetEvaluation::is_active() {
+                return Poll::Ready(Err(RegistryError::FacetEvaluation));
+            }
+            let Some(mut pending) = self.pending.take() else {
+                return Poll::Ready(Ok(()));
+            };
             // Restore the work only if it suspends. If a hook panics, the future
             // unwinds here and cannot be polled again by a later mutation.
-            let mut pending = self.pending.take().expect("settlement is pending");
             let result = pending.as_mut().poll(cx);
             if result.is_pending() {
                 self.pending = Some(pending);
+            } else {
+                self.published.flush();
             }
             result
         })
-        .await;
-        self.published.flush();
-        result
+        .await
     }
 
     fn begin_reconciliation(

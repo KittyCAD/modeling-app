@@ -1,5 +1,4 @@
 use std::{
-    cell::Cell,
     error::Error,
     fmt,
     future::{Future, poll_fn},
@@ -9,24 +8,7 @@ use std::{
     task::Poll,
 };
 
-thread_local! {
-    static EVALUATING_FACET: Cell<bool> = const { Cell::new(false) };
-}
-
-/// Marks synchronous source and combiner execution on the current thread.
-pub(crate) struct FacetEvaluation(bool);
-
-impl FacetEvaluation {
-    pub(crate) fn enter() -> Self {
-        Self(EVALUATING_FACET.with(|evaluating| evaluating.replace(true)))
-    }
-}
-
-impl Drop for FacetEvaluation {
-    fn drop(&mut self) {
-        EVALUATING_FACET.with(|evaluating| evaluating.set(self.0));
-    }
-}
+use crate::contract::FacetEvaluation;
 
 /// A service call attempted while a Facet source or combiner was running.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -41,7 +23,7 @@ impl fmt::Display for ServiceCallError {
 impl Error for ServiceCallError {}
 
 fn check_evaluation() -> Result<(), ServiceCallError> {
-    if EVALUATING_FACET.with(Cell::get) {
+    if FacetEvaluation::is_active() {
         Err(ServiceCallError)
     } else {
         Ok(())
