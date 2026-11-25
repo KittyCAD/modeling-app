@@ -83,12 +83,13 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         sketch_values,
         RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
+                // Sketch coercion extracts `meta.sketch` and would discard `sideFaces`.
+                edge::edge_specifier_type(),
                 RuntimeType::sketch(),
                 RuntimeType::face(),
                 RuntimeType::tagged_face(),
                 RuntimeType::edge(),
                 RuntimeType::segment(),
-                edge::edge_specifier_type(),
             ])),
             ArrayLen::None,
         ),
@@ -1843,6 +1844,44 @@ b = region(segments = [profiles.circle2])
             assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
             assert!(err.message().contains("Sketches or Faces"), "{err:?}");
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_prefers_edge_specifier_over_sketch_metadata() {
+        let code = r#"
+@settings(kclVersion = 3.0)
+
+profile = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+section = region(segments = [profile.circle1])
+body = extrude(section, length = 5mm, tagEnd = $capEnd)
+otherSection = region(segments = [profile.circle1])
+
+extrude(
+  [{ sideFaces = [section.tags.circle1, capEnd], meta = { sketch = otherSection } }],
+  length = 1mm,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let extrude = result
+            .root_module_artifact_commands()
+            .iter()
+            .rev()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Extrude(extrude) => Some(extrude),
+                _ => None,
+            })
+            .expect("expected an extrude command");
+
+        let target_reference = extrude
+            .target_reference
+            .as_ref()
+            .expect("expected an edge specifier target");
+        assert_eq!(target_reference.side_faces.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
