@@ -735,8 +735,8 @@ pub(crate) fn is_edge_specifier_object(value: &KclValue) -> bool {
     matches!(value, KclValue::Object { value, .. } if value.contains_key("sideFaces"))
 }
 
-/// Recognize edge specifier objects during argument coercion. The parser
-/// validates their fields.
+/// The `sideFaces` field identifies an edge specifier during coercion. Its type
+/// is `any` here so the edge specifier parser can report field-specific errors.
 pub(super) fn edge_specifier_type() -> RuntimeType {
     RuntimeType::Object(vec![("sideFaces".to_owned(), RuntimeType::any())], false)
 }

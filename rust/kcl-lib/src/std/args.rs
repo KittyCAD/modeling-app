@@ -61,9 +61,9 @@ pub(super) fn coerce_geometry_array(
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<Vec<KclValue>, KclError> {
-    // These stdlib arguments need scalar geometry values. The array coercer's
-    // subtype shortcut can preserve typed singleton wrappers, so have it check
-    // the elements of this argument individually.
+    // KCL treats `[Sketch; 1]` as a subtype of `Sketch`, so the array coercer
+    // can leave the inner array intact. Use `any` on this argument copy to make
+    // the coercer check each element and unwrap singletons.
     if let KclValue::HomArray { ty, .. } = &mut value {
         *ty = RuntimeType::any();
     }

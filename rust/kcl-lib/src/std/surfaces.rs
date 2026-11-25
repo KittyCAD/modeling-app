@@ -268,8 +268,8 @@ async fn inner_delete_face(
 
 /// Create a new surface that blends between two edges of separate surface bodies
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // Pipeline arguments reach Rust without being coerced against the KCL
-    // signature.
+    // A value piped into `blend()` skips signature coercion. Check its outer
+    // length here so both call forms reject `[[edge1, edge2]]`.
     let edges = args.get_unlabeled_kw_arg(
         "edges",
         &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::Known(2)),
