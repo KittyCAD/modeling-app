@@ -1,6 +1,6 @@
 # KCL editors
 
-This package adds KCL syntax to Code views and a Modeling mode to project-owned
+This package adds KCL syntax to Code views and Modeling and Variables modes to project-owned
 editors. A Code view edits the live document; a Modeling view executes its current
 contents and presents the resulting model without waiting for a save. These
 contributions require `zds_project_shell_refactor`.
@@ -11,6 +11,12 @@ geometry or entity IDs. Each view separately owns an engine connection, native
 context, camera, and the native execution result for that scene. Thus source
 capture is shared, while native KCL execution still runs for each connection.
 Consumers can explicitly create independent executors when they need that policy.
+
+Variables is available from the KCL tab's view picker. It leases the same
+executor and evaluates the captured sources, including unsaved imports, using
+KCL's mock runtime without opening an engine connection. This is a separate
+evaluation, not a read of a Modeling scene's memory. The legacy Variables pane
+shares the tree and clipboard UI but still gets values from its KCL manager.
 
 ## From a document to a model
 
@@ -54,6 +60,7 @@ without generated Rust bindings or a built WASM bundle.
 | Project source service | Working-document precedence, project membership, captured bytes, and source revisions |
 | Shared executor | Source-capture cancellation and connection-independent output |
 | Modeling view context | Executor lease, scene session, preferences, and native-result observer |
+| Variables view context | Executor lease, mock evaluation, and cancellation on source change or close |
 | `createKclSession` | Connection startup, presentation attachment, resizing, and recovery |
 | `createKclRuntime` | Native model memory and serialized execution, export, and disposal |
 
@@ -185,7 +192,7 @@ See [the selection contract](scene/README.md#view-selection-and-dialog-picking).
 - `modeling/`: per-view sessions, snapshot consumption, and React presentation.
 - `registry/`: composes KCL capabilities into editor views.
 
-- [`registry/index.ts`](registry/index.ts): contributes KCL editing and Modeling.
+- [`registry/index.ts`](registry/index.ts): contributes KCL editing, Modeling, and Variables.
 - [`project sources`](../projectSession/next/sources.ts): captures working documents
   and stored bytes for a specific project opening.
 - [`execution/executor.ts`](execution/executor.ts): contributes shared source capture.
