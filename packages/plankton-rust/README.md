@@ -26,7 +26,7 @@ the other associated types directly.
 
 A `Service` marker declares a capability, which can be a trait object such as
 `dyn FileAccess`. Register an implementation with `Binding::provide::<Files>`.
-`resolve` returns `Missing`, `Ready(Rc<_>)`, or `Conflict` with provider origins.
+`resolve` returns `Missing`, `Ready(ServiceHandle<_>)`, or `Conflict` with provider origins.
 `required` requires one provider. `optional` allows absence and reports conflicts.
 
 Bevy's reflection registry also uses types to identify registrations. Here the
@@ -36,6 +36,27 @@ element type at both insertion and lookup. Factories use definition identity or
 an explicit key, so two Factories can export the same type and still have
 independent lifetimes. [Bevy TypeRegistry](https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistry.html)
 · [Rust std::any](https://doc.rust-lang.org/std/any/)
+
+## Service calls
+
+A service lookup returns an owned `ServiceHandle<T>`. Use `call` for synchronous
+methods and `call_async` for methods that borrow the provider across an await.
+
+```rust
+let document = registry.required::<ActiveDocument>()?;
+document.call(|document| document.title.set("assembly.kcl".into()))?;
+```
+
+The handle lends the implementation to the callback. Calls return
+`ServiceCallError` while a Facet source or combiner runs, including calls made
+through a previously resolved handle or an older snapshot. Async calls check
+each poll. The guard applies across registries on the current thread and
+survives nested Facet reads.
+
+This boundary covers calls through service handles. Providers choose what
+owned values and capabilities their methods return. For reactive Facet inputs,
+share a `ReadSignal<T>` through a constructor dependency or obtain it from a
+service before entering the Facet source.
 
 ## Signals and subscriptions
 
@@ -153,4 +174,4 @@ boundary behind an explicit cleanup hook. Lifecycle failure reporting covers
 errors returned from hooks. Panics follow ordinary Rust unwinding.
 
 This prototype uses a single-threaded registry. The application supplies its
-executor. The TypeScript service facade is outside this prototype's scope.
+executor.

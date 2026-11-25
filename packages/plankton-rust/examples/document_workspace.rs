@@ -74,7 +74,7 @@ async fn workspace() -> HookResult {
     println!("Initial panels: {:?}", panels.get()?);
     let subscription = panels.subscribe(|panels| println!("Panels changed: {panels:?}"))?;
     let document = registry.required::<ActiveDocument>()?;
-    document.title.set("assembly.kcl".into());
+    document.call(|document| document.title.set("assembly.kcl".into()))?;
     registry
         .replace(
             &sidebar,
@@ -90,7 +90,7 @@ async fn workspace() -> HookResult {
         .ok_or("expected an installed outline plugin")?;
     let outline = outline.controller;
     outline.toggle(&mut registry).await?;
-    document.title.set("scene.kcl".into());
+    document.call(|document| document.title.set("scene.kcl".into()))?;
     outline.toggle(&mut registry).await?;
 
     drop(subscription);

@@ -187,16 +187,16 @@ fn services_with_the_same_trait_resolve_independently_and_report_conflicts() {
             ));
         }
         let backup = registry.required::<BackupFiles>().unwrap();
-        assert_eq!(backup.read(), "backup");
+        assert_eq!(backup.call(|service| service.read()).unwrap(), "backup");
 
         registry.configure(vec![local.into()]).await.unwrap();
         let Resolution::Ready(files) = observed.get().unwrap() else {
             panic!("the remaining provider should resolve");
         };
         let optional = registry.optional::<Files>().unwrap().unwrap();
-        assert!(Rc::ptr_eq(&files, &optional));
+        assert!(files.ptr_eq(&optional));
         registry.configure(Vec::new()).await.unwrap();
-        assert_eq!(files.read(), "local");
+        assert_eq!(files.call(|service| service.read()).unwrap(), "local");
         assert!(matches!(observed.get().unwrap(), Resolution::Missing));
     });
 }

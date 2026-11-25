@@ -5,6 +5,7 @@ mod factory;
 mod planner;
 mod plugins;
 mod registry;
+mod service;
 mod signal;
 
 pub use contract::{
@@ -22,4 +23,5 @@ pub use registry::{
     HookFailure, HookPhase, InspectedItem, ItemPath, Observation, ObservationError, Origin,
     PathStep, Registry, RegistryError, RegistryInspection,
 };
+pub use service::{ServiceCallError, ServiceHandle};
 pub use signal::{ReadSignal, Signal, Subscription};

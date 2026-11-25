@@ -45,37 +45,49 @@ fn replacing_the_slot_keeps_its_controller_and_rejects_handles_from_a_previous_m
             .unwrap();
         let controller = registry.required::<Controls>().unwrap();
 
-        controller.replace(&mut registry, Vec::new()).await.unwrap();
-        assert!(registry.get::<Panels>().is_empty());
-        assert!(Rc::ptr_eq(
-            &controller,
-            &registry.required::<Controls>().unwrap()
-        ));
         controller
-            .replace(
-                &mut registry,
-                vec![Binding::new::<Panels>(|| "outline").into()],
-            )
+            .call_async(async |slot| slot.replace(&mut registry, Vec::new()).await)
             .await
+            .unwrap()
+            .unwrap();
+        assert!(registry.get::<Panels>().is_empty());
+        assert!(controller.ptr_eq(&registry.required::<Controls>().unwrap()));
+        controller
+            .call_async(async |slot| {
+                slot.replace(
+                    &mut registry,
+                    vec![Binding::new::<Panels>(|| "outline").into()],
+                )
+                .await
+            })
+            .await
+            .unwrap()
             .unwrap();
         assert_eq!(registry.get::<Panels>(), ["outline"]);
 
         registry.configure(Vec::new()).await.unwrap();
         assert!(matches!(
-            controller.replace(&mut registry, Vec::new()).await,
+            controller
+                .call_async(async |slot| slot.replace(&mut registry, Vec::new()).await)
+                .await
+                .unwrap(),
             Err(RegistryError::ScopeExpired)
         ));
         registry.configure(vec![plugin.into()]).await.unwrap();
         assert!(matches!(
-            controller.replace(&mut registry, Vec::new()).await,
+            controller
+                .call_async(async |slot| slot.replace(&mut registry, Vec::new()).await)
+                .await
+                .unwrap(),
             Err(RegistryError::ScopeExpired)
         ));
         assert_eq!(registry.get::<Panels>(), ["outline"]);
         registry
             .required::<Controls>()
             .unwrap()
-            .replace(&mut registry, Vec::new())
+            .call_async(async |slot| slot.replace(&mut registry, Vec::new()).await)
             .await
+            .unwrap()
             .unwrap();
         assert!(registry.get::<Panels>().is_empty());
     });
@@ -92,11 +104,18 @@ fn a_scoped_slot_works_only_with_the_registry_that_acquired_its_owner() {
 
         let controller = first.required::<Controls>().unwrap();
         assert!(matches!(
-            controller.replace(&mut second, Vec::new()).await,
+            controller
+                .call_async(async |slot| slot.replace(&mut second, Vec::new()).await)
+                .await
+                .unwrap(),
             Err(RegistryError::WrongRegistry)
         ));
         assert_eq!(second.get::<Panels>(), ["outline"]);
-        controller.replace(&mut first, Vec::new()).await.unwrap();
+        controller
+            .call_async(async |slot| slot.replace(&mut first, Vec::new()).await)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(first.get::<Panels>().is_empty());
     });
 }
@@ -131,7 +150,10 @@ fn a_slot_mounted_elsewhere_cannot_be_replaced_after_its_owner_detaches_it() {
             .unwrap();
         registry.replace(&owner, Vec::new()).await.unwrap();
         assert!(matches!(
-            controller.replace(&mut registry, Vec::new()).await,
+            controller
+                .call_async(async |slot| slot.replace(&mut registry, Vec::new()).await)
+                .await
+                .unwrap(),
             Err(RegistryError::SlotNotOwned)
         ));
         assert_eq!(registry.get::<Panels>(), ["outline"]);

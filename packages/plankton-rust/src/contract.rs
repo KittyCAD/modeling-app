@@ -6,7 +6,10 @@ use std::{
     rc::Rc,
 };
 
-use crate::{Origin, ReadSignal, RegistryInspection, signal::Notifier};
+use crate::{
+    Origin, ReadSignal, RegistryInspection, ServiceHandle, service::FacetEvaluation,
+    signal::Notifier,
+};
 
 /// A marker type identifies one contract. Its associated types pair the input
 /// accepted by a binding with the output returned to readers.
@@ -79,7 +82,7 @@ impl<T, F: Fn() -> T + ?Sized> Source<T> for F {}
 #[derive(Debug)]
 pub enum Resolution<T: ?Sized> {
     Missing,
-    Ready(Rc<T>),
+    Ready(ServiceHandle<T>),
     Conflict(Vec<Origin>),
 }
 
@@ -189,7 +192,7 @@ impl<S: Service> Facet for Providers<S> {
     fn combine(mut inputs: Vec<Self::Input>) -> Self::Output {
         match inputs.len() {
             0 => Resolution::Missing,
-            1 => Resolution::Ready(inputs.swap_remove(0).1),
+            1 => Resolution::Ready(ServiceHandle::new(inputs.swap_remove(0).1)),
             _ => Resolution::Conflict(inputs.into_iter().map(|(origin, _)| origin).collect()),
         }
     }
@@ -258,6 +261,7 @@ impl Snapshot {
     }
 
     pub fn get<F: Facet>(&self) -> F::Output {
+        let _evaluation = FacetEvaluation::enter();
         let entries = self.entries::<F>();
         F::combine(
             entries
@@ -272,7 +276,9 @@ impl Snapshot {
     }
 
     /// Resolve a service and require exactly one provider.
-    pub fn required<S: Service>(&self) -> Result<Rc<S::Capability>, ServiceResolutionError> {
+    pub fn required<S: Service>(
+        &self,
+    ) -> Result<ServiceHandle<S::Capability>, ServiceResolutionError> {
         self.optional::<S>()?
             .ok_or(ServiceResolutionError::Missing {
                 service: type_name::<S>(),
@@ -282,7 +288,7 @@ impl Snapshot {
     /// Resolve a service while permitting an empty provider list.
     pub fn optional<S: Service>(
         &self,
-    ) -> Result<Option<Rc<S::Capability>>, ServiceResolutionError> {
+    ) -> Result<Option<ServiceHandle<S::Capability>>, ServiceResolutionError> {
         match self.resolve::<S>() {
             Resolution::Missing => Ok(None),
             Resolution::Ready(capability) => Ok(Some(capability)),
