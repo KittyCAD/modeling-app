@@ -19,8 +19,14 @@ import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibrari
 import { routerService } from '@src/registry/contracts/router'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import type { Registry } from 'plankton'
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+
+type ProjectSharing = {
+  url: string
+  projectId: string
+  cloud: CloudStorageService
+}
 
 export function ShareProjectButton({ app }: AppHeaderItemProps) {
   useSignals()
@@ -41,14 +47,20 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
     .value
   const project = app.projectSignal.value?.projectIORefSignal.value
   let projectId: string | undefined
+  let localProjectPath: string | undefined
   if (onProjectRoute && nextProject?.storage?.type === 'cloud') {
     projectId = nextProject.storage.projectId
-  } else if (
-    onFileRoute &&
-    project?.cloudProjectId &&
-    project.path === cloud?.pathFor(project.cloudProjectId)
-  ) {
-    projectId = project.cloudProjectId
+  } else if (onLocalRoute && !nextProject?.storage) {
+    localProjectPath = nextProject?.contents.path
+  } else if (onFileRoute && project) {
+    if (
+      project.cloudProjectId &&
+      project.path === cloud?.pathFor(project.cloudProjectId)
+    ) {
+      projectId = project.cloudProjectId
+    } else {
+      localProjectPath = project.path
+    }
   }
 
   const sharing =
@@ -62,24 +74,26 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
           cloud,
         }
       : undefined
+  const projectKey = sharing?.url ?? localProjectPath
   return (
     <Popover
       className="flex"
-      key={sharing ? `${sharing.url}:${auth.user.value?.id ?? ''}` : undefined}
+      key={
+        projectKey ? `${projectKey}:${auth.user.value?.id ?? ''}` : undefined
+      }
     >
       {({ open }) => (
         <>
           <Popover.Button
             type="button"
-            disabled={!sharing}
-            title={sharing ? undefined : 'Open a cloud project to share.'}
+            disabled={!projectKey}
             className={`${getProjectHeaderButtonClasses()} disabled:cursor-default disabled:opacity-50`}
           >
             <CustomIcon name="link" className="h-5 w-5" aria-hidden="true" />
             Share
           </Popover.Button>
-          {open && sharing && (
-            <ShareProjectDialog {...sharing} registry={registry} />
+          {open && projectKey && (
+            <ShareProjectDialog sharing={sharing} registry={registry} />
           )}
         </>
       )}
@@ -88,18 +102,18 @@ export function ShareProjectButton({ app }: AppHeaderItemProps) {
 }
 
 function ShareProjectDialog({
-  url,
-  projectId,
-  cloud,
+  sharing,
   registry,
 }: {
-  url: string
-  projectId: string
-  cloud: CloudStorageService
+  sharing?: ProjectSharing
   registry: Registry
 }) {
   useSignals()
+  const { url, projectId, cloud } = sharing ?? {}
+  const isLocal = !sharing
   const id = useId()
+  const accessNoteId = `${id}-access-note`
+  const panelRef = useRef<HTMLDivElement>(null)
   const [details, setDetails] = useState<{
     access?: ProjectAccessResponse
     libraryId?: string
@@ -129,12 +143,18 @@ function ShareProjectDialog({
       ? PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE
       : undefined)
   let ownership: string | undefined
+  if (isLocal) ownership = 'Local'
   if (isPersonal) ownership = 'Personal'
   if (access?.scope === 'organization')
     ownership = organizationName || 'Organization'
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
+    if (isLocal) panelRef.current?.focus({ preventScroll: true })
+  }, [isLocal])
+
+  useEffect(() => {
+    if (!cloud || !projectId) return
     const controller = new AbortController()
     const { signal } = controller
     const load = async () => {
@@ -147,7 +167,7 @@ function ShareProjectDialog({
     return () => controller.abort()
   }, [projectId, cloud])
 
-  const copyLink = async () => {
+  const copyLink = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
@@ -156,11 +176,23 @@ function ShareProjectDialog({
     }
   }
 
+  const sharingGuidance = (
+    <p
+      id={accessNoteId}
+      className={`text-xs leading-5 text-2${isPersonal ? ' mt-2' : ''}`}
+    >
+      {isPersonal && 'Only you can open this project link. '}
+      Sharing this project requires an organization library.
+    </p>
+  )
+
   return (
     <Popover.Panel
+      ref={panelRef}
       focus
       role="dialog"
       aria-labelledby={`${id}-title`}
+      aria-describedby={isLocal ? accessNoteId : undefined}
       className="fixed right-4 top-16 z-20 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border b-4 bg-2 text-sm text-default shadow-2xl"
     >
       <div className="shrink-0 border-b b-4 bg-3 px-4 py-4">
@@ -172,43 +204,41 @@ function ShareProjectDialog({
         </p>
       </div>
       <div className="flex min-h-0 flex-col gap-4 overflow-y-auto px-4 py-4">
-        <div>
-          <label htmlFor={`${id}-link`} className="text-xs font-medium text-2">
-            Project link
-          </label>
-          <div className="mt-2 flex items-center gap-2">
-            <input
-              id={`${id}-link`}
-              className="min-w-0 flex-1 select-text rounded border b-4 bg-default px-2.5 py-1.5 focus-visible:outline-color-4"
-              type="url"
-              value={url}
-              aria-describedby={isPersonal ? `${id}-access-note` : undefined}
-              readOnly
-              onFocus={(event) => event.currentTarget.select()}
-            />
-            <ActionButton
-              Element="button"
-              type="button"
-              tabIndex={0}
-              iconStart={{
-                icon: copied ? 'clipboardCheckmark' : 'clipboard',
-                bgClassName: '!bg-transparent',
-              }}
-              className="min-w-24 shrink-0 self-stretch justify-center whitespace-nowrap !rounded"
-              onClick={() => void copyLink()}
+        {url && (
+          <div>
+            <label
+              htmlFor={`${id}-link`}
+              className="text-xs font-medium text-2"
             >
-              {copied ? 'Copied' : 'Copy link'}
-            </ActionButton>
+              Project link
+            </label>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                id={`${id}-link`}
+                className="min-w-0 flex-1 select-text rounded border b-4 bg-default px-2.5 py-1.5 focus-visible:outline-color-4"
+                type="url"
+                value={url}
+                aria-describedby={isPersonal ? accessNoteId : undefined}
+                readOnly
+                onFocus={(event) => event.currentTarget.select()}
+              />
+              <ActionButton
+                Element="button"
+                type="button"
+                tabIndex={0}
+                iconStart={{
+                  icon: copied ? 'clipboardCheckmark' : 'clipboard',
+                  bgClassName: '!bg-transparent',
+                }}
+                className="min-w-24 shrink-0 self-stretch justify-center whitespace-nowrap !rounded"
+                onClick={() => void copyLink(url)}
+              >
+                {copied ? 'Copied' : 'Copy link'}
+              </ActionButton>
+            </div>
+            {isPersonal && sharingGuidance}
           </div>
-          {isPersonal && (
-            <p
-              id={`${id}-access-note`}
-              className="mt-2 text-xs leading-5 text-2"
-            >
-              Only you can open this project link.
-            </p>
-          )}
-        </div>
+        )}
         {(libraryName || ownership) && (
           <section aria-labelledby={`${id}-library`}>
             <h3 id={`${id}-library`} className="text-sm font-medium">
@@ -230,29 +260,32 @@ function ShareProjectDialog({
             </dl>
           </section>
         )}
-        <section aria-labelledby={`${id}-permissions`}>
-          <h3 id={`${id}-permissions`} className="text-sm font-medium">
-            Current permissions
-          </h3>
-          {access ? (
-            <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-              <dt className="text-2">Who can open this link</dt>
-              <dd className="min-w-0 break-words">
-                {access.scope === 'organization'
-                  ? `Members of ${organizationName || 'the owning organization'}`
-                  : 'Project owner'}
-              </dd>
-              <dt className="text-2">Your access</dt>
-              <dd>{access.can_edit ? 'Can edit' : 'Can view'}</dd>
-            </dl>
-          ) : (
-            <p role="status" className="mt-2 text-sm text-2">
-              {details === undefined
-                ? 'Loading permissions…'
-                : 'Could not load project permissions.'}
-            </p>
-          )}
-        </section>
+        {!isLocal && (
+          <section aria-labelledby={`${id}-permissions`}>
+            <h3 id={`${id}-permissions`} className="text-sm font-medium">
+              Current permissions
+            </h3>
+            {access ? (
+              <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+                <dt className="text-2">Who can open this link</dt>
+                <dd className="min-w-0 break-words">
+                  {access.scope === 'organization'
+                    ? `Members of ${organizationName || 'the owning organization'}`
+                    : 'Project owner'}
+                </dd>
+                <dt className="text-2">Your access</dt>
+                <dd>{access.can_edit ? 'Can edit' : 'Can view'}</dd>
+              </dl>
+            ) : (
+              <p role="status" className="mt-2 text-sm text-2">
+                {details === undefined
+                  ? 'Loading permissions…'
+                  : 'Could not load project permissions.'}
+              </p>
+            )}
+          </section>
+        )}
+        {isLocal && sharingGuidance}
       </div>
     </Popover.Panel>
   )
