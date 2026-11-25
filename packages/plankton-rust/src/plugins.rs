@@ -1,8 +1,8 @@
-use std::rc::Rc;
+use std::{cell::Cell, rc::Rc};
 
 use crate::{
-    Binding, Dependencies, Extension, Facet, Factory, HookResult, Instance, Observation, Registry,
-    RegistryError, ScopedSlot,
+    Binding, Dependencies, Extension, Facet, Factory, HookResult, Instance, Observation,
+    ObservationError, Registry, RegistryError, ScopedSlot, Subscription,
 };
 
 /// Metadata and initial state for a plugin.
@@ -51,9 +51,33 @@ impl Facet for Plugins {
     }
 }
 
+/// The enabled state of one acquired plugin.
+#[derive(Clone)]
+pub struct PluginActivity(Observation<bool>);
+
+impl PluginActivity {
+    pub fn get(&self) -> Result<bool, ObservationError> {
+        self.0.get()
+    }
+
+    /// Notify only when this plugin's published state changes.
+    /// Registration samples the current state without calling the listener.
+    pub fn subscribe(
+        &self,
+        listener: impl Fn(bool) + 'static,
+    ) -> Result<Subscription, ObservationError> {
+        let previous = Cell::new(self.get()?);
+        self.0.subscribe(move |active| {
+            if previous.replace(active) != active {
+                listener(active);
+            }
+        })
+    }
+}
+
 /// Controls one acquired plugin. Activity follows its published slot content.
 pub struct PluginController {
-    pub active: Observation<bool>,
+    pub active: PluginActivity,
     body: ScopedSlot,
     content: Vec<Extension>,
 }
@@ -121,7 +145,7 @@ pub fn create_plugin<D: 'static>(
             title: spec.title.clone(),
             description: spec.description.clone(),
             controller: Rc::new(PluginController {
-                active,
+                active: PluginActivity(active),
                 body: slot,
                 content,
             }),

@@ -135,3 +135,50 @@ fn activity_tracks_the_committed_graph_when_child_hooks_fail() {
     assert!(!release.active.get().unwrap());
     assert_eq!(registry.get::<Plugins>().len(), 2);
 }
+
+#[test]
+fn activity_subscribers_only_see_changes_to_their_own_plugin() {
+    let plugin = |id| {
+        create_plugin(PluginSpec::new(id, id, ""), Dependencies::none(), |()| {
+            Ok(Vec::new())
+        })
+    };
+    let mut registry = Registry::new();
+    registry
+        .configure(vec![plugin("outline").into(), plugin("search").into()])
+        .unwrap();
+    let plugins = registry.get::<Plugins>();
+    let outline = &plugins[0].controller;
+    let search = &plugins[1].controller;
+    let updates = Rc::new(RefCell::new(Vec::new()));
+    let _outline_subscription = outline
+        .active
+        .subscribe({
+            let updates = updates.clone();
+            move |active| updates.borrow_mut().push(("outline", active))
+        })
+        .unwrap();
+    let _search_subscription = search
+        .active
+        .subscribe({
+            let updates = updates.clone();
+            move |active| updates.borrow_mut().push(("search", active))
+        })
+        .unwrap();
+
+    outline.disable(&mut registry).unwrap();
+    search.disable(&mut registry).unwrap();
+    outline.enable(&mut registry).unwrap();
+    search.disable(&mut registry).unwrap();
+    search.enable(&mut registry).unwrap();
+
+    assert_eq!(
+        *updates.borrow(),
+        [
+            ("outline", false),
+            ("search", false),
+            ("outline", true),
+            ("search", true),
+        ]
+    );
+}

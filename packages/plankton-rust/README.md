@@ -77,8 +77,8 @@ The controller exposes an `active` observation and takes `&mut Registry` for
 `enable`, `disable`, and `toggle`. Activity follows the published graph. A failed
 acquisition preserves the previous state, and a cleanup failure after disabling
 leaves the plugin inactive. Records remain discoverable while disabled.
-An activity subscription can receive an unchanged value when another plugin
-toggles because the activity observations share a Facet.
+An activity subscriber receives updates when its own plugin's enabled state
+changes.
 
 ## Scoped slots
 

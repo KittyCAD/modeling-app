@@ -14,7 +14,9 @@ pub use contract::{
 pub use factory::{
     Dependencies, Extension, Factory, HookError, HookResult, Instance, Scope, ScopedSlot, slot,
 };
-pub use plugins::{PluginController, PluginRecord, PluginSpec, Plugins, create_plugin};
+pub use plugins::{
+    PluginActivity, PluginController, PluginRecord, PluginSpec, Plugins, create_plugin,
+};
 pub use registry::{
     HookFailure, HookPhase, ItemPath, Observation, ObservationError, Origin, PathStep, Registry,
     RegistryError,
