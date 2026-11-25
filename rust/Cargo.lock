@@ -2659,6 +2659,7 @@ dependencies = [
  "clap",
  "criterion",
  "dashmap 6.2.1",
+ "futures",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",

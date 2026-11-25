@@ -1,4 +1,7 @@
 import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { sceneSelectionAdapter } from '@src/lib/kcl/scene/selectionAdapter'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
@@ -289,6 +292,39 @@ describe('local GLB loading', () => {
       setDefaultVisibility,
     }
   }
+
+  it('lets the new picking adapter use the existing local GPU handler through ConnectionManager', async () => {
+    const f = planeFixture()
+    const commands = new ConnectionManager({
+      settingsActor: {} as SettingsActorType,
+    })
+    commands.streamDimensions = { width: 800, height: 600 }
+    const release = commands.setLocalSelectionCommandHandler(
+      f.state.handleLocalSelectionCommand
+    )
+    const canvas = document.createElement('canvas')
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(100, 50, 400, 300)
+    )
+    try {
+      const adapter = sceneSelectionAdapter(commands, canvas)
+      expect(await adapter.pick({ clientX: 200, clientY: 125 })).toEqual({
+        reference: { type: 'plane', plane_id: 'plane-xy' },
+      })
+      expect(f.picker.pick).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: 200,
+          y: 150,
+          streamWidth: 800,
+          streamHeight: 600,
+        })
+      )
+      expect(commands.connection).toBeUndefined()
+    } finally {
+      release()
+      f.renderer.dispose()
+    }
+  })
 
   it.each(['plane-xy', 'offset'])(
     'maps %s hits and selection to the same hover/click/highlight path',

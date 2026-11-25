@@ -15,7 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { hotkeyDisplay, type HotkeySequence } from '@src/lib/hotkeys'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -160,7 +160,7 @@ interface ContextMenuItemProps {
   children: React.ReactNode
   icon?: ActionIconProps['icon']
   onClick?: () => void
-  hotkey?: string
+  hotkey?: HotkeySequence
   'data-testid'?: string
   disabled?: boolean
 }
