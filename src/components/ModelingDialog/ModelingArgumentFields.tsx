@@ -4,7 +4,7 @@ import {
   CommandKclInput,
   getKclInputValue,
   type CommandKclArgument,
-  type CommandKclModel,
+  type KclExpressionInputContext,
 } from '@src/components/CommandBar/CommandKclInput'
 import { CommandCameraInput } from '@src/components/CommandBar/CommandCameraInput'
 import { MarkdownText } from '@src/components/MarkdownText'
@@ -48,7 +48,7 @@ export function ModelingArgumentFields({
   fields: DialogField[]
   context: Pick<CommandBarContext, 'selectedCommand' | 'argumentsToSubmit'>
   submittedValues: Record<string, unknown>
-  model?: CommandKclModel
+  model?: KclExpressionInputContext
   artifactGraph?: ArtifactGraph
   settings: AppSettingsSystem
   wasmPromise: Promise<ModuleType>

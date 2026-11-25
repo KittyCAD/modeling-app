@@ -30,8 +30,12 @@ import type { ReadonlySignal } from '@preact/signals-core'
 import type { Program, VariableMap } from '@src/lang/wasm'
 import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
 
-/** Expression inputs need source and model memory, independently of the legacy editor controller. */
-export interface CommandKclModel {
+/**
+ * Source, parsed program, available variables, and evaluation APIs used by
+ * `CommandKclInput`. Hosts supply these from their existing execution context;
+ * the input does not need the rest of `KclManager`.
+ */
+export interface KclExpressionInputContext {
   readonly ast: Node<Program>
   readonly astSignal: ReadonlySignal<Node<Program>>
   readonly codeSignal: ReadonlySignal<string>
@@ -102,7 +106,7 @@ export function CommandKclInput({
   onChange,
   onValidationChange,
 }: {
-  kclManager: CommandKclModel
+  kclManager: KclExpressionInputContext
   settings: AppSettingsSystem
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
