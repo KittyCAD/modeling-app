@@ -38,7 +38,7 @@ export const EditingConstraintInputView = ({
 
   const [position, setPosition] = useState<[number, number]>(() => {
     return (
-      (editingConstraintId &&
+      (editingConstraintId !== undefined &&
         calculateDimensionLabelScreenPosition(
           editingConstraintId,
           state,
@@ -125,8 +125,7 @@ function getInitialDimension(
   state: StateFrom<typeof modelingMachine>
 ) {
   let initialDimension = ''
-  const constraintObject =
-    editingConstraintId && getConstraintObject(editingConstraintId, state)
+  const constraintObject = getConstraintObject(editingConstraintId, state)
   if (constraintObject && isConstraintWithSource(constraintObject)) {
     initialDimension = constraintObject.kind.constraint.source.expr ?? ''
   }
