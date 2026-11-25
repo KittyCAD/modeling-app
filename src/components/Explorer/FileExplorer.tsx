@@ -278,6 +278,8 @@ function RenameForm({
           defaultValue={formattedPlaceHolder}
           placeholder={formattedPlaceHolder}
           className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
+          onClick={(event) => event.stopPropagation()}
+          onDoubleClick={(event) => event.stopPropagation()}
           onKeyDown={handleKeyDown}
           onBlur={onSubmit}
         />
