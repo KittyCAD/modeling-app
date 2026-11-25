@@ -14,7 +14,6 @@ import {
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -39,31 +38,40 @@ import {
 import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
 
+// The cached project list can miss projects created elsewhere, so a new
+// project's folder is reserved against storage instead.
+function createNewProjectDirectory(app: App, requestedName: string) {
+  return app.fileOperations.createUniqueDirectory(
+    app.projectLibraries.projectDirectoryPath,
+    requestedName
+  )
+}
+
 async function onSubmitKCLSampleCreation({
   sample,
-  uniqueNameIfNeeded,
+  projectName,
   app,
   isProjectNew,
 }: {
   sample: string
-  uniqueNameIfNeeded: string
+  projectName: string
   app: App
   isProjectNew: boolean
 }) {
   const openedProject = app.project
   const existing = app.projectOperations.projects.value.find(
-    (project) => project.name === uniqueNameIfNeeded
+    (project) => project.name === projectName
   )
-  const projectRoot =
-    openedProject?.name === uniqueNameIfNeeded
+  const existingProjectRoot =
+    openedProject?.name === projectName
       ? openedProject.path
       : (existing?.path ??
-        fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
-          uniqueNameIfNeeded
-        ))
+        fsZds.join(app.projectLibraries.projectDirectoryPath, projectName))
   const { requestedProjectName: sampleName, initialProject } =
     await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
+  const projectRoot = isProjectNew
+    ? await createNewProjectDirectory(app, projectName)
+    : existingProjectRoot
   // Every sample gets its own folder in an existing project, including samples
   // containing only main.kcl. Allocate against storage so repeated imports and
   // collisions with either files or folders cannot overwrite existing contents.
@@ -117,12 +125,8 @@ export function createApplicationCommands({
     async onSubmit(data) {
       if (data) {
         const error = "The command couldn't be submitted, check the arguments."
-        const folders = app.projectOperations.projects.value
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
-        const uniqueNameIfNeeded = isProjectNew
-          ? getUniqueProjectName(requestedProjectName, [...folders])
-          : requestedProjectName
 
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
@@ -131,7 +135,7 @@ export function createApplicationCommands({
           } else {
             void onSubmitKCLSampleCreation({
               sample: data.sample,
-              uniqueNameIfNeeded,
+              projectName: requestedProjectName,
               app,
               isProjectNew,
             }).catch(reportError)
@@ -151,15 +155,17 @@ export function createApplicationCommands({
             selectedFile instanceof File
               ? selectedFile.name
               : getStringAfterLastSeparator(selectedFile)
-          const root = joinOSPaths(
-            app.projectLibraries.projectDirectoryPath,
-            uniqueNameIfNeeded
-          )
           try {
             const content =
               selectedFile instanceof File
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await app.fileOperations.readFile(selectedFile)
+            const root = isProjectNew
+              ? await createNewProjectDirectory(app, requestedProjectName)
+              : joinOSPaths(
+                  app.projectLibraries.projectDirectoryPath,
+                  requestedProjectName
+                )
             const paths = await app.projectOperations.writeFiles(root, [
               { path: fileNameWithExtension, contents: content },
             ])
