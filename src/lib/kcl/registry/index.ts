@@ -22,6 +22,7 @@ import {
   type KclViewExecution,
 } from '@src/lib/kcl/modeling/viewExecution'
 import { createKclExecution } from '@src/lib/kcl/execution/executor'
+import { defineVariablesView } from '@src/lib/kcl/registry/variables'
 import { KclScene } from '@src/lib/kcl/modeling/KclScene'
 import { openKclScene } from '@src/lib/kcl/scene/open'
 import { createKclSession } from '@src/lib/kcl/modeling/session'
@@ -40,6 +41,7 @@ import {
   readKclVersion,
 } from '@src/lib/kcl/execution/nativeInputs'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 
 /**
  * Contributes KCL Code syntax, execution, and a Modeling mode for KCL documents.
@@ -81,6 +83,17 @@ const extension = factory({
           ),
       })
     }, sources.revision)
+    const variablesView = defineVariablesView({
+      capability: execution.capability,
+      getExecutors: () => executorsInput.executorsService.required(),
+      getWasm: () => wasmInput.wasmPromiseFacet.value,
+      nativeSettings,
+      readTheme: () =>
+        getResolvedTheme(
+          settingsInput.settingsService.current.value?.current.value.app.theme
+            .currentSignal.value ?? Themes.System
+        ),
+    })
     const modelingView = defineEditorView(({ editor, onDispose }) => {
       const executors = executorsInput.executorsService.required()
       const lease = executors.acquireExecutor(editor)
@@ -192,6 +205,7 @@ const extension = factory({
       items: [
         contribute(executorCapabilityFacet, () => execution.capability),
         contribute(editorViewsFacet, () => modelingView),
+        contribute(editorViewsFacet, () => variablesView),
         contribute(editorLanguagesFacet, () => ({
           id: 'kcl',
           matches: '.kcl' as const,
