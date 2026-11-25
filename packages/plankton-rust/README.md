@@ -28,6 +28,9 @@ A `Service` marker declares a capability, which can be a trait object such as
 `dyn FileAccess`. Register an implementation with `Binding::provide::<Files>`.
 `resolve` returns `Missing`, `Ready(ServiceHandle<_>)`, or `Conflict` with provider origins.
 `required` requires one provider. `optional` allows absence and reports conflicts.
+Subscribe to `registry.debug_service::<S>()` for the missing, ready, and conflict
+states with effective provider origins, keys, and precedence. The observation
+reads metadata without resolving or calling the service.
 
 Bevy's reflection registry also uses types to identify registrations. Here the
 marker selects a contribution list through `TypeId`, and `Any` lets the registry

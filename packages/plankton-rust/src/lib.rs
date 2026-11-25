@@ -10,7 +10,7 @@ mod signal;
 
 pub use contract::{
     Binding, BindingOptions, ContributionInfo, Facet, Precedence, Resolution, Service,
-    ServiceResolutionError, Snapshot, Source,
+    ServiceDebug, ServiceResolutionError, Snapshot, Source,
 };
 pub use factory::{
     Dependencies, Extension, Factory, HookError, HookResult, Instance, Scope, ScopedSlot, slot,

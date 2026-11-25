@@ -107,6 +107,14 @@ pub enum Resolution<T: ?Sized> {
     Conflict(Vec<Origin>),
 }
 
+/// Metadata for the effective providers of a service.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ServiceDebug {
+    Missing,
+    Ready(ContributionInfo),
+    Conflict(Vec<ContributionInfo>),
+}
+
 /// A service lookup failed because a provider is absent or several providers conflict.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ServiceResolutionError {

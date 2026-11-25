@@ -12,7 +12,8 @@ use std::{
 
 use crate::{
     Binding, ContributionInfo, Extension, Facet, Factory, HookError, ItemKind, Resolution, Scope,
-    ScopedSlot, Service, ServiceHandle, ServiceResolutionError, Snapshot, Subscription,
+    ScopedSlot, Service, ServiceDebug, ServiceHandle, ServiceResolutionError, Snapshot,
+    Subscription,
     contract::{FacetEvaluation, Providers},
     factory::{Cleanup, ExtensionKind, FactoryItem, FactoryKey, Start},
     planner::{Planned, PlannedItem, cycle, plan_selected},
@@ -552,6 +553,16 @@ impl Registry {
             key: ObservationKey::Debug(TypeId::of::<F>()),
             read: Rc::new(|snapshot| snapshot.debug::<F>().cloned().collect()),
         }
+    }
+
+    /// Observe provider origins and conflicts without resolving or calling the service.
+    pub fn debug_service<S: Service>(&self) -> Observation<ServiceDebug> {
+        self.debug::<Providers<S>>()
+            .map(|mut providers| match providers.len() {
+                0 => ServiceDebug::Missing,
+                1 => ServiceDebug::Ready(providers.swap_remove(0)),
+                _ => ServiceDebug::Conflict(providers),
+            })
     }
 
     pub fn observe_service<S: Service>(&self) -> Observation<Resolution<S::Capability>> {

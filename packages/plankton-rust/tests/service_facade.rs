@@ -7,7 +7,10 @@ use std::{
 };
 
 use futures_lite::future::{block_on, yield_now};
-use plankton_rust::{Binding, Facet, Registry, Service, ServiceCallError, ServiceHandle};
+use plankton_rust::{
+    Binding, BindingOptions, ContributionInfo, Dependencies, Facet, Factory, Instance, ItemPath,
+    Origin, Precedence, Registry, Service, ServiceCallError, ServiceDebug, ServiceHandle,
+};
 
 trait Counter {
     fn increment(&self) -> usize;
@@ -183,5 +186,80 @@ fn unwinding_a_facet_source_restores_service_access() {
 
         assert!(catch_unwind(AssertUnwindSafe(|| registry.get::<CallResults>())).is_err());
         assert_eq!(handle.call(|counter| counter.increment()), Ok(1));
+    });
+}
+
+#[test]
+fn service_debug_observes_provider_origins_and_conflicts_without_calling_the_service() {
+    struct MustNotCall;
+    impl Counter for MustNotCall {
+        fn increment(&self) -> usize {
+            panic!("inspecting a provider must not call it");
+        }
+    }
+
+    let provider = |name: &'static str, precedence| {
+        Factory::keyed(name, Dependencies::none(), move |(), _| {
+            Ok(Instance::new(()).with_children(vec![
+                Binding::provide_with_options::<CounterService>(
+                    Rc::new(MustNotCall),
+                    BindingOptions {
+                        key: Some(name.into()),
+                        precedence,
+                    },
+                )
+                .into(),
+            ]))
+        })
+    };
+    let local = provider("local", Precedence::Default);
+    let remote = provider("remote", Precedence::High);
+
+    block_on(async {
+        let mut registry = Registry::new();
+        let debug = registry.debug_service::<CounterService>();
+        assert_eq!(debug.get().unwrap(), ServiceDebug::Missing);
+        let updates = Rc::new(RefCell::new(Vec::new()));
+        let _subscription = debug
+            .subscribe({
+                let updates = updates.clone();
+                move |metadata| updates.borrow_mut().push(metadata)
+            })
+            .unwrap();
+
+        registry
+            .configure(vec![local.clone().into()])
+            .await
+            .unwrap();
+        registry
+            .configure(vec![local.into(), remote.clone().into()])
+            .await
+            .unwrap();
+        registry.configure(vec![remote.into()]).await.unwrap();
+
+        let metadata = |name: &str, root, precedence| ContributionInfo {
+            origin: Origin {
+                name: name.into(),
+                path: ItemPath {
+                    root,
+                    steps: Vec::new(),
+                },
+            },
+            key: Some(name.into()),
+            precedence,
+        };
+        let local = metadata("local", 0, Precedence::Default);
+        let remote = metadata("remote", 1, Precedence::High);
+        assert_eq!(debug.get().unwrap(), ServiceDebug::Ready(remote.clone()));
+        registry.dispose().await.unwrap();
+        assert_eq!(
+            *updates.borrow(),
+            [
+                ServiceDebug::Ready(local.clone()),
+                ServiceDebug::Conflict(vec![remote.clone(), local]),
+                ServiceDebug::Ready(remote),
+                ServiceDebug::Missing,
+            ]
+        );
     });
 }
