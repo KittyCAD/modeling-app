@@ -104,7 +104,7 @@ export const renderCommands = factory({
           command: KCL_RENDER_COMMAND,
           title: 'Render code',
           source: 'KCL',
-          keystrokes: ['mod+s'],
+          keystrokes: ['mod+enter'],
           when: [KCL_RENDER_SCOPE],
         }),
       ],

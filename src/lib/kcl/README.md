@@ -228,9 +228,10 @@ The Stale badge marks a previously produced Modeling result that is out of date.
 The contribution uses `editorTabIndicatorsFacet` and stays hidden during initial
 loading. Code tabs and fresh sibling views do not show it. The registered
 `kcl.render` command targets the focused editor, including its Code view when a
-Modeling context has been acquired. Its default `mod+s` binding uses the existing
-keymap system and supports user remapping. Opening the command palette retains its
-originating editor until dismissal or submission. Other documents are unaffected;
+Modeling context has been acquired. Its default `mod+enter` binding uses the
+existing keymap system and supports user remapping. `mod+s` remains reserved for
+Save. Opening the command palette retains its originating editor until dismissal
+or submission. Other documents are unaffected;
 views sharing the requested editor consume the same new capture. Render also
 wakes an idle streamed scene and restores its saved camera before presenting
 the requested model.

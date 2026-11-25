@@ -23,7 +23,7 @@ import { beforeAll, expect, it, vi } from 'vitest'
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 })
-it('routes Render to the focused editor, retains the palette target, and withdraws closed utils', async () => {
+it('routes Render to the focused editor, retains the palette target, and releases closed targets', async () => {
   const registry = new Registry()
   await registry.configure([editorsExtension])
   const editors = registry.required(editorsService)
@@ -92,7 +92,7 @@ it('contributes a scoped command and a remappable keymap binding', async () => {
         expect.objectContaining({
           id: KCL_RENDER_COMMAND,
           command: KCL_RENDER_COMMAND,
-          keystrokes: ['mod+s'],
+          keystrokes: ['mod+enter'],
           when: [KCL_RENDER_SCOPE],
         }),
       ])
@@ -103,19 +103,19 @@ it('contributes a scoped command and a remappable keymap binding', async () => {
         bindings: [
           {
             command: KCL_RENDER_COMMAND,
-            keystrokes: ['mod+enter'],
+            keystrokes: ['mod+shift+enter'],
             when: [KCL_RENDER_SCOPE],
           },
         ],
       })
     )
     expect(
-      matchKeymapKeystrokes(remapped, [KCL_RENDER_SCOPE], ['mod+s'])
+      matchKeymapKeystrokes(remapped, [KCL_RENDER_SCOPE], ['mod+enter'])
     ).toEqual({ type: 'none' })
     expect(
-      matchKeymapKeystrokes(remapped, [KCL_RENDER_SCOPE], ['mod+enter'])
+      matchKeymapKeystrokes(remapped, [KCL_RENDER_SCOPE], ['mod+shift+enter'])
     ).toMatchObject({ type: 'full', item: { command: KCL_RENDER_COMMAND } })
-    expect(matchKeymapKeystrokes(remapped, [], ['mod+enter'])).toEqual({
+    expect(matchKeymapKeystrokes(remapped, [], ['mod+shift+enter'])).toEqual({
       type: 'none',
     })
   } finally {
