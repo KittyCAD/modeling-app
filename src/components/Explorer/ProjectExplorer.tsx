@@ -282,7 +282,7 @@ export const ProjectExplorer = ({
     setFileTreeMutationPending(true)
     try {
       await run()
-      await app.projectLibraries.refreshProjects()
+      await app.projectSession.refreshProject()
     } catch (error) {
       trap(error)
     } finally {
@@ -351,9 +351,7 @@ export const ProjectExplorer = ({
     if (refreshExplorerPressed <= 0) {
       return
     }
-    // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
-    // It is correct but can be slow if there are many projects
-    app.projectLibraries.refreshProjects().catch(reportRejection)
+    app.projectSession.refreshProject().catch(reportRejection)
   }, [refreshExplorerPressed, app])
   useEffect(() => {
     if (collapsePressed <= 0) {
