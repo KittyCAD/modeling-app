@@ -29,7 +29,6 @@ use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
-use crate::std::array::flatten_geometry_targets;
 use crate::std::edge;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
@@ -268,30 +267,25 @@ async fn inner_delete_face(
 
 /// Create a new surface that blends between two edges of separate surface bodies
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let edges = args.get_unlabeled_kw_arg(
+    // Pipeline arguments reach Rust without being coerced against the KCL
+    // signature.
+    let _: KclValue = args.get_unlabeled_kw_arg(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::Known(2)),
+        exec_state,
+    )?;
+    let edges: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "edges",
         &RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::Primitive(PrimitiveType::BoundedEdge),
                 RuntimeType::tagged_edge(),
-                RuntimeType::any(),
+                edge::edge_specifier_type(),
             ])),
             ArrayLen::Known(2),
         ),
         exec_state,
     )?;
-    let edges = flatten_geometry_targets(edges);
-    if edges.len() != 2 {
-        return Err(KclError::new_argument(KclErrorDetails::new(
-            format!(
-                "`blend` requires exactly two edges, but received {} after flattening.",
-                edges.len()
-            ),
-            args.unlabeled_kw_arg_unconverted()
-                .map_or_else(|| vec![args.source_range], |arg| arg.source_ranges()),
-        )));
-    }
-
     let mut bounded_edges = Vec::with_capacity(edges.len());
     for edge in edges {
         bounded_edges.push(resolve_blend_edge(edge, exec_state, &args).await?);
@@ -510,13 +504,15 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn blend_checks_edge_count_after_flattening() {
-        for (edges, count) in [("[[], []]", 0), ("[[], [1]]", 1), ("[[], [1, 2, 3]]", 3)] {
+        let edge = "{ sideFaces = [] }";
+        for edges in [
+            "[[], []]".to_owned(),
+            format!("[[], [{edge}]]"),
+            format!("[[], [{edge}, {edge}, {edge}]]"),
+        ] {
             let err = parse_execute(&format!("blend({edges})")).await.unwrap_err();
-            assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
-            assert!(
-                err.message().contains(&format!("received {count} after flattening")),
-                "{err:?}"
-            );
+            assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
+            assert!(err.message().contains("an array of 2"), "{err:?}");
         }
     }
 

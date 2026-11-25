@@ -735,6 +735,12 @@ pub(crate) fn is_edge_specifier_object(value: &KclValue) -> bool {
     matches!(value, KclValue::Object { value, .. } if value.contains_key("sideFaces"))
 }
 
+/// Recognize edge specifier objects during argument coercion. The parser
+/// validates their fields.
+pub(super) fn edge_specifier_type() -> RuntimeType {
+    RuntimeType::Object(vec![("sideFaces".to_owned(), RuntimeType::any())], false)
+}
+
 pub(crate) fn parse_edge_specifier_value(value: &KclValue, args: &Args) -> Result<UnresolvedEdgeSpecifier, KclError> {
     parse_edge_specifier_value_at(value, args.source_range)
 }

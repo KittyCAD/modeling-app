@@ -60,7 +60,6 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
-use crate::std::array::flatten_geometry_targets;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
 use crate::std::axis_or_reference::Point3dOrEdgeReference;
 use crate::std::edge::{self};
@@ -78,12 +77,18 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "sketches",
         &RuntimeType::Array(
-            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
-            ArrayLen::Minimum(1),
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::sketch(),
+                RuntimeType::face(),
+                RuntimeType::tagged_face(),
+                RuntimeType::edge(),
+                RuntimeType::segment(),
+                edge::edge_specifier_type(),
+            ])),
+            ArrayLen::None,
         ),
         exec_state,
     )?;
-    let sketch_values = flatten_geometry_targets(sketch_values);
     let target_argument_source_range = args
         .unlabeled_kw_arg_unconverted()
         .map(|arg| arg.source_range)
@@ -1817,6 +1822,7 @@ b = region(segments = [profiles.circle2])
             ("extrude([a], length = 5mm)", 2),
             ("extrude([a[0], [], b], length = 5mm)", 3),
             ("extrude([[[a[0]], [b[0]]]], length = 5mm)", 2),
+            ("extrude([[a[0]]]: [[Sketch; 1]; 1], length = 5mm)", 1),
             ("[a, b] |> extrude(length = 5mm)", 4),
         ] {
             let code = format!("{PATTERNED_EXTRUDE_TARGETS}\nbodies = {call}\nassertIs(count(bodies) == {count})");
@@ -1832,8 +1838,8 @@ b = region(segments = [profiles.circle2])
             let code = format!("{PATTERNED_EXTRUDE_TARGETS}\nextrude({targets}, length = 5mm)");
             let err = parse_execute(&code).await.unwrap_err();
 
-            assert!(matches!(err, KclError::Type { .. }), "{err:?}");
-            assert!(err.message().contains("Expected sketches, faces"), "{err:?}");
+            assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
+            assert!(err.message().contains("Sketches or Faces"), "{err:?}");
         }
     }
 
