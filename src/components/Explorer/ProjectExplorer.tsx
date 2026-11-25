@@ -20,9 +20,11 @@ import {
 import { fsFileDeletion, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { newKclFile } from '@src/lang/project'
+import type { App } from '@src/lib/app'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
@@ -32,6 +34,7 @@ import {
   fileNameHasExtension,
   getParentAbsolutePath,
   joinOSPaths,
+  PATHS,
   parentPathRelativeToApplicationDirectory,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
@@ -47,6 +50,7 @@ import {
   type ProjectExplorerRowContextMenuItemContext,
   projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
+import { routerService } from '@src/registry/contracts/router'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import type { FocusEvent as ReactFocusEvent } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -143,6 +147,21 @@ const collectDroppedFiles = async (
   }
   return {
     supported,
+  }
+}
+
+// Go Home if the open project's folder is gone. Not every project has a
+// watcher that would notice, e.g. browser-local projects on web.
+async function refreshOpenProject(app: App) {
+  const project = app.project
+  try {
+    await app.projectSession.refreshProject()
+  } catch (error) {
+    if (project && app.project === project && isPathNotFoundError(error)) {
+      await app.registry.required(routerService).navigate(PATHS.HOME)
+    } else {
+      return Promise.reject(error)
+    }
   }
 }
 
@@ -282,7 +301,7 @@ export const ProjectExplorer = ({
     setFileTreeMutationPending(true)
     try {
       await run()
-      await app.projectSession.refreshProject()
+      await refreshOpenProject(app)
     } catch (error) {
       trap(error)
     } finally {
@@ -351,7 +370,7 @@ export const ProjectExplorer = ({
     if (refreshExplorerPressed <= 0) {
       return
     }
-    app.projectSession.refreshProject().catch(reportRejection)
+    refreshOpenProject(app).catch(reportRejection)
   }, [refreshExplorerPressed, app])
   useEffect(() => {
     if (collapsePressed <= 0) {
