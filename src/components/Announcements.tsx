@@ -53,11 +53,11 @@ function AnnouncementBanner({ announcement }: { announcement: Announcement }) {
       data-testid="announcement-banner"
       className="my-2 rounded-lg border border-primary/30 bg-chalkboard-10 px-4 py-3 text-xs dark:border-primary/40 dark:bg-chalkboard-90"
     >
-      <p className="font-bold text-primary">{announcement.title}</p>
+      <p className="mb-2 font-bold text-primary">{announcement.title}</p>
       {announcement.body && (
         <MarkdownText
           text={announcement.body}
-          className="mt-1 leading-5 text-chalkboard-90 dark:text-chalkboard-20"
+          className="leading-5 text-chalkboard-90 dark:text-chalkboard-20 [&_p+p]:mt-2"
         />
       )}
     </section>

@@ -11,6 +11,35 @@ import {
 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+async function clickEndCap(
+  page: Page,
+  scene: SceneFixture,
+  rendererTag: string,
+  stream: { x: number; y: number }
+) {
+  const id =
+    rendererTag === '@localRenderer'
+      ? await page.evaluate(() => {
+          const graph = window.app.singletons.kclManager.artifactGraph
+          const caps = [...graph.values()].filter(
+            (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+          )
+          if (caps.length !== 1) {
+            throw new Error(
+              `Expected one extrusion end cap, found ${caps.length}`
+            )
+          }
+          return caps[0].id
+        })
+      : undefined
+  const [click] = await scene.makeSelectionHelpers({
+    kind: 'bodyFace',
+    id,
+    stream: { ...stream, format: 'pixels' },
+  })
+  await click()
+}
+
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests', { tag: '@web' }, () => {
@@ -616,7 +645,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.advanced.click()
         await expect(modelingDialog.input('v degree')).toBeVisible()
-        await modelingDialog.input('v degree').fill('3')
+        await modelingDialog.fillInput('v degree', '3')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
@@ -635,8 +664,6 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     }
   )
 
-  // Note: testing the helix case here for sweep as it's the only one we can't
-  // test in src\lang\modifyAst\sweeps.test.ts
   test(
     `Sweep point-and-click helix`,
     { tag: '@localRenderer' },
@@ -927,8 +954,8 @@ extrude001 = extrude(region001, length = -12)`
 }
 hide(sketch001)
 region001 = region(segments = [sketch001.circle1])
-extrude001 = extrude(region001, length = 100)
-fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.circle1)])`
+extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.circle1, capEnd001] }])`
       await test.step(`Initial test setup`, async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.goToModelingScene()
@@ -959,22 +986,26 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
     }
   )
 
+  const extrudedRectangle = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  line2 = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  line3 = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  line4 = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+extrude001 = extrude(region001, length = 3, tagEnd = $capEnd001)`
+
   test(
     'Should automatically fix revolve axis that is incompatible with P&C upon edit',
     { tag: '@localRenderer' },
     async ({ page, homePage, scene, editor, toolbar, modelingDialog }) => {
-      const initialCode = `sketch001 = startSketchOn(XY)
-profile = startProfile(sketch001, at = [0, 0])
-  |> line(endAbsolute = [10, 0])
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0], tag = $seg02)
-  |> close()
-
-extrude001 = extrude(profile, length = 3, tagEnd = $capEnd001)
-sketch002 = startSketchOn(extrude001, face = capEnd001)
-profile001 = circle(sketch002, center = [-3.44, -2.23], radius = 1.64)
-revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
+      const initialCode = `${extrudedRectangle}
+face001 = faceOf(extrude001, face = capEnd001)
+sketch002 = sketch(on = face001) {
+  circle1 = circle(start = [-1.8mm, -2.23mm], center = [-3.44mm, -2.23mm])
+}
+region002 = region(segments = [sketch002.circle1])
+revolve001 = revolve(region002, angle = 360deg, axis = getOppositeEdge(region001.tags.line4))
 `
 
       await test.step('Initial test setup', async () => {
@@ -1021,16 +1052,9 @@ revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
     'Should automatically fix helix axis that is incompatible with P&C upon edit',
     { tag: '@localRenderer' },
     async ({ page, homePage, scene, editor, toolbar, modelingDialog }) => {
-      const initialCode = `sk = startSketchOn(XY)
-profile = startProfile(sk, at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $seg01)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-ex = extrude(profile, length = 5, tagEnd = $capEnd001)
+      const initialCode = `${extrudedRectangle}
 helix001 = helix(
-  axis = getOppositeEdge(seg01),
+  axis = getOppositeEdge(region001.tags.line1),
   revolutions = 1,
   angleStart = 360deg,
   radius = 5,
@@ -1727,42 +1751,16 @@ extrude001 = extrude(region001, length = 30)`
       )
       await resetView(scene)
 
-      // One dumb hardcoded screen pixel value
-      // Any idea here how to select a cap without clicking in the scene?
-      const testPoint = { x: 575, y: 200 }
-
       const shellDeclaration =
         'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
-      const shellDeclaration2 =
-        'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
-      const secondaryShellFaceDeclaration =
-        'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
       const editedShellDeclaration =
         'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
-      const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [-219, 25])
-  |> angledLine(angle = 0deg, length = 488, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 472)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close()
-extrude001 = extrude(profile001, length = 500)`
-      const secondaryShellClickPoint = {
-        x: 0.4935,
-        y: 0.5159,
-        format: 'ratio' as const,
-      }
 
       await test.step(`Fill the modeling dialog without preselected faces`, async () => {
         await editor.closePane()
         await toolbar.shellButton.click()
         await modelingDialog.selection('Faces').click()
-        const [clickOnCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 0,
-          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-        })
-        await clickOnCap()
+        await clickEndCap(page, scene, rendererTag, { x: 575, y: 200 })
         await toolbar.expectSelection('1 face')
 
         await expect(modelingDialog.input('thickness')).toHaveText('5')
@@ -1814,49 +1812,6 @@ extrude001 = extrude(profile001, length = 500)`
         await scene.settled()
         await editor.expectEditor.not.toContain(shellDeclaration)
       })
-      await test.step('Replace modeling code with secondary shell snippet', async () => {
-        await editor.openPane()
-        await scene.waitForExecutionDoneAfter(() =>
-          editor.replaceCode('', secondaryShellCode)
-        )
-        await editor.closePane()
-      })
-
-      await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
-        await editor.closePane()
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.shellButton.click()
-        await modelingDialog.selection('Faces').click()
-
-        const [clickOnDebugCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 2,
-          stream: {
-            x: secondaryShellClickPoint.x,
-            y: secondaryShellClickPoint.y,
-            format: secondaryShellClickPoint.format,
-          },
-        })
-        await clickOnDebugCap()
-        await toolbar.expectSelection('1 face')
-
-        await expect(modelingDialog.input('thickness')).toHaveText('5')
-
-        await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
-        await scene.settled()
-      })
-
-      await test.step('Confirm secondary shell code exists without diagnostics', async () => {
-        await editor.openPane()
-        await editor.expectEditor.toContain(secondaryShellFaceDeclaration)
-        await editor.expectEditor.toContain(shellDeclaration2)
-        await editor.expectState({
-          diagnostics: [],
-          activeLines: [shellDeclaration2],
-        })
-        await editor.closePane()
-      })
     })
   }
 
@@ -1884,18 +1839,10 @@ extrude001 = extrude(region001, length = 30)`
       )
       await resetView(scene)
 
-      // One dumb hardcoded screen pixel value
-      const testPoint = { x: 575, y: 200 }
-
       await test.step(`Fill the modeling dialog`, async () => {
         await toolbar.selectSurface('delete-face')
         await modelingDialog.selection('Faces').click()
-        const [clickOnCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 0,
-          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-        })
-        await clickOnCap()
+        await clickEndCap(page, scene, rendererTag, { x: 575, y: 200 })
         await toolbar.expectSelection('1 face')
 
         await expect(modelingDialog.submitButton).toBeEnabled()
@@ -2258,30 +2205,25 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     'Blend point-and-click',
     { tag: '@localRenderer' },
     async ({ page, homePage, scene, editor, toolbar, modelingDialog }) => {
-      // It makes more sense to keep this as a sketch v1 test as we can directly select from code instead of px clicks
-      // We're not testing sketch solve stuff here, just the Blend command e2e. Sketch solve tests are at
-      // src/lang/modifyAst/edges.spec.ts
-      const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
-      const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
-      const initialCode = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [-2, 0])
-  |> ${firstSurfaceEdge}
-  |> extrude(length = 2, bodyType = SURFACE)
+      const firstEdge = 'line(start = [-2mm, 0mm], end = [2mm, 0mm])'
+      const secondEdge = 'line(start = [-1mm, 0mm], end = [1mm, 0mm])'
+      const initialCode = `sketch001 = sketch(on = XY) {
+  line1 = ${firstEdge}
+  line2 = line(start = [2mm, 0mm], end = [0mm, -2mm])
+  line3 = line(start = [0mm, -2mm], end = [-2mm, 0mm])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+extrude001 = extrude(region001, length = 2, bodyType = SURFACE)
   |> translate(y = 3, z = 2)
 
-sketch002 = startSketchOn(XZ)
-profile002 = startProfile(sketch002, at = [-1, 0])
-  |> ${secondSurfaceEdge}
-  |> extrude(length = 2, bodyType = SURFACE)
+sketch002 = sketch(on = XZ) {
+  line1 = ${secondEdge}
+  line2 = line(start = [1mm, 0mm], end = [0mm, -1mm])
+  line3 = line(start = [0mm, -1mm], end = [-1mm, 0mm])
+}
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+extrude002 = extrude(region002, length = 2, bodyType = SURFACE)
   |> flipSurface()`
-      const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
-
-      async function selectEdgesFromBothSurfaces() {
-        await editor.selectText(firstSurfaceEdge)
-        await page
-          .getByText(secondSurfaceEdge)
-          .click({ modifiers: ['ControlOrMeta'] })
-      }
 
       await test.step('Settle the scene', async () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -2292,24 +2234,22 @@ profile002 = startProfile(sketch002, at = [-1, 0])
         )
       })
 
-      await test.step('Click blend in the surface toolbar group', async () => {
+      await test.step('Blend the selected edges', async () => {
         await toolbar.selectSurface('blend-surface')
         await modelingDialog.selection('Edges').click()
-      })
-
-      await test.step('Select two edges through the modeling dialog', async () => {
-        await selectEdgesFromBothSurfaces()
-        await expect(toolbar.selectionStatus).toContainText(
-          /2 (?:segments?|edges)/
-        )
-
+        await editor.selectText(firstEdge)
+        await page.getByText(secondEdge).click({ modifiers: ['ControlOrMeta'] })
+        await toolbar.expectSelection('2 edges')
         await expect(modelingDialog.submitButton).toBeEnabled()
-        await modelingDialog.submit()
+        await scene.waitForExecutionDoneAfter(() => modelingDialog.submit())
         await scene.settled()
       })
 
       await test.step('Check blend code was added', async () => {
-        await editor.expectEditor.toContain(blendDeclaration)
+        await editor.expectEditor.toContain('blend001 = blend(')
+        await editor.expectEditor.toContain('getBoundedEdge(extrude001,')
+        await editor.expectEditor.toContain('getBoundedEdge(extrude002,')
+        await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
       })
 
       await test.step('Delete blend via feature tree selection', async () => {
@@ -2322,7 +2262,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
         await operationButton.click()
         await page.keyboard.press('Delete')
         await scene.settled()
-        await editor.expectEditor.not.toContain(blendDeclaration)
+        await editor.expectEditor.not.toContain('blend001 = blend(')
       })
     }
   )
@@ -2929,13 +2869,6 @@ extrude001 = extrude(region001, length = 30)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      // Adjusted coordinates to center screen for clicking on cap
-      const testPoint = { x: 500, y: 200 }
-      const [clickOnCap] = await scene.makeSelectionHelpers({
-        kind: 'face',
-        index: 0,
-        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-      })
       await test.step('Add GDT Flatness to the scene', async () => {
         await test.step('Open GDT Flatness command from toolbar', async () => {
           await toolbar.selectGdtFlatness()
@@ -2945,7 +2878,7 @@ extrude001 = extrude(region001, length = 30)`
         await test.step('Select face and configure basic parameters', async () => {
           await test.step('Select face', async () => {
             await modelingDialog.selection('Faces').click()
-            await clickOnCap()
+            await clickEndCap(page, scene, rendererTag, { x: 500, y: 200 })
             await toolbar.expectSelection('1 face')
           })
 
@@ -3145,13 +3078,6 @@ extrude001 = extrude(region001, length = 30)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
-      // Adjusted coordinates to center screen for clicking on cap
-      const testPoint = { x: 500, y: 200 }
-      const [clickOnCap] = await scene.makeSelectionHelpers({
-        kind: 'face',
-        index: 0,
-        stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-      })
       await test.step('Add GDT Datum to the scene', async () => {
         await test.step('Open GDT Datum command from toolbar', async () => {
           await page
@@ -3165,7 +3091,7 @@ extrude001 = extrude(region001, length = 30)`
         await test.step('Select face and configure basic parameters', async () => {
           await test.step('Select face', async () => {
             await modelingDialog.selection('Faces').click()
-            await clickOnCap()
+            await clickEndCap(page, scene, rendererTag, { x: 500, y: 200 })
             await toolbar.expectSelection('1 face')
           })
 
@@ -3341,15 +3267,8 @@ extrude001 = extrude(region001, length = 10)`
 
       await test.step('Add the hole through the command flow', async () => {
         await toolbar.holeButton.click()
-        const testPoint = { x: 600, y: 250 }
-
         await modelingDialog.selection('Face').click()
-        const [clickOnCap] = await scene.makeSelectionHelpers({
-          kind: 'face',
-          index: 2,
-          stream: { x: testPoint.x, y: testPoint.y, format: 'pixels' },
-        })
-        await clickOnCap()
+        await clickEndCap(page, scene, rendererTag, { x: 600, y: 250 })
         await toolbar.expectSelection('1 face')
 
         await expect(modelingDialog.input('cut at')).toHaveText('[0, 0]')

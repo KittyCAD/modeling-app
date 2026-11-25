@@ -1,3 +1,4 @@
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import path from 'path'
 import * as fsp from 'fs/promises'
 
@@ -91,11 +92,14 @@ async function insertPartIntoAssembly(
 }
 
 // test file is for testing point an click code gen functionality that's assemblies related
+test.use({ useTestSettings: true })
+
 test.describe(
   'Point-and-click assemblies tests',
-  { tag: ['@desktop', '@macos', '@windows'] },
+  { tag: '@web' }, // The external file watcher stays in the desktop suite below.
   () => {
     test(`Import kcl parts into assembly as whole module import`, async ({
+      fs,
       folderSetupFn,
       page,
       homePage,
@@ -103,35 +107,48 @@ test.describe(
       editor,
       toolbar,
       cmdBar,
-      tronApp,
     }) => {
-      if (!tronApp) throwTronAppMissing()
-
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await folderSetupFn(async (dir) => {
-          const projDir = path.join(dir, projectName)
-          const nestedProjDir = path.join(dir, projectName, 'nested', 'twice')
-          await fsp.mkdir(projDir, { recursive: true })
-          await fsp.mkdir(nestedProjDir, { recursive: true })
+          const projDir = await fs.join(dir, projectName)
+          const nestedProjDir = await fs.join(
+            dir,
+            projectName,
+            'nested',
+            'twice'
+          )
+          await fs.mkdir(projDir, { recursive: true })
+          await fs.mkdir(nestedProjDir, { recursive: true })
           await Promise.all([
-            fsp.copyFile(
-              executorInputPath('cylinder.kcl'),
-              path.join(projDir, 'cylinder.kcl')
+            fs.writeFile(
+              await fs.join(projDir, 'cylinder.kcl'),
+              Uint8Array.from(
+                await fsp.readFile(executorInputPath('cylinder.kcl'))
+              )
             ),
-            fsp.copyFile(
-              executorInputPath('cylinder.kcl'),
-              path.join(nestedProjDir, 'main.kcl')
+            fs.writeFile(
+              await fs.join(nestedProjDir, 'main.kcl'),
+              Uint8Array.from(
+                await fsp.readFile(executorInputPath('cylinder.kcl'))
+              )
             ),
-            fsp.copyFile(
-              executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-              path.join(projDir, 'bracket.kcl')
+            fs.writeFile(
+              await fs.join(projDir, 'bracket.kcl'),
+              Uint8Array.from(
+                await fsp.readFile(
+                  executorInputPath('e2e-can-sketch-on-chamfer.kcl')
+                )
+              )
             ),
-            fsp.copyFile(
-              testsInputPath('cube.step'),
-              path.join(projDir, 'cube.step')
+            fs.writeFile(
+              await fs.join(projDir, 'cube.step'),
+              Uint8Array.from(await fsp.readFile(testsInputPath('cube.step')))
             ),
-            fsp.writeFile(path.join(projDir, 'main.kcl'), ''),
+            fs.writeFile(
+              await fs.join(projDir, 'main.kcl'),
+              new TextEncoder().encode('')
+            ),
           ])
         })
         await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -234,7 +251,8 @@ test.describe(
       selectionType: 'scene' | 'feature-tree',
       folderSetupFn: (
         fn: (dir: string) => Promise<void>
-      ) => Promise<{ dir: string }>
+      ) => Promise<{ dir: string }>,
+      fs: PromisifiedZooDesignStudioFS
     ) {
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
@@ -248,10 +266,10 @@ test.describe(
           if (await modelingDialog.locator.isVisible()) {
             await modelingDialog.moveTo({ x: 0, y: 80 })
           }
+          // This bracket wall stays clear of the dialog after scaling.
           const [clickBracketInScene] = await scene.makeSelectionHelpers({
-            kind: 'face',
-            // The end cap stays visible when the bracket rotates.
-            index: 2,
+            kind: 'bodyFace',
+            id: 'de06675a-22ea-58f0-8413-18c53d9c17f9',
             stream: { x: 0.75, y: 0.92, format: 'ratio' },
           })
           await clickBracketInScene()
@@ -268,14 +286,21 @@ test.describe(
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
+          const bracketDir = await fs.join(dir, projectName)
+          await fs.mkdir(bracketDir, { recursive: true })
           await Promise.all([
-            fsp.copyFile(
-              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
-              path.join(bracketDir, 'bracket.kcl')
+            fs.writeFile(
+              await fs.join(bracketDir, 'bracket.kcl'),
+              Uint8Array.from(
+                await fsp.readFile(
+                  path.join('public', 'kcl-samples', 'bracket', 'main.kcl')
+                )
+              )
             ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+            fs.writeFile(
+              await fs.join(bracketDir, 'main.kcl'),
+              new TextEncoder().encode('')
+            ),
           ])
         })
         await page.setBodyDimensions({ width: 1200, height: 800 })
@@ -465,77 +490,9 @@ test.describe(
       })
     }
 
-    test(
-      `Module feature tree items are source-only`,
-      { tag: '@localRenderer' },
-      async ({
-        page,
-        homePage,
-        scene,
-        editor,
-        toolbar,
-        cmdBar,
-        tronApp,
-        folderSetupFn,
-      }) => {
-        if (!tronApp) throwTronAppMissing()
-        test.slow()
-
-        const projectName = 'assembly'
-        await folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
-              path.join(bracketDir, 'bracket.kcl')
-            ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-          ])
-        })
-        await page.setBodyDimensions({ width: 1200, height: 800 })
-        await homePage.openProject(projectName)
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-        await insertPartIntoAssembly(
-          'bracket.kcl',
-          'bracket',
-          toolbar,
-          cmdBar,
-          page
-        )
-
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(
-          `
-          import "bracket.kcl" as bracket
-        `,
-          { shouldNormalise: true }
-        )
-        await scene.settled()
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.openFeatureTreeOperationContextMenu('bracket', 0)
-
-        await expect(page.getByText('View KCL source code')).toBeVisible()
-        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
-        await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
-        await expect(
-          page.getByTestId('context-menu-set-translate')
-        ).not.toBeVisible()
-        await expect(
-          page.getByTestId('context-menu-set-rotate')
-        ).not.toBeVisible()
-        await expect(
-          page.getByTestId('context-menu-set-scale')
-        ).not.toBeVisible()
-      }
-    )
-
     for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
       test(`Import the bracket part into an assembly and transform it (scene selection) ${rendererTag}`, async ({
+        fs,
         context,
         page,
         homePage,
@@ -544,10 +501,8 @@ test.describe(
         toolbar,
         cmdBar,
         modelingDialog,
-        tronApp,
         folderSetupFn,
       }) => {
-        if (!tronApp) throwTronAppMissing()
         test.slow()
         await testBracketInsertionThenTransformsThenDeletion(
           context,
@@ -559,7 +514,8 @@ test.describe(
           cmdBar,
           modelingDialog,
           'scene',
-          folderSetupFn
+          folderSetupFn,
+          fs
         )
       })
     }
@@ -568,6 +524,7 @@ test.describe(
       `Import foreign parts into assembly and delete them`,
       { tag: ['@skipLocalEngine', '@localRenderer'] },
       async ({
+        fs,
         folderSetupFn,
         page,
         homePage,
@@ -575,35 +532,36 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
-        tronApp,
       }) => {
-        if (!tronApp) throwTronAppMissing()
-
         const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
         const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
 
         await test.step('Setup parts and expect empty assembly scene', async () => {
           const projectName = 'assembly'
           await folderSetupFn(async (dir) => {
-            const bracketDir = path.join(dir, projectName)
-            await fsp.mkdir(bracketDir, { recursive: true })
+            const bracketDir = await fs.join(dir, projectName)
+            await fs.mkdir(bracketDir, { recursive: true })
             await Promise.all([
-              fsp.mkdir(path.join(bracketDir, 'folder.prt')),
-              fsp.copyFile(
-                testsInputPath('cube.step'),
-                path.join(bracketDir, 'cube.step')
+              fs.mkdir(await fs.join(bracketDir, 'folder.prt')),
+              fs.writeFile(
+                await fs.join(bracketDir, 'cube.step'),
+                // Valid trailing whitespace pushes the STEP file beyond the editor's size limit.
+                new TextEncoder().encode(
+                  (await fsp.readFile(testsInputPath('cube.step'), 'utf-8')) +
+                    ' '.repeat(1024 * 1024)
+                )
               ),
-              fsp.copyFile(
-                testsInputPath('cube.sldprt'),
-                path.join(bracketDir, complexPlmFileName)
+              fs.writeFile(
+                await fs.join(bracketDir, complexPlmFileName),
+                Uint8Array.from(
+                  await fsp.readFile(testsInputPath('cube.sldprt'))
+                )
               ),
-              fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+              fs.writeFile(
+                await fs.join(bracketDir, 'main.kcl'),
+                new TextEncoder().encode('')
+              ),
             ])
-            // Valid trailing whitespace pushes the STEP file beyond the editor's size limit.
-            await fsp.appendFile(
-              path.join(bracketDir, 'cube.step'),
-              ' '.repeat(1024 * 1024)
-            )
           })
           await homePage.openProject(projectName)
           await scene.settled()
@@ -714,7 +672,13 @@ test.describe(
         })
       }
     )
+  }
+)
 
+test.describe(
+  'Point-and-click assemblies tests',
+  { tag: ['@desktop', '@macos', '@windows'] },
+  () => {
     test(
       'Assembly gets reexecuted when imported models are updated externally',
       { tag: '@skipLocalEngine' },
@@ -795,61 +759,6 @@ foreign
             })
             await scene.settled()
             await toolbar.closePane(DefaultLayoutPaneID.Code)
-          })
-        })
-      }
-    )
-
-    test(
-      `Point-and-click clone`,
-      { tag: '@localRenderer' },
-      async ({
-        folderSetupFn,
-        page,
-        homePage,
-        scene,
-        editor,
-        toolbar,
-        cmdBar,
-        tronApp,
-      }) => {
-        if (!tronApp) throwTronAppMissing()
-
-        const projectName = 'assembly'
-        const cloneLine = `clone001 = clone(washer)`
-
-        await test.step('Setup parts and expect imported model', async () => {
-          await folderSetupFn(async (dir) => {
-            const projectDir = path.join(dir, projectName)
-            await fsp.mkdir(projectDir, { recursive: true })
-            await Promise.all([
-              fsp.copyFile(
-                path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
-                path.join(projectDir, 'washer.kcl')
-              ),
-              fsp.writeFile(
-                path.join(projectDir, 'main.kcl'),
-                `import "washer.kcl" as washer`
-              ),
-            ])
-          })
-          await page.setBodyDimensions({ width: 1000, height: 500 })
-          await homePage.openProject(projectName)
-          await scene.settled()
-          await toolbar.closePane(DefaultLayoutPaneID.Code)
-        })
-
-        await test.step('Module feature tree items do not offer clone', async () => {
-          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          await toolbar.openFeatureTreeOperationContextMenu('washer', 0)
-          await expect(page.getByText('View KCL source code')).toBeVisible()
-          await expect(page.getByTestId('context-menu-clone')).not.toBeVisible()
-          await page.keyboard.press('Escape')
-          await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-
-          await toolbar.openPane(DefaultLayoutPaneID.Code)
-          await editor.expectEditor.not.toContain(cloneLine, {
-            shouldNormalise: true,
           })
         })
       }

@@ -230,13 +230,6 @@ npm run playwright -- install webkit
 npm run test:e2e:web:webkit
 ```
 
-Local WebKit tests use two workers on `http://localhost:3000` and
-`http://localhost:5173`, both allowed by the development API CORS policy. The
-second origin proxies the development server, or serves the same build directly
-when using the prebuilt app. Separate origins isolate WebKit's shared OPFS
-storage. Keep both ports free in CI. Use `-- --workers=1` to compare with a serial
-run. Runs against `VERCEL_BASE_URL` remain single-worker.
-
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
 If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:
@@ -255,7 +248,7 @@ Alternatively, you can simply delete `e2e/playwright/snapshot-tests.spec.ts-snap
 However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
 With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
 
-If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`
+If you want to limit to a single browser use `--project=chrome`, `firefox`, or `webkit`
 Or comment out browsers in `playwright.config.ts`.
 
 note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'

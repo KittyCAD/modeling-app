@@ -4,6 +4,10 @@ import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
+// The projects API keeps an uploaded thumbnail only at exactly this size, and
+// renders its own with the engine otherwise.
+export const PROJECT_THUMBNAIL_SIZE = { width: 1280, height: 720 }
+
 const getVisibleCanvasCrop = (canvas: HTMLCanvasElement) => {
   const canvasRect = canvas.getBoundingClientRect()
   const visibleRect = getVisibleElementRect(canvas)
@@ -84,7 +88,7 @@ const drawVisibleVideoStream = (
   return crop
 }
 
-/** Copies the frame before returning, and encodes it afterwards. */
+// Copies the frame at thumbnail size before returning, then encodes it.
 function encodeVisibleFrame(
   frameSource: HTMLVideoElement | HTMLCanvasElement,
   canvas: HTMLCanvasElement
@@ -94,6 +98,55 @@ function encodeVisibleFrame(
   if (!crop) {
     return Promise.resolve(null)
   }
+  const thumbnailCanvas = fitToThumbnailSize(frameCanvas)
+  if (!thumbnailCanvas) {
+    return Promise.resolve(null)
+  }
+  return encodeCanvas(thumbnailCanvas)
+}
+
+// Draws the whole frame centred at the thumbnail's size. The space around it
+// takes the colour of the frame's corner, which is usually the background.
+function fitToThumbnailSize(frameCanvas: HTMLCanvasElement) {
+  const { width, height } = PROJECT_THUMBNAIL_SIZE
+  const thumbnailCanvas = document.createElement('canvas')
+  thumbnailCanvas.width = width
+  thumbnailCanvas.height = height
+  const frameContext = frameCanvas.getContext('2d')
+  const context = thumbnailCanvas.getContext('2d')
+  if (!frameContext || !context) {
+    return null
+  }
+  const [red, green, blue] = frameContext.getImageData(0, 0, 1, 1).data
+  context.fillStyle = `rgb(${red}, ${green}, ${blue})`
+  context.fillRect(0, 0, width, height)
+  const scale = Math.min(width / frameCanvas.width, height / frameCanvas.height)
+  const drawWidth = frameCanvas.width * scale
+  const drawHeight = frameCanvas.height * scale
+  context.drawImage(
+    frameCanvas,
+    (width - drawWidth) / 2,
+    (height - drawHeight) / 2,
+    drawWidth,
+    drawHeight
+  )
+  return thumbnailCanvas
+}
+
+// Copies all of the canvas before returning, and encodes it afterwards.
+function encodeWholeCanvas(canvas: HTMLCanvasElement): Promise<Blob | null> {
+  const frameCanvas = document.createElement('canvas')
+  frameCanvas.width = canvas.width
+  frameCanvas.height = canvas.height
+  const context = frameCanvas.getContext('2d')
+  if (!context) {
+    return Promise.resolve(null)
+  }
+  context.drawImage(canvas, 0, 0, canvas.width, canvas.height)
+  return encodeCanvas(frameCanvas)
+}
+
+function encodeCanvas(frameCanvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     // Serialize thumbnails asynchronously so PNG encoding does not block input.
     frameCanvas.toBlob((blob) => {
@@ -200,9 +253,9 @@ export function createProjectThumbnail({
   fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
   /**
-   * A canvas the local renderer drew in this same task, used instead of the
-   * video stream. WebGPU and WebGL canvases read back blank afterwards, so it
-   * is copied before this returns.
+   * A canvas the local renderer drew in this same task at the thumbnail's
+   * size, used whole instead of the video stream. WebGPU and WebGL canvases
+   * read back blank afterwards, so it is copied before this returns.
    */
   renderedCanvas?: HTMLCanvasElement
   isCurrent: () => boolean
@@ -226,7 +279,7 @@ export function createProjectThumbnail({
   }
   if (renderedCanvas) {
     if (projectDirectoryWithoutEndingSlash) {
-      save(encodeVisibleFrame(renderedCanvas, renderedCanvas))
+      save(encodeWholeCanvas(renderedCanvas))
     }
     return
   }

@@ -12,6 +12,7 @@ import {
 } from '@src/clientSideScene/CameraControls'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
+import fc from 'fast-check'
 import {
   Group,
   OrthographicCamera,
@@ -57,8 +58,8 @@ function makeConnectionManager(
         }
         return undefined
       }),
-    subscribeTo: vi.fn(),
-    subscribeToUnreliable: vi.fn(),
+    subscribeTo: vi.fn(() => () => {}),
+    subscribeToUnreliable: vi.fn(() => () => {}),
   } as unknown as ConnectionManager
 }
 
@@ -202,6 +203,176 @@ describe('local canvas spherical orbit', () => {
           interaction: 'rotate',
         }),
       })
+    )
+  })
+})
+
+describe('local canvas trackball orbit', () => {
+  // The canvas is offset on the page: the trackball is centered on the canvas,
+  // at client (612, 434).
+  const offsetCanvas = new DOMRect(100, 50, 1024, 768)
+  const centerX = offsetCanvas.left + offsetCanvas.width / 2
+  const centerY = offsetCanvas.top + offsetCanvas.height / 2
+
+  function setup(rect = offsetCanvas) {
+    const canvas = makeCanvas(rect.width, rect.height)
+    canvas.setPointerCapture = vi.fn()
+    canvas.releasePointerCapture = vi.fn()
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(rect)
+    const manager = makeConnectionManager({
+      width: rect.width,
+      height: rect.height,
+    })
+    const controls = new CameraControls(canvas, manager, unusedSettings)
+    controls.localCameraMode = true
+    // Looking along +Y with +Z up: the camera's right is +X.
+    controls.target.set(10, 20, 30)
+    controls.camera.position.copy(controls.target).add(new Vector3(0, -100, 0))
+    controls.camera.up.set(0, 0, 1)
+    controls.camera.lookAt(controls.target)
+    controls.camera.updateMatrixWorld()
+    vi.spyOn(controls, 'getInteractionType').mockReturnValue('rotatetrackball')
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    return { controls, send }
+  }
+
+  function pointer(x: number, y: number) {
+    return new PointerEvent('pointermove', {
+      clientX: x,
+      clientY: y,
+      pointerId: 1,
+      pointerType: 'mouse',
+      button: 2,
+      buttons: 2,
+    })
+  }
+
+  function drag(controls: CameraControls, from: Vector2, to: Vector2) {
+    controls.onMouseDown(pointer(from.x, from.y))
+    controls.onMouseMove(pointer(to.x, to.y))
+    controls.onMouseUp(pointer(to.x, to.y))
+  }
+
+  it('turns about the view up as far as the engine for a drag from the canvas center', () => {
+    const { controls } = setup()
+    const initialRotation = controls.camera.quaternion.clone()
+
+    drag(
+      controls,
+      new Vector2(centerX, centerY),
+      new Vector2(centerX + 192, centerY)
+    )
+
+    // From the engine's trackball: a 0.8 ball, 1.5x speed, and 192px is
+    // 0.5 of half the canvas's 768px side.
+    expect(controls.camera.quaternion.angleTo(initialRotation)).toBeCloseTo(
+      1.0127,
+      4
+    )
+    // The model follows the cursor: the camera swings the other way, about
+    // the unchanged up.
+    expect(controls.camera.position.x).toBeLessThan(controls.target.x)
+    expect(controls.camera.up.distanceTo(new Vector3(0, 0, 1))).toBeLessThan(
+      1e-8
+    )
+  })
+
+  it('rolls the view when dragged near the canvas edge', () => {
+    const { controls } = setup()
+    const initialRotation = controls.camera.quaternion.clone()
+    const initialDirection = controls.camera.getWorldDirection(new Vector3())
+
+    // Down along the right edge.
+    drag(
+      controls,
+      new Vector2(offsetCanvas.left + 1000, centerY),
+      new Vector2(offsetCanvas.left + 1000, centerY + 40)
+    )
+
+    expect(controls.camera.quaternion.angleTo(initialRotation)).toBeCloseTo(
+      0.19546,
+      4
+    )
+    // Mostly a roll: up turns much further than the view direction, toward
+    // the camera's left as the model turns clockwise with the cursor.
+    expect(
+      controls.camera.getWorldDirection(new Vector3()).angleTo(initialDirection)
+    ).toBeLessThan(0.05)
+    expect(controls.camera.up.angleTo(new Vector3(0, 0, 1))).toBeGreaterThan(
+      0.19
+    )
+    expect(controls.camera.up.x).toBeLessThan(0)
+    // The local renderer orients its camera from up, so up must carry the roll.
+    expect(
+      controls.camera.up.distanceTo(
+        new Vector3(0, 1, 0).applyQuaternion(controls.camera.quaternion)
+      )
+    ).toBeLessThan(1e-8)
+  })
+
+  describe('for any camera and canvas', () => {
+    const unit = fc.double({ min: -1, max: 1, noNaN: true })
+    const coordinate = fc.double({ min: -1000, max: 1000, noNaN: true })
+    // The drag's start and end, as fractions of the canvas. A captured pointer
+    // can drag well past the canvas edges.
+    const fraction = fc.double({ min: -0.5, max: 1.5, noNaN: true })
+    const scenario = fc.record({
+      canvas: fc
+        .tuple(
+          fc.integer({ min: 0, max: 500 }),
+          fc.integer({ min: 0, max: 500 }),
+          fc.integer({ min: 1, max: 4000 }),
+          fc.integer({ min: 1, max: 4000 })
+        )
+        .map(
+          ([left, top, width, height]) => new DOMRect(left, top, width, height)
+        ),
+      target: fc.tuple(coordinate, coordinate, coordinate),
+      distance: fc.double({ min: 1, max: 10000, noNaN: true }),
+      // Normalized into an orientation; tiny quaternions are too imprecise.
+      rotation: fc
+        .tuple(unit, unit, unit, unit)
+        .filter((quaternion) => Math.hypot(...quaternion) > 0.1),
+      orthographic: fc.boolean(),
+      from: fraction,
+      to: fraction,
+    })
+
+    it.each([
+      ['up', 'row', new Vector3(0, 1, 0)],
+      ['right', 'column', new Vector3(1, 0, 0)],
+    ] as const)(
+      "turns only about the camera's %s for a drag along the canvas's middle %s",
+      (_axisName, line, cameraAxis) => {
+        fc.assert(
+          fc.property(scenario, (s) => {
+            const { controls } = setup(s.canvas)
+            const rotation = new Quaternion(...s.rotation).normalize()
+            controls.target.set(...s.target)
+            controls.camera.quaternion.copy(rotation)
+            controls.camera.position
+              .set(0, 0, s.distance)
+              .applyQuaternion(rotation)
+              .add(controls.target)
+            controls.camera.up.set(0, 1, 0).applyQuaternion(rotation)
+            controls.camera.updateMatrixWorld()
+            if (s.orthographic) controls.useOrthographicCamera()
+
+            const { left, top, width, height } = s.canvas
+            const along = (fraction: number) =>
+              line === 'row'
+                ? new Vector2(left + fraction * width, top + height / 2)
+                : new Vector2(left + width / 2, top + fraction * height)
+            const axisInWorld = () =>
+              cameraAxis.clone().applyQuaternion(controls.camera.quaternion)
+            const axis = axisInWorld()
+
+            drag(controls, along(s.from), along(s.to))
+
+            expect(axisInWorld().distanceTo(axis)).toBeLessThan(1e-9)
+          })
+        )
+      }
     )
   })
 })
@@ -862,6 +1033,8 @@ describe('local sketch camera transition', () => {
   function setup(geometryOnly = true) {
     const manager = makeConnectionManager({ width: 800, height: 600 })
     Object.defineProperty(manager, 'geometryOnly', { value: geometryOnly })
+    vi.spyOn(manager, 'subscribeTo').mockReturnValue(() => {})
+    vi.spyOn(manager, 'subscribeToUnreliable').mockReturnValue(() => {})
     const controls = new CameraControls(
       makeCanvas(800, 600),
       manager,
@@ -1000,6 +1173,33 @@ describe('local sketch camera transition', () => {
       ).toBeLessThan(1e-8)
     }
   )
+
+  it('ignores a pending face-center response after disposal', async () => {
+    const { controls, sendSceneCommand } = setup()
+    const response = promiseFactory<WebSocketResponse>()
+    sendSceneCommand.mockReturnValueOnce(response.promise)
+    const camera = controls.camera
+    const position = camera.position.clone()
+    controls.requestSketchCameraTransition('face-id')
+    const pending = controls.transitionToSketch(new Group())
+    controls.dispose()
+    response.resolve({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'face_get_center',
+            data: { pos: { x: 10, y: 20, z: 30 } },
+          },
+        },
+      },
+    })
+    await pending
+    expect(controls.camera).toBe(camera)
+    expect(camera.position).toEqual(position)
+    expect(controls.target.toArray()).toEqual([0, 0, 0])
+  })
 
   it('ignores a face-centre response after leaving sketch mode', async () => {
     const { controls, sendSceneCommand } = setup()
@@ -1210,6 +1410,50 @@ describe('hover queries', () => {
     )
   }
 
+  it('uses the supplied scene element and suppresses a queued hover when a dialog disables picking', () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 800, height: 600 })
+    const canvas = makeCanvas(400, 300)
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(100, 50, 400, 300)
+    )
+    const controls = new CameraControls(
+      canvas,
+      manager,
+      unusedSettings,
+      () => null,
+      () => canvas
+    )
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    const move = () =>
+      controls.onMouseMove(
+        new PointerEvent('pointermove', {
+          clientX: 200,
+          clientY: 125,
+          pointerType: 'mouse',
+        })
+      )
+    try {
+      move()
+      vi.advanceTimersToNextFrame()
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x: 200, y: 150 },
+          },
+        })
+      )
+      send.mockClear()
+      move()
+      controls.hoverPickingDisabled = true
+      vi.advanceTimersToNextFrame()
+      expect(send).not.toHaveBeenCalled()
+    } finally {
+      controls.dispose()
+    }
+  })
+
   it.each([true, false])(
     'are sent outside a sketch (local camera: %s)',
     (local) => {
@@ -1289,3 +1533,30 @@ async function expectViewRestored(
   expect(restored.eye_offset).toBeCloseTo(view.eye_offset)
   expect({ ...restored, eye_offset: view.eye_offset }).toEqual(view)
 }
+
+it('releases camera input and engine subscriptions when a scene closes', () => {
+  const canvas = makeCanvas(640, 360)
+  const manager = makeConnectionManager({ width: 640, height: 360 })
+  const releases: Array<ReturnType<typeof vi.fn>> = []
+  const subscribe = () => {
+    const release = vi.fn()
+    releases.push(release)
+    return release
+  }
+  vi.spyOn(manager, 'subscribeTo').mockImplementation(subscribe)
+  vi.spyOn(manager, 'subscribeToUnreliable').mockImplementation(subscribe)
+  const controls = new CameraControls(canvas, manager, unusedSettings)
+  controls.localCameraMode = true
+  vi.spyOn(controls, 'getInteractionType').mockReturnValue('zoom')
+  controls.camera.position.set(0, 0, 100)
+  const initial = controls.camera.position.clone()
+  canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  expect(controls.camera.position.distanceTo(initial)).toBeGreaterThan(0)
+  const previous = controls.camera.position.clone()
+  controls.dispose()
+  controls.dispose()
+  canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }))
+  expect(controls.camera.position.equals(previous)).toBe(true)
+  expect(releases).toHaveLength(5)
+  for (const release of releases) expect(release).toHaveBeenCalledOnce()
+})

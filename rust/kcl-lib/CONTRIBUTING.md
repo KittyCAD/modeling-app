@@ -102,6 +102,19 @@ The above should create a bunch of output files in the same directory.
 
 Make sure you actually look at them. Specifically, if there's an `execution_error.snap`, it means the execution failed. Depending on the test, this may be what you expect. But if it's not, delete the snap file and run it again.
 
+To update a family of simulation fixtures, pass the shared prefix of their Rust
+test modules from `rust/`.
+
+```shell
+just overwrite-sim-test-family sketch_block_compatibility_
+```
+
+Review the snapshot diff, then verify the family in a separate run.
+
+```shell
+just verify simulation_tests::sketch_block_compatibility_
+```
+
 When it looks good, commit all the files, including `input.kcl`, generated output files in the test directory, and changes to `simulation_tests.rs`.
 
 ## Bumping the version

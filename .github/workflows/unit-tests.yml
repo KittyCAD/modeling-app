@@ -109,7 +109,7 @@ jobs:
           CI_SUITE: ui-components
 
   npm-test-integration:
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     needs: build-wasm
     steps:
       - uses: actions/checkout@v7.0.1

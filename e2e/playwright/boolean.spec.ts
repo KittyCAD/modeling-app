@@ -1,12 +1,15 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { getEndCapId } from '@e2e/playwright/lib/solidSelection'
+import { resetView } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-import { expect, test } from '@e2e/playwright/zoo-test'
+test.use({ useTestSettings: true })
 
 test.describe(
   'Point and click for boolean workflows',
-  { tag: '@desktop' },
+  { tag: ['@web'] },
   () => {
     // Boolean operations to test
     const booleanOperations = [
@@ -35,7 +38,6 @@ test.describe(
       }`
       for (const rendererTag of ['@localRenderer', '@streamRenderer']) {
         test(`Create boolean operation -- ${operationName} ${rendererTag}`, async ({
-          context,
           homePage,
           modelingDialog,
           editor,
@@ -51,11 +53,12 @@ test.describe(
             ),
             'utf-8'
           )
-          await context.addInitScript((file) => {
-            localStorage.setItem('persistCode', file)
-          }, file)
           await homePage.goToModelingScene()
           await scene.settled()
+          await scene.waitForExecutionDoneAfter(() =>
+            editor.replaceCode('', file)
+          )
+          await resetView(scene)
           await toolbar.closePane(DefaultLayoutPaneID.Code)
 
           await test.step(`Test ${operationName} operation`, async () => {
@@ -70,21 +73,32 @@ test.describe(
               'aria-label',
               commandName
             )
+            const targets = modelingDialog.selection(
+              operationName === 'split' ? 'Targets' : 'Solids'
+            )
+            await expect(targets).toHaveAttribute('aria-pressed', 'true')
             // Select first object in the scene, expect there to be a pixel diff from the selection color change
             const [clickFirstObject] = await scene.makeSelectionHelpers({
-              kind: 'face',
-              index: 8,
+              kind: 'bodyFace',
+              id:
+                rendererTag === '@localRenderer'
+                  ? await getEndCapId(page, 'extrude001')
+                  : undefined,
               stream: { x: 592, y: 174, format: 'pixels' },
             })
             await clickFirstObject({ pixelDiff: 50 })
-            await page.waitForTimeout(1000)
+            await expect(targets).toHaveText('1 sweep')
 
-            // For subtract, we need to proceed to the next step before selecting the second object
+            // For subtract, select the tool separately.
             if (operationName !== 'subtract') {
               // should down shift key to select multiple objects
               await page.keyboard.down('Shift')
             } else {
               await modelingDialog.selection('Tools').click()
+              await expect(modelingDialog.selection('Tools')).toHaveAttribute(
+                'aria-pressed',
+                'true'
+              )
             }
 
             // Local selection resolves asynchronously; keep Shift held until both
@@ -92,9 +106,12 @@ test.describe(
             try {
               // Select second object
               const [clickSecondObject] = await scene.makeSelectionHelpers({
-                kind: 'face',
-                index: 1,
-                stream: { x: 683, y: 273, format: 'pixels' },
+                kind: 'bodyFace',
+                id:
+                  rendererTag === '@localRenderer'
+                    ? await getEndCapId(page, 'extrude002')
+                    : undefined,
+                stream: { x: 500, y: 300, format: 'pixels' },
               })
               await clickSecondObject({ pixelDiff: 50 })
 

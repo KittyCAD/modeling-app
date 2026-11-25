@@ -50,6 +50,7 @@ export const createOnEngineConnectionOpened = ({
   camControlsCameraChange,
   connection,
   setStreamIsReady,
+  isCurrent,
 }: {
   settings: SettingsViaQueryString
   sendSceneCommand: (
@@ -62,6 +63,8 @@ export const createOnEngineConnectionOpened = ({
   camControlsCameraChange: () => void
   connection: Connection
   setStreamIsReady: (isStreamReady: boolean) => void
+  /** Startup may resume after its owner closes or replaces the connection. */
+  isCurrent: () => boolean
 }) => {
   const initializeRenderer = async () => {
     // Set the stream's camera projection type
@@ -81,6 +84,7 @@ export const createOnEngineConnectionOpened = ({
       })
     }
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'setting theme',
@@ -89,6 +93,7 @@ export const createOnEngineConnectionOpened = ({
       },
     })
     await setTheme(settings.theme)
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'setting theme completed',
@@ -112,11 +117,13 @@ export const createOnEngineConnectionOpened = ({
       },
     })
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'camControlsCameraChange',
     })
     camControlsCameraChange()
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'restoreRemoteCameraStateAndTriggerSync',
@@ -130,6 +137,7 @@ export const createOnEngineConnectionOpened = ({
       },
     })
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'default_system_properties_set',
@@ -139,10 +147,12 @@ export const createOnEngineConnectionOpened = ({
   }
 
   const onEngineConnectionOpened = async () => {
+    if (!isCurrent()) return
     if (!connection.geometryOnly) {
       await initializeRenderer()
     }
 
+    if (!isCurrent()) return
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'Dispatching SceneReady',
@@ -155,7 +165,7 @@ export const createOnEngineConnectionOpened = ({
     )
 
     // Enables the toolbar reading from App state
-    setStreamIsReady(true)
+    if (isCurrent()) setStreamIsReady(true)
   }
   return onEngineConnectionOpened
 }

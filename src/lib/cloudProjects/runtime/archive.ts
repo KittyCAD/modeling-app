@@ -22,6 +22,7 @@ import {
 } from '@src/lib/cloudProjects/runtime/archiveContents'
 
 type PrepareProjectFilesForCloudUploadOptions = {
+  fallbackTitle?: string
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
@@ -41,6 +42,7 @@ export function prepareProjectFilesForCloudUpload(
   const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
+    options.fallbackTitle ||
     archivePaths.basename(
       projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
     )
@@ -154,23 +156,6 @@ function getProjectTomlDefaultFile(files: ProjectArchiveFile[]) {
   return getProjectDefaultFileFromProjectTomlContents(
     new TextDecoder().decode(projectTomlFile.data)
   )
-}
-
-export function getMimeType(fileName: string) {
-  const extension = archivePaths.extname(fileName).toLowerCase()
-  if (extension === '.kcl' || extension === '.toml') {
-    return 'text/plain'
-  }
-  if (extension === '.png') {
-    return 'image/png'
-  }
-  if (extension === '.jpg' || extension === '.jpeg') {
-    return 'image/jpeg'
-  }
-  if (extension === '.webp') {
-    return 'image/webp'
-  }
-  return 'application/octet-stream'
 }
 
 export function withProjectTitleInArchiveFiles(

@@ -1,5 +1,6 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import { inputs, observeService } from '@src/registry/inputs'
 import type { ReadonlySignal } from '@preact/signals-core'
+import { contract, service } from 'plankton'
 import type { Location, NavigateFunction } from 'react-router-dom'
 
 export type RouterRuntimeValues = {
@@ -24,9 +25,12 @@ export type RouterRegistryService = {
   seed: (values: RouterRuntimeValues) => () => void
   reset: () => void
 }
-
-export const routerContract = defineContract({
-  routerService: defineService<RouterRegistryService>('router.service'),
+export const routerContract = contract({
+  routerService: service<RouterRegistryService>('router.service'),
 })
 
 export const { routerService } = routerContract
+
+export const observations = inputs({
+  routerService: observeService(routerService),
+})

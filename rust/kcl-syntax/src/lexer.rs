@@ -108,6 +108,8 @@ enum RawTokenKind {
     #[regex(r#"'([^'\\]|\\[\s\S])*'"#)]
     String,
     #[regex(r#""([^"\\\n\r]|\\[^\n\r])*"#, unterminated_string)]
+    // Should be fixed in Rust 1.101, see
+    // https://github.com/rust-lang/rust-clippy/issues/13238
     #[expect(clippy::duplicated_attributes, reason = "false positive with ' vs \"")]
     #[regex(r#"'([^'\\\n\r]|\\[^\n\r])*"#, unterminated_string)]
     UnterminatedString,

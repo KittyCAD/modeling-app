@@ -1,3 +1,9 @@
+import { cameraShortcutHints } from '@src/lib/cameraViewCommands'
+import {
+  keymapService,
+  keymapScopesFacet,
+} from '@src/registry/contracts/keymap'
+import { createCameraViewMenuItems } from '@src/components/CameraViewMenu'
 import { memo, useMemo } from 'react'
 
 import { useSignals } from '@preact/signals-react/runtime'
@@ -11,22 +17,19 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import { useApp, useSingletons } from '@src/lib/boot'
-import type { AxisNames } from '@src/lib/constants'
-import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
-import {
-  DefaultLayoutPaneID,
-  getOpenPanes,
-  setOpenPanes,
-} from '@src/lib/layout'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { reportRejection } from '@src/lib/trap'
 import { shouldLockViewControls } from '@src/components/viewControlMenuUtils'
 import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   useSignals()
-  const { settings, layout } = useApp()
+  const { settings, layout, registry } = useApp()
+  const keymap = registry.optional(keymapService)
+  const cameraKeymap = keymap?.keymap.value
+  const cameraScopes = keymap?.getCurrentScopes()
+  const cameraScopeMetadata = registry.observe(keymapScopesFacet).value
   const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
@@ -60,51 +63,33 @@ export function useViewControlMenuItems() {
 
   const menuItems = useMemo(
     () => [
-      ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
-        <ContextMenuItem
-          key={axisName}
-          onClick={() => {
-            kclManager.sceneInfra.camControls
-              .updateCameraToAxis(axisName as AxisNames)
-              .catch(reportRejection)
-          }}
-          disabled={shouldLockView}
-        >
-          {axisSemantic} view
-        </ContextMenuItem>
-      )),
-      <ContextMenuDivider />,
-      <ContextMenuItem
-        onClick={() => {
+      ...createCameraViewMenuItems({
+        camera: kclManager.sceneInfra.camControls,
+        shortcuts:
+          cameraKeymap && cameraScopes
+            ? cameraShortcutHints(
+                cameraKeymap,
+                { type: 'legacy' },
+                cameraScopes,
+                cameraScopeMetadata
+              )
+            : undefined,
+        disabled: shouldLockView,
+        reset: () =>
           resetCameraPosition({
             sceneInfra: kclManager.sceneInfra,
             settingsActor: settings.actor,
-          }).catch(reportRejection)
-        }}
-        disabled={shouldLockView}
-        hotkey="mod+alt+x"
-      >
-        Reset view
-      </ContextMenuItem>,
-      <ContextMenuItem
-        onClick={() => {
+          }),
+        center: async () => {
           modelingSend({ type: 'Center camera on selection' })
-        }}
-        disabled={shouldLockView}
-        hotkey={`mod+alt+c`}
-      >
-        Center view on selection
-      </ContextMenuItem>,
+        },
+      }),
       <ContextMenuItem
         key="go-to-selection"
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            const rootLayout = layout.signal.value
-            setOpenPanes(rootLayout, [
-              ...getOpenPanes({ rootLayout }),
-              DefaultLayoutPaneID.Code,
-            ])
+            layout.openPane(DefaultLayoutPaneID.Code)
 
             // Navigate to the source code location
             modelingSend({
@@ -194,6 +179,9 @@ export function useViewControlMenuItems() {
     ],
     [
       shouldLockView,
+      cameraKeymap,
+      cameraScopes,
+      cameraScopeMetadata,
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
@@ -201,7 +189,7 @@ export function useViewControlMenuItems() {
       showSketchGrid,
       snapToGrid,
       gizmoType,
-      layout.signal.value,
+      layout,
       kclManager,
       settings,
     ]

@@ -122,6 +122,11 @@ pub mod lsp_support {
 
         pub mod cache {
             pub use crate::execution::cache::Cache;
+
+            #[cfg(feature = "lsp-test-util")]
+            pub async fn retained_environment_count(cache: &Cache) -> Option<usize> {
+                Some(cache.read_old_memory().await?.stack.memory.envs_with_bindings())
+            }
         }
 
         pub mod typed_path {

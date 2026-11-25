@@ -48,7 +48,7 @@ interface ProjectLibraryPreviewRowProps {
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   projectShellEnabled?: boolean
   showCloudSyncUi: boolean
-  onCloneToLibrary: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
@@ -87,7 +87,7 @@ export function ProjectLibraryPreviewRow({
   fileOperations,
   projectShellEnabled = false,
   showCloudSyncUi,
-  onCloneToLibrary,
+  onDuplicateToLibrary,
   projectLibraryDrag,
   projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
@@ -170,7 +170,7 @@ export function ProjectLibraryPreviewRow({
           projectShellEnabled={projectShellEnabled}
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
-          onCloneToLibrary={onCloneToLibrary}
+          onDuplicateToLibrary={onDuplicateToLibrary}
           projectLibraryDrag={projectLibraryDrag}
           density="compact"
           className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
@@ -194,7 +194,7 @@ interface ProjectCardListProps {
   fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   projectShellEnabled?: boolean
   showCloudSyncUi: boolean
-  onCloneToLibrary: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
   density?: 'default' | 'compact'
   showDetails?: boolean
@@ -209,7 +209,7 @@ export function ProjectCardList({
   fileOperations,
   projectShellEnabled = false,
   showCloudSyncUi,
-  onCloneToLibrary,
+  onDuplicateToLibrary,
   projectLibraryDrag,
   density = 'default',
   showDetails = true,
@@ -238,7 +238,7 @@ export function ProjectCardList({
             projectShellEnabled={projectShellEnabled}
             showCloudSyncUi={showCloudSyncUi}
             showSourceStatusBadges={showSourceStatusBadges}
-            onCloneToLibrary={onCloneToLibrary}
+            onDuplicateToLibrary={onDuplicateToLibrary}
             {...projectDragProps}
           />
         )
