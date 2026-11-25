@@ -110,7 +110,6 @@ type MlCopilotUserRequest = Omit<
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
   project_id?: string
-  cloud_project?: { project_id: string; expected_revision: string }
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
@@ -1927,7 +1926,6 @@ export const zookeeperManagerMachine = setup({
                 },
                 conversationId: response.conversation_id.conversation_id,
                 cloudProjectSave:
-                  'cloud_project_save' in response.conversation_id &&
                   response.conversation_id.cloud_project_save === true,
                 replayNextCursor,
                 defaultMode: maybeDefaultMode,
