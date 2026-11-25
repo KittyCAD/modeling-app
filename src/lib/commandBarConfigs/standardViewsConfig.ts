@@ -1,119 +1,43 @@
-import type { KclManager } from '@src/lang/KclManager'
+import type { CameraControls } from '@src/clientSideScene/CameraControls'
+import { cameraViewDefinitions } from '@src/lib/cameraViewCommands'
 import type { Command } from '@src/lib/commandTypes'
-import { AxisNames } from '@src/lib/constants'
+import { ZOOM_TO_FIT_PADDING } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import {
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
 
-export function createStandardViewsCommands(kclManager: KclManager) {
-  const { sceneInfra } = kclManager
-  const topViewCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Top view',
-    displayName: `Top view`,
-    description: 'Set to top view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls
-        .updateCameraToAxis(AxisNames.Z)
-        .catch(reportRejection)
-    },
-  }
-  const rightViewCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Right view',
-    displayName: `Right view`,
-    description: 'Set to right view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls
-        .updateCameraToAxis(AxisNames.X)
-        .catch(reportRejection)
-    },
-  }
-  const frontViewCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Front view',
-    displayName: `Front view`,
-    description: 'Set to front view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls
-        .updateCameraToAxis(AxisNames.NEG_Y)
-        .catch(reportRejection)
-    },
-  }
-
-  const backViewCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Back view',
-    displayName: `Back view`,
-    description: 'Set to back view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls
-        .updateCameraToAxis(AxisNames.Y)
-        .catch(reportRejection)
-    },
-  }
-
-  const bottomViewCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Bottom view',
-    displayName: `Bottom view`,
-    description: 'Set to bottom view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls
-        .updateCameraToAxis(AxisNames.NEG_Z)
-        .catch(reportRejection)
-    },
-  }
-
-  const leftViewCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Left view',
-    displayName: `Left view`,
-    description: 'Set to left view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls
-        .updateCameraToAxis(AxisNames.NEG_X)
-        .catch(reportRejection)
-    },
-  }
-
-  const zoomToFitCommand: Command = {
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    name: 'Zoom to fit',
-    displayName: `Zoom to fit`,
-    description: 'Fits the model in the camera view',
-    groupId: 'standardViews',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (data) => {
-      sceneInfra.camControls.zoomToFit({ padding: 0.1 }).catch(reportRejection)
-    },
-  }
-
-  return {
-    topViewCommand,
-    rightViewCommand,
-    frontViewCommand,
-    backViewCommand,
-    bottomViewCommand,
-    leftViewCommand,
-    zoomToFitCommand,
-  }
+/** Legacy camera commands retain their IDs; defaults live beside the shared actions. */
+export function createStandardViewsCommands(
+  camera: Pick<CameraControls, 'updateCameraToAxis' | 'zoomToFit'>
+): Command[] {
+  return cameraViewDefinitions.flatMap((definition) => {
+    if (!('axis' in definition) && definition.id !== 'fit') return []
+    return [
+      {
+        id: definition.legacyCommand,
+        scopes:
+          definition.id === 'fit'
+            ? FILE_COMMAND_SCOPES
+            : [MODE_MODELING_COMMAND_SCOPE],
+        name: definition.title,
+        displayName: definition.title,
+        description:
+          definition.id === 'fit'
+            ? 'Fits the model in the camera view'
+            : `Set to ${definition.title.toLowerCase()}`,
+        groupId: 'standardViews',
+        icon: 'settings',
+        needsReview: false,
+        onSubmit: () => {
+          const operation =
+            'axis' in definition
+              ? camera.updateCameraToAxis(definition.axis)
+              : camera.zoomToFit({ padding: ZOOM_TO_FIT_PADDING })
+          operation.catch(reportRejection)
+        },
+      },
+    ]
+  })
 }

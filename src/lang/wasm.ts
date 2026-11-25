@@ -959,6 +959,13 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         pathToNode.push([step.index, ARG_INDEX_FIELD])
         pathToNode.push(['arg', LABELED_ARG_FIELD])
         break
+      case 'CallKwBlock':
+        pathToNode.push(['block', 'CallExpressionKw'])
+        break
+      case 'BlockItem':
+        pathToNode.push(['items', 'Block'])
+        pathToNode.push([step.index, 'index'])
+        break
       case 'BinaryLeft':
         pathToNode.push(['left', 'BinaryExpression'])
         break

@@ -1,4 +1,9 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
+import { commandKey } from '@src/lib/commandUtils'
+import {
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
+import { createCameraKeymapItems } from '@src/lib/cameraViewCommands'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
@@ -6,16 +11,17 @@ import {
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
+  keymapFacet,
   MODE_MODELING_KEYMAP_SCOPE,
-  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODELING_DIALOG_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
+import { contribute } from 'plankton'
 
 const BASE_KEYMAP_SOURCE = 'Base'
 const FILE_KEYMAP_SCOPES = [
@@ -145,6 +151,13 @@ export const defaultKeymap: KeymapDocument = {
       userBindingCommand: APP_COMMAND_IDS.search.focusProjects,
     },
     {
+      id: 'project.export-archive',
+      title: EXPORT_PROJECT_ARCHIVE_LABEL,
+      when: [...FILE_KEYMAP_SCOPES, CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+shift+s'],
+      command: commandKey(EXPORT_PROJECT_ARCHIVE_COMMAND),
+    },
+    {
       id: 'editor.undo',
       title: 'Undo',
       when: FILE_KEYMAP_SCOPES,
@@ -202,13 +215,6 @@ export const defaultKeymap: KeymapDocument = {
       command: APP_COMMAND_IDS.modeling.deleteSelection,
     })),
     {
-      id: 'modeling.center-camera-on-selection',
-      title: 'Center camera on selection',
-      when: FILE_KEYMAP_SCOPES,
-      keystrokes: ['mod+alt+c'],
-      command: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
-    },
-    {
       id: 'modeling.select-all-in-current-sketch',
       title: 'Select all in current sketch',
       when: [
@@ -242,14 +248,14 @@ export const defaultKeymap: KeymapDocument = {
     },
     {
       id: 'project-explorer.arrow-up',
-      title: 'Clone project explorer selection up',
+      title: 'Select previous project explorer row',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowup'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
     },
     {
       id: 'project-explorer.arrow-down',
-      title: 'Clone project explorer selection down',
+      title: 'Select next project explorer row',
       when: [PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE],
       keystrokes: ['arrowdown'],
       command: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
@@ -289,69 +295,7 @@ export const defaultKeymap: KeymapDocument = {
       keystrokes: ['mod+v'],
       command: PROJECT_EXPLORER_COMMAND_IDS.paste,
     },
-    {
-      id: 'view.top',
-      title: 'Top view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '1'],
-      command: 'standardViews:Top view',
-    },
-    {
-      id: 'view.right',
-      title: 'Right view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '2'],
-      command: 'standardViews:Right view',
-    },
-    {
-      id: 'view.front',
-      title: 'Front view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '3'],
-      command: 'standardViews:Front view',
-    },
-    {
-      id: 'view.back',
-      title: 'Back view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '4'],
-      command: 'standardViews:Back view',
-    },
-    {
-      id: 'view.bottom',
-      title: 'Bottom view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '5'],
-      command: 'standardViews:Bottom view',
-    },
-    {
-      id: 'view.left',
-      title: 'Left view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', '6'],
-      command: 'standardViews:Left view',
-    },
-    {
-      id: 'view.zoom-to-fit',
-      title: 'Zoom to fit',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', 'f'],
-      command: 'standardViews:Zoom to fit',
-    },
-    {
-      id: 'view.reset',
-      title: 'Reset view',
-      when: [MODE_MODELING_KEYMAP_SCOPE],
-      keystrokes: ['v', 'r'],
-      command: APP_COMMAND_IDS.view.reset,
-    },
-    {
-      id: 'view.reset-with-modifier',
-      title: 'Reset view',
-      when: FILE_KEYMAP_SCOPES,
-      keystrokes: ['mod+alt+x'],
-      command: APP_COMMAND_IDS.view.reset,
-    },
+    ...createCameraKeymapItems({ type: 'legacy' }),
     {
       id: 'toolbar.modeling.sketch',
       title: 'Start or edit sketch',
@@ -611,10 +555,8 @@ export const defaultKeymap: KeymapDocument = {
     },
   ],
 }
-
-export const defaultKeymapItem = defineRegistryItem({
-  id: 'default-keymap',
-  provides: [
-    provide(keymapValueSpec, defaultKeymap, { key: defaultKeymap.source }),
-  ],
-})
+export const defaultKeymapItem = [
+  contribute(keymapFacet, () => defaultKeymap, {
+    key: defaultKeymap.source,
+  }),
+]

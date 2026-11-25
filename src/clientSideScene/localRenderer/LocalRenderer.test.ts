@@ -1,7 +1,12 @@
+import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { sceneSelectionAdapter } from '@src/lib/kcl/scene/selectionAdapter'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { EntityType } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import type { TessellationResponse } from '@src/clientSideScene/localRenderer/nativeBrep/protocol'
 import type { KclManager } from '@src/lang/KclManager'
+import { legacyLocalRendererHost } from '@src/clientSideScene/localRenderer/legacyHost'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
@@ -13,13 +18,13 @@ import {
   Group,
   Mesh,
   type Object3D,
-  type OrthographicCamera,
+  OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshStandardNodeMaterial } from 'three/webgpu'
+import { MeshStandardNodeMaterial, WebGPURenderer } from 'three/webgpu'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lang/KclManager', () => ({
@@ -33,9 +38,21 @@ vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({ settings: { modeling: { base_unit: 'mm' } } }),
 }))
 vi.mock('@src/lib/trap', () => ({ reportRejection: vi.fn() }))
+vi.mock('@src/lib/clientErrors', () => ({
+  ClientErrorCode: { LocalRendererFailure: 'local_renderer_failure' },
+  reportClientError: vi.fn(async () => {}),
+}))
+vi.mock('@src/lib/resetCameraPosition', () => ({
+  resetCameraPosition: vi.fn(async () => {}),
+}))
 
-import { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import {
+  LocalRenderer,
+  assignFaceUuids,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
+import { reportClientError } from '@src/lib/clientErrors'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { Artifact } from '@src/lang/wasm'
 
 // Exercise the real export/GLTFLoader lifecycle without requesting a GPU device.
@@ -117,10 +134,14 @@ function fixture(
     1,
     0.1,
     10000
-  )
+  ),
+  claimInitialCameraFrame?: () => boolean
 ) {
   const manager = Object.assign(new EventTarget(), {
     path: '/model.kcl',
+    hasErrors() {
+      return this.diagnosticsSignal.peek().some((d) => d.severity === 'error')
+    },
     diagnosticsSignal: signal<{ severity: string }[]>([]),
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     engineSceneGenerationSignal: signal(0),
@@ -167,9 +188,13 @@ function fixture(
   })
   manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
   const onModelLoadSettled = vi.fn()
+  const onRendererFailed = vi.fn()
   const renderer = new LocalRenderer(
     document.createElement('div'),
-    manager as unknown as KclManager,
+    {
+      ...legacyLocalRendererHost(manager as unknown as KclManager),
+      claimInitialCameraFrame,
+    },
     {
       theme: Themes.Light,
       enableSSAO: false,
@@ -177,6 +202,7 @@ function fixture(
       fixedSizeGrid: true,
       backfaceColor: '#00D5FF',
       onModelLoadSettled,
+      onRendererFailed,
     }
   )
   const state = renderer as unknown as RendererInternals
@@ -192,7 +218,15 @@ function fixture(
       })
     )
   }
-  return { renderer, state, gpu, manager, done, onModelLoadSettled }
+  return {
+    renderer,
+    state,
+    gpu,
+    manager,
+    done,
+    onModelLoadSettled,
+    onRendererFailed,
+  }
 }
 
 function stubPreviewWorker() {
@@ -224,9 +258,44 @@ function nativeExportResponse() {
     },
   ]
 }
+describe('exported face planes', () => {
+  it('associates analytic surface data with the matching face mesh', () => {
+    const mesh = new Mesh()
+    const scene = new Group()
+    scene.add(mesh)
+    const gltf = {
+      scene,
+      parser: {
+        json: { meshes: [{ primitives: [{}] }] },
+        associations: new Map([[mesh, { meshes: 0, primitives: 0 }]]),
+      },
+      userData: {
+        gltfExtensions: {
+          KITTYCAD_boundary_representation: {
+            solids: [{ mesh: 0, shells: [[0, 1]] }],
+            shells: [{ faces: [[0, 1]] }],
+            faces: [
+              {
+                surface: [0, 1],
+                extras: { KITTYCAD: { uuid: 'planar-face' } },
+              },
+            ],
+            surfaces: [
+              { type: 'plane', plane: { normal: [0, 0, 1], point: [0, 0, 2] } },
+            ],
+          },
+        },
+      },
+    } as unknown as KITTYCAD_GLTF
+    const planes = assignFaceUuids(gltf)
+    expect(mesh.userData.faceUuid).toBe('planar-face')
+    expect(planes.get(mesh)?.constant).toBe(-2)
+  })
+})
 
 describe('local GLB loading', () => {
   beforeEach(() => {
+    vi.mocked(resetCameraPosition).mockClear()
     const prototype = LocalRenderer.prototype as unknown as RendererInternals
     vi.spyOn(prototype, 'initialize').mockResolvedValue(undefined)
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
@@ -248,8 +317,9 @@ describe('local GLB loading', () => {
     } = f.gpu
     planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
     planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
-    const target = planes.planes.get(id)?.mesh
-    if (!target) throw new Error('Missing plane mesh')
+    const targets = planes.planes.get(id)?.meshes
+    const target = targets?.[0]
+    if (!targets || !target) throw new Error('Missing plane mesh')
     picker.pick.mockResolvedValue({ target, stale: false })
     const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
     f.state.camera = new PerspectiveCamera()
@@ -275,10 +345,11 @@ describe('local GLB loading', () => {
       )
     const defaultTargets = [...planes.planes.values()]
       .filter((plane) => plane.defaultPlane)
-      .map(({ mesh }) => mesh)
+      .flatMap(({ meshes }) => meshes)
     return {
       ...f,
       target,
+      targets,
       defaultTargets,
       picker,
       highlights,
@@ -286,6 +357,39 @@ describe('local GLB loading', () => {
       setDefaultVisibility,
     }
   }
+
+  it('lets the new picking adapter use the existing local GPU handler through ConnectionManager', async () => {
+    const f = planeFixture()
+    const commands = new ConnectionManager({
+      settingsActor: {} as SettingsActorType,
+    })
+    commands.streamDimensions = { width: 800, height: 600 }
+    const release = commands.setLocalSelectionCommandHandler(
+      f.state.handleLocalSelectionCommand
+    )
+    const canvas = document.createElement('canvas')
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(100, 50, 400, 300)
+    )
+    try {
+      const adapter = sceneSelectionAdapter(commands, canvas)
+      expect(await adapter.pick({ clientX: 200, clientY: 125 })).toEqual({
+        reference: { type: 'plane', plane_id: 'plane-xy' },
+      })
+      expect(f.picker.pick).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: 200,
+          y: 150,
+          streamWidth: 800,
+          streamHeight: 600,
+        })
+      )
+      expect(commands.connection).toBeUndefined()
+    } finally {
+      release()
+      f.renderer.dispose()
+    }
+  })
 
   it.each(['plane-xy', 'offset'])(
     'maps %s hits and selection to the same hover/click/highlight path',
@@ -295,7 +399,7 @@ describe('local GLB loading', () => {
         type: 'highlight_set_entity',
         data: { entity_id: id },
       })
-      expect(f.highlights.setHover).toHaveBeenLastCalledWith([f.target])
+      expect(f.highlights.setHover).toHaveBeenLastCalledWith(f.targets)
       const result = await f.pick(true)
       expect(result?.modelingResponse).toEqual({
         type: 'query_entity_type_with_point',
@@ -316,7 +420,7 @@ describe('local GLB loading', () => {
         })
       engineSelects([id])
       await f.state.syncSelectionFromEngine()
-      expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
+      expect(f.highlights.setSelection).toHaveBeenLastCalledWith(f.targets)
       engineSelects([])
       await f.state.syncSelectionFromEngine()
       expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
@@ -457,8 +561,138 @@ describe('local GLB loading', () => {
       duration: 0,
       minScaleChange: 0,
     })
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
-    f.renderer.dispose()
+  })
+
+  it('fits orthographic depth before a pick that arrives ahead of the next frame', async () => {
+    const f = planeFixture()
+    const camera = new OrthographicCamera(-16, 16, 16, -16, -10000, 10000)
+    camera.position.set(0, 30, 0)
+    camera.up.set(0, 0, -1)
+    camera.lookAt(0, 0, 0)
+    f.state.camera = camera
+    // scheduleRender is mocked: the pointer event arrives before the queued
+    // animation frame can prepare the camera used by the visible render.
+    f.picker.pick.mockImplementationOnce(async () => {
+      expect(camera.near).toBeGreaterThan(0)
+      expect(camera.far).toBeLessThan(100)
+      return { target: null, stale: false }
+    })
+    await f.pick()
+    const invalidations = f.picker.invalidate.mock.calls.length
+    await f.pick()
+    expect(f.picker.invalidate).toHaveBeenCalledTimes(invalidations)
+  })
+
+  it.each([false, true])(
+    'loads standard geometry/materials with a partial buffer view: %s',
+    async (partialView) => {
+      const f = fixture()
+      if (partialView) {
+        const file = triangleGlb()
+        const padded = new Uint8Array(file.contents.length + 2)
+        padded.set(file.contents, 1)
+        f.manager.rustContext.export.mockResolvedValue([
+          { ...file, contents: padded.subarray(1, -1) },
+        ])
+      }
+      f.manager.isExecutingSignal.value = true
+      expect(f.manager.rustContext.export).not.toHaveBeenCalled()
+      f.done()
+      await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+      expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
+        {
+          type: 'gltf',
+          storage: 'binary',
+          presentation: 'compact',
+          include_uuids: true,
+          extras: ['sketches', 'regions'],
+        },
+        { settings: { modeling: { base_unit: 'mm' } } }
+      )
+      const mesh = f.state.currentModel?.children[0]
+      expect(mesh).toBeInstanceOf(Mesh)
+      if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
+      expect(mesh.geometry.getAttribute('position').count).toBe(3)
+      expect(mesh.material).toBeInstanceOf(MeshStandardNodeMaterial)
+      expect(mesh.material.metalness).toBe(0.3)
+      expect(mesh.material.roughness).toBe(0.4)
+      expect(resetCameraPosition).toHaveBeenCalledExactlyOnceWith({
+        sceneInfra: f.manager.sceneInfra,
+        settingsActor: f.manager.systemDeps.settings,
+      })
+      expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+      f.renderer.dispose()
+    }
+  )
+
+  it('keeps the scene camera when a local presentation is recreated, while allowing explicit resets', async () => {
+    const claimInitialCameraFrame = vi
+      .fn()
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
+    const camera = new PerspectiveCamera(45, 1, 0.1, 10000)
+    const first = fixture(camera, claimInitialCameraFrame)
+    first.done()
+    await vi.waitFor(() =>
+      expect(first.renderer.isLoadedSceneCurrent()).toBe(true)
+    )
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    first.renderer.dispose()
+
+    const reattached = fixture(camera, claimInitialCameraFrame)
+    camera.position.set(10, 20, 30)
+    reattached.done()
+    await vi.waitFor(() =>
+      expect(reattached.renderer.isLoadedSceneCurrent()).toBe(true)
+    )
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(camera.position.toArray()).toEqual([10, 20, 30])
+    reattached.renderer.resetCameraAfterModelLoad()
+    expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    reattached.renderer.dispose()
+  })
+
+  it('retains reset requests across failed loads and consumes initial framing only once', async () => {
+    const claimInitialCameraFrame = vi.fn(() => false)
+    const f = fixture(
+      new PerspectiveCamera(45, 1, 0.1, 10000),
+      claimInitialCameraFrame
+    )
+    try {
+      f.renderer.resetCameraAfterModelLoad()
+      f.manager.isExecutingSignal.value = true
+      f.done(false)
+      expect(resetCameraPosition).not.toHaveBeenCalled()
+      expect(claimInitialCameraFrame).not.toHaveBeenCalled()
+      f.manager.isExecutingSignal.value = true
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.manager.isExecutingSignal.value = true
+      f.done(false)
+      f.renderer.resetCameraAfterModelLoad()
+      expect(resetCameraPosition).toHaveBeenCalledOnce()
+      f.manager.isExecutingSignal.value = true
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+      expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
+
+      f.manager.isExecutingSignal.value = true
+      f.done()
+      await vi.waitFor(() =>
+        expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(2)
+    } finally {
+      f.renderer.dispose()
+    }
   })
 
   it('crossfades for 150 ms and cancels the captured preview when a new execution starts', async () => {
@@ -1306,6 +1540,79 @@ describe('local GLB loading', () => {
   })
 })
 
+// Runs the real initialize() up to renderer.init(), which these tests control.
+describe('local renderer GPU failures', () => {
+  beforeEach(() => {
+    vi.mocked(resetCameraPosition).mockClear()
+    const prototype = LocalRenderer.prototype as unknown as RendererInternals
+    vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(reportClientError).mockClear()
+  })
+  afterEach(() => vi.restoreAllMocks())
+
+  it('reports a renderer that cannot start', async () => {
+    const error = new Error('Error creating WebGL context.')
+    vi.spyOn(WebGPURenderer.prototype, 'init').mockRejectedValue(error)
+    const f = fixture()
+    await vi.waitFor(() =>
+      expect(f.onRendererFailed).toHaveBeenCalledWith({
+        kind: 'initialization',
+        message: 'Error creating WebGL context.',
+      })
+    )
+    expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
+      code: 'local_renderer_failure',
+      message: 'Local renderer failed: initialization',
+      error,
+      dedupeKey: 'LocalRenderer:initialization',
+      extra: { kind: 'initialization' },
+    })
+    f.renderer.dispose()
+  })
+
+  it('reports a GPU lost while rendering, but not after dispose', async () => {
+    const init = vi
+      .spyOn(WebGPURenderer.prototype, 'init')
+      .mockReturnValue(new Promise(() => {}))
+    const f = fixture()
+    await vi.waitFor(() => expect(init).toHaveBeenCalledOnce())
+    const created = init.mock.contexts[0] as WebGPURenderer
+    const lost = {
+      api: 'WebGL' as const,
+      message: 'Context lost',
+      reason: 'unknown',
+      originalEvent: null,
+    }
+    const dispose = vi.spyOn(f.renderer, 'dispose')
+    created.onDeviceLost(lost)
+    expect(f.onRendererFailed).toHaveBeenCalledExactlyOnceWith({
+      kind: 'lost',
+      message: 'Context lost',
+    })
+    expect(reportClientError).toHaveBeenCalledExactlyOnceWith({
+      code: 'local_renderer_failure',
+      message: 'Local renderer failed: lost',
+      dedupeKey: 'LocalRenderer:lost',
+      extra: {
+        kind: 'lost',
+        api: 'WebGL',
+        reason: 'unknown',
+        message: 'Context lost',
+      },
+    })
+    // three.js's own handler still runs, so it skips work on the lost device.
+    expect(Reflect.get(created, '_isDeviceLost')).toBe(true)
+    // A lost renderer stops, so it can't capture a blank thumbnail.
+    expect(dispose).toHaveBeenCalledOnce()
+    expect(f.renderer.readFrame(() => 'frame')).toBeUndefined()
+    f.renderer.dispose()
+    created.onDeviceLost(lost)
+    expect(f.onRendererFailed).toHaveBeenCalledOnce()
+    expect(reportClientError).toHaveBeenCalledOnce()
+  })
+})
+
 // A minimal standard GLB: no Zoo extensions/extras or external resources.
 function offsetPlane(): Extract<Artifact, { type: 'plane' }> {
   return {
@@ -1370,5 +1677,5 @@ function triangleGlb(): ModelingAppFile {
   header.setUint32(binOffset, vertices.byteLength, true)
   header.setUint32(binOffset + 4, 0x004e4942, true)
   bytes.set(new Uint8Array(vertices.buffer), binOffset + 8)
-  return { name: 'model.glb', contents: Array.from(bytes) }
+  return { name: 'model.glb', contents: bytes }
 }

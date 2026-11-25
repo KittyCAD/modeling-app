@@ -51,6 +51,7 @@ export type AreaTypeDefinition = {
 
 export enum ActionType {
   Export = 'export',
+  ExportProjectArchive = 'exportProjectArchive',
   AddFile = 'addFileToProject',
   Make = 'make',
   CommandBar = 'openCommandBar',
@@ -62,9 +63,13 @@ export type ActionLibrary = Record<ActionTypeId, ActionTypeDefinition>
 
 export type ActionTypeDefinition = {
   execute: () => void
+  label?: string
+  icon?: CustomIconName
   /** A custom hook for the Action to detect if it should be enabled */
   useDisabled?: () => string | undefined
   shortcut?: string
+  /** Display a shortcut that is registered through the keymap. */
+  shortcutKeystrokes?: readonly string[]
   useHidden?: () => boolean
 }
 

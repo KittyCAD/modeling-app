@@ -1,8 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
-import { FilesSnapshot, Thinking } from '@src/components/Thinking'
+import {
+  ExportDownloadFiles,
+  FilesSnapshot,
+  Thinking,
+} from '@src/components/Thinking'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [
@@ -137,6 +141,11 @@ describe('FilesSnapshot', () => {
 
     expect(screen.getByAltText('reference.png')).toBeInTheDocument()
     expect(createObjectURLMock).toHaveBeenCalledOnce()
+    fireEvent.click(screen.getByRole('button', { name: 'reference.png' }))
+    expect(
+      screen.getByRole('dialog', { name: 'Image preview' })
+    ).toBeInTheDocument()
+    expect(onFetchAttachment).toHaveBeenCalledOnce()
   })
 
   test('preserves image URLs when the reasoning parent rerenders', () => {
@@ -357,22 +366,66 @@ describe('FilesSnapshot', () => {
     expect(revokeObjectURLMock).toHaveBeenCalledTimes(1)
   })
 
-  test('image has download button with correct title', () => {
-    const files: MlCopilotFile[] = [
-      {
-        name: 'clickable-image.png',
-        mimetype: 'image/png',
-        data: MOCK_PNG_DATA,
-      },
-    ]
+  test.each([
+    ['reasoning snapshots', FilesSnapshot],
+    ['final attachments', ExportDownloadFiles],
+  ])('opens %s in a preview instead of downloading', (_label, Component) => {
+    const file: MlCopilotFile = {
+      name: 'clickable-image.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const download = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {})
+    render(<Component files={[file]} />)
 
-    render(<FilesSnapshot files={files} />)
+    const trigger = screen.getByRole('button', { name: file.name })
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    fireEvent.click(trigger)
 
-    const imageButton = screen.getByTitle(
-      'Click to download clickable-image.png'
+    const dialog = screen.getByRole('dialog', { name: 'Image preview' })
+    expect(
+      within(dialog).getByRole('img', { name: 'Attachment preview' })
+    ).toBeInTheDocument()
+    expect(download).not.toHaveBeenCalled()
+
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Close preview' })
     )
-    expect(imageButton).toBeInTheDocument()
-    expect(imageButton.tagName).toBe('BUTTON')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+
+    fireEvent.click(
+      screen.getByRole('button', { name: `Download ${file.name}` })
+    )
+    expect(download).toHaveBeenCalledOnce()
+    expect(download.mock.instances[0]).toHaveAttribute('download', file.name)
+    expect(download.mock.instances[0]).toHaveAttribute(
+      'href',
+      screen.getByAltText(file.name).getAttribute('src')
+    )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  test('keeps downloading available when an image cannot be displayed', () => {
+    const file: MlCopilotFile = {
+      name: 'broken.png',
+      mimetype: 'image/png',
+      data: [0],
+    }
+    const download = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {})
+    render(<FilesSnapshot files={[file]} />)
+
+    fireEvent.error(screen.getByAltText(file.name))
+    expect(
+      screen.queryByRole('img', { name: file.name })
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTitle(`Click to download ${file.name}`))
+    expect(download).toHaveBeenCalledOnce()
+    expect(download.mock.instances[0]).toHaveAttribute('download', file.name)
   })
 
   test('non-image file has download button with correct title', () => {

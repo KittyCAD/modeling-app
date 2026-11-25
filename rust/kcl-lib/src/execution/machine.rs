@@ -156,6 +156,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::KclVersion;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::SketchSurface;
@@ -1154,7 +1155,7 @@ async fn step_eval(
         // ---- access / control ----
         Expr::MemberExpression(node) => {
             let node = node.arc();
-            if exec_state.entry_point_version_is_v3_or_higher() {
+            if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
                 // KCL 3.0: evaluate in source order, the object before the
                 // property.
                 let object = EvalRequest::expr(&node.object);
@@ -1642,7 +1643,7 @@ async fn step_block(
                         Vec::new(),
                     )));
                 };
-                if exec_state.entry_point_version_is_v3_or_higher() {
+                if exec_state.entry_point_version_at_least(KclVersion::V3Preview) {
                     // KCL 3.0: early return. The rest of this block is
                     // abandoned (this continuation is already popped and holds
                     // no ambient state); unwind_return absorbs the value at the
@@ -1843,6 +1844,15 @@ async fn start_call(
     ctx: &ExecutorContext,
 ) -> Result<Control, KclError> {
     let callsite: SourceRange = SourceRange::from(node.as_ref());
+
+    // The Wasm API accepts serialized ASTs directly. Reject an unsupported
+    // trailing block before an argument can perform a modeling operation.
+    if let Some(block) = &node.block {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Calls with trailing blocks cannot be executed yet".to_owned(),
+            vec![block.into()],
+        )));
+    }
 
     // Resolve the function before evaluating arguments so calls can mutate
     // exec_state without holding a memory borrow.

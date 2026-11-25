@@ -206,7 +206,8 @@ impl HoverProvider for CallExpressionKw {
             }
         }
 
-        None
+        let value = self.block.as_ref()?.get_expr_for_position(pos)?;
+        value.get_hover_value_for_position(pos, code, opts)
     }
 }
 
@@ -420,5 +421,47 @@ impl HoverProvider for SketchBlock {
 
         let value = self.body.get_expr_for_position(pos)?;
         value.get_hover_value_for_position(pos, code, opts)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn nested_call_in_trailing_block_provides_hover_and_signature() {
+        let code = "outer()\ninner(1, width = 20)";
+        let module = crate::ModuleId::default();
+        let mut program = crate::parsing::parse_str(code, module).parse_errs_as_err().unwrap().ast;
+
+        // Assemble the trailing block from parsed statements to preserve their source ranges.
+        let items = program.body.split_off(1);
+        let BodyItem::ExpressionStatement(stmt) = &mut program.body[0] else {
+            panic!("expected a call statement");
+        };
+        let Expr::CallExpressionKw(call) = &mut stmt.expression else {
+            panic!("expected the outer call");
+        };
+        let inner_pos = code.find("inner").unwrap();
+        call.block = Some(BoxNode::new(Node::new(
+            Block {
+                items,
+                ..Default::default()
+            },
+            inner_pos,
+            code.len(),
+            module,
+        )));
+        call.end = code.len();
+        stmt.end = code.len();
+
+        let hover = program.get_hover_value_for_position(inner_pos, code, &HoverOpts::default_for_hover());
+        assert!(matches!(hover, Some(Hover::Function { name, .. }) if name == "inner"));
+        let signature = program.get_hover_value_for_position(
+            code.find("20").unwrap(),
+            code,
+            &HoverOpts::default_for_signature_help(),
+        );
+        assert!(matches!(signature, Some(Hover::Signature { name, parameter_index: 1, .. }) if name == "inner"));
     }
 }

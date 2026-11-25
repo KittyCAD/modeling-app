@@ -25,6 +25,7 @@ export class Debugger {
 
   getNow() {
     const isPerformanceSupported =
+      typeof window !== 'undefined' &&
       window.performance &&
       // @ts-ignore this is a real check.
       window.performance.now &&

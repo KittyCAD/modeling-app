@@ -5,7 +5,7 @@ import JSZip from 'jszip'
 // Shared Projects API responses and archives for cloud storage scenarios.
 export const CLOUD_ENVIRONMENT = 'dev.zoo.dev'
 
-export type ProjectFiles = Record<string, string>
+export type ProjectFiles = Record<string, string | Buffer>
 
 export type CloudProject = {
   id: string

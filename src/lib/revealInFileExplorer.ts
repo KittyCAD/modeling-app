@@ -1,4 +1,6 @@
+import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
 import { isDesktop } from '@src/lib/isDesktop'
+import { getRelativePathIfContained } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 
 export function canRevealInFileExplorer() {
@@ -6,6 +8,17 @@ export function canRevealInFileExplorer() {
     isDesktop() &&
     typeof window !== 'undefined' &&
     typeof window.electron?.showInFolder === 'function'
+  )
+}
+
+export function canRevealPathInFileExplorer(
+  path: string | undefined,
+  mounts: readonly FileOperationsMount[]
+) {
+  if (!path || !canRevealInFileExplorer()) return false
+
+  return mounts.every(
+    ({ root }) => getRelativePathIfContained(root, path) === undefined
   )
 }
 

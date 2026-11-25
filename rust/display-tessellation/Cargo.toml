@@ -9,7 +9,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde = { workspace = true, features = ["derive"] }
-kittycad-modeling-cmds = { workspace = true }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "e185c32ca4f03abd06a2f167206effcc5e527c42" }
 serde_json.workspace = true
 earcutr = "0.4.3"
 
