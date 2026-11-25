@@ -650,15 +650,15 @@ describe('RustContext using a context owned by the KCL runtime', () => {
 })
 
 it('adopts an executed project without reopening it and ignores adoption after destruction', async () => {
-  const native = runtime('adopted')
-  const context = owner(Promise.resolve(native.module))
+  const native = createNativeModule('adopted')
+  const context = createRustContext(Promise.resolve(native.module))
   const published = vi.fn()
   context.planesCreated.add(published)
   try {
     await context.adoptExecutedProject(planes, 1)
     expect(context.hasOpenedProject).toBe(true)
     expect(context.defaultPlanes).toEqual(planes)
-    expect(native.instances[0].open_project).not.toHaveBeenCalled()
+    expect(native.instance.open_project).not.toHaveBeenCalled()
     published.mockClear()
     const pending = context.adoptExecutedProject({ ...planes, xy: 'late' }, 2)
     context.destroy()
