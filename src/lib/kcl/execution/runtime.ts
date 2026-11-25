@@ -200,6 +200,9 @@ export async function createKclRuntime(
         : Promise.reject(Cause.squash(exit.cause))
     })
   }
+  // Let the legacy RustContext wrapper share this runtime's native state and
+  // operation queue. This runtime retains ownership of native.free(); see
+  // NativeContextHost for the migration rationale and replacement path.
   const nativeContextHost: NativeContextHost = {
     create: async () => {
       if (disposed) return Promise.reject(new Error('The KCL scene closed'))
