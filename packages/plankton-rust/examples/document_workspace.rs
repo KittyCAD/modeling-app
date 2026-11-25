@@ -27,6 +27,10 @@ impl Service for ActiveDocument {
 }
 
 fn main() -> HookResult {
+    futures_lite::future::block_on(workspace())
+}
+
+async fn workspace() -> HookResult {
     let document = Factory::new(Dependencies::none(), |(), _| {
         let document = Rc::new(Document {
             title: Signal::new("sketch.kcl".into()),
@@ -62,17 +66,21 @@ fn main() -> HookResult {
     );
     let sidebar = slot(vec![Binding::new::<Panels>(|| "help".into()).into()]);
     let mut registry = Registry::new();
-    registry.configure(vec![editor.into(), sidebar.clone().into(), outline.into()])?;
+    registry
+        .configure(vec![editor.into(), sidebar.clone().into(), outline.into()])
+        .await?;
 
     let panels = registry.observe::<Panels>();
     println!("Initial panels: {:?}", panels.get()?);
     let subscription = panels.subscribe(|panels| println!("Panels changed: {panels:?}"))?;
     let document = registry.required::<ActiveDocument>()?;
     document.title.set("assembly.kcl".into());
-    registry.replace(
-        &sidebar,
-        vec![Binding::new::<Panels>(|| "search".into()).into()],
-    )?;
+    registry
+        .replace(
+            &sidebar,
+            vec![Binding::new::<Panels>(|| "search".into()).into()],
+        )
+        .await?;
 
     // The same controller stays available while its slot is empty.
     let outline = registry
@@ -81,11 +89,11 @@ fn main() -> HookResult {
         .find(|plugin| plugin.id == "outline")
         .ok_or("expected an installed outline plugin")?;
     let outline = outline.controller;
-    outline.toggle(&mut registry)?;
+    outline.toggle(&mut registry).await?;
     document.title.set("scene.kcl".into());
-    outline.toggle(&mut registry)?;
+    outline.toggle(&mut registry).await?;
 
     drop(subscription);
-    registry.dispose()?;
+    registry.dispose().await?;
     Ok(())
 }

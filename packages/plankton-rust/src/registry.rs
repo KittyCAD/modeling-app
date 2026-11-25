@@ -4,7 +4,10 @@ use std::{
     collections::{HashMap, HashSet},
     error::Error,
     fmt,
+    future::{Future, poll_fn},
+    pin::{Pin, pin},
     rc::{Rc, Weak},
+    task::{Context, Waker},
 };
 
 use crate::{
@@ -385,14 +388,14 @@ impl RuntimeInstance {
         }
     }
 
-    fn release(&self, failures: &mut Vec<HookFailure>) {
+    async fn release(&self, failures: &mut Vec<HookFailure>) {
         let (stop, dispose) = {
             let mut hooks = self.hooks.borrow_mut();
             (hooks.stop.take(), hooks.dispose.take())
         };
         for (phase, cleanup) in [(HookPhase::Stop, stop), (HookPhase::Dispose, dispose)] {
             if let Some(cleanup) = cleanup
-                && let Err(source) = cleanup()
+                && let Err(source) = cleanup().await
             {
                 failures.push(self.failure(phase, source));
             }
@@ -408,6 +411,72 @@ impl RuntimeInstance {
     }
 }
 
+/// Work after acquisition. It owns all instances it must release or start so
+/// the Registry can keep it even if the calling future is dropped.
+enum Settlement {
+    Commit {
+        removed: Vec<Rc<RuntimeInstance>>,
+        added: Vec<Rc<RuntimeInstance>>,
+    },
+    Rollback {
+        cause: RegistryError,
+        acquired: Vec<Rc<RuntimeInstance>>,
+    },
+}
+
+impl Settlement {
+    async fn finish(self) -> Result<(), RegistryError> {
+        let mut failures = Vec::new();
+        match self {
+            Self::Commit { removed, added } => {
+                for instance in removed {
+                    instance.release(&mut failures).await;
+                }
+                for instance in added {
+                    instance.start(&mut failures);
+                }
+                if failures.is_empty() {
+                    Ok(())
+                } else {
+                    Err(RegistryError::Settling(failures))
+                }
+            }
+            Self::Rollback { cause, acquired } => {
+                for instance in acquired {
+                    instance.release(&mut failures).await;
+                }
+                if failures.is_empty() {
+                    Err(cause)
+                } else {
+                    Err(RegistryError::Rollback {
+                        cause: Box::new(cause),
+                        failures,
+                    })
+                }
+            }
+        }
+    }
+}
+
+/// Invalidations are delivered after settlement, including when the next
+/// mutation is the one that finishes a canceled caller's work.
+struct NotificationPause(Rc<Published>);
+
+impl NotificationPause {
+    fn begin(published: Rc<Published>) -> Self {
+        published.reconciling.set(true);
+        Self(published)
+    }
+}
+
+impl Drop for NotificationPause {
+    fn drop(&mut self) {
+        self.0.reconciling.set(false);
+    }
+}
+
+type PendingSettlement = Pin<Box<dyn Future<Output = Result<(), RegistryError>>>>;
+
 /// Owns a published graph and the Factory instances that keep it running.
 /// Exclusive mutation serializes reconciliation and its lifecycle hooks.
 #[derive(Default)]
@@ -417,6 +486,7 @@ pub struct Registry {
     mounted: HashMap<FactoryKey, Mounted>,
     disposal: Vec<FactoryKey>,
     disposed: bool,
+    pending: Option<PendingSettlement>,
 }
 
 impl Registry {
@@ -460,19 +530,25 @@ impl Registry {
         Observation::for_facet::<Providers<S>>(Rc::downgrade(&self.published))
     }
 
-    pub fn configure(&mut self, roots: Vec<Extension>) -> Result<(), RegistryError> {
-        self.reconcile(roots, None)
+    pub async fn configure(&mut self, roots: Vec<Extension>) -> Result<(), RegistryError> {
+        self.finish_pending().await?;
+        if self.disposed {
+            return Err(RegistryError::Disposed);
+        }
+        self.begin_reconciliation(roots, None);
+        self.finish_pending().await
     }
 
-    pub fn replace<T>(
+    pub async fn replace<T>(
         &mut self,
         owner: &Factory<T>,
         children: Vec<Extension>,
     ) -> Result<(), RegistryError> {
-        self.replace_factory(&owner.item, children)
+        self.finish_pending().await?;
+        self.replace_factory(&owner.item, children).await
     }
 
-    fn replace_factory(
+    async fn replace_factory(
         &mut self,
         owner: &FactoryItem,
         children: Vec<Extension>,
@@ -487,10 +563,11 @@ impl Registry {
                 mounted.instance.origin.clone(),
             ));
         }
-        self.reconcile(self.roots.clone(), Some((key, children)))
+        self.begin_reconciliation(self.roots.clone(), Some((key, children)));
+        self.finish_pending().await
     }
 
-    pub(crate) fn replace_scoped(
+    pub(crate) async fn replace_scoped(
         &mut self,
         slot: &ScopedSlot,
         children: Vec<Extension>,
@@ -498,6 +575,7 @@ impl Registry {
         if !Weak::ptr_eq(&slot.published, &Rc::downgrade(&self.published)) {
             return Err(RegistryError::WrongRegistry);
         }
+        self.finish_pending().await?;
         let owner = self
             .mounted
             .get(&slot.owner)
@@ -512,39 +590,60 @@ impl Registry {
         {
             return Err(RegistryError::SlotNotOwned);
         }
-        self.replace_factory(&target, children)
+        self.replace_factory(&target, children).await
     }
 
-    pub fn dispose(&mut self) -> Result<(), RegistryError> {
+    /// Publish an empty graph and await terminal shutdown.
+    pub async fn dispose(&mut self) -> Result<(), RegistryError> {
+        self.finish_pending().await?;
         if self.disposed {
             return Ok(());
         }
-        let result = self.configure(Vec::new());
+        self.begin_reconciliation(Vec::new(), None);
         self.disposed = true;
-        result
+        self.finish_pending().await
     }
 
-    fn reconcile(
-        &mut self,
-        roots: Vec<Extension>,
-        replacement: Option<(FactoryKey, Vec<Extension>)>,
-    ) -> Result<(), RegistryError> {
-        if self.disposed {
-            return Err(RegistryError::Disposed);
+    /// Finish cleanup, startup, or rollback left by a dropped operation.
+    /// The next mutation also calls this before beginning its own work.
+    pub async fn finish_pending(&mut self) -> Result<(), RegistryError> {
+        if self.pending.is_none() {
+            return Ok(());
         }
-        let published = self.published.clone();
-        let reconciling = ActiveFlag::begin(&published.reconciling);
-        let result = self.reconcile_graph(roots, replacement);
-        drop(reconciling);
-        published.flush();
+        let result = poll_fn(|cx| {
+            // Restore the work only if it suspends. If a hook panics, the future
+            // unwinds here and cannot be polled again by a later mutation.
+            let mut pending = self.pending.take().expect("settlement is pending");
+            let result = pending.as_mut().poll(cx);
+            if result.is_pending() {
+                self.pending = Some(pending);
+            }
+            result
+        })
+        .await;
+        self.published.flush();
         result
     }
 
-    fn reconcile_graph(
+    fn begin_reconciliation(
         &mut self,
         roots: Vec<Extension>,
         replacement: Option<(FactoryKey, Vec<Extension>)>,
-    ) -> Result<(), RegistryError> {
+    ) {
+        let pause = NotificationPause::begin(self.published.clone());
+        let settlement = self.stage_reconciliation(roots, replacement);
+        self.pending = Some(Box::pin(async move {
+            let result = settlement.finish().await;
+            drop(pause);
+            result
+        }));
+    }
+
+    fn stage_reconciliation(
+        &mut self,
+        roots: Vec<Extension>,
+        replacement: Option<(FactoryKey, Vec<Extension>)>,
+    ) -> Settlement {
         let acquisition = ActiveFlag::begin(&self.published.acquiring);
         let mut draft = Draft {
             replacement,
@@ -556,7 +655,12 @@ impl Registry {
         drop(acquisition);
         let disposal = match result {
             Ok(order) => order,
-            Err(cause) => return Err(draft.rollback(cause)),
+            Err(cause) => {
+                return Settlement::Rollback {
+                    cause,
+                    acquired: draft.rollback_order(),
+                };
+            }
         };
 
         let snapshot = draft.snapshot();
@@ -565,30 +669,35 @@ impl Registry {
         let previous_disposal = std::mem::replace(&mut self.disposal, disposal);
         self.published.publish(snapshot);
 
-        let mut failures = Vec::new();
-        for key in previous_disposal {
-            if !self.mounted.contains_key(&key) {
-                let removed = previous
+        let removed = previous_disposal
+            .into_iter()
+            .filter(|key| !self.mounted.contains_key(key))
+            .map(|key| {
+                previous
                     .remove(&key)
-                    .expect("disposal order tracks mounted instances");
-                removed.instance.release(&mut failures);
-            }
-        }
-        for key in draft.created {
-            self.mounted[&key].instance.start(&mut failures);
-        }
-        if failures.is_empty() {
-            Ok(())
-        } else {
-            Err(RegistryError::Settling(failures))
-        }
+                    .expect("disposal order tracks mounted instances")
+                    .instance
+            })
+            .collect();
+        let added = draft
+            .created
+            .into_iter()
+            .map(|key| self.mounted[&key].instance.clone())
+            .collect();
+        Settlement::Commit { removed, added }
     }
 }
 
 impl Drop for Registry {
     fn drop(&mut self) {
         if !std::thread::panicking() {
-            let _ = self.dispose();
+            // Drop can run immediately ready hooks without driving an executor.
+            // A caller that needs async cleanup to finish must await shutdown.
+            let _ = pin!(async {
+                let _ = self.finish_pending().await;
+                self.dispose().await
+            })
+            .poll(&mut Context::from_waker(Waker::noop()));
         }
     }
 }
@@ -771,30 +880,22 @@ impl Draft {
         snapshot
     }
 
-    fn rollback(mut self, cause: RegistryError) -> RegistryError {
-        self.exports.clear();
-        let created: HashSet<_> = self.created.iter().collect();
-        let mut failures = Vec::new();
+    fn rollback_order(mut self) -> Vec<Rc<RuntimeInstance>> {
         // Non-strict ordering breaks any cycle so every acquired instance is released.
-        if let Ok(order) = self.disposal_order(false) {
-            for key in order {
-                if created.contains(&key) {
-                    let removed = self
-                        .mounted
-                        .remove(&key)
-                        .expect("rollback order tracks acquired instances");
-                    removed.instance.release(&mut failures);
-                }
-            }
-        }
-        if failures.is_empty() {
-            cause
-        } else {
-            RegistryError::Rollback {
-                cause: Box::new(cause),
-                failures,
-            }
-        }
+        let order = self
+            .disposal_order(false)
+            .expect("non-strict ordering tolerates cycles");
+        let created: HashSet<_> = self.created.iter().collect();
+        order
+            .into_iter()
+            .filter(|key| created.contains(key))
+            .map(|key| {
+                self.mounted
+                    .remove(&key)
+                    .expect("rollback order tracks acquired instances")
+                    .instance
+            })
+            .collect()
     }
 
     fn disposal_order(&self, strict: bool) -> Result<Vec<FactoryKey>, RegistryError> {

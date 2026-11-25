@@ -7,3 +7,6 @@ publish = false
 
 [lints.rust]
 unsafe_code = "forbid"
+
+[dev-dependencies]
+futures-lite = "2.6.1"

@@ -1,7 +1,7 @@
 # Plankton for Rust
 
 Plankton composes application extensions and manages the resources they share.
-This standalone prototype requires Rust 1.88 and has no crate dependencies.
+This standalone prototype requires Rust 1.88 and has no runtime crate dependencies.
 
 Run the document workspace example from the repository root.
 
@@ -74,7 +74,8 @@ Declare resources that should follow the toggle in child factories.
 
 Use `registry.get::<Plugins>()` to find a plugin's metadata and controller.
 The controller exposes an `active` observation and takes `&mut Registry` for
-`enable`, `disable`, and `toggle`. Activity follows the published graph. A failed
+`enable`, `disable`, and `toggle`. Await these operations to finish cleanup.
+Activity follows the published graph. A failed
 acquisition preserves the previous state, and a cleanup failure after disabling
 leaves the plugin inactive. Records remain discoverable while disabled.
 An activity subscriber receives updates when its own plugin's enabled state
@@ -125,15 +126,31 @@ hooks. A snapshot keeps one graph available for reads across several Facets.
 Sources still evaluate on demand, so data captured by a source can change
 between reads of the same snapshot.
 
-The registry acquires synchronously, publishes the new graph together, releases
-removed instances, then starts newly acquired instances. Constructor failures
-roll back the new instances. Cleanup and startup errors leave the committed
-graph in place. `dispose` reports shutdown failures. Dropping a registry runs
-best-effort cleanup. Retaining a snapshot or a service handle can extend the
-life of a Rust value beyond registry removal, while lifecycle callbacks still
-run at removal. Keep resources that need a deterministic shutdown boundary
-behind an explicit cleanup hook. Lifecycle failure reporting covers errors
-returned from hooks. Panics follow ordinary Rust unwinding.
+Factory construction and startup are synchronous. Register cleanup with
+`on_dispose` or `on_start_with_cleanup` for synchronous callbacks. Use
+`on_dispose_async` or `on_start_with_async_cleanup` for callbacks that return
+futures.
 
-This prototype uses a single-threaded registry and synchronous hooks. The
-TypeScript service facade and async cleanup are outside this prototype's scope.
+Await `configure`, `replace`, and `dispose` to finish reconciliation. The
+registry acquires and publishes the new graph before awaiting removed instances'
+cleanup. It awaits startup cleanup before disposal, children before owners,
+and consumers before dependencies. New instances start after cleanup, then
+subscribers receive queued updates. Constructor failures roll back new instances
+and preserve the previous graph. Cleanup and startup errors are collected and
+leave the committed graph in place.
+
+The registry keeps settlement work if the calling future is dropped. Call
+`finish_pending().await` to resume it, or let the next mutation finish it first.
+If that work returns an error, the next mutation returns that error before
+starting its own changes. Once shutdown begins, it is terminal.
+Await `dispose` to finish shutdown. Dropping the registry can run cleanup that
+completes immediately in graph order. Cleanup that suspends needs an executor
+and an explicit await.
+
+Retaining a snapshot or a service handle can extend the life of a Rust value
+beyond registry removal. Keep resources that need a deterministic shutdown
+boundary behind an explicit cleanup hook. Lifecycle failure reporting covers
+errors returned from hooks. Panics follow ordinary Rust unwinding.
+
+This prototype uses a single-threaded registry. The application supplies its
+executor. The TypeScript service facade is outside this prototype's scope.

@@ -83,19 +83,19 @@ pub struct PluginController {
 }
 
 impl PluginController {
-    pub fn enable(&self, registry: &mut Registry) -> Result<(), RegistryError> {
-        self.body.replace(registry, self.content.clone())
+    pub async fn enable(&self, registry: &mut Registry) -> Result<(), RegistryError> {
+        self.body.replace(registry, self.content.clone()).await
     }
 
-    pub fn disable(&self, registry: &mut Registry) -> Result<(), RegistryError> {
-        self.body.replace(registry, Vec::new())
+    pub async fn disable(&self, registry: &mut Registry) -> Result<(), RegistryError> {
+        self.body.replace(registry, Vec::new()).await
     }
 
-    pub fn toggle(&self, registry: &mut Registry) -> Result<(), RegistryError> {
+    pub async fn toggle(&self, registry: &mut Registry) -> Result<(), RegistryError> {
         if self.active.get().unwrap_or(false) {
-            self.disable(registry)
+            self.disable(registry).await
         } else {
-            self.enable(registry)
+            self.enable(registry).await
         }
     }
 }

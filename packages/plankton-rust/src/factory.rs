@@ -2,7 +2,9 @@ use std::{
     any::{Any, TypeId},
     collections::HashMap,
     error::Error,
+    future::{Future, ready},
     marker::PhantomData,
+    pin::Pin,
     rc::{Rc, Weak},
 };
 
@@ -13,7 +15,8 @@ use crate::{
 
 pub type HookError = Box<dyn Error>;
 pub type HookResult<T = ()> = Result<T, HookError>;
-pub(crate) type Cleanup = Box<dyn FnOnce() -> HookResult>;
+type CleanupFuture = Pin<Box<dyn Future<Output = HookResult>>>;
+pub(crate) type Cleanup = Box<dyn FnOnce() -> CleanupFuture>;
 pub(crate) type Start = Box<dyn FnOnce() -> HookResult<Option<Cleanup>>>;
 
 /// The exports and lifecycle work for one acquired Factory.
@@ -45,19 +48,46 @@ impl<T> Instance<T> {
     }
 
     pub fn on_start_with_cleanup<C: FnOnce() -> HookResult + 'static>(
-        mut self,
+        self,
         start: impl FnOnce() -> HookResult<C> + 'static,
     ) -> Self {
-        self.start = Some(Box::new(|| {
-            start().map(|stop| Some(Box::new(stop) as Cleanup))
+        self.on_start_with_async_cleanup(move || start().map(|stop| move || ready(stop())))
+    }
+
+    /// Start synchronously and return a cleanup callback that the registry awaits.
+    pub fn on_start_with_async_cleanup<C, F>(
+        mut self,
+        start: impl FnOnce() -> HookResult<C> + 'static,
+    ) -> Self
+    where
+        C: FnOnce() -> F + 'static,
+        F: Future<Output = HookResult> + 'static,
+    {
+        self.start = Some(Box::new(move || {
+            start().map(|stop| Some(erase_cleanup(stop)))
         }));
         self
     }
 
-    pub fn on_dispose(mut self, dispose: impl FnOnce() -> HookResult + 'static) -> Self {
-        self.dispose = Some(Box::new(dispose));
+    pub fn on_dispose(self, dispose: impl FnOnce() -> HookResult + 'static) -> Self {
+        self.on_dispose_async(move || ready(dispose()))
+    }
+
+    /// Run asynchronous cleanup after any cleanup returned by startup.
+    pub fn on_dispose_async<F>(mut self, dispose: impl FnOnce() -> F + 'static) -> Self
+    where
+        F: Future<Output = HookResult> + 'static,
+    {
+        self.dispose = Some(erase_cleanup(dispose));
         self
     }
+}
+
+fn erase_cleanup<F>(cleanup: impl FnOnce() -> F + 'static) -> Cleanup
+where
+    F: Future<Output = HookResult> + 'static,
+{
+    Box::new(move || Box::pin(cleanup()))
 }
 
 /// Constructor access to provenance, observations, and owned slots.
@@ -104,12 +134,12 @@ pub struct ScopedSlot {
 
 impl ScopedSlot {
     /// Replace the slot's children using the Registry that acquired its owner.
-    pub fn replace(
+    pub async fn replace(
         &self,
         registry: &mut Registry,
         children: Vec<Extension>,
     ) -> Result<(), RegistryError> {
-        registry.replace_scoped(self, children)
+        registry.replace_scoped(self, children).await
     }
 }
 
