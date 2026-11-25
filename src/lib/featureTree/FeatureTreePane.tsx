@@ -124,8 +124,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // may fail since operations don't have an identity that persists across
 // executions. Currently, we don't change the operations in an auto-fix, but
 // this seems brittle.
-const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
-
 const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
   'fillet',
   'chamfer',
@@ -193,14 +191,13 @@ export const FeatureTreePaneContents = memo(() => {
   const platform = usePlatform()
   const keymap = app.registry.optional(keymapService)
   const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
-    keymap
-      ? findKeymapItemForCommand(
-          keymap.keymap.value,
-          APP_COMMAND_IDS.editor.render,
-          keymap.getCurrentScopes(),
-          app.registry.observe(keymapScopesFacet).value
-        )?.keystrokes
-      : [UNRENDERED_EXECUTE_HOTKEY],
+    keymap &&
+      findKeymapItemForCommand(
+        keymap.keymap.value,
+        APP_COMMAND_IDS.editor.render,
+        keymap.getCurrentScopes(),
+        app.registry.observe(keymapScopesFacet).value
+      )?.keystrokes,
     platform
   )
   const { kclManager } = useSingletons()

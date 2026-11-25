@@ -72,10 +72,16 @@ async function fixture() {
     ast: createEmptyAst(),
     artifactGraph: new Map(),
     editorHasFocus: false,
-    execute: vi.fn(async () => {}),
+    execute: { run: vi.fn(async () => {}), keystrokes: undefined },
     toasts: [],
   }
-  function View({ disabled = false }: { disabled?: boolean }) {
+  function View({
+    disabled = false,
+    unrendered = false,
+  }: {
+    disabled?: boolean
+    unrendered?: boolean
+  }) {
     const snapshot = actor.getSnapshot()
     return (
       <ModelingMachineToolbar
@@ -84,7 +90,7 @@ async function fixture() {
         send={(event) => actor.send(event)}
         actor={actor}
         isExecuting={disabled}
-        disableModelingForUnrenderedChanges={false}
+        disableModelingForUnrenderedChanges={unrendered}
         overallState={NetworkHealthState.Ok}
         immediateState={{
           type: EngineConnectionStateType.ConnectionEstablished,
@@ -165,5 +171,23 @@ it('uses supplied execution readiness and command configuration when rerendered'
     ).not.toBeInTheDocument()
   } finally {
     f.actor.stop()
+  }
+})
+
+it('uses the supplied Execute action and shortcut instead of looking up the legacy command', async () => {
+  const toolbar = await fixture()
+  const execute = vi.fn(async () => {})
+  toolbar.host.execute = { run: execute, keystrokes: ['mod+enter'] }
+  try {
+    const view = render(<toolbar.View unrendered />)
+    const button = screen.getByRole('button', { name: /Execute Ctrl\+enter$/ })
+    fireEvent.click(button)
+    expect(execute).toHaveBeenCalledOnce()
+    toolbar.host.execute = { run: execute, keystrokes: undefined }
+    view.rerender(<toolbar.View unrendered />)
+    expect(button).toHaveAccessibleName(/Execute$/)
+    expect(button.querySelector('kbd')).toBeNull()
+  } finally {
+    toolbar.actor.stop()
   }
 })

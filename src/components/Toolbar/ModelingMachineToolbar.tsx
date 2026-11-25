@@ -43,7 +43,6 @@ import {
   type KeymapTree,
   type KeymapScope,
 } from '@src/registry/contracts/keymap'
-import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import { memo, useMemo, type ComponentType, type ComponentProps } from 'react'
 import type { SnapshotFrom } from 'xstate'
@@ -74,10 +73,15 @@ export interface ModelingMachineToolbarHost {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   editorHasFocus: boolean
-  execute: (() => Promise<unknown>) | undefined
+  /** The host chooses the execution target and resolves its current keybinding. */
+  execute:
+    | {
+        run: () => Promise<unknown>
+        keystrokes: readonly string[] | undefined
+      }
+    | undefined
   toasts: readonly ToolbarToast[]
 }
-const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function ModelingMachineToolbar(
   props: ModelingMachineToolbarProps & { host: ModelingMachineToolbarHost }
@@ -132,12 +136,7 @@ export function ModelingMachineToolbar(
     toolbarModeNameToKeymapScope[toolbarConfigurationName],
   ]
   const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
-    findKeymapItemForCommand(
-      keymapTree,
-      APP_COMMAND_IDS.editor.render,
-      currentToolbarKeymapScopes,
-      keymapScopes
-    )?.keystrokes ?? [UNRENDERED_EXECUTE_HOTKEY],
+    host.execute?.keystrokes,
     platform
   )
   const sketchSolveIsExiting = useSelector(
@@ -385,7 +384,7 @@ export function ModelingMachineToolbar(
             className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
             disabled={props.isExecuting || !host.execute}
             onClick={() => {
-              host.execute?.().catch(reportRejection)
+              host.execute?.run().catch(reportRejection)
             }}
           >
             <CustomIcon name="play" className="w-5 h-5" />

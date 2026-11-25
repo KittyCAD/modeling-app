@@ -13,9 +13,11 @@ import { commandKey, isModelingDialogCommand } from '@src/lib/commandUtils'
 import { useToolbarConfig } from '@src/hooks/useToolbarConfig'
 import { toolbarToastsSignal } from '@src/lib/toolbarToast'
 import {
+  findKeymapItemForCommand,
   keymapScopesFacet,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { useSelector } from '@xstate/react'
 import { memo, use } from 'react'
@@ -60,7 +62,15 @@ const Toolbar_ = memo(
           artifactGraph: kclManager.artifactGraph,
           editorHasFocus: kclManager.editorView.hasFocus,
           execute: executionService
-            ? () => executionService.executeCode()
+            ? {
+                run: () => executionService.executeCode(),
+                keystrokes: findKeymapItemForCommand(
+                  keymapTree,
+                  APP_COMMAND_IDS.editor.render,
+                  keymap.getCurrentScopes(),
+                  keymapScopes
+                )?.keystrokes,
+              }
             : undefined,
           toasts: toolbarToastsSignal.value,
         }}
