@@ -56,6 +56,7 @@ async fn main() -> ExitCode {
     let ctx = ExecutorContext::new_with_client(
         ExecutorSettings {
             project_directory,
+            heartbeats: Some(15),
             ..Default::default()
         },
         None,
