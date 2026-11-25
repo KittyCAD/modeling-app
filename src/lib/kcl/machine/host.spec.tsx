@@ -1,3 +1,9 @@
+import { Suspense } from 'react'
+import { MachineModelingView } from '@src/lib/kcl/machine/View'
+import {
+  KCL_RENDER_COMMAND,
+  KCL_RENDER_SCOPE,
+} from '@src/lib/kcl/registry/renderCommands'
 import { Registry, factory, contribute, provide } from 'plankton'
 import { createCommandsExtension } from '@src/registry/extensions/commands'
 import {
@@ -32,7 +38,7 @@ import { SKETCH_SOLVE_ORIGIN_SPRITE } from '@src/machines/sketchSolve/originSpri
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { encode } from '@msgpack/msgpack'
 import { signal } from '@preact/signals-core'
-import { expect, it, vi } from 'vitest'
+import { assert, expect, it, vi } from 'vitest'
 vi.mock('@src/lib/boot', () => ({
   app: {},
   useApp: vi.fn(),
@@ -51,6 +57,7 @@ import {
 } from '@src/lib/kcl/machine/host'
 import {
   KEYMAP_SCHEMA_VERSION,
+  findKeymapItemForCommand,
   keymapService,
   keymapScopesFacet,
   provideKeymapItem,
@@ -1103,6 +1110,57 @@ it('releases a legacy sketch owner before another native editing owner is acquir
     next.release()
   } finally {
     view.owner.actor.stop()
+    await view.dispose()
+  }
+})
+
+it('uses the shared Render action and follows its remapped or unbound shortcut in the toolbar', async () => {
+  const view = await fixture()
+  const renderModel = vi.spyOn(view.view.context, 'render').mockResolvedValue()
+  const legacyExecute = vi
+    .spyOn(view.owner.model, 'executeCode')
+    .mockResolvedValue()
+  // This existing disabled state exposes the toolbar's Execute control.
+  view.view.editor.readOnly.value = true
+  const keymap = view.commandEnv.keymap
+  await keymap.addUserBinding({
+    command: KCL_RENDER_COMMAND,
+    when: [KCL_RENDER_SCOPE],
+    keystrokes: ['q'],
+  })
+  try {
+    await act(async () => {
+      render(
+        <Suspense fallback={<p>Loading modeling view</p>}>
+          <MachineModelingView owner={view.owner} context={view.view.context} />
+        </Suspense>
+      )
+    })
+    const execute = await screen.findByRole('button', { name: /Execute Q$/ })
+    fireEvent.click(execute)
+    expect(renderModel).toHaveBeenCalledOnce()
+    expect(legacyExecute).not.toHaveBeenCalled()
+    await act(async () =>
+      keymap.addUserBinding({
+        command: KCL_RENDER_COMMAND,
+        when: [KCL_RENDER_SCOPE],
+        keystrokes: ['w'],
+      })
+    )
+    expect(execute).toHaveAccessibleName(/Execute W$/)
+    const binding = findKeymapItemForCommand(
+      keymap.keymap.value,
+      KCL_RENDER_COMMAND,
+      [KCL_RENDER_SCOPE]
+    )
+    assert(binding, 'Expected the remapped Render binding')
+    await act(async () => keymap.unbind(binding))
+    expect(execute).toHaveAccessibleName(/Execute$/)
+    expect(execute.querySelector('kbd')).toBeNull()
+  } finally {
+    cleanupReact()
+    renderModel.mockRestore()
+    legacyExecute.mockRestore()
     await view.dispose()
   }
 })

@@ -1,3 +1,8 @@
+import { findKeymapItemForCommand } from '@src/registry/contracts/keymap'
+import {
+  KCL_RENDER_COMMAND,
+  KCL_RENDER_SCOPE,
+} from '@src/lib/kcl/registry/renderCommands'
 import { ErrorBanner } from '@src/components/ErrorBanner'
 import { machineDialogPicking } from '@src/lib/kcl/machine/dialogPicking'
 import type { SelectionArgument } from '@src/components/ModelingDialog/arguments'
@@ -101,7 +106,15 @@ export function MachineModelingView({
             ast: owner.model.ast,
             artifactGraph: owner.model.artifactGraph,
             editorHasFocus: false,
-            execute: () => owner.model.executeCode(),
+            execute: {
+              run: context.render,
+              keystrokes: findKeymapItemForCommand(
+                owner.keymapTree.value,
+                KCL_RENDER_COMMAND,
+                [KCL_RENDER_SCOPE],
+                owner.keymapScopes.value
+              )?.keystrokes,
+            },
             toasts: toolbarToastsSignal.value,
           }}
         />
