@@ -1,93 +1,68 @@
+import { createElement } from 'react'
+import { contribute, factory } from 'plankton'
 import { defineEditorView } from '@src/lib/editors/views'
+import { editorViewsFacet } from '@src/lib/editors/registry/contract'
 import { executionContext } from '@src/lib/executors/context'
 import {
-  defineRegistryItem,
-  defineRegistryItemFactory,
-  provide,
-} from '@kittycad/registry'
-import { DrawingsView } from '@src/lib/drawings/DrawingsView'
-import type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
-import { createDrawingsExecutorCapability } from '@src/lib/drawings/executor'
-import {
-  editorViewValueSpec,
-  editorsService,
-} from '@src/lib/editors/registry/contract'
-import { createElement } from 'react'
-import {
-  executorsService,
-  executorCapabilityValueSpec,
+  observations as executorInputs,
+  executorCapabilityFacet,
 } from '@src/lib/executors/registry/contract'
-import { loadKclProjectSources } from '@src/lib/kcl/projectSources'
-import { projectSessionService } from '@src/lib/projectSession/next/contract'
-import fsZds from '@src/lib/fs-zds'
-import { isErr } from '@src/lib/trap'
-import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { observations as wasmInputs } from '@src/registry/contracts/wasm'
+import projectSourcesExtension from '@src/lib/projectSession/registry/sources'
 import { withProjectShellFeature } from '@src/lib/projectSession/next/feature'
+import { readKclFileExtensions } from '@src/lib/kcl/execution/nativeInputs'
+import { createDrawingsExecutorCapability } from '@src/lib/drawings/executor'
+import { evaluateDrawings } from '@src/lib/drawings/evaluate'
+import { DrawingsView } from '@src/lib/drawings/DrawingsView'
+import { isErr } from '@src/lib/trap'
 
-/** Drawings evaluates paper declarations locally, independently of the engine stream. */
-const extension = defineRegistryItemFactory(({ services, valueSpecs }) => {
-  const capability = createDrawingsExecutorCapability(
-    async (contents, context) => {
-      const wasm = await valueSpecs.get(wasmPromiseValueSpec)
-      if (!wasm) return new Error('KCL runtime is unavailable')
-      if (context.signal.aborted)
-        return new Error('Drawing execution was cancelled')
-      const sources = await loadKclProjectSources(
-        contents,
-        context,
-        services.optional(projectSessionService),
-        services.optional(editorsService)?.editors.peek() ?? []
+const extension = factory({
+  key: 'drawings',
+  dependencies: {
+    executors: executorInputs,
+    wasm: wasmInputs,
+    sources: projectSourcesExtension,
+  },
+  create: ({ executors, wasm, sources }) => {
+    const capability = createDrawingsExecutorCapability(
+      async (contents, context) => {
+        const getWasm = wasm.wasmPromiseFacet.value
+        if (!getWasm) return new Error('KCL runtime is unavailable')
+        const extensions = readKclFileExtensions(getWasm)
+        const snapshot = await sources.capture({
+          document: { src: context.src || undefined, contents },
+          unnamedPath: 'main.kcl',
+          signal: context.signal,
+          include: async (path) =>
+            (await extensions).some((extension) =>
+              path.toLowerCase().endsWith(extension)
+            ),
+        })
+        if (isErr(snapshot)) return snapshot
+        return evaluateDrawings(snapshot, await getWasm, context.signal)
+      },
+      sources.revision
+    )
+    const view = defineEditorView(
+      executionContext(
+        capability,
+        () => executors.executorsService.required(),
+        () => true
       )
-      if (isErr(sources)) return sources
-      const files = new Map(
-        typeof sources === 'string'
-          ? [[fsZds.resolve(context.src), sources]]
-          : [...sources].map(([path, source]) => [fsZds.resolve(path), source])
-      )
-      // This binding serializes the runtime's generated KclValueView map.
-      return (await wasm.evaluate_kcl_mock(contents, context.src, {
-        readFile: async (path: string) => {
-          if (context.signal.aborted)
-            return Promise.reject(new Error('Drawing execution was cancelled'))
-          const source = files.get(fsZds.resolve(path))
-          return source === undefined
-            ? Promise.reject(new Error(`KCL file not found: ${path}`))
-            : new TextEncoder().encode(source)
-        },
-        exists: async (path: string) => files.has(fsZds.resolve(path)),
-        getAllFiles: async () => [...files.keys()],
-      })) as Record<string, KclValueView>
+    )({
+      id: 'drawings.sheet',
+      label: 'Drawings',
+      matches: '.kcl',
+      Component: ({ context }) =>
+        createElement(DrawingsView, { executor: context.executor, capability }),
+    })
+    return {
+      items: [
+        contribute(executorCapabilityFacet, () => capability),
+        contribute(editorViewsFacet, () => view),
+      ],
     }
-  )
-  return createZdsPlugin({
-    id: 'drawings',
-    title: 'Drawings',
-    description: 'A paper workspace for KCL drawings.',
-    items: [
-      defineRegistryItem({
-        provides: [
-          provide(executorCapabilityValueSpec, capability),
-          provide(
-            editorViewValueSpec,
-            defineEditorView(
-              executionContext(capability, () => services.get(executorsService))
-            )({
-              id: 'drawings.sheet',
-              label: 'Drawings',
-              matches: '.kcl',
-
-              Component: ({ context }) =>
-                createElement(DrawingsView, {
-                  executor: context.executor,
-                  capability,
-                }),
-            })
-          ),
-        ],
-      }),
-    ],
-  })
-}, 'drawings')
+  },
+})
 
 export default withProjectShellFeature(extension, 'drawings')

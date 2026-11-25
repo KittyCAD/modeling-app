@@ -26,10 +26,10 @@ export function DrawingsView({
 }) {
   useSignals()
   const [selectedName, setSelectedName] = useState<string | null>(null)
-  const output = executor.output.value
-  const drawings = output.get(capability)
+  const output = executor.result(capability).value
+  const drawings = output.data
   const sheets = drawings?.sheets ?? []
-  const error = output.errors[capability.id]
+  const error = output.error
   const selectedId = sheets.some((sheet) => sheet.name === selectedName)
     ? selectedName
     : (sheets[0]?.name ?? null)
@@ -53,7 +53,11 @@ export function DrawingsView({
       emptyState={
         <p className="p-4 text-sm">
           No drawing sheets in this file. Create one with{' '}
-          <code>drawing::sheet(drawing::PaperSize::A4)</code>.
+          <code>
+            drawing::standardSheet(size = drawing::SheetSize::IsoA4, orientation
+            = drawing::SheetOrientation::Portrait)
+          </code>
+          .
         </p>
       }
       items={sheets.map((sheet) => ({

@@ -1,5 +1,9 @@
 import '@src/lib/projectSession/next/testFeature'
-import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
+import { Registry, contribute, provide } from 'plankton'
+import { requireSuccess } from '@src/lib/editors/testViews'
+import { acquireAutomaticExecution } from '@src/lib/executors/automatic'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
 import { DrawingsView } from '@src/lib/drawings/DrawingsView'
 import { createDrawingsExecutorCapability } from '@src/lib/drawings/executor'
@@ -7,26 +11,34 @@ import editorsExtension from '@src/lib/editors/registry'
 import { editorsService } from '@src/lib/editors/registry/contract'
 import executorsExtension from '@src/lib/executors/registry'
 import {
-  executorCapabilityValueSpec,
+  executorCapabilityFacet,
+  defineExecutorCapability,
   executorsService,
 } from '@src/lib/executors/registry/contract'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeAll, expect, it } from 'vitest'
 
-function sheet(size: string, width: number, height: number): KclValueView {
-  const length = (value: number): KclValueView => ({
-    type: 'Number',
-    value,
-    ty: { type: 'Known', value: { type: 'Length', value: 'mm' } },
-  })
+function sheet(
+  size: string,
+  width: number,
+  height: number,
+  unit: 'mm' | 'in' = 'mm'
+): KclValueView {
   return {
-    type: 'Object',
-    constrainable: false,
+    type: 'Sheet',
     value: {
-      size: { type: 'Enum', enum_name: 'PaperSize', variant: size },
-      width: length(width),
-      height: length(height),
+      sizeSource: { kind: 'custom' },
+      name: size,
+      orientation: 'Portrait',
+      width: {
+        n: width,
+        ty: { type: 'Known', value: { type: 'Length', value: unit } },
+      },
+      height: {
+        n: height,
+        ty: { type: 'Known', value: { type: 'Length', value: unit } },
+      },
     },
   }
 }
@@ -34,9 +46,9 @@ let registry: Registry
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
 })
-afterEach(() => {
+afterEach(async () => {
   cleanup()
-  registry?.[Symbol.dispose]()
+  await registry?.dispose()
 })
 
 it('shows evaluated sheets as tabs and recovers when an edit removes the selected sheet', async () => {
@@ -45,32 +57,35 @@ it('shows evaluated sheets as tabs and recovers when an edit removes the selecte
       contents === 'two sheets'
         ? {
             detail: sheet('A4', 210, 297),
-            assembly: sheet('Letter', 215.9, 279.4),
+            assembly: sheet('Letter', 8.5, 11, 'in'),
             unrelated: { type: 'String', value: 'not a drawing' },
           }
         : contents === 'one sheet'
           ? { detail: sheet('A3', 297, 420) }
           : {}
   )
+  const waiting = defineExecutorCapability({
+    id: 'waiting-for-engine',
+    matches: '.kcl',
+    execute: () => new Promise<Record<string, unknown>>(() => {}),
+  })
   registry = new Registry()
-  registry.configure([
+  await registry.configure([
     editorsExtension,
     executorsExtension,
-    defineRegistryItem({
-      provides: [
-        provide(executorCapabilityValueSpec, capability),
-        provide(executorCapabilityValueSpec, {
-          id: 'waiting-for-engine',
-          matches: '.kcl',
-          execute: () => new Promise(() => {}),
-        }),
-      ],
-    }),
+    provide(fileOperationsService, testFileOperations),
+    contribute(executorCapabilityFacet, () => capability),
+    contribute(executorCapabilityFacet, () => waiting),
   ])
-  const editor = registry
-    .get(editorsService)
-    .openEditor('/main.kcl', 'two sheets')
-  const executor = registry.get(executorsService).createExecutor(editor)
+  const editor = requireSuccess(
+    registry.required(editorsService).openEditor('/main.kcl', 'two sheets')
+  )
+  const executor = requireSuccess(
+    registry.required(executorsService).createExecutor(editor)
+  )
+  const stop = acquireAutomaticExecution(executor, capability)
+  void executor.run(waiting)
+
   render(<DrawingsView executor={executor} capability={capability} />)
   fireEvent.click(await screen.findByRole('tab', { name: 'assembly' }))
   expect(
@@ -105,4 +120,5 @@ it('shows evaluated sheets as tabs and recovers when an edit removes the selecte
   expect(
     await screen.findByText(/No drawing sheets in this file/)
   ).toBeVisible()
+  stop()
 })

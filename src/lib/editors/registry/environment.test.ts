@@ -54,7 +54,11 @@ describe('experimental editor registration', () => {
         granted.value = active
         await vi.waitFor(() => {
           expect(registry!.get(editorViewsFacet).length > 0).toBe(active)
-          expect(registry!.get(editorViewsFacet).some(({ id }) => id === 'drawings.sheet')).toBe(active)
+          expect(
+            registry!
+              .get(editorViewsFacet)
+              .some(({ id }) => id === 'drawings.sheet')
+          ).toBe(active)
           expect(registry!.optional(editorsService) !== undefined).toBe(active)
           expect(registry!.optional(editorSaveService) !== undefined).toBe(
             active
