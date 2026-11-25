@@ -1,8 +1,11 @@
-use std::{cell::Cell, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 use plankton_rust::{
     Binding, BindingOptions, Dependencies, Extension, Facet, Factory, Instance, ItemKind, ItemPath,
-    PathStep, Precedence, Registry, RegistryError, RegistryInspection, plan,
+    PathStep, Precedence, Registry, RegistryError, RegistryInspection, Signal, plan, slot,
 };
 
 struct Panels;
@@ -225,5 +228,74 @@ fn inspection_changes_only_when_a_new_graph_is_published() {
 
         registry.dispose().await.unwrap();
         assert_eq!(registry.inspect(), RegistryInspection::default());
+    });
+}
+
+#[test]
+fn live_debug_updates_after_slot_replacement_without_reading_sources() {
+    futures_lite::future::block_on(async {
+        let reads = Rc::new(Cell::new(0));
+        let label = Signal::new("initial");
+        let binding = |key: &str, precedence| {
+            Binding::with_options::<Panels>(
+                {
+                    let label = label.read_only();
+                    let reads = reads.clone();
+                    move || {
+                        reads.set(reads.get() + 1);
+                        label.get()
+                    }
+                },
+                BindingOptions {
+                    key: Some(key.into()),
+                    precedence,
+                },
+            )
+            .depending_on(&label)
+        };
+        let sidebar = slot(vec![
+            binding("outline", Precedence::Low).into(),
+            binding("outline", Precedence::High).into(),
+        ]);
+        let mut registry = Registry::new();
+        let debug = registry.debug::<Panels>();
+        assert!(debug.get().unwrap().is_empty());
+        registry
+            .configure(vec![sidebar.clone().into()])
+            .await
+            .unwrap();
+
+        let initial = debug.get().unwrap();
+        assert_eq!(initial.len(), 1);
+        assert_eq!(initial[0].key.as_deref(), Some("outline"));
+        assert_eq!(initial[0].precedence, Precedence::High);
+        let updates = Rc::new(RefCell::new(Vec::new()));
+        let _subscription = debug
+            .subscribe({
+                let updates = updates.clone();
+                move |metadata| updates.borrow_mut().push(metadata)
+            })
+            .unwrap();
+
+        label.set("edited");
+        assert!(updates.borrow().is_empty());
+        registry
+            .replace(
+                &sidebar,
+                vec![binding("search", Precedence::Default).into()],
+            )
+            .await
+            .unwrap();
+
+        let current = debug.get().unwrap();
+        assert_eq!(current.len(), 1);
+        assert_eq!(current[0].key.as_deref(), Some("search"));
+        assert_eq!(current[0].precedence, Precedence::Default);
+        assert_eq!(current[0].origin, initial[0].origin);
+        assert_eq!(*updates.borrow(), [current]);
+        assert_eq!(reads.get(), 0);
+
+        assert_eq!(registry.get::<Panels>(), ["edited"]);
+        assert_eq!(reads.get(), 1);
     });
 }

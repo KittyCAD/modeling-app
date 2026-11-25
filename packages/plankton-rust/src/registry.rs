@@ -200,6 +200,13 @@ impl fmt::Display for ObservationError {
 
 impl Error for ObservationError {}
 
+/// Graph changes invalidate both reads. Signal writes only invalidate values.
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+enum ObservationKey {
+    Value(TypeId),
+    Debug(TypeId),
+}
+
 /// Owns the active signal connections and batches invalidation through reconciliation.
 #[derive(Default)]
 pub(crate) struct Published {
@@ -207,9 +214,9 @@ pub(crate) struct Published {
     acquiring: Cell<bool>,
     reconciling: Cell<bool>,
     notifying: Cell<bool>,
-    observers: RefCell<HashMap<TypeId, Rc<Notifier>>>,
+    observers: RefCell<HashMap<ObservationKey, Rc<Notifier>>>,
     signal_connections: RefCell<Vec<Subscription>>,
-    dirty: RefCell<HashSet<TypeId>>,
+    dirty: RefCell<HashSet<ObservationKey>>,
 }
 
 impl Published {
@@ -229,7 +236,7 @@ impl Published {
                 let facets = dependents.facets.clone();
                 dependents.signal.subscribe(move || {
                     if let Some(published) = published.upgrade() {
-                        published.invalidate(facets.iter().copied());
+                        published.invalidate(facets.iter().copied().map(ObservationKey::Value));
                     }
                 })
             })
@@ -237,11 +244,15 @@ impl Published {
         let snapshot = Rc::new(snapshot);
         let previous = self.snapshot.replace(snapshot.clone());
         drop(self.signal_connections.replace(connections));
-        self.invalidate(snapshot.changed_facets(&previous));
+        self.invalidate(
+            snapshot
+                .changed_facets(&previous)
+                .flat_map(|facet| [ObservationKey::Value(facet), ObservationKey::Debug(facet)]),
+        );
     }
 
-    fn invalidate(&self, facets: impl IntoIterator<Item = TypeId>) {
-        self.dirty.borrow_mut().extend(facets);
+    fn invalidate(&self, keys: impl IntoIterator<Item = ObservationKey>) {
+        self.dirty.borrow_mut().extend(keys);
         self.flush();
     }
 
@@ -251,12 +262,12 @@ impl Published {
         }
         let _notifying = ActiveFlag::begin(&self.notifying);
         loop {
-            let facets = std::mem::take(&mut *self.dirty.borrow_mut());
-            if facets.is_empty() {
+            let keys = std::mem::take(&mut *self.dirty.borrow_mut());
+            if keys.is_empty() {
                 break;
             }
-            for facet in facets {
-                let observers = self.observers.borrow().get(&facet).cloned();
+            for key in keys {
+                let observers = self.observers.borrow().get(&key).cloned();
                 if let Some(observers) = observers {
                     observers.notify();
                 }
@@ -268,7 +279,7 @@ impl Published {
 /// A live, owned handle. Reading it samples the current published graph.
 pub struct Observation<T> {
     published: Weak<Published>,
-    facet: TypeId,
+    key: ObservationKey,
     read: Rc<dyn Fn(&Snapshot) -> T>,
 }
 
@@ -276,7 +287,7 @@ impl<T> Clone for Observation<T> {
     fn clone(&self) -> Self {
         Self {
             published: self.published.clone(),
-            facet: self.facet,
+            key: self.key,
             read: self.read.clone(),
         }
     }
@@ -286,7 +297,7 @@ impl<T> Observation<T> {
     pub(crate) fn for_facet<F: Facet<Output = T>>(published: Weak<Published>) -> Self {
         Self {
             published,
-            facet: TypeId::of::<F>(),
+            key: ObservationKey::Value(TypeId::of::<F>()),
             read: Rc::new(Snapshot::get::<F>),
         }
     }
@@ -297,12 +308,12 @@ impl<T> Observation<T> {
     {
         let Self {
             published,
-            facet,
+            key,
             read,
         } = self;
         Observation {
             published,
-            facet,
+            key,
             read: Rc::new(move |snapshot| project(read(snapshot))),
         }
     }
@@ -334,7 +345,7 @@ impl<T> Observation<T> {
         let observers = published
             .observers
             .borrow_mut()
-            .entry(self.facet)
+            .entry(self.key)
             .or_default()
             .clone();
         let observation = self.clone();
@@ -531,6 +542,16 @@ impl Registry {
 
     pub fn observe<F: Facet>(&self) -> Observation<F::Output> {
         Observation::for_facet::<F>(Rc::downgrade(&self.published))
+    }
+
+    /// Observe the effective contributions for a Facet in precedence order.
+    /// Graph changes can notify this observation without evaluating sources.
+    pub fn debug<F: Facet>(&self) -> Observation<Vec<ContributionInfo>> {
+        Observation {
+            published: Rc::downgrade(&self.published),
+            key: ObservationKey::Debug(TypeId::of::<F>()),
+            read: Rc::new(|snapshot| snapshot.debug::<F>().cloned().collect()),
+        }
     }
 
     pub fn observe_service<S: Service>(&self) -> Observation<Resolution<S::Capability>> {

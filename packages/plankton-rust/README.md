@@ -126,8 +126,12 @@ values for runtime.
 Call `registry.inspect()` for the currently published graph, including children
 returned by constructors. It lists selected items and counts factories,
 installed bindings, and facets with contributions. Binding counts include
-contributions shadowed by a key. Use `snapshot.debug::<F>()` for the bindings
-that contribute to a particular facet. Inspection includes both an item's
+contributions shadowed by a key. Use `registry.debug::<F>()` to observe the
+selected contributions for a Facet in precedence order. It reports origins,
+keys, and precedence without evaluating sources. Changes to selected bindings
+can notify debug subscribers. Writes to a source signal invalidate the Facet's
+value observation. Use `snapshot.debug::<F>()` to read metadata from a captured
+graph. Inspection includes both an item's
 current path and its origin, which preserves a retained factory's original
 acquisition path. `snapshot.inspect()` reads the inventory captured with that
 snapshot.
