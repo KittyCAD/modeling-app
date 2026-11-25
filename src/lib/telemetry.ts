@@ -163,6 +163,7 @@ export async function maybeWriteToDisk(
     args = await electron.getArgvParsed()
   }
   if (args.telemetry) {
+    // zds-performance-exception: background-polling -- Flush opt-in timing telemetry periodically; collecting or presenting an interaction never waits for this writer.
     setInterval(() => {
       const marks = getMarks()
       const deltaTotalTable = printDeltaTotal(marks)

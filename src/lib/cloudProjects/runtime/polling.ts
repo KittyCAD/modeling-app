@@ -21,7 +21,7 @@ export function createProjectPoller({
   let generation = 0
   let due = Infinity
   let timer: ReturnType<typeof setTimeout> | undefined
-  const delay = () => {
+  const pollInterval = () => {
     const base = Math.max(
       POLL_INTERVALS_MS[Math.max(step, 0)] ?? 1_500,
       failureInterval
@@ -42,6 +42,7 @@ export function createProjectPoller({
     if (timer !== undefined && due <= Date.now() + milliseconds) return
     clear()
     due = Date.now() + milliseconds
+    // zds-performance-exception: background-polling -- Schedule non-overlapping cloud revision probes with outage backoff; editor updates remain immediate.
     timer = setTimeout(() => {
       clear()
       void run()
@@ -82,7 +83,7 @@ export function createProjectPoller({
         // snapshot must not add another full interval to every update.
         // Failed probes still wait their complete retry delay after failure.
         const elapsed = failed ? 0 : Date.now() - startedAt
-        schedule(Math.max(0, retryAfter, delay() - elapsed))
+        schedule(Math.max(0, retryAfter, pollInterval() - elapsed))
       }
     }
   }
@@ -100,7 +101,7 @@ export function createProjectPoller({
     activity() {
       step = 0
       generation += 1
-      if (!inFlight) schedule(delay())
+      if (!inFlight) schedule(pollInterval())
     },
     checkNow() {
       step = -1

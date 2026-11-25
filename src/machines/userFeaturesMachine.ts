@@ -151,6 +151,7 @@ export function waitForUserFeaturesSettled(
       finish()
       return
     }
+    // zds-performance-exception: network-deadline -- Bound waiting for remote feature availability; the subscribed settled state resolves immediately and cancels this timer.
     timeoutId = setTimeout(finish, timeoutMs)
   })
 }
@@ -374,6 +375,7 @@ export const userFeaturesMachine = setup({
           actions: 'startLoading',
         },
       },
+      // zds-performance-exception: background-polling -- Refresh remote entitlement state periodically while the last fetched state stays available to the UI.
       after: {
         [USER_FEATURES_POLL_INTERVAL_MS]: {
           actions: raise({ type: UserFeaturesTransition.Refresh }),
@@ -393,6 +395,7 @@ export const userFeaturesMachine = setup({
           actions: 'startLoading',
         },
       },
+      // zds-performance-exception: connection-retry -- Retry a failed entitlement fetch with backoff instead of blocking local UI or spinning on the failed request.
       after: {
         [USER_FEATURES_RETRY_INTERVAL_MS]: {
           actions: raise({ type: UserFeaturesTransition.Refresh }),

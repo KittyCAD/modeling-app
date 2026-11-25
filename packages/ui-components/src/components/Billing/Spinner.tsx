@@ -7,6 +7,7 @@ export function Spinner({ className, ...props }: SVGProps<SVGSVGElement>) {
       data-testid="spinner"
       viewBox="0 0 10 10"
       className={classNames(
+        // zds-performance-exception: activity-indicator -- Rotate the shared billing activity indicator while a real request is pending, without gating billing results.
         'inline-block h-4 w-4 origin-center animate-spin text-current',
         className
       )}

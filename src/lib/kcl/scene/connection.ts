@@ -85,6 +85,7 @@ export async function connectScene({
     interrupt(new Error('Scene connection was cancelled'))
   }
   signal?.addEventListener('abort', onAbort, { once: true })
+  // zds-performance-exception: network-deadline -- Close a connection attempt that never becomes ready; a ready connection returns immediately.
   const timer = setTimeout(() => {
     dispose()
     interrupt(new Error('Timed out connecting to the scene'))
