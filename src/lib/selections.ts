@@ -2718,7 +2718,6 @@ export function getSelectionCountByType(
           break
         }
         case 'region':
-          incrementOrInitializeSelectionType('engineRegion')
           break
       }
     } else if (inlineArtifact?.type === 'helix') {
