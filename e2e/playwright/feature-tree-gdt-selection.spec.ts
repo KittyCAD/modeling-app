@@ -34,6 +34,7 @@ ${treatment}001 = ${treatment}(
       await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
       await scene.settled()
       await toolbar.openFeatureTreePane()
+      await toolbar.expandFeatureTreeBodies()
       await toolbar.featureTreePane
         .getByRole('button', { name: new RegExp(`${treatment}001`) })
         .first()

@@ -1250,6 +1250,14 @@ export function coerceSelectionsToBody(
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
+  // Pattern copies may have no artifact of their own to mark as consumed.
+  const consumedInputs = new Set(
+    [...artifactGraph.values()].flatMap((artifact) =>
+      artifact.type === 'compositeSolid'
+        ? [...artifact.solidIds, ...artifact.toolIds]
+        : []
+    )
+  )
   const artifacts: Map<
     ArtifactId,
     Extract<Artifact, { type: 'compositeSolid' | 'sweep' | 'pattern' }>
@@ -1279,11 +1287,13 @@ export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
               (source.type === 'sweep' || source.type === 'compositeSolid') &&
               (source.patternIds || []).includes(artifact.id)
           )
-    if (sourceBody) {
+    if (sourceBody && !sourceBody.consumed) {
       artifacts.set(sourceBody.id, artifact)
     }
     artifact.copyIds.forEach((copyId) => {
-      artifacts.set(copyId, artifact)
+      // Preserve a live Boolean output that reuses a copy's ID.
+      if (!artifacts.has(copyId) && !consumedInputs.has(copyId))
+        artifacts.set(copyId, artifact)
     })
   }
 

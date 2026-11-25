@@ -45,24 +45,9 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
 export const featureTreePaneConfig: PaneChild = {
   id: DefaultLayoutPaneID.FeatureTree,
   label: 'Feature Tree',
-  type: LayoutType.Splits,
-  orientation: 'block',
-  sizes: [70, 30],
+  type: LayoutType.Simple,
+  areaType: AreaType.FeatureTree,
   icon: 'model',
-  children: [
-    {
-      id: 'operations-list',
-      label: 'Feature Tree',
-      type: LayoutType.Simple,
-      areaType: AreaType.FeatureTree,
-    },
-    {
-      id: 'bodies-list',
-      label: 'Bodies',
-      type: LayoutType.Simple,
-      areaType: AreaType.Bodies,
-    },
-  ],
 }
 
 export const namedViewsPaneConfig: PaneChild = {

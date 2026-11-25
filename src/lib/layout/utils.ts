@@ -29,7 +29,7 @@ import { capitaliseFC, throttle } from '@src/lib/utils'
 import type React from 'react'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v4'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v5'
 
 export const defaultLayout = defaultLayoutConfig
 
@@ -1121,6 +1121,34 @@ function getLayoutMigrations(): LayoutMigrationMap {
       },
     ],
   ])
+
+  migrationMap.set('v4', {
+    newVersion: 'v5',
+    transformationSets: [
+      {
+        matcher: (layout) =>
+          layout.id === featureTreePaneConfig.id &&
+          layout.type === LayoutType.Splits &&
+          layout.children.length === 2 &&
+          layout.children.some(
+            (child) =>
+              child.type === LayoutType.Simple &&
+              child.areaType === AreaType.FeatureTree
+          ) &&
+          layout.children.some(
+            (child) =>
+              child.type === LayoutType.Simple &&
+              child.areaType === AreaType.Bodies
+          ),
+        transformations: [
+          (layout) => ({
+            ...structuredClone(featureTreePaneConfig),
+            label: layout.label,
+          }),
+        ],
+      },
+    ],
+  })
 
   return migrationMap
 }

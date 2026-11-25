@@ -205,6 +205,7 @@ export class LocalRenderer {
   // HOOPS (map_topology_uuids only restores edges and faces). Once the GLB has
   // them, this can go and faces can be matched to their body by that UUID.
   private readonly bodyFacesById = new Map<string, Mesh[]>()
+  private selectionSync: Promise<void> = Promise.resolve()
   private hoveredTarget: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
@@ -459,6 +460,7 @@ export class LocalRenderer {
    */
   private async syncSelectionFromEngine() {
     const version = ++this.selectionRequestVersion
+    const executionVersion = this.executionVersion
     // Lets the command that changed the selection be sent first, and lets only
     // the last command of a burst ask.
     await Promise.resolve()
@@ -481,6 +483,42 @@ export class LocalRenderer {
     if (single && isModelingResponse(single)) {
       const modelingResponse = single.resp.data.modeling_response
       if (modelingResponse.type === 'select_get') {
+        // Tree selection has no picked face to identify the body's glTF mesh.
+        await Promise.all(
+          modelingResponse.data.entity_ids.map(async (id) => {
+            if (
+              this.bodyFacesById.has(id) ||
+              this.targetsByEntityId.has(id) ||
+              this.getPlaneTarget(id)
+            )
+              return
+            const reference = await this.getEngineEntityReference(id)
+            if (reference?.type !== 'solid3d') return
+            const response =
+              await this.kclManager.engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'solid3d_get_face_uuid',
+                  object_id: id,
+                  face_index: 0,
+                },
+              })
+            const single = isArray(response) ? response[0] : response
+            if (!single || !isModelingResponse(single)) return
+            const result = single.resp.data.modeling_response
+            if (result.type !== 'solid3d_get_face_uuid') return
+            const target = this.targetsByEntityId.get(result.data.face_id)?.[0]
+            if (target && executionVersion === this.executionVersion)
+              this.bodyFacesById.set(id, this.getBodyFaces(target))
+          })
+        )
+        if (
+          this.disposed ||
+          version !== this.selectionRequestVersion ||
+          executionVersion !== this.executionVersion
+        )
+          return
         this.selectedEntityIds = modelingResponse.data.entity_ids
         this.updateSelection()
       }
@@ -1047,7 +1085,12 @@ export class LocalRenderer {
    * What center view on selection centers on, as in the engine: the selected
    * entities. In the engine's world: Z up, in mm.
    */
-  getSelectionBounds(): Box3 | undefined {
+  async getSelectionBounds(): Promise<Box3 | undefined> {
+    let pending: Promise<void>
+    do {
+      pending = this.selectionSync
+      await pending
+    } while (pending !== this.selectionSync)
     const bounds = new Box3()
     for (const target of this.getSelectedTargets()) {
       bounds.union(new Box3().setFromObject(target))
@@ -1186,7 +1229,8 @@ export class LocalRenderer {
               command.cmd.type === 'select_remove' ||
               command.cmd.type === 'select_clear')
           ) {
-            this.syncSelectionFromEngine().catch(reportRejection)
+            this.selectionSync = this.syncSelectionFromEngine()
+            this.selectionSync.catch(reportRejection)
             return null
           }
           return this.settings.pickingEnabled

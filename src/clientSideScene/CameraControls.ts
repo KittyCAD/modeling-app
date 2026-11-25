@@ -110,7 +110,7 @@ interface LocalCameraScene {
   /** What zoom to fit frames. */
   getFitBounds(): Box3 | undefined
   /** What center view on selection centers on. */
-  getSelectionBounds(): Box3 | undefined
+  getSelectionBounds(): Box3 | undefined | Promise<Box3 | undefined>
 }
 
 class CameraFrame {
@@ -1249,12 +1249,26 @@ export class CameraControls {
   }
 
   /**
-   * Frames the model without turning the camera, as the engine's zoom_to_fit
+   * Frames the model or selection without turning the camera, as the engine's zoom_to_fit
    * does. `padding` grows the model's bounds by that fraction of their size.
    */
-  async zoomToFit({ padding }: { padding: number }): Promise<void> {
+  async zoomToFit({
+    padding,
+    selection = false,
+  }: {
+    padding: number
+    selection?: boolean
+  }): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const bounds = this.getLocalScene()?.getFitBounds()
+      const scene = this.getLocalScene()
+      const bounds = selection
+        ? await scene?.getSelectionBounds()
+        : scene?.getFitBounds()
+      if (
+        scene !== this.getLocalScene() ||
+        this.effectiveCameraMode !== 'local'
+      )
+        return
       if (bounds) {
         frameLocalCamera(
           this.camera,
@@ -1269,9 +1283,24 @@ export class CameraControls {
       return
     }
 
+    let objectIds: string[] = []
+    if (selection) {
+      const response = await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'select_get' },
+      })
+      const single = isArray(response) ? response[0] : response
+      if (!single || !isModelingResponse(single)) return
+      const result = single.resp.data.modeling_response
+      if (result.type !== 'select_get' || result.data.entity_ids.length === 0)
+        return
+      objectIds = result.data.entity_ids
+    }
     await engineStreamZoomToFit({
       engineCommandManager: this.engineCommandManager,
       padding,
+      objectIds,
     })
   }
 
@@ -1317,9 +1346,14 @@ export class CameraControls {
    */
   async centerOnSelection(): Promise<void> {
     if (this.effectiveCameraMode === 'local') {
-      const center =
-        this.getLocalScene()?.getSelectionBounds()?.getCenter(new Vector3()) ??
-        new Vector3()
+      const scene = this.getLocalScene()
+      const bounds = await scene?.getSelectionBounds()
+      if (
+        scene !== this.getLocalScene() ||
+        this.effectiveCameraMode !== 'local'
+      )
+        return
+      const center = bounds?.getCenter(new Vector3()) ?? new Vector3()
       this.camera.position.add(center).sub(this.target)
       this.target.copy(center)
       this.onCameraChange()
