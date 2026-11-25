@@ -1,7 +1,14 @@
 import type { ModelingCmd } from '@kittycad/lib'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
@@ -9,8 +16,17 @@ vi.mock('@kittycad/ui-components', () => ({
   CopyTextButton: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  Draggable: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
+  Draggable: ({
+    children,
+    Handle,
+  }: {
+    children: React.ReactNode
+    Handle: React.ReactNode
+  }) => (
+    <div>
+      {Handle}
+      {children}
+    </div>
   ),
 }))
 
@@ -19,6 +35,12 @@ import {
   MeasurementTool,
 } from '@src/registry/extensions/engineScene/MeasurementTool'
 import { measurementToolService } from '@src/registry/extensions/engineScene/measurementToolService'
+
+import { MeasurementStatusBarItemView } from './MeasurementToolView'
+import { PhysicalAnalysisStatusBarItemView } from './physicalAnalysis/PhysicalAnalysisToolView'
+import { createMeasurementToolService } from './measurementToolService'
+import { createPhysicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
+import type { SceneToolsHost } from './sceneToolsHost'
 
 function response(type: string, data: unknown) {
   return {
@@ -129,3 +151,90 @@ describe('Face API measurement wiring', () => {
     expect(screen.queryByText('No selection.')).not.toBeInTheDocument()
   })
 })
+
+it.each(['mounted', 'replaced'])(
+  'opens Measure in the stream %s after the status control rendered',
+  async (lifecycle) => {
+    setup(0)
+    const original = document.createElement('div')
+    original.id = 'stream'
+    if (lifecycle === 'replaced') document.body.append(original)
+    onTestFinished(() => original.remove())
+    await act(async () => {
+      render(<MeasurementStatusBarItem />)
+    })
+
+    original.remove()
+    const stream = document.createElement('div')
+    stream.id = 'stream'
+    document.body.append(stream)
+    onTestFinished(() => stream.remove())
+    fireEvent.click(screen.getByRole('button', { name: 'Measure' }))
+
+    const close = await within(stream).findByRole('button', { name: /Close/ })
+    expect(await within(stream).findByText('No selection.')).toBeVisible()
+    fireEvent.click(close)
+    expect(
+      within(stream).queryByRole('button', { name: /Close/ })
+    ).not.toBeInTheDocument()
+  }
+)
+
+it.each([
+  {
+    View: MeasurementStatusBarItemView,
+    name: 'Measure',
+    service: 'measurement' as const,
+  },
+  {
+    View: PhysicalAnalysisStatusBarItemView,
+    name: 'Physical analysis',
+    service: 'physicalAnalysis' as const,
+  },
+])(
+  'opens and closes $name in only its supplied scene',
+  async ({ View, name, service }) => {
+    const containers = [
+      document.createElement('div'),
+      document.createElement('div'),
+    ]
+    for (const container of containers) document.body.append(container)
+    onTestFinished(() => containers.forEach((container) => container.remove()))
+    const hosts: SceneToolsHost[] = containers.map((container, index) => ({
+      selections: { graphSelections: [], otherSelections: [] },
+      artifactGraph: new Map(),
+      idle: false,
+      executing: false,
+      unit: 'mm',
+      executionKey: `scene-${index}`,
+      sendModelingCommand: vi.fn(
+        async () => new Error('Inactive scenes cannot execute')
+      ),
+      container,
+      measurement: createMeasurementToolService(),
+      physicalAnalysis: createPhysicalAnalysisService(),
+    }))
+    render(
+      <>
+        <View host={hosts[0]} />
+        <View host={hosts[1]} />
+      </>
+    )
+
+    fireEvent.click(screen.getAllByRole('button', { name })[1])
+    const close = await within(containers[1]).findByRole('button', {
+      name: /Close/,
+    })
+    expect(
+      within(containers[0]).queryByRole('button', { name: /Close/ })
+    ).not.toBeInTheDocument()
+    expect(hosts[0][service].isOpen.value).toBe(false)
+    expect(hosts[1][service].isOpen.value).toBe(true)
+
+    fireEvent.click(close)
+    expect(
+      within(containers[1]).queryByRole('button', { name: /Close/ })
+    ).not.toBeInTheDocument()
+    expect(hosts[1][service].isOpen.value).toBe(false)
+  }
+)
