@@ -138,6 +138,7 @@ function fixture(
 ) {
   const manager = Object.assign(new EventTarget(), {
     path: '/model.kcl',
+    hasErrors() { return this.diagnosticsSignal.peek().some(d => d.severity === 'error') },
     diagnosticsSignal: signal<{ severity: string }[]>([]),
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
     engineSceneGenerationSignal: signal(0),
@@ -623,9 +624,11 @@ describe('local GLB loading', () => {
     )
     try {
       f.renderer.resetCameraAfterModelLoad()
+      f.manager.isExecutingSignal.value = true
       f.done(false)
       expect(resetCameraPosition).not.toHaveBeenCalled()
       expect(claimInitialCameraFrame).not.toHaveBeenCalled()
+      f.manager.isExecutingSignal.value = true
       f.done()
       await vi.waitFor(() =>
         expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
@@ -633,9 +636,11 @@ describe('local GLB loading', () => {
       expect(resetCameraPosition).toHaveBeenCalledOnce()
       expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
 
+      f.manager.isExecutingSignal.value = true
       f.done(false)
       f.renderer.resetCameraAfterModelLoad()
       expect(resetCameraPosition).toHaveBeenCalledOnce()
+      f.manager.isExecutingSignal.value = true
       f.done()
       await vi.waitFor(() =>
         expect(f.renderer.isLoadedSceneCurrent()).toBe(true)
@@ -643,6 +648,7 @@ describe('local GLB loading', () => {
       expect(resetCameraPosition).toHaveBeenCalledTimes(2)
       expect(claimInitialCameraFrame).toHaveBeenCalledOnce()
 
+      f.manager.isExecutingSignal.value = true
       f.done()
       await vi.waitFor(() =>
         expect(f.renderer.isLoadedSceneCurrent()).toBe(true)

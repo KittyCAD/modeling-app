@@ -98,6 +98,9 @@ it('mounts from an explicit host without app providers and releases only its ren
     selectionFilter: signal([]),
     commands: {
       pendingCommands: {},
+      connection: undefined,
+      sendCommand: vi.fn(),
+      executionIsStale: false,
       sendSceneCommand: vi.fn().mockResolvedValue(null),
       setLocalSelectionCommandHandler: vi.fn(),
     },
