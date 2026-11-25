@@ -26,7 +26,7 @@ afterEach(async () => {
 })
 vi.mock('@src/lib/paths', () => ({ PATHS: { INDEX: '/' } }))
 
-it('interrupts a run when its contents stop matching and rematches on same-type renames', async () => {
+it('retains a requested run when its editor stops matching and only executes again on request', async () => {
   let finish!: (data: { ready: boolean }) => void
   let aborted: AbortSignal | undefined
   const execute = vi.fn(
@@ -60,22 +60,29 @@ it('interrupts a run when its contents stop matching and rematches on same-type 
   editor.dispatch({
     changes: { from: 0, to: editor.state.doc.length, insert: 'enabled' },
   })
+  const firstRun = executor.run(capability)
   await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
   editors.setSource(editor.id, '/project/other.toml')
-  expect(executor.output.value.running).toBe(false)
+  expect(executor.output.value.running).toBe(true)
   finish({ ready: true })
-  await vi.waitFor(() => expect(aborted?.aborted).toBe(true))
-  expect(executor.output.value.get(capability)).toBeUndefined()
+  await firstRun
+  expect(aborted?.aborted).toBe(false)
+  expect(executor.result(capability).value).toMatchObject({
+    stale: true,
+    data: { ready: true },
+  })
   expect(executor.output.value.running).toBe(false)
   editors.setSource(editor.id, '/project/settings.toml')
+  const secondRun = executor.run(capability)
   await vi.waitFor(() => expect(execute).toHaveBeenCalledTimes(2))
   editor.dispatch({
     changes: { from: 0, to: editor.state.doc.length, insert: 'disabled' },
   })
-  expect(executor.output.value.running).toBe(false)
+  expect(executor.output.value.running).toBe(true)
   finish({ ready: true })
-  await vi.waitFor(() => expect(aborted?.aborted).toBe(true))
-  expect(executor.output.value.get(capability)).toBeUndefined()
+  await secondRun
+  expect(aborted?.aborted).toBe(false)
+  expect(executor.result(capability).value.stale).toBe(true)
 })
 
 it('rematches an unnamed editor when its language is chosen and cleared', async () => {
@@ -104,10 +111,12 @@ it('rematches an unnamed editor when its language is chosen and cleared', async 
   )
   expect(executor.output.value.get(capability)).toBeUndefined()
   editors.setLanguage(editor.id, 'markdown')
+  await executor.run(capability)
   await vi.waitFor(() =>
     expect(executor.output.value.get(capability)).toEqual({ rendered: 'DRAFT' })
   )
   editors.setLanguage(editor.id, undefined)
-  expect(executor.output.value.get(capability)).toBeUndefined()
+  expect(executor.result(capability).value.stale).toBe(true)
+  expect(executor.output.value.get(capability)).toEqual({ rendered: 'DRAFT' })
   expect(editor.src.value).toBeUndefined()
 })
