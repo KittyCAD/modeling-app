@@ -225,6 +225,22 @@ function RenameForm({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
+  useEffect(() => {
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled || !inputRef.current) {
+        return
+      }
+
+      inputRef.current.focus()
+      inputRef.current.select()
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   function handleRenameSubmit(e: NonNullable<MaybePressOrBlur>) {
     if ('key' in e && e.key !== 'Enter') {
       return
@@ -259,7 +275,7 @@ function RenameForm({
           data-testid="file-rename-field"
           ref={inputRef}
           type="text"
-          autoFocus
+          defaultValue={formattedPlaceHolder}
           placeholder={formattedPlaceHolder}
           className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}
