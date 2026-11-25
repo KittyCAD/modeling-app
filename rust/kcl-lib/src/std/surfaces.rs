@@ -483,11 +483,25 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn blend_flattens_nested_edges() {
-        let code = include_str!("../../tests/blend_with_edge_specifier_objects/input.kcl");
-        let (setup, edges) = code.rsplit_once("blend([").unwrap();
-        let edges = edges.trim_end().strip_suffix("])").unwrap();
-        let nested = format!("{setup}blend([[{edges}], []])");
-        let flat_result = parse_execute(code).await.unwrap();
+        const TEMPLATE: &str = r#"
+@settings(kclVersion = 3.0)
+
+profiles = sketch(on = XY) {
+  circleA = circle(center = [var 0mm, var 0mm], start = [var 2mm, var 0mm])
+  circleB = circle(center = [var 8mm, var 0mm], start = [var 10mm, var 0mm])
+}
+sectionA = region(segments = [profiles.circleA])
+sectionB = region(segments = [profiles.circleB])
+surfaceA = extrude(sectionA, length = 3mm, bodyType = SURFACE)
+surfaceB = extrude(sectionB, length = 3mm, bodyType = SURFACE)
+
+edgeA = { sideFaces = [sectionA.tags.circleA], index = 0 }
+edgeB = { sideFaces = [sectionB.tags.circleB], index = 0 }
+__BLEND_CALL__
+"#;
+        let flat = TEMPLATE.replace("__BLEND_CALL__", "blend([edgeA, edgeB])");
+        let nested = TEMPLATE.replace("__BLEND_CALL__", "blend([[edgeA, edgeB], []])");
+        let flat_result = parse_execute(&flat).await.unwrap();
         let nested_result = parse_execute(&nested).await.unwrap();
         let blend_command = |result: &crate::execution::ExecTestResults| {
             result.root_module_artifact_commands().iter().find_map(|cmd| {
