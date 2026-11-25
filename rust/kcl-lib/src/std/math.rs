@@ -3,6 +3,7 @@
 use anyhow::Result;
 
 use crate::CompilationIssue;
+use crate::KclVersion;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
@@ -275,7 +276,12 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = libm::log(input.n) / libm::log(base.n);
+    #[expect(clippy::disallowed_methods)]
+    let result = if exec_state.entry_point_version_at_least(KclVersion::V4Preview) {
+        libm::log(input.n) / libm::log(base.n)
+    } else {
+        input.n.log(base.n)
+    };
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -290,7 +296,12 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = libm::log2(input.n);
+    #[expect(clippy::disallowed_methods)]
+    let result = if exec_state.entry_point_version_at_least(KclVersion::V4Preview) {
+        libm::log2(input.n)
+    } else {
+        input.n.log2()
+    };
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -305,7 +316,12 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = libm::log10(input.n);
+    #[expect(clippy::disallowed_methods)]
+    let result = if exec_state.entry_point_version_at_least(KclVersion::V4Preview) {
+        libm::log10(input.n)
+    } else {
+        input.n.log10()
+    };
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -320,7 +336,12 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = libm::log(input.n);
+    #[expect(clippy::disallowed_methods)]
+    let result = if exec_state.entry_point_version_at_least(KclVersion::V4Preview) {
+        libm::log(input.n)
+    } else {
+        input.n.ln()
+    };
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }

@@ -4793,26 +4793,36 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_logarithms_same_bits_on_every_platform() {
         // Before libm, each of these differed in the last bit between macOS, Linux and Wasm.
+        #[expect(clippy::disallowed_methods)]
         let cases = [
-            ("ln(95.97)", 0x401241928f3b7d22_u64),
-            ("ln(46.07)", 0x400ea42bf6afb55a),
-            ("ln(1.09)", 0x3fb60fbdd2fffc36),
-            ("log2(403.24)", 0x40214f9d0897b657),
-            ("log2(6.33)", 0x40054c3265a1f2f0),
-            ("log2(1.06)", 0x3fb5853c54075e4c),
-            ("log10(21.92)", 0x3ff5741538698394),
-            ("log10(1.02)", 0x3f819cf783a8cb1d),
-            ("log10(1.43)", 0x3fc3e20d2066bded),
-            ("log(127.17, base = 10)", 0x4000d5c7a16b14d4),
-            ("log(65.35, base = 10)", 0x3ffd0b3ef637d639),
-            ("log(1.38, base = 10)", 0x3fc1e78ed2be6bf0),
+            ("ln(95.97)", 0x401241928f3b7d22_u64, 95.97_f64.ln()),
+            ("ln(46.07)", 0x400ea42bf6afb55a, 46.07_f64.ln()),
+            ("ln(1.09)", 0x3fb60fbdd2fffc36, 1.09_f64.ln()),
+            ("log2(403.24)", 0x40214f9d0897b657, 403.24_f64.log2()),
+            ("log2(6.33)", 0x40054c3265a1f2f0, 6.33_f64.log2()),
+            ("log2(1.06)", 0x3fb5853c54075e4c, 1.06_f64.log2()),
+            ("log10(21.92)", 0x3ff5741538698394, 21.92_f64.log10()),
+            ("log10(1.02)", 0x3f819cf783a8cb1d, 1.02_f64.log10()),
+            ("log10(1.43)", 0x3fc3e20d2066bded, 1.43_f64.log10()),
+            ("log(127.17, base = 10)", 0x4000d5c7a16b14d4, 127.17_f64.log(10.0)),
+            ("log(65.35, base = 10)", 0x3ffd0b3ef637d639, 65.35_f64.log(10.0)),
+            ("log(1.38, base = 10)", 0x3fc1e78ed2be6bf0, 1.38_f64.log(10.0)),
         ];
-        for (expr, bits) in cases {
-            let result = parse_execute(&format!("myVar = {expr}")).await.unwrap();
-            let actual = mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
-                .as_f64()
-                .unwrap();
-            assert_eq!(actual.to_bits(), bits, "{expr} gave {actual}");
+        for (expr, bits, legacy) in cases {
+            for (settings, expected) in [
+                ("", legacy.to_bits()),
+                ("@settings(kclVersion = 1.0)\n", legacy.to_bits()),
+                ("@settings(kclVersion = 2.0)\n", legacy.to_bits()),
+                ("@settings(kclVersion = \"3.0-preview\")\n", legacy.to_bits()),
+                ("@settings(kclVersion = 3.0)\n", legacy.to_bits()),
+                ("@settings(kclVersion = \"4.0-preview\")\n", bits),
+            ] {
+                let result = parse_execute(&format!("{settings}myVar = {expr}")).await.unwrap();
+                let actual = mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                    .as_f64()
+                    .unwrap();
+                assert_eq!(actual.to_bits(), expected, "{settings}{expr} gave {actual}");
+            }
         }
     }
 
