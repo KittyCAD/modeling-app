@@ -170,7 +170,16 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
+import {
+  getRelativePathIfContained,
+  toProjectRelativePath,
+  webSafePathSplit,
+} from '@src/lib/paths'
+import { planImportedSketchAnchor } from '@src/lib/projectSession/importedSketchAnchor'
+import {
+  applyProjectFileSnapshots,
+  zookeeperEditPatchHistoryEvent,
+} from '@src/lib/zookeeper/editorPlugin'
 import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
 import { sanitizeProjectName } from '@src/lib/projectName'
@@ -3231,7 +3240,48 @@ export const modelingMachine = setup({
             : {
                 solidId: primitiveFaceSelection.parentEntityId,
                 index: primitiveFaceSelection.primitiveIndex,
+                faceId: primitiveFaceSelection.entityId,
               }
+
+        const pickedBody = primitiveFace
+          ? kclManager.artifactGraph.get(primitiveFace.solidId)
+          : undefined
+        // A retained source cap can belong to one member of an array of
+        // subtraction outputs. Use the live pick so Rust can address that
+        // member and its exact face, just as for newly generated faces.
+        const isSeparatedSubtractFace =
+          pickedBody?.type === 'compositeSolid' &&
+          pickedBody.subType === 'subtract' &&
+          pickedBody.outputIndex != null
+
+        const pickedCut = primitiveFace?.faceId
+          ? kclManager.artifactGraph.get(primitiveFace.faceId)
+          : undefined
+        const hasGeneratedFaceReference =
+          pickedCut?.type === 'edgeCut' &&
+          pickedCut.unattributed &&
+          pickedCut.generatedFrom
+
+        const hasNamedHistoryWall =
+          primitiveFace !== null &&
+          Object.values(kclManager.variables).some((value) => {
+            const entries =
+              value?.type === 'HomArray' || value?.type === 'Tuple'
+                ? value.value
+                : [value]
+            return entries.some(
+              (entry) =>
+                entry?.type === 'Solid' &&
+                entry.value.id === primitiveFace.solidId &&
+                (entry.value.historyWalls?.some(
+                  ([id]) => id === primitiveFace.faceId
+                ) ||
+                  entry.value.historyAnchorGroups?.some(
+                    ([id, , collection]) =>
+                      id === primitiveFace.faceId && collection === 'wallFaces'
+                  ))
+            )
+          })
 
         const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
           sceneInfra: kclManager.sceneInfra,
@@ -3252,7 +3302,12 @@ export const modelingMachine = setup({
             result = offsetResult
           }
         }
-        if (!result) {
+        if (
+          !result &&
+          !isSeparatedSubtractFace &&
+          !hasNamedHistoryWall &&
+          !hasGeneratedFaceReference
+        ) {
           const sweepFaceSelected = await selectionBodyFace(
             artifactOrPlaneId,
             kclManager.artifactGraph,
@@ -3310,6 +3365,8 @@ export const modelingMachine = setup({
             : undefined
         const faceRequiringSourceMaterialization: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
+          !hasNamedHistoryWall &&
+          !hasGeneratedFaceReference &&
           (selectedFaceArtifact?.type === 'edgeCut' ||
             (result.faceInfo.type === 'wall' &&
               isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)))
@@ -3404,9 +3461,16 @@ export const modelingMachine = setup({
             )
           }
 
-          sketchArgs = {
-            on: { primitiveFace },
-          }
+          const faceId = result.faceId
+          const cap = isSeparatedSubtractFace
+            ? setProgramOutcome.sceneGraph.objects.find(
+                (object) =>
+                  object.artifact_id === faceId &&
+                  object.kind.type === 'Cap' &&
+                  object.kind.solidOutputIndex === pickedBody.outputIndex
+              )
+            : undefined
+          sketchArgs = { on: cap ? { object: cap.id } : { primitiveFace } }
         } else {
           if (setProgramOutcome.type !== 'Success') {
             return reject(
@@ -3437,7 +3501,51 @@ export const modelingMachine = setup({
         }
 
         let newSketchResult
+        let injection: Awaited<ReturnType<typeof planImportedSketchAnchor>>
+        let producerStaged = false
+        let consumerCommitted = false
+        const previousCode = kclManager.code
+        const consumerPath = kclManager.path
+        const fileOps = kclManager.systemDeps.fileOperations
+        const consumerRelativePath = getRelativePathIfContained(
+          project.path,
+          consumerPath
+        )
+        const assertCurrent = () => {
+          if (
+            signal.aborted ||
+            kclManager.path !== consumerPath ||
+            kclManager.code !== previousCode ||
+            projectRef?.current?.path !== project.path
+          ) {
+            throw new Error(
+              'The current file changed while creating the sketch.'
+            )
+          }
+        }
         try {
+          if (primitiveFace && hasNamedHistoryWall && consumerRelativePath) {
+            injection = await planImportedSketchAnchor(
+              kclManager,
+              primitiveFace,
+              wasmInstance
+            )
+          }
+          if (injection) {
+            assertCurrent()
+            await applyProjectFileSnapshots(fileOps, [injection.edit], 'redo')
+            producerStaged = true
+            await rustContext.sendUpdateFile(
+              injection.fileId,
+              injection.edit.nextContent!
+            )
+            const outcome = await rustContext.hackSetProgram(
+              kclManager.ast,
+              jsAppSettings(rustContext.settingsActor)
+            )
+            if (outcome.type !== 'Success')
+              throw new Error('Could not load the imported anchor.')
+          }
           await rustContext.clearSketchCheckpoints()
           newSketchResult = await rustContext.newSketch(
             0, // projectId - using 0 as placeholder
@@ -3445,7 +3553,44 @@ export const modelingMachine = setup({
             0, // version - using 0 as placeholder
             sketchArgs
           )
+          if (injection && consumerRelativePath) {
+            assertCurrent()
+            const objects = newSketchResult.sceneGraphDelta.new_graph.objects
+            const sketch = objects[newSketchResult.sketchId]
+            if (
+              sketch?.kind.type !== 'Sketch' ||
+              objects[sketch.kind.plane]?.artifact_id !==
+                primitiveFace?.faceId ||
+              !newSketchResult.kclSource.text.includes(
+                `.anchors.${injection.anchor}.walls.`
+              )
+            ) {
+              throw new Error(
+                'The imported anchor did not resolve to the selected face.'
+              )
+            }
+            await applyProjectFileSnapshots(
+              fileOps,
+              [
+                {
+                  relativePath: consumerRelativePath,
+                  absolutePath: consumerPath,
+                  previousContent: previousCode,
+                  nextContent: newSketchResult.kclSource.text,
+                },
+              ],
+              'redo'
+            )
+            consumerCommitted = true
+          }
         } catch (error) {
+          if (producerStaged && injection && !consumerCommitted) {
+            await applyProjectFileSnapshots(fileOps, [injection.edit], 'undo')
+            await rustContext.sendUpdateFile(
+              injection.fileId,
+              injection.edit.previousContent!
+            )
+          }
           await rustContext.hackSetProgram(
             kclManager.ast,
             jsAppSettings(rustContext.settingsActor)
@@ -3470,15 +3615,40 @@ export const modelingMachine = setup({
         }
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-        kclManager.updateCodeEditor(
-          newSketchResult.kclSource.text,
-          {
-            shouldAddToHistory: true,
-          },
-          {
-            sketchCheckpointId: newSketchResult.checkpointId ?? null,
-          }
-        )
+        if (injection && consumerRelativePath) {
+          kclManager.addGlobalHistoryEventWithCodeChange(
+            zookeeperEditPatchHistoryEvent({
+              projectPath: injection.projectPath,
+              activeFilePath: consumerPath,
+              patch: { run_id: crypto.randomUUID() },
+              snapshotFiles: [
+                injection.edit,
+                {
+                  relativePath: consumerRelativePath,
+                  absolutePath: consumerPath,
+                  previousContent: previousCode,
+                  nextContent: newSketchResult.kclSource.text,
+                },
+              ],
+            }),
+            newSketchResult.kclSource.text,
+            previousCode,
+            {
+              shouldExecute: false,
+              sketchCheckpointId: newSketchResult.checkpointId,
+            }
+          )
+        } else {
+          kclManager.updateCodeEditor(
+            newSketchResult.kclSource.text,
+            {
+              shouldAddToHistory: true,
+            },
+            {
+              sketchCheckpointId: newSketchResult.checkpointId ?? null,
+            }
+          )
+        }
 
         return {
           plane: result,

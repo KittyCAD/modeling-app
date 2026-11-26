@@ -255,6 +255,17 @@ export async function applyZookeeperEditPatch({
   )
 }
 
+export async function applyProjectFileSnapshots(
+  fileOperations: FileOperationsRegistryService,
+  files: readonly ZookeeperSnapshotFileReplay[],
+  direction: ZookeeperPatchReplayDirection
+) {
+  const changes = await prepareZookeeperSnapshotReplay(files, direction, {
+    fileOperations,
+  })
+  await writeZookeeperPatchReplay(fileOperations, changes)
+}
+
 async function replayZookeeperEditPatch({
   fileOperations,
   kclManager,

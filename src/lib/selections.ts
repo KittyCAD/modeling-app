@@ -1818,7 +1818,19 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (clickEntityId && engineCommandManager) {
+  const clickedOwnerId =
+    engineTopologyFallbackFromReference(reference)?.parentId
+  const clickedOwner = clickedOwnerId
+    ? artifactGraph.get(clickedOwnerId)
+    : undefined
+  const hasSplitProvenance =
+    entityRef.type === 'edge' &&
+    entityRef.side_faces.length >= 2 &&
+    clickedOwner?.type === 'compositeSolid' &&
+    clickedOwner.subType === 'subtract' &&
+    clickedOwner.outputIndex != null
+
+  if (!hasSplitProvenance && clickEntityId && engineCommandManager) {
     const primitiveSel = await getPrimitiveSelectionForEntity(
       clickEntityId,
       engineCommandManager,
@@ -2044,7 +2056,8 @@ export async function getEventForQueryEntityTypeWithPoint(
       : 0
   const selection: Selection = {
     entityRef,
-    codeRef: codeRefs?.[0],
+    ...(hasSplitProvenance ? { artifact: clickedOwner } : {}),
+    codeRef: hasSplitProvenance ? clickedOwner.codeRef : codeRefs?.[0],
     ...(patternArtifact && patternCopyIndex > 0
       ? {
           artifact: patternArtifact,
@@ -2335,19 +2348,18 @@ export function processCodeMirrorRanges({
     })
 
   if (!isChange) return null
-  const codeBasedSelections: Array<{ codeRef: CodeRef; artifact?: Artifact }> =
-    codeMirrorRanges.map(({ from, to }) => {
-      const pathToNode = getNodePathFromSourceRange(
-        ast,
-        topLevelRange(from, to)
-      )
-      return {
-        codeRef: {
-          range: topLevelRange(from, to),
-          pathToNode,
-        },
-      }
-    })
+  const codeBasedSelections: Array<{
+    codeRef: CodeRef
+    artifact?: Artifact
+  }> = codeMirrorRanges.map(({ from, to }) => {
+    const pathToNode = getNodePathFromSourceRange(ast, topLevelRange(from, to))
+    return {
+      codeRef: {
+        range: topLevelRange(from, to),
+        pathToNode,
+      },
+    }
+  })
   const idBasedSelections: SelectionToEngine[] = codeToIdSelections(
     codeBasedSelections,
     artifactGraph,

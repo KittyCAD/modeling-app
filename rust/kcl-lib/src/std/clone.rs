@@ -141,6 +141,14 @@ async fn inner_clone(
                 .await?;
 
             fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args).await?;
+            if let (GeometryWithImportedGeometry::Solid(source), GeometryWithImportedGeometry::Solid(copy)) =
+                (&geometry, &mut new_geometry)
+                && (!source.primary_chamfer_faces.is_empty() || !source.extrusion_history.is_empty())
+            {
+                let pairs = args.ctx.engine.clone_face_copies(new_id).await;
+                copy.inherit_primary_chamfer_faces(source, &pairs);
+                super::history::inherit_copy_history(copy, source, &pairs);
+            }
             res.push(new_geometry)
         }
     }

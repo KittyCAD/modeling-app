@@ -1,0 +1,5 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+import finished from "history-support-part.kcl"
+
+resolvedWall = finished.history.extrusions[0].walls.line3

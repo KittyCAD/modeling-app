@@ -155,6 +155,31 @@ impl Cache {
         if self.owns(&inner) { inner.old_ast.clone() } else { None }
     }
 
+    /// Output count from the latest live run, for mock validation of the
+    /// experimental separated subtraction. Mock geometry cannot infer this.
+    pub(crate) async fn separated_subtract_output_count(
+        &self,
+        range: kcl_error::SourceRange,
+    ) -> Option<usize> {
+        let inner = self.storage.inner().read().await;
+        let state = inner.old_ast.as_ref().filter(|_| self.owns(&inner))?;
+        state
+            .exec_state
+            .artifacts
+            .graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                kcl_api::artifact::Artifact::CompositeSolid(solid)
+                    if solid.code_ref.range == range =>
+                {
+                    solid.output_index
+                }
+                _ => None,
+            })
+            .max()
+            .map(|index| index + 1)
+    }
+
     pub(super) async fn write_old_ast(&self, old_state: GlobalState) {
         let mut inner = self.storage.inner().write().await;
         if !self.owns(&inner) {

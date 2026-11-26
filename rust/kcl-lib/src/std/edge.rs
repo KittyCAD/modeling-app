@@ -899,6 +899,32 @@ fn edge_combinations_exceed_limit(side_face_count: usize, end_face_count: usize)
         || side_face_count.saturating_mul(end_face_count) > MAX_EDGE_COMBINATIONS
 }
 
+async fn resolve_scoped_face_ids(
+    value: &TagOrUuid,
+    solid: Option<&Solid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<Uuid>, KclError> {
+    let ids = resolve_as_face_ids(value, solid, exec_state, args).await?;
+    let Some(solid) = solid else { return Ok(ids) };
+    let mut scoped = Vec::new();
+    for id in ids {
+        let mut has_correspondence = false;
+        for entry in &solid.subtraction_face_reassignments {
+            if entry.source_id == id {
+                has_correspondence = true;
+                if entry.owner_id == solid.id && !scoped.contains(&entry.replacement_id) {
+                    scoped.push(entry.replacement_id);
+                }
+            }
+        }
+        if !has_correspondence && !scoped.contains(&id) {
+            scoped.push(id);
+        }
+    }
+    Ok(scoped)
+}
+
 async fn resolve_edge_specifiers_with_face_tags(
     unresolved: &UnresolvedEdgeSpecifier,
     solid: Option<&Solid>,
@@ -907,11 +933,11 @@ async fn resolve_edge_specifiers_with_face_tags(
 ) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
     let mut side_face_groups = Vec::with_capacity(unresolved.side_faces.len());
     for value in &unresolved.side_faces {
-        side_face_groups.push(resolve_as_face_ids(value, solid, exec_state, args).await?);
+        side_face_groups.push(resolve_scoped_face_ids(value, solid, exec_state, args).await?);
     }
     let mut end_face_groups = Vec::with_capacity(unresolved.end_faces.len());
     for value in &unresolved.end_faces {
-        end_face_groups.push(resolve_as_face_ids(value, solid, exec_state, args).await?);
+        end_face_groups.push(resolve_scoped_face_ids(value, solid, exec_state, args).await?);
     }
 
     // Before computing all combinations, count them. If there would be too
@@ -1001,6 +1027,151 @@ pub(crate) async fn resolve_edge_specifier_with_adjacent_faces_or_tag_ids(
         .end_faces(end_faces)
         .maybe_index(unresolved.index)
         .build())
+}
+
+/// Expand a lineage selector against the live solid being filleted.
+pub(super) async fn resolve_lineage_fillet(
+    references: &[KclValue],
+    solid: &Solid,
+    args: &Args,
+) -> Result<Option<Vec<kcmc::shared::EdgeSpecifier>>, KclError> {
+    use super::csg::ExtrusionFaceRole;
+    use super::csg::SubtractionFaceOrigin;
+
+    let uses_lineage = references.iter().any(|reference| {
+        let KclValue::Object { value, .. } = reference else {
+            return false;
+        };
+        ["sideFaces", "endFaces"].iter().any(|key| {
+            value
+                .get(*key)
+                .and_then(KclValue::as_slice)
+                .is_some_and(|faces| faces.iter().any(|face| matches!(face, KclValue::Object { .. } | KclValue::Face { .. })))
+        })
+    });
+    if !uses_lineage {
+        return Ok(None);
+    }
+    let error =
+        |message: &str| KclError::new_semantic(KclErrorDetails::new(message.to_owned(), vec![args.source_range]));
+    let [KclValue::Object { value: selector, .. }] = references else {
+        return Err(error("Provide exactly one lineage edge selector per fillet."));
+    };
+    if selector.contains_key("index") {
+        return Err(error("Narrow a lineage edge with end faces."));
+    }
+    let mock = args.ctx.no_engine_commands().await;
+    let face_groups = |key| -> Result<Vec<Vec<Uuid>>, KclError> {
+        let faces = selector
+            .get(key)
+            .and_then(KclValue::as_slice)
+            .ok_or_else(|| error("A lineage edge needs side faces and end faces."))?;
+        faces
+            .iter()
+            .map(|face| {
+                if let KclValue::Object {
+                    object_kind: crate::execution::kcl_value::KclObjectKind::HistoryFaceGroup { owner, value_id, faces },
+                    ..
+                } = face
+                {
+                    if *owner != solid.id || *value_id != solid.value_id {
+                        return Err(error("Each history face group must belong to the solid being filleted."));
+                    }
+                    return Ok(faces.clone());
+                }
+                if let KclValue::Face { value } = face {
+                    if value.parent_solid.solid_id != solid.id {
+                        return Err(error("Each lineage face must belong to the solid being filleted."));
+                    }
+                    return Ok(vec![value.id]);
+                }
+                let KclValue::Object { value, .. } = face else {
+                    return Err(error("Use construction roles for all faces in a lineage edge."));
+                };
+                let count = |key| match value.get(key) {
+                    Some(KclValue::Number { value, .. })
+                        if *value >= 0.0 && *value <= u32::MAX as f64 && value.fract() == 0.0 =>
+                    {
+                        Some(*value as usize)
+                    }
+                    _ => None,
+                };
+                let string = |key| match value.get(key) {
+                    Some(KclValue::String { value, .. }) => Some(value.as_str()),
+                    _ => None,
+                };
+                let cut_depth = count("cutDepth").ok_or_else(|| error("cutDepth must be a non-negative integer."))?;
+                let tool = match string("operand") {
+                    Some("tool") => true,
+                    Some("target") => false,
+                    _ => return Err(error("operand must be target or tool.")),
+                };
+                let role = match string("role") {
+                    Some("start") => ExtrusionFaceRole::Start,
+                    Some("end") => ExtrusionFaceRole::End,
+                    Some("wall") => ExtrusionFaceRole::Wall(
+                        count("segmentIndex").ok_or_else(|| error("A wall needs a segmentIndex."))?,
+                    ),
+                    _ => return Err(error("role must be start, end or wall.")),
+                };
+                let origin = SubtractionFaceOrigin { cut_depth, tool, role };
+                let mut matches = solid
+                    .subtraction_face_origins
+                    .iter()
+                    .filter_map(|(candidate, face_id)| (*candidate == origin).then_some(*face_id))
+                    .collect::<Vec<_>>();
+                matches.sort_unstable();
+                matches.dedup();
+                if mock {
+                    Ok(vec![Uuid::nil()])
+                } else if matches.is_empty() {
+                    Err(error("A lineage face role has no live descendants on this body."))
+                } else {
+                    Ok(matches)
+                }
+            })
+            .collect()
+    };
+    let sides = face_groups("sideFaces")?;
+    let ends = face_groups("endFaces")?;
+    let named_side_faces = selector
+        .get("sideFaces")
+        .and_then(KclValue::as_slice)
+        .is_some_and(|faces| {
+            faces.iter().all(|face| {
+                matches!(
+                    face,
+                    KclValue::Object {
+                        object_kind: crate::execution::kcl_value::KclObjectKind::HistoryFaceGroup { .. },
+                        ..
+                    } | KclValue::Face { .. }
+                )
+            })
+        });
+    if sides.len() != 2 || (ends.is_empty() && !named_side_faces) {
+        return Err(error(
+            "A lineage edge needs two side faces, and legacy face roles also need an end face.",
+        ));
+    }
+    if edge_combinations_exceed_limit(
+        combination_count(sides.iter().map(Vec::len)),
+        combination_count(ends.iter().map(Vec::len)),
+    ) {
+        return Err(error("The lineage edge has too many possible face combinations."));
+    }
+    let end_combinations = face_id_combinations(&ends);
+    let mut result = Vec::new();
+    for side_faces in face_id_combinations(&sides) {
+        for end_faces in &end_combinations {
+            result.push(
+                kcmc::shared::EdgeSpecifier::builder()
+                    .side_faces(side_faces.clone())
+                    .end_faces(end_faces.clone())
+                    .build(),
+            );
+        }
+    }
+    Ok(Some(result))
 }
 
 pub(crate) async fn parse_edge_refs_to_references(

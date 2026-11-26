@@ -1,0 +1,3 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+import finished from "named-output-part.kcl"

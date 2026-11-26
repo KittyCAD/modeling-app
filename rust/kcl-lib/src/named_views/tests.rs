@@ -207,6 +207,8 @@ fn sweeps_with_non_path_artifacts_use_their_own_ids() {
 fn identity_kinds_use_their_artifact_ids_without_visibility_filtering() {
     let artifacts = [
         Artifact::CompositeSolid(CompositeSolid {
+            subtraction_face_sources: Default::default(),
+            subtraction_face_identity_lineage: None,
             id: id(4),
             consumed: true,
             sub_type: CompositeSolidSubType::Union,
@@ -261,6 +263,7 @@ fn pattern_copies_use_the_supplied_copy_ids() {
         sub_type: PatternSubType::Linear,
         source_id: id(1),
         copy_ids: vec![id(5), id(6)],
+        copy_face_sources: Default::default(),
         copy_face_ids: Vec::new(),
         copy_edge_ids: Vec::new(),
         code_ref: Default::default(),
@@ -309,6 +312,8 @@ fn plane(artifact_id: ArtifactId) -> Artifact {
 
 fn composite(artifact_id: ArtifactId) -> Artifact {
     Artifact::CompositeSolid(CompositeSolid {
+        subtraction_face_sources: Default::default(),
+        subtraction_face_identity_lineage: None,
         id: artifact_id,
         consumed: false,
         sub_type: CompositeSolidSubType::Union,
@@ -364,6 +369,7 @@ fn pattern(artifact_id: ArtifactId, source_id: ArtifactId, copy_ids: Vec<Artifac
         sub_type: PatternSubType::Linear,
         source_id,
         copy_ids,
+        copy_face_sources: Default::default(),
         copy_face_ids: Vec::new(),
         copy_edge_ids: Vec::new(),
         code_ref: Default::default(),

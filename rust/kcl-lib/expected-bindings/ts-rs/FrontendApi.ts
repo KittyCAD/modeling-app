@@ -149,7 +149,11 @@ export type PrimitiveFacePlane = {
 /**
  * Engine ID of the solid which owns the face.
  */
-solidId: string, index: number, };
+solidId: string, index: number,
+/**
+ * Live face ID from the viewport pick, used to find semantic construction roles.
+ */
+faceId?: string | null, };
 
 export type Radius = { arc: ApiObjectId, radius: Number, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 

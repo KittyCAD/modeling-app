@@ -1440,6 +1440,32 @@ describe('KclManager storage checks before sketch insertion', () => {
   )
 })
 
+describe('KclManager editor selection bounds', () => {
+  it.each(['', 'x = 1'])(
+    'clamps selection from a longer source to the current editor %j',
+    async (source) => {
+      const { app, kclManager } = createKclManagerTestHarness(source)
+      try {
+        const end = kclManager.editorView.state.doc.length
+        const selection = kclManager.createEditorSelection({
+          graphSelections: [
+            { codeRef: { range: [20, 40, 0], pathToNode: [] } },
+          ],
+          otherSelections: [],
+        })
+        expect(selection.ranges.map(({ from, to }) => [from, to])).toEqual([
+          [end, end],
+        ])
+        expect(() =>
+          kclManager.editorView.dispatch({ selection })
+        ).not.toThrow()
+      } finally {
+        await app.dispose()
+      }
+    }
+  )
+})
+
 describe('KclManager deferred editor ownership', () => {
   it.each(['closed', 'different project'])(
     'drops a delayed request after its owner is %s',

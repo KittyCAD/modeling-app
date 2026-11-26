@@ -1,3 +1,10 @@
+import type { planImportedRegionAnchor } from '@src/lib/projectSession/importedSketchAnchor'
+import { getRelativePathIfContained } from '@src/lib/paths'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import {
+  applyProjectFileSnapshots,
+  zookeeperEditPatchHistoryEvent,
+} from '@src/lib/zookeeper/editorPlugin'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { KclManager } from '@src/lang/KclManager'
@@ -6,7 +13,13 @@ import {
   updateModelingState,
 } from '@src/lang/modelingWorkflows'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { recast, type PathToNode, type Program } from '@src/lang/wasm'
+import {
+  parse,
+  recast,
+  resultIsOk,
+  type PathToNode,
+  type Program,
+} from '@src/lang/wasm'
 import type { CommandReviewValidationError } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
@@ -22,11 +35,15 @@ type ModelingCodemodRunContext<CommandArgs> = {
   ast: Node<Program>
   kclManager: KclManager
   wasmInstance: ModuleType
+  planProjectEdits?: boolean
 }
 
 export type ModelingCodemodSuccess = {
   modifiedAst: Node<Program>
   pathToNode: PathToNode | PathToNode[]
+  importedAnchor?: NonNullable<
+    Awaited<ReturnType<typeof planImportedRegionAnchor>>
+  >
 }
 
 export type ModelingCodemodResult = ModelingCodemodSuccess | Error
@@ -91,11 +108,13 @@ export async function runModelingCodemod<CommandArgs>({
   kclManager,
   wasmInstance,
   sourceSnapshot,
+  planProjectEdits = false,
 }: {
   codemod: ModelingCodemod<CommandArgs>
   commandArgs: CommandArgs
   kclManager: KclManager
   wasmInstance?: ModuleType
+  planProjectEdits?: boolean
   sourceSnapshot?: {
     ast: Node<Program>
     code: string
@@ -128,6 +147,7 @@ export async function runModelingCodemod<CommandArgs>({
     ast,
     kclManager,
     wasmInstance: resolvedWasmInstance,
+    planProjectEdits,
   })
 }
 
@@ -202,7 +222,9 @@ export function createModelingCodemodActor<CommandArgs>(
 ) {
   return async ({
     input,
+    signal,
   }: {
+    signal?: AbortSignal
     input:
       | {
           data: CommandArgs | undefined
@@ -216,14 +238,98 @@ export function createModelingCodemodActor<CommandArgs>(
       return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
     }
 
+    const { kclManager } = input
+    const sourceSnapshot = { ast: kclManager.ast, code: kclManager.code }
+    const consumerPath = kclManager.path
     const codemodResult = await runModelingCodemod({
       codemod,
       commandArgs: input.data,
       kclManager: input.kclManager,
       wasmInstance: input.wasmInstance,
+      sourceSnapshot,
+      planProjectEdits: true,
     })
     if (err(codemodResult)) {
       return Promise.reject(codemodResult)
+    }
+
+    const anchor = codemodResult.importedAnchor
+    if (anchor) {
+      const { fileOperations } = kclManager.systemDeps
+      const relativePath = getRelativePathIfContained(
+        anchor.projectPath,
+        consumerPath
+      )
+      if (!relativePath)
+        throw new Error('The consumer is outside the current project.')
+      const wasm = input.wasmInstance ?? (await kclManager.wasmInstancePromise)
+      const code = recast(codemodResult.modifiedAst, wasm)
+      if (isErr(code)) throw code
+      const parsed = parse(code, wasm)
+      if (isErr(parsed)) throw parsed
+      if (!resultIsOk(parsed))
+        throw new Error('Could not parse the anchored fillet.')
+      const consumer = {
+        relativePath,
+        absolutePath: consumerPath,
+        previousContent: sourceSnapshot.code,
+        nextContent: code,
+      }
+      const assertCurrent = () => {
+        if (
+          signal?.aborted ||
+          kclManager.path !== consumerPath ||
+          kclManager.code !== sourceSnapshot.code ||
+          kclManager.systemDeps.project.peek()?.path !== anchor.projectPath
+        ) {
+          throw new Error('The current file changed while applying the fillet.')
+        }
+      }
+      let staged = false
+      try {
+        assertCurrent()
+        await applyProjectFileSnapshots(fileOperations, [anchor.edit], 'redo')
+        staged = true
+        await input.rustContext.sendUpdateFile(
+          anchor.fileId,
+          anchor.edit.nextContent
+        )
+        const settings = jsAppSettings(input.rustContext.settingsActor)
+        const refreshed = await input.rustContext.hackSetProgram(
+          sourceSnapshot.ast,
+          settings
+        )
+        if (refreshed.type !== 'Success')
+          throw new Error('Could not load the imported anchor.')
+        await input.rustContext.execute(parsed.program, settings, consumerPath)
+        assertCurrent()
+        await applyProjectFileSnapshots(fileOperations, [consumer], 'redo')
+      } catch (error) {
+        if (staged) {
+          await applyProjectFileSnapshots(fileOperations, [anchor.edit], 'undo')
+          await input.rustContext.sendUpdateFile(
+            anchor.fileId,
+            anchor.edit.previousContent
+          )
+          if (kclManager.path === consumerPath) {
+            await kclManager.executeAst({ ast: sourceSnapshot.ast })
+          }
+        }
+        throw error
+      }
+      kclManager.addGlobalHistoryEventWithCodeChange(
+        zookeeperEditPatchHistoryEvent({
+          projectPath: anchor.projectPath,
+          activeFilePath: consumerPath,
+          patch: { run_id: crypto.randomUUID() },
+          snapshotFiles: [anchor.edit, consumer],
+        }),
+        code,
+        sourceSnapshot.code,
+        { shouldExecute: false }
+      )
+      await kclManager.executeAst({ ast: parsed.program })
+      return
     }
 
     await updateModelingState(

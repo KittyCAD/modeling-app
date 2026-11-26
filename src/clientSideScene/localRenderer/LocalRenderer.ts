@@ -39,6 +39,7 @@ import {
 } from '@src/lib/kcl/scene/execution'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { getPatternArtifactForCopyId } from '@src/lang/std/artifactGraph'
 import { DprDetector } from '@src/lib/DprDetector'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -659,9 +660,22 @@ export class LocalRenderer {
           trap(new Error('Could not find the body of the selected face'))
         }
       }
+      const edgeOwner =
+        reference?.type === 'edge'
+          ? reference.topology_fallback?.parent_id
+          : undefined
+      const pickedCopy = edgeOwner
+        ? getPatternArtifactForCopyId(edgeOwner, this.host.artifacts())
+        : undefined
+      const data = {
+        reference,
+        ...(entityId && edgeOwner && pickedCopy?.copyIds.includes(edgeOwner)
+          ? { entity_id: entityId }
+          : {}),
+      }
       const response = {
         type: 'query_entity_type_with_point',
-        data: { reference },
+        data,
       } satisfies Extract<
         OkModelingCmdResponse,
         { type: 'query_entity_type_with_point' }

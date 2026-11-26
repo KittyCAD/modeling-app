@@ -99,9 +99,29 @@ fn validate_solid_not_consumed(
 }
 
 fn consumed_solid_error_message(solid: &Solid, exec_state: &ExecState) -> Result<Option<String>, KclError> {
-    let key = consumed_solid_key(solid);
+    consumed_body_error_message(solid.id, solid.value_id, exec_state)
+}
+
+pub(super) fn validate_body_not_consumed(
+    body: uuid::Uuid,
+    value: uuid::Uuid,
+    exec_state: &ExecState,
+    range: SourceRange,
+) -> Result<(), KclError> {
+    if let Some(message) = consumed_body_error_message(body, value, exec_state)? {
+        return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])));
+    }
+    Ok(())
+}
+
+fn consumed_body_error_message(
+    body: uuid::Uuid,
+    value: uuid::Uuid,
+    exec_state: &ExecState,
+) -> Result<Option<String>, KclError> {
+    let key = ConsumedSolidKey::new(body, value);
     let Some(info) = exec_state.check_solid_consumed(&key) else {
-        if let Some(info) = exec_state.check_solid_id_consumed(&solid.id)
+        if let Some(info) = exec_state.check_solid_id_consumed(&body)
             && info.should_report_reused_engine_id_as_consumed(key)
         {
             let operation = info.operation();
@@ -232,6 +252,12 @@ mod tests {
             end_cap_id: None,
             edge_cuts: vec![],
             pending_edge_cut_ids: vec![],
+            subtraction_face_reassignments: Vec::new(),
+            subtraction_face_identity_lineage: None,
+            subtraction_face_origins: Vec::new(),
+            primary_chamfer_faces: Vec::new(),
+            extrusion_history: Vec::new(),
+            boolean_output_names: Vec::new(),
             units: UnitLength::Millimeters,
             sectional: false,
             meta: vec![SourceRange::default().into()],

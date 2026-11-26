@@ -51,6 +51,10 @@ import {
   observeViewportDensity,
   resizeSceneCanvas,
 } from '@src/lib/kcl/scene/viewport'
+import {
+  setInjectSelectionAnchors,
+  shouldInjectSelectionAnchors,
+} from '@src/lib/selectionAnchors'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
@@ -187,6 +191,18 @@ export const ClientSideScene = ({
             : ''
         }`}
       ></div>
+      {!inSketchMode && !inSketchSolveMode && (
+        <label className="absolute bottom-4 left-4 z-10 flex items-center gap-2 rounded bg-2 px-2 py-1 text-xs">
+          <input
+            type="checkbox"
+            defaultChecked={shouldInjectSelectionAnchors()}
+            onChange={(event) =>
+              setInjectSelectionAnchors(event.currentTarget.checked)
+            }
+          />
+          Inject anchors
+        </label>
+      )}
       <ConstraintBadgeTooltipOverlay containerRef={containerRef} />
       <Overlays />
       <SketchSolveToolIconOverlay />

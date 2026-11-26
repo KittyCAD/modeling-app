@@ -3451,7 +3451,8 @@ export class KclManager extends File {
   addGlobalHistoryEventWithCodeChange(
     spec: TransactionSpecNoChanges,
     code: string,
-    previousCode?: string
+    previousCode?: string,
+    options?: { shouldExecute: boolean; sketchCheckpointId?: number | null }
   ) {
     if (code === this.code) {
       if (previousCode !== undefined && !isCodeTheSame(previousCode, code)) {
@@ -3475,12 +3476,13 @@ export class KclManager extends File {
       {
         shouldAddToHistory: true,
         shouldClearHistory: false,
-        shouldExecute: true,
+        shouldExecute: options?.shouldExecute ?? true,
         shouldResetCamera: false,
         shouldWriteToDisk: true,
       },
       {
         annotations: [isolateHistory.of('full')],
+        sketchCheckpointId: options?.sketchCheckpointId,
         effects: [globalHistoryEffect],
       }
     )
@@ -3675,34 +3677,29 @@ export class KclManager extends File {
     })
   }
   createEditorSelection(selections: Selections) {
+    const docLength = this._editorView?.state.doc.length ?? 0
     let codeBasedSelections = []
     // Handle empty graphSelections array to avoid runtime errors
     if (selections.graphSelections.length === 0) {
-      const defaultCursor = EditorSelection.cursor(
-        this._editorView?.state.doc.length || 0
-      )
+      const defaultCursor = EditorSelection.cursor(docLength)
       return EditorSelection.create([defaultCursor], 0)
     }
     for (const selection of selections.graphSelections) {
       const cr = selection.codeRef
       if (!cr?.range) continue
-      const safeEnd = Math.min(
-        cr.range[1],
-        this._editorView?.state.doc.length || cr.range[1]
-      )
-      codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
+      const safeStart = Math.min(cr.range[0], docLength)
+      const safeEnd = Math.min(cr.range[1], docLength)
+      codeBasedSelections.push(EditorSelection.range(safeStart, safeEnd))
     }
     const lastSel =
       selections.graphSelections[selections.graphSelections.length - 1]
     const lastRange = lastSel?.codeRef?.range
     if (!lastRange) {
-      const defaultCursor = EditorSelection.cursor(
-        this._editorView?.state.doc.length || 0
-      )
+      const defaultCursor = EditorSelection.cursor(docLength)
       return EditorSelection.create([defaultCursor], 0)
     }
     const end = lastRange[1]
-    const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
+    const safeEnd = Math.min(end, docLength)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
     return EditorSelection.create(codeBasedSelections, 1)
   }

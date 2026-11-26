@@ -5,6 +5,7 @@ use kcl_error::CompilationIssue;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
+use kcmc::shared::BooleanTopologyReassignment;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -91,6 +92,110 @@ fn subtract_output_ids(
     output_ids
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) struct SubtractionFaceOrigin {
+    pub cut_depth: usize,
+    pub tool: bool,
+    pub role: ExtrusionFaceRole,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum ExtrusionFaceRole {
+    Start,
+    End,
+    Wall(usize),
+}
+
+fn extrusion_face_role(solid: &Solid, face: uuid::Uuid) -> Option<ExtrusionFaceRole> {
+    if Some(face) == solid.start_cap_id {
+        return Some(ExtrusionFaceRole::Start);
+    }
+    if Some(face) == solid.end_cap_id {
+        return Some(ExtrusionFaceRole::End);
+    }
+    let surface = solid.value.iter().find(|surface| {
+        surface.face_id() == face
+            && matches!(
+                surface,
+                crate::execution::ExtrudeSurface::ExtrudePlane(_) | crate::execution::ExtrudeSurface::ExtrudeArc(_)
+            )
+    })?;
+    solid
+        .sketch()?
+        .paths
+        .iter()
+        .position(|path| path.get_id() == surface.get_id())
+        .map(ExtrusionFaceRole::Wall)
+}
+
+fn subtraction_face_origins(
+    target: &Solid,
+    tool: &Solid,
+    links: &[BooleanTopologyReassignment],
+    output_id: uuid::Uuid,
+) -> Vec<(SubtractionFaceOrigin, uuid::Uuid)> {
+    let mut result = Vec::new();
+    for link in links.iter().filter(|link| link.owner_id == output_id) {
+        if target.subtraction_face_identity_lineage.is_some() {
+            for (origin, face_id) in &target.subtraction_face_origins {
+                if *face_id == link.source_id {
+                    result.push((
+                        SubtractionFaceOrigin {
+                            cut_depth: origin.cut_depth + 1,
+                            ..*origin
+                        },
+                        link.replacement_id,
+                    ));
+                }
+            }
+        } else if let Some(role) = extrusion_face_role(target, link.source_id) {
+            result.push((
+                SubtractionFaceOrigin {
+                    cut_depth: 0,
+                    tool: false,
+                    role,
+                },
+                link.replacement_id,
+            ));
+        }
+        if let Some(role) = extrusion_face_role(tool, link.source_id) {
+            result.push((
+                SubtractionFaceOrigin {
+                    cut_depth: 0,
+                    tool: true,
+                    role,
+                },
+                link.replacement_id,
+            ));
+        }
+    }
+    result
+}
+
+fn compose_face_identity_lineage(
+    previous: &[BooleanTopologyReassignment],
+    current: &[BooleanTopologyReassignment],
+    input_id: uuid::Uuid,
+    output_id: uuid::Uuid,
+) -> Vec<BooleanTopologyReassignment> {
+    let mut lineage = Vec::new();
+    for link in current.iter().filter(|link| link.owner_id == output_id) {
+        lineage.push(link.clone());
+        for ancestor in previous
+            .iter()
+            .filter(|ancestor| ancestor.owner_id == input_id && ancestor.replacement_id == link.source_id)
+        {
+            lineage.push(BooleanTopologyReassignment {
+                source_id: ancestor.source_id,
+                ..link.clone()
+            });
+        }
+    }
+    lineage.sort_unstable_by_key(|link| (link.source_id, link.replacement_id));
+    lineage.dedup_by_key(|link| (link.source_id, link.replacement_id));
+    lineage
+}
+
 fn inherit_face_tags<'item, I>(output: &mut Solid, inputs: I)
 where
     I: Iterator<Item = &'item Solid>,
@@ -118,6 +223,7 @@ pub(crate) async fn inner_union(
     inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into(), NewBodyKind::Replacement);
+    solid.extrusion_history = super::history::combine(&solids);
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -174,6 +280,7 @@ pub(crate) async fn inner_union(
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = solid_out_id;
         new_solid.become_new_body(extra_solid_id, extra_solid_id.into(), NewBodyKind::Replacement);
+        new_solid.extrusion_history = solid.extrusion_history.clone();
         new_solids.push(new_solid);
     }
 
@@ -288,7 +395,76 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
-    let solids = inner_subtract(solids, tools, tolerance, csg_algorithm, exec_state, args).await?;
+    let separate_bodies = args
+        .get_kw_arg_opt("separateBodies", &RuntimeType::bool(), exec_state)?
+        .unwrap_or_default();
+    let names: Option<KclValue> = args.get_kw_arg_opt("outputNames", &RuntimeType::any(), exec_state)?;
+    let range = args.source_range;
+    let input_error = |message: &str| KclError::new_semantic(KclErrorDetails::new(message.to_owned(), vec![range]));
+    let witnesses = match names {
+        None => Vec::new(),
+        Some(KclValue::Object { value, .. }) if separate_bodies => value
+            .into_iter()
+            .map(|(name, value)| {
+                let KclValue::TagIdentifier(tag) = value else {
+                    return Err(input_error(
+                        "Each output name must use a tagged region segment as its wall witness.",
+                    ));
+                };
+                Ok((name, tag))
+            })
+            .collect::<Result<Vec<_>, _>>()?,
+        Some(_) => {
+            return Err(input_error(
+                "Use outputNames = { name = region.tags.segment } with separateBodies = true.",
+            ));
+        }
+    };
+    let mock = !witnesses.is_empty() && args.ctx.no_engine_commands().await;
+    let mut solids = inner_subtract(
+        solids,
+        tools,
+        tolerance,
+        csg_algorithm,
+        separate_bodies,
+        exec_state,
+        args,
+    )
+    .await?;
+    if !mock
+        && !witnesses.is_empty()
+        && solids
+            .iter()
+            .any(|solid| solid.subtraction_face_identity_lineage.is_none())
+    {
+        return Err(input_error(
+            "The engine did not report the wall lineage needed to name Boolean outputs.",
+        ));
+    }
+    for (name, tag) in witnesses {
+        if mock {
+            // Mock execution cannot know which output retains a face.
+            if let Some(solid) = solids.first_mut() {
+                solid.boolean_output_names.push(name);
+            }
+        } else {
+            for solid in solids
+                .iter_mut()
+                .filter(|solid| super::history::contains_tagged_wall(solid, &tag))
+            {
+                solid.boolean_output_names.push(name.clone());
+            }
+        }
+    }
+    if separate_bodies {
+        return Ok(KclValue::HomArray {
+            value: solids
+                .into_iter()
+                .map(|solid| KclValue::Solid { value: Box::new(solid) })
+                .collect(),
+            ty: RuntimeType::Primitive(crate::execution::types::PrimitiveType::Solid),
+        });
+    }
     Ok(solids.into())
 }
 
@@ -297,9 +473,18 @@ pub(crate) async fn inner_subtract(
     tools: Vec<Solid>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
+    separate_bodies: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    // The engine's sequential multi-tool path only cuts the first output again.
+    if separate_bodies && (solids.len() != 1 || tools.len() != 1) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Separate subtraction requires exactly one target and one tool.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
 
@@ -308,11 +493,18 @@ pub(crate) async fn inner_subtract(
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        // Output N new bodies, where N is the number of input target bodies.
-        let new_solids = solids
-            .iter()
-            .enumerate()
-            .map(|(index, solid)| {
+        let output_count = if separate_bodies {
+            args.ctx
+                .cache
+                .separated_subtract_output_count(args.source_range)
+                .await
+                .unwrap_or(1)
+        } else {
+            solids.len()
+        };
+        let new_solids = (0..output_count)
+            .map(|index| {
+                let solid = &solids[if separate_bodies { 0 } else { index }];
                 // The first ID is set by the user, subsequent IDs are not.
                 // This matches the usual production normal execution path.
                 let output_id = if index == 0 {
@@ -325,6 +517,9 @@ pub(crate) async fn inner_subtract(
                 inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
                 new_solid.set_id(output_id);
                 new_solid.become_new_body(output_id, output_id.into(), NewBodyKind::Replacement);
+                if let ([target], [tool]) = (solids.as_slice(), tools.as_slice()) {
+                    new_solid.extrusion_history = super::history::after_subtraction(target, tool, output_id, None, &[]);
+                }
                 new_solid
             })
             .collect::<Vec<_>>();
@@ -343,6 +538,7 @@ pub(crate) async fn inner_subtract(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
             ModelingCmd::from(
                 mcmd::BooleanSubtract::builder()
+                    .separate_bodies(separate_bodies)
                     .use_legacy(csg_algorithm.is_legacy())
                     .target_ids(target_ids.clone())
                     .tool_ids(tool_ids.clone())
@@ -384,6 +580,35 @@ pub(crate) async fn inner_subtract(
             new_solid.set_id(output_id);
             new_solid.value_id = solid_out_id;
             new_solid.become_new_body(output_id, output_id.into(), NewBodyKind::Replacement);
+            if let ([target], [tool]) = (solids.as_slice(), tools.as_slice()) {
+                new_solid.extrusion_history = super::history::after_subtraction(
+                    target,
+                    tool,
+                    output_id,
+                    boolean_resp.face_identity_lineage.as_deref(),
+                    &boolean_resp.face_reassignments,
+                );
+            }
+            if separate_bodies {
+                new_solid.subtraction_face_reassignments = boolean_resp.face_reassignments.clone();
+                if let (Some(links), [target], [tool]) =
+                    (&boolean_resp.face_identity_lineage, solids.as_slice(), tools.as_slice())
+                {
+                    new_solid.subtraction_face_origins = subtraction_face_origins(target, tool, links, output_id);
+                }
+                new_solid.subtraction_face_identity_lineage =
+                    boolean_resp.face_identity_lineage.as_ref().map(|links| {
+                        compose_face_identity_lineage(
+                            solids[0]
+                                .subtraction_face_identity_lineage
+                                .as_deref()
+                                .unwrap_or_default(),
+                            links,
+                            solids[0].id,
+                            output_id,
+                        )
+                    });
+            }
             new_solid
         })
         .collect::<Vec<_>>();
@@ -539,6 +764,7 @@ pub(crate) async fn inner_imprint(
 mod tests {
     use uuid::Uuid;
 
+    use super::compose_face_identity_lineage;
     use super::subtract_output_ids;
     use crate::errors::KclError;
     use crate::execution::KclValue;
@@ -678,6 +904,41 @@ secondCap = second.faces.cap
 
     fn test_uuid(id: u128) -> Uuid {
         Uuid::from_u128(id)
+    }
+
+    #[test]
+    fn face_lineage_composes_only_live_descendants_on_the_requested_branch() {
+        let link = |source, replacement, owner| super::BooleanTopologyReassignment {
+            source_id: test_uuid(source),
+            replacement_id: test_uuid(replacement),
+            owner_id: test_uuid(owner),
+        };
+        let mut previous = vec![
+            link(1, 2, 10),
+            link(1, 3, 10),
+            link(1, 4, 10),
+            link(1, 6, 10),
+            link(8, 2, 11),
+        ];
+        let mut current = vec![link(2, 2, 20), link(2, 5, 20), link(3, 3, 20), link(4, 9, 21)];
+        let expected = vec![
+            link(1, 2, 20),
+            link(1, 3, 20),
+            link(1, 5, 20),
+            link(2, 2, 20),
+            link(2, 5, 20),
+            link(3, 3, 20),
+        ];
+        assert_eq!(
+            compose_face_identity_lineage(&previous, &current, test_uuid(10), test_uuid(20)),
+            expected,
+        );
+        previous.reverse();
+        current.reverse();
+        assert_eq!(
+            compose_face_identity_lineage(&previous, &current, test_uuid(10), test_uuid(20)),
+            expected,
+        );
     }
 
     #[test]

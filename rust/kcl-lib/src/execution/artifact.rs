@@ -286,6 +286,7 @@ fn merge_composite_solid(old: &mut CompositeSolid, new: Artifact) -> Option<Arti
     merge_opt_id(&mut old.composite_solid_id, new.composite_solid_id);
     merge_ids(&mut old.pattern_ids, new.pattern_ids);
     old.output_index = new.output_index;
+    old.subtraction_face_identity_lineage = new.subtraction_face_identity_lineage;
     old.consumed = new.consumed;
     None
 }
@@ -384,6 +385,7 @@ fn merge_pattern(old: &mut Pattern, new: Artifact) -> Option<Artifact> {
     let Artifact::Pattern(new) = new else { return Some(new) };
     merge_ids(&mut old.copy_ids, new.copy_ids);
     merge_ids(&mut old.copy_face_ids, new.copy_face_ids);
+    old.copy_face_sources.extend(new.copy_face_sources);
     merge_ids(&mut old.copy_edge_ids, new.copy_edge_ids);
     None
 }
@@ -459,7 +461,7 @@ fn code_ref_for_range(
 /// `exec_artifacts` are filled in from the AST.
 pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
-    responses: &IndexMap<Uuid, WebSocketResponse>,
+    flattened_responses: &AHashMap<Uuid, OkModelingCmdResponse>,
     ast: &Node<Program>,
     exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
@@ -471,8 +473,7 @@ pub(super) fn build_artifact_graph(
     let mut path_to_plane_id_map = AHashMap::default();
     let mut current_plane_id = None;
     let import_code_refs = import_statement_code_refs(ast, module_infos, programs, item_count);
-    let flattened_responses = flatten_modeling_command_responses(responses);
-    let entity_clone_id_maps = build_entity_clone_id_maps(artifact_commands, &flattened_responses);
+    let entity_clone_id_maps = build_entity_clone_id_maps(artifact_commands, flattened_responses);
 
     // Fill in NodePaths for artifacts that were added directly to the map
     // during execution.
@@ -515,7 +516,7 @@ pub(super) fn build_artifact_graph(
         let artifact_updates = artifacts_to_update(
             &map,
             artifact_command,
-            &flattened_responses,
+            flattened_responses,
             &entity_clone_id_maps,
             &path_to_plane_id_map,
             programs,
@@ -585,7 +586,7 @@ fn fill_in_node_paths(
 
 /// Flatten the responses into a map of command IDs to modeling command
 /// responses.  The raw responses from the engine contain batches.
-fn flatten_modeling_command_responses(
+pub(super) fn flatten_modeling_command_responses(
     responses: &IndexMap<Uuid, WebSocketResponse>,
 ) -> AHashMap<Uuid, OkModelingCmdResponse> {
     let mut map = AHashMap::default();
@@ -824,6 +825,8 @@ fn remap_artifact_for_clone(
 ) -> Artifact {
     match artifact {
         Artifact::CompositeSolid(source) => Artifact::CompositeSolid(CompositeSolid {
+            subtraction_face_sources: Default::default(),
+            subtraction_face_identity_lineage: None,
             id: remap_id_for_clone(source.id, entity_id_map),
             consumed: if source.id == source_root_id {
                 false
@@ -976,9 +979,12 @@ fn remap_artifact_for_clone(
             common_surface_ids: remap_ids_for_clone(&source.common_surface_ids, entity_id_map),
         }),
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
+            copy_source_face_id: None,
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
             source_selector_index: source.source_selector_index,
+            unattributed: source.unattributed,
+            generated_from: None,
             consumed_edge_id: remap_opt_id_for_clone(source.consumed_edge_id, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
@@ -1029,6 +1035,7 @@ fn remap_artifact_for_clone(
             sub_type: source.sub_type,
             source_id: remap_id_for_clone(source.source_id, entity_id_map),
             copy_ids: remap_ids_for_clone(&source.copy_ids, entity_id_map),
+            copy_face_sources: Default::default(),
             copy_face_ids: remap_ids_for_clone(&source.copy_face_ids, entity_id_map),
             copy_edge_ids: remap_ids_for_clone(&source.copy_edge_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
@@ -1102,6 +1109,11 @@ fn pattern_artifact_updates(
         .iter()
         .flat_map(|info| info.faces.iter().copied().map(ArtifactId::new))
         .collect::<Vec<_>>();
+    let copy_face_sources = face_edge_infos
+        .iter()
+        .flat_map(|info| &info.face_copies)
+        .map(|[source, copy]| (ArtifactId::new(*copy), ArtifactId::new(*source)))
+        .collect();
     let copy_edge_ids = face_edge_infos
         .iter()
         .flat_map(|info| info.edges.iter().copied().map(ArtifactId::new))
@@ -1114,6 +1126,7 @@ fn pattern_artifact_updates(
         source_id,
         copy_ids,
         copy_face_ids,
+        copy_face_sources,
         copy_edge_ids,
         code_ref,
     })];
@@ -1342,6 +1355,7 @@ fn mirror_3d_artifact_updates(
             Some(Artifact::CompositeSolid(composite)) => {
                 let mut mirrored_composite = composite.clone();
                 mirrored_composite.id = mirrored_solid_id;
+                mirrored_composite.subtraction_face_identity_lineage = None;
                 mirrored_composite.code_ref = code_ref.clone();
                 mirrored_composite.consumed = false;
                 mirrored_composite.composite_solid_id = None;
@@ -1935,6 +1949,17 @@ fn artifacts_to_update(
             };
 
             let mut entity_id_map = entity_clone_id_maps.get(&uuid).cloned().unwrap_or_default();
+            let confirmed_face_copies = match response {
+                Some(OkModelingCmdResponse::EntityClone(response)) => response
+                    .face_edge_ids
+                    .iter()
+                    .filter(|info| ArtifactId::new(info.object_id) == id)
+                    .flat_map(|info| &info.face_copies)
+                    .map(|[source, copy]| (ArtifactId::new(*source), ArtifactId::new(*copy)))
+                    .collect::<AHashMap<_, _>>(),
+                _ => AHashMap::default(),
+            };
+            entity_id_map.extend(confirmed_face_copies.iter().map(|(&source, &copy)| (source, copy)));
             entity_id_map.insert(source_entity_id, id);
             if let Some(info) = entity_clone_info {
                 entity_id_map.insert(info.source_topology_id, id);
@@ -1959,13 +1984,19 @@ fn artifacts_to_update(
                 if artifact_id == source_artifact_id || !entity_id_map.contains_key(&artifact_id) {
                     continue;
                 }
-                cloned_artifacts.push(remap_artifact_for_clone(
+                let mut cloned = remap_artifact_for_clone(
                     artifact,
                     &entity_id_map,
                     &code_ref,
                     artifact_command.cmd_id,
                     source_artifact_id,
-                ));
+                );
+                if let Artifact::EdgeCut(edge_cut) = &mut cloned
+                    && confirmed_face_copies.get(&artifact_id) == Some(&edge_cut.id)
+                {
+                    edge_cut.copy_source_face_id = Some(artifact_id);
+                }
+                cloned_artifacts.push(cloned);
             }
 
             return Ok(cloned_artifacts);
@@ -2461,6 +2492,8 @@ fn artifacts_to_update(
         ModelingCmd::Solid3dMultiJoin(cmd) => {
             let mut return_arr = Vec::new();
             return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                subtraction_face_sources: Default::default(),
+                subtraction_face_identity_lineage: None,
                 id,
                 consumed: false,
                 sub_type: CompositeSolidSubType::Union,
@@ -2504,9 +2537,12 @@ fn artifacts_to_update(
                 edge_id.into()
             };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
+                copy_source_face_id: None,
                 id,
                 sub_type: edge_cut_sub_type(cmd.cut_type),
                 source_selector_index: None,
+                unattributed: None,
+                generated_from: None,
                 consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
@@ -2533,9 +2569,12 @@ fn artifacts_to_update(
                 internal_error!(range, "Solid3dCutEdges command has no edge ID: id={id:?}, cmd={cmd:?}");
             };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
+                copy_source_face_id: None,
                 id,
                 sub_type: edge_cut_sub_type_v2(cmd.cut_type),
                 source_selector_index: None,
+                unattributed: None,
+                generated_from: None,
                 consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
@@ -2555,15 +2594,48 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
-            let face_ids = std::iter::once(id).chain(cmd.extra_face_ids.iter().copied().map(ArtifactId::new));
-            let mut updates: Vec<_> = face_ids
+            let requested_ids: Vec<_> = std::iter::once(uuid)
+                .chain(cmd.extra_face_ids.iter().copied())
                 .take(cmd.edges_references.len())
+                .collect();
+            let result = match response {
+                Some(OkModelingCmdResponse::Solid3dCutEdgeReferences(result)) => Some(result),
+                _ => None,
+            };
+            let report = result.and_then(|result| {
+                result.created_face_ids.as_ref().map(|faces| (faces, result.single_edge_per_selector))
+            });
+            // A singleton can be tagged in place if its requested face is the only output.
+            // Splitting a multi-selector cut needs one surviving face per selector without chaining.
+            let can_use_selector = report.is_none_or(|(faces, single_edge_per_selector)| {
+                single_edge_per_selector
+                    && (!cmd.tangent_chain || requested_ids.len() == 1)
+                    && faces.len() == requested_ids.len()
+                    && requested_ids.iter().all(|id| faces.contains(id))
+            });
+            let face_ids = if can_use_selector {
+                &requested_ids
+            } else {
+                report.map_or(&requested_ids, |(faces, _)| faces)
+            };
+            let mut updates: Vec<_> = face_ids
+                .iter()
+                .copied()
                 .enumerate()
-                .map(|(source_selector_index, face_id)| {
+                .map(|(index, face_id)| {
                     Artifact::EdgeCut(EdgeCut {
-                        id: face_id,
+                        copy_source_face_id: None,
+                        id: ArtifactId::new(face_id),
                         sub_type: edge_cut_sub_type_v2(cmd.cut_type),
-                        source_selector_index: Some(source_selector_index),
+                        source_selector_index: can_use_selector.then_some(index),
+                        unattributed: (!can_use_selector).then_some(true),
+                        generated_from: result
+                            .and_then(|result| result.face_sources.iter().find(|source| source.face_id == face_id))
+                            .map(|source| CutFaceOrigin {
+                                operation_id: uuid,
+                                edge_id: source.edge_id,
+                                side_faces: source.side_faces,
+                            }),
                         consumed_edge_id: None,
                         edge_ids: Vec::new(),
                         surface_id: None,
@@ -2721,12 +2793,38 @@ fn artifacts_to_update(
                 );
             }
 
-            for solid_id in &new_solid_ids {
+            let separated_subtract = match (cmd, response) {
+                (ModelingCmd::BooleanSubtract(cmd), Some(OkModelingCmdResponse::BooleanSubtract(response)))
+                    if cmd.separate_bodies =>
+                {
+                    Some(response)
+                }
+                _ => None,
+            };
+
+            for (output_index, solid_id) in new_solid_ids.iter().enumerate() {
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                    subtraction_face_identity_lineage: separated_subtract
+                        .and_then(|response| response.face_identity_lineage.as_ref())
+                        .map(|links| SubtractionFaceIdentityLineage {
+                            operation_id: id,
+                            source_range: range,
+                            sources: links
+                                .iter()
+                                .filter(|link| ArtifactId::new(link.owner_id) == *solid_id)
+                                .map(|link| (ArtifactId::new(link.replacement_id), ArtifactId::new(link.source_id)))
+                                .collect(),
+                        }),
+                    subtraction_face_sources: separated_subtract
+                        .into_iter()
+                        .flat_map(|response| &response.face_reassignments)
+                        .filter(|entry| ArtifactId::new(entry.owner_id) == *solid_id)
+                        .map(|entry| (ArtifactId::new(entry.replacement_id), ArtifactId::new(entry.source_id)))
+                        .collect(),
                     id: *solid_id,
                     consumed: false,
                     sub_type,
-                    output_index: None,
+                    output_index: separated_subtract.map(|_| output_index),
                     solid_ids: solid_ids.clone(),
                     tool_ids: tool_ids.clone(),
                     code_ref: code_ref.clone(),
@@ -2788,6 +2886,8 @@ fn artifacts_to_update(
 
             for (output_index, solid_id) in new_solid_ids.iter().enumerate() {
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                    subtraction_face_sources: Default::default(),
+                    subtraction_face_identity_lineage: None,
                     id: *solid_id,
                     consumed: false,
                     sub_type: CompositeSolidSubType::Split,

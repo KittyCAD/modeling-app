@@ -1,0 +1,36 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+baseSketch = sketch(on = XY) {
+  side0 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  side1 = line(start = [var 40mm, var 0mm], end = [var 40mm, var 30mm])
+  side2 = line(start = [var 40mm, var 30mm], end = [var 0mm, var 30mm])
+  side3 = line(start = [var 0mm, var 30mm], end = [var 0mm, var 0mm])
+  coincident([side0.end, side1.start])
+  coincident([side1.end, side2.start])
+  coincident([side2.end, side3.start])
+  coincident([side3.end, side0.start])
+}
+baseRegion = region(segments = [baseSketch.side0, baseSketch.side1, baseSketch.side2, baseSketch.side3])
+base = extrude(baseRegion, length = 10mm)
+
+toolSketch = sketch(on = XY) {
+  side0 = line(start = [var 16mm, var -5mm], end = [var 24mm, var -5mm])
+  side1 = line(start = [var 24mm, var -5mm], end = [var 24mm, var 35mm])
+  side2 = line(start = [var 24mm, var 35mm], end = [var 16mm, var 35mm])
+  side3 = line(start = [var 16mm, var 35mm], end = [var 16mm, var -5mm])
+  coincident([side0.end, side1.start])
+  coincident([side1.end, side2.start])
+  coincident([side2.end, side3.start])
+  coincident([side3.end, side0.start])
+}
+toolRegion = region(segments = [toolSketch.side0, toolSketch.side1, toolSketch.side2, toolSketch.side3])
+tool = extrude(toolRegion, length = 14mm)
+  |> translate(z = -2mm)
+
+split = subtract(
+  [base],
+  tools = [tool],
+  separateBodies = true,
+  outputNames = { left = baseRegion.tags.side3, right = baseRegion.tags.side1 },
+)
+export finished = split

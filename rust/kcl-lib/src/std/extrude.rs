@@ -1122,6 +1122,12 @@ pub(crate) async fn after_surface_creation(
         end_cap_id: None,
         edge_cuts: Vec::new(),
         pending_edge_cut_ids: Vec::new(),
+        subtraction_face_reassignments: Vec::new(),
+        subtraction_face_identity_lineage: None,
+        subtraction_face_origins: Vec::new(),
+        primary_chamfer_faces: Vec::new(),
+        extrusion_history: Vec::new(),
+        boolean_output_names: Vec::new(),
     })
 }
 
@@ -1435,6 +1441,12 @@ pub(crate) async fn do_post_extrude<'a>(
         end_cap_id,
         edge_cuts: vec![],
         pending_edge_cut_ids: vec![],
+        subtraction_face_reassignments: Vec::new(),
+        subtraction_face_identity_lineage: None,
+        subtraction_face_origins: Vec::new(),
+        primary_chamfer_faces: Vec::new(),
+        extrusion_history: Vec::new(),
+        boolean_output_names: Vec::new(),
     };
 
     if matches!(being_extruded, BeingExtruded::SketchSegments) {
@@ -1464,6 +1476,9 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     }
 
+    solid
+        .extrusion_history
+        .push(super::history::ExtrusionHistory::from_solid(&solid, args.source_range));
     Ok(solid)
 }
 

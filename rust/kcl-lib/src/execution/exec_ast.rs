@@ -3985,6 +3985,56 @@ impl Node<MemberExpression> {
             },
             (
                 KclValue::Object {
+                    value,
+                    object_kind: KclObjectKind::BooleanOutputs,
+                    ..
+                },
+                Property::String(name),
+                false,
+            ) => match value.get(&name) {
+                Some(body @ KclValue::Solid { .. }) => Ok(body.clone().normal()),
+                found => {
+                    let message = if found.is_some() {
+                        format!(
+                            "More than one Boolean output matches '{name}'. Choose a wall witness unique to the intended body."
+                        )
+                    } else {
+                        format!("No live Boolean output named '{name}'. Its wall witness may have been removed.")
+                    };
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        message,
+                        vec![meta.source_range],
+                    )))
+                }
+            },
+            (
+                KclValue::Object {
+                    object_kind: KclObjectKind::HistoryExtrusions { value },
+                    ..
+                },
+                Property::String(property),
+                false,
+            ) => value.named(&property, meta.source_range).map(KclValue::normal),
+            (
+                KclValue::Object {
+                    object_kind: KclObjectKind::HistoryExtrusions { value },
+                    ..
+                },
+                Property::UInt(index),
+                true,
+            ) => value.indexed(index, meta.source_range).map(KclValue::normal),
+            (
+                KclValue::Object {
+                    object_kind: KclObjectKind::HistoryWalls { value },
+                    ..
+                },
+                Property::String(property),
+                false,
+            ) => crate::std::history::wall_face(&value, &property, exec_state, ctx, meta.source_range)
+                .await
+                .map(KclValue::normal),
+            (
+                KclValue::Object {
                     value: map,
                     object_kind,
                     ..
@@ -4048,6 +4098,38 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
+            (KclValue::HomArray { value, ty }, Property::String(prop), false)
+                if prop == "outputs"
+                    && (ty == RuntimeType::solid()
+                        || (!value.is_empty() && value.iter().all(|item| matches!(item, KclValue::Solid { .. })))) =>
+            {
+                let mut fields = crate::execution::kcl_value::KclObjectFields::default();
+                for body in value {
+                    if let KclValue::Solid { value: solid } = &body {
+                        for name in &solid.boolean_output_names {
+                            match fields.entry(name.clone()) {
+                                std::collections::hash_map::Entry::Vacant(entry) => {
+                                    entry.insert(body.clone());
+                                }
+                                std::collections::hash_map::Entry::Occupied(mut entry) => {
+                                    if !matches!(entry.get(), KclValue::Solid { value: existing }
+                                        if existing.id == solid.id && existing.value_id == solid.value_id)
+                                    {
+                                        entry.insert(KclValue::none());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Ok(KclValue::Object {
+                    value: fields,
+                    object_kind: KclObjectKind::BooleanOutputs,
+                    constrainable: false,
+                    meta: vec![meta],
+                }
+                .normal())
+            }
             (KclValue::HomArray { value: arr, ty }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 // Out-of-bounds error.
@@ -4090,6 +4172,11 @@ impl Node<MemberExpression> {
                     format!("Only integers >= 0 can be used as the index of an array, but you're using {article} {t}",),
                     vec![self.clone().into()],
                 )))
+            }
+            (KclValue::Solid { value }, Property::String(prop), false) if prop == "history" || prop == "anchors" => {
+                crate::std::history::solid_history(&value, exec_state, ctx, meta.source_range, prop == "anchors")
+                    .await
+                    .map(KclValue::normal)
             }
             (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => {
                 let Some(sketch) = value.sketch() else {
@@ -4230,6 +4317,7 @@ impl Node<BinaryExpression> {
                     vec![*right.clone()],
                     Default::default(),
                     crate::std::csg::CsgAlgorithm::Latest,
+                    false,
                     exec_state,
                     args,
                 )

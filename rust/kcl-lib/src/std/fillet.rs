@@ -152,20 +152,36 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
-    let edge_inputs = parse_tagged_edge_inputs(
-        edge_refs,
-        tags,
-        Some(solid.as_ref()),
-        exec_state,
-        &args,
-        "You must provide either 'tags' or 'edges' to fillet edges",
-        "You must provide either 'tags' or 'edges' to fillet edges, not both",
-    )
-    .await?;
+    let lineage_edges = match edge_refs.as_deref() {
+        Some(references) if tags.is_none() => super::edge::resolve_lineage_fillet(references, &solid, &args).await?,
+        _ => None,
+    };
+    let require_unique_edge = lineage_edges.is_some();
+    if require_unique_edge && tangent_chain {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Use tangentChain = false for a lineage fillet.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    let edge_inputs = if let Some(references) = lineage_edges {
+        TaggedEdgeInputs::EngineRefs(references)
+    } else {
+        parse_tagged_edge_inputs(
+            edge_refs,
+            tags,
+            Some(solid.as_ref()),
+            exec_state,
+            &args,
+            "You must provide either 'tags' or 'edges' to fillet edges",
+            "You must provide either 'tags' or 'edges' to fillet edges, not both",
+        )
+        .await?
+    };
 
     match edge_inputs {
         TaggedEdgeInputs::EngineRefs(edge_refs) => {
             let params = FilletEdgeRefParams {
+                require_unique_edge,
                 radius,
                 tolerance,
                 csg_algorithm,
@@ -323,6 +339,7 @@ async fn inner_fillet(
 }
 
 struct FilletEdgeRefParams {
+    require_unique_edge: bool,
     radius: TyF64,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
@@ -357,7 +374,11 @@ async fn inner_fillet_with_engine_refs(
     let mut solid = solid.clone();
 
     let id = exec_state.next_uuid();
-    let num_extra_ids = edge_references.len().saturating_sub(1);
+    let num_extra_ids = if params.require_unique_edge {
+        0
+    } else {
+        edge_references.len().saturating_sub(1)
+    };
     let mut extra_face_ids = Vec::with_capacity(num_extra_ids);
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
@@ -370,6 +391,7 @@ async fn inner_fillet_with_engine_refs(
                 mcmd::Solid3dCutEdgeReferences::builder()
                     .object_id(solid.id)
                     .edges_references(edge_references.clone())
+                    .require_unique_edge(params.require_unique_edge)
                     .cut_type(CutTypeV2::Fillet {
                         radius: LengthUnit(params.radius.unwrap_to_mm()),
                         second_length: None,

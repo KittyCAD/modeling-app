@@ -274,6 +274,11 @@ pub struct EditConstraintOptions {
 struct SolidAstReference {
     variable_name: String,
     output_index: Option<usize>,
+    primary_chamfer_faces: Vec<Option<Uuid>>,
+    generated_chamfers: HashMap<Uuid, (usize, [Uuid; 2])>,
+    history_face_groups: Vec<(Uuid, usize, String, String)>,
+    history_walls: Vec<(Uuid, usize, String)>,
+    history_anchor_groups: Vec<(Uuid, String, String, String)>,
 }
 
 #[derive(Debug, Clone)]
@@ -562,7 +567,7 @@ impl FrontendState {
 
         self.program = checkpoint.program;
         self.scene_graph = checkpoint.scene_graph.clone();
-        self.solid_references = solid_references_from_variables(&self.program.ast, &checkpoint.exec_outcome.variables);
+        self.solid_references = solid_references_from_variables(&self.program.ast, &checkpoint.exec_outcome.variables, &checkpoint.exec_outcome.artifact_graph);
         self.point_freedom_cache = checkpoint.point_freedom_cache;
         self.next_drag_anchor_segment_ids = None;
         self.next_segment_drag_anchors = None;
@@ -4945,7 +4950,7 @@ impl FrontendState {
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
         let mut outcome = outcome;
-        self.solid_references = solid_references_from_variables(&self.program.ast, &outcome.variables);
+        self.solid_references = solid_references_from_variables(&self.program.ast, &outcome.variables, &outcome.artifact_graph);
         let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
         if freedom_analysis_ran {
@@ -5248,6 +5253,85 @@ fn sketch_on_ast_expr(
                     face.solid_id
                 ))
             })?;
+            if let Some(face_id) = face.face_id
+                && let Some(reference) = solid_references.get(&face.solid_id)
+                && let Some((occurrence, sides)) = reference.generated_chamfers.get(&face_id)
+            {
+                let side_exprs = sides
+                    .iter()
+                    .map(|id| {
+                        let (_, extrusion, collection, member) = reference.history_face_groups
+                            .iter()
+                            .filter(|entry| entry.0 == *id)
+                            .min_by_key(|entry| entry.2 != "capFaces")?;
+                        let group_is_unique = reference.history_face_groups.iter().all(
+                            |(other_id, other_extrusion, other_collection, other_member)| {
+                                other_extrusion != extrusion || other_collection != collection
+                                    || other_member != member || other_id == id
+                            },
+                        );
+                        if !group_is_unique {
+                            return None;
+                        }
+                        let extrusions = ["history", "extrusions"]
+                            .into_iter()
+                            .fold(solid_expr.clone(), create_member_expression);
+                        let extrusion = indexed_solid_expr_for_sweep_output(extrusions, Some(*extrusion));
+                        Some([collection.as_str(), member.as_str()].into_iter().fold(extrusion, create_member_expression))
+                    })
+                    .collect::<Option<Vec<_>>>()
+                    .ok_or_else(|| KclError::refactor(
+                        "The selected bevel has no unique construction face reference for its source edge.".to_owned()
+                    ))?;
+                return Ok(ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                    callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
+                    unlabeled: Some(solid_expr),
+                    block: None,
+                    arguments: vec![
+                        ast::LabeledArg { label: Some(ast::Identifier::new("chamferFace")), arg: index_ast_expr(*occurrence) },
+                        ast::LabeledArg { label: Some(ast::Identifier::new("fromFaces")), arg: ast::ArrayExpression::new(side_exprs).into() },
+                    ],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                }))));
+            }
+            if let Some(face_id) = face.face_id
+                && let Some(occurrence) = solid_references.get(&face.solid_id).and_then(|reference| {
+                    reference
+                        .primary_chamfer_faces
+                        .iter()
+                        .position(|candidate| *candidate == Some(face_id))
+                })
+            {
+                return Ok(create_face_of_with_arg_ast(
+                    solid_expr,
+                    "chamferFace",
+                    index_ast_expr(occurrence),
+                ));
+            }
+            if let Some(face_id) = face.face_id
+                && let Some(reference) = solid_references.get(&face.solid_id)
+                && let Some((_, anchor, collection, wall)) = reference.history_anchor_groups.iter()
+                    .find(|(id, _, collection, _)| *id == face_id && collection == "wallFaces")
+                && reference.history_anchor_groups.iter().all(|(id, name, kind, member)| {
+                    name != anchor || kind != collection || member != wall || *id == face_id
+                })
+            {
+                return Ok(["anchors", anchor, "walls", wall]
+                    .into_iter()
+                    .fold(solid_expr, create_member_expression));
+            }
+            if let Some(face_id) = face.face_id
+                && let Some((_, extrusion, wall)) = solid_references
+                    .get(&face.solid_id)
+                    .and_then(|reference| reference.history_walls.iter().find(|(id, _, _)| *id == face_id))
+            {
+                let extrusions = ["history", "extrusions"]
+                    .into_iter()
+                    .fold(solid_expr, create_member_expression);
+                let occurrence = indexed_solid_expr_for_sweep_output(extrusions, Some(*extrusion));
+                return Ok(["walls", wall].into_iter().fold(occurrence, create_member_expression));
+            }
             let face_id_expr = create_face_id_ast(solid_expr.clone(), face.index);
             Ok(create_face_of_ast(solid_expr, face_id_expr))
         }
@@ -5257,40 +5341,61 @@ fn sketch_on_ast_expr(
 fn solid_references_from_variables(
     ast: &ast::Node<ast::Program>,
     variables: &IndexMap<String, KclValueView>,
+    artifacts: &ArtifactGraph,
 ) -> HashMap<Uuid, SolidAstReference> {
     let mut references = HashMap::new();
+    let mut generated = HashMap::<Uuid, Vec<(Uuid, [Uuid; 2])>>::new();
+    for artifact in artifacts.values() {
+        if let Artifact::EdgeCut(cut) = artifact
+            && cut.unattributed == Some(true)
+            && let Some(source) = cut.generated_from
+        {
+            generated.entry(source.operation_id).or_default().push((cut.id.into(), source.side_faces));
+        }
+    }
 
     // In-place operations such as shell reuse their input solid's engine ID.
     // Later variables overwrite earlier references so mutations target the result.
-    for item in &ast.body {
-        let ast::BodyItem::VariableDeclaration(declaration) = item else {
-            continue;
+    let mut record = |name: &String| {
+        let Some(value) = variables.get(name) else { return };
+        let mut record_solid = |solid: &kcl_api::SolidView, output_index| {
+            references.insert(
+                solid.id,
+                SolidAstReference {
+                    variable_name: name.clone(),
+                    output_index,
+                    primary_chamfer_faces: solid.primary_chamfer_faces.clone(),
+                    generated_chamfers: solid.primary_chamfer_faces.iter().enumerate()
+                        .flat_map(|(index, command)| {
+                            command.and_then(|id| generated.get(&id)).into_iter().flatten()
+                                .map(move |(face, sides)| (*face, (index, *sides)))
+                        })
+                        .collect(),
+                    history_face_groups: solid.history_face_groups.clone(),
+                    history_walls: solid.history_walls.clone(),
+                    history_anchor_groups: solid.history_anchor_groups.clone(),
+                },
+            );
         };
-        let name = &declaration.declaration.id.name;
-        let Some(value) = variables.get(name) else {
-            continue;
-        };
-
         match value {
-            KclValueView::Solid { value } => {
-                references.insert(
-                    value.id,
-                    SolidAstReference {
-                        variable_name: name.clone(),
-                        output_index: None,
-                    },
-                );
-            }
+            KclValueView::Solid { value } => record_solid(value, None),
             KclValueView::Tuple { value } | KclValueView::HomArray { value } => {
                 for (output_index, entry) in value.iter().enumerate() {
                     if let KclValueView::Solid { value } = entry {
-                        references.insert(
-                            value.id,
-                            SolidAstReference {
-                                variable_name: name.clone(),
-                                output_index: Some(output_index),
-                            },
-                        );
+                        record_solid(value, Some(output_index));
+                    }
+                }
+            }
+            _ => {}
+        }
+    };
+    for item in &ast.body {
+        match item {
+            ast::BodyItem::VariableDeclaration(declaration) => record(&declaration.declaration.id.name),
+            ast::BodyItem::ImportStatement(import) => {
+                if let ast::ImportSelector::List { items } = &import.selector {
+                    for item in items {
+                        record(&item.alias.as_ref().unwrap_or(&item.name).name);
                     }
                 }
             }
@@ -5384,10 +5489,33 @@ fn sketch_face_of_scene_object_ast_expr(
                 ast_name_expr(solid_name_expr.name.name.clone()),
                 cap.solid_output_index,
             );
-            // TODO: change this to explicit tag references with tagStart/tagEnd mutations
-            let face_expr = match cap.kind {
-                kcl_api::CapKind::Start => ast_name_expr("START".to_owned()),
-                kcl_api::CapKind::End => ast_name_expr("END".to_owned()),
+            let (tag_arg, default_tag) = match cap.kind {
+                kcl_api::CapKind::Start => ("tagStart", "START"),
+                kcl_api::CapKind::End => ("tagEnd", "END"),
+            };
+            let source_tag = (cap.solid_output_index.is_some() && cap.source.solid != cap.source.sweep)
+                .then(|| {
+                    let sweep_ref = source_ref_from_source_ref_range(&cap.source.sweep);
+                    let name = variable_name_containing_source_ref(ast, &sweep_ref)?;
+                    let ast::Definition::Variable(declaration) = ast.get_variable(&name)? else {
+                        return None;
+                    };
+                    let ast::Expr::CallExpressionKw(call) = &declaration.init else {
+                        return None;
+                    };
+                    call.arguments.iter().find_map(|arg| match &arg.arg {
+                        ast::Expr::TagDeclarator(tag)
+                            if arg.label.as_ref().is_some_and(|label| label.name == tag_arg) =>
+                        {
+                            Some(tag.name.clone())
+                        }
+                        _ => None,
+                    })
+                })
+                .flatten();
+            let face_expr = match source_tag {
+                Some(tag) => create_member_expression(create_member_expression(solid_expr.clone(), "faces"), &tag),
+                None => ast_name_expr(default_tag.to_owned()),
             };
 
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
@@ -5546,6 +5674,74 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<kcl_api::Object>, artif
         .map(|object| object.artifact_id)
         .collect::<HashSet<_>>();
 
+    // Prefer the live cap and its owning output over the consumed sweep's
+    // cap object. A source cap can be addressed by START/END when it has
+    // exactly one descendant on this output.
+    for artifact in artifact_graph.values() {
+        let Artifact::CompositeSolid(owner) = artifact else {
+            continue;
+        };
+        if owner.consumed {
+            continue;
+        }
+        let Some(output_index) = owner.output_index else {
+            continue;
+        };
+        for (&live_id, source_id) in &owner.subtraction_face_sources {
+            let Some(Artifact::Cap(cap)) = artifact_graph.get(source_id) else {
+                continue;
+            };
+            let Some(Artifact::Sweep(sweep)) = artifact_graph.get(&cap.sweep_id) else {
+                continue;
+            };
+            // Subtraction may name the base by its sweep or by its swept path.
+            // START and END describe the base's caps, not the tool's.
+            let is_base_cap = owner.solid_ids.contains(&sweep.id)
+                || sweep
+                    .path_id
+                    .and_then(|id| artifact_graph.get(&id))
+                    .is_some_and(|artifact| {
+                        matches!(artifact, Artifact::Path(path)
+                        if composite_contains_path_input(&owner.solid_ids, &[], path.id, path.solid2d_id))
+                    });
+            if !is_base_cap
+                || owner
+                    .subtraction_face_sources
+                    .values()
+                    .filter(|id| *id == source_id)
+                    .count()
+                    != 1
+            {
+                continue;
+            }
+            if !existing_artifact_ids.insert(live_id) {
+                continue;
+            }
+            let id = ObjectId(scene_objects.len());
+            let source = CapSource {
+                solid: code_ref_source_ref_range(&owner.code_ref),
+                sweep: code_ref_source_ref_range(&sweep.code_ref),
+            };
+            let object_source = source_ref_from_source_ref_range(&source.solid);
+            scene_objects.push(kcl_api::Object {
+                id,
+                kind: ObjectKind::Cap(kcl_api::Cap {
+                    id,
+                    kind: match cap.sub_type {
+                        CapSubType::Start => kcl_api::CapKind::Start,
+                        CapSubType::End => kcl_api::CapKind::End,
+                    },
+                    source,
+                    solid_output_index: Some(output_index),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id: live_id,
+                source: object_source,
+            });
+        }
+    }
+
     for artifact in artifact_graph.values() {
         match artifact {
             Artifact::Wall(wall) => {
@@ -5676,11 +5872,15 @@ fn negated_plane_ast_expr(name: &str) -> ast::Expr {
 }
 
 fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
+    create_face_of_with_arg_ast(solid_expr, "face", face_expr)
+}
+
+fn create_face_of_with_arg_ast(solid_expr: ast::Expr, label: &str, face_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
-            label: Some(ast::Identifier::new("face")),
+            label: Some(ast::Identifier::new(label)),
             arg: face_expr,
         }],
         digest: None,
@@ -5689,20 +5889,24 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
     })))
 }
 
+fn index_ast_expr(index: usize) -> ast::Expr {
+    ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+        ast::NumericLiteral {
+            value: index as f64,
+            suffix: NumericSuffix::None,
+            raw: index.to_string(),
+            digest: None,
+        },
+    ))))
+}
+
 fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
     ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceId")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("index")),
-            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
-                ast::NumericLiteral {
-                    value: index as f64,
-                    suffix: NumericSuffix::None,
-                    raw: index.to_string(),
-                    digest: None,
-                },
-            )))),
+            arg: index_ast_expr(index),
         }],
         digest: None,
         non_code_meta: Default::default(),
@@ -7498,6 +7702,8 @@ second = sketch(on = XZ) {
         artifacts.insert(
             composite_id,
             Artifact::CompositeSolid(CompositeSolid {
+                subtraction_face_sources: Default::default(),
+                subtraction_face_identity_lineage: None,
                 id: composite_id,
                 consumed: false,
                 sub_type: CompositeSolidSubType::Union,
@@ -14591,7 +14797,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             Some(KclValueView::Solid { value }) => value.id,
             value => panic!("expected shell001 to be a solid, got {value:?}"),
         };
-        let solid_references = solid_references_from_variables(&program.ast, &outcome.variables);
+        let solid_references = solid_references_from_variables(&program.ast, &outcome.variables, &outcome.artifact_graph);
 
         let mut ast = program.ast;
         let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
@@ -14599,7 +14805,11 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             &mut ast,
             &scene_graph,
             &solid_references,
-            &Plane::PrimitiveFace(kcl_api::PrimitiveFacePlane { solid_id, index: 6 }),
+            &Plane::PrimitiveFace(kcl_api::PrimitiveFacePlane {
+                solid_id,
+                index: 6,
+                face_id: None,
+            }),
         )
         .unwrap();
         let face_decl = ast::VariableDeclaration::new(

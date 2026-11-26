@@ -1117,6 +1117,7 @@ mod tests {
             artifact_id: ArtifactId::new(id),
             original_id: id,
             origin_sketch_id: None,
+            region_history_tag: None,
             mirror: None,
             clone: None,
             synthetic_jump_path_ids: vec![],
