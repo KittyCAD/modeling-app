@@ -79,7 +79,7 @@ import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
-type OutputFormat = OutputFormat3d
+type OutputFormat = Exclude<OutputFormat3d, { type: 'native_brep' }>
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage?: infer U }
   ? NonNullable<U>

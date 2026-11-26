@@ -1197,6 +1197,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "display-tessellation"
+version = "0.1.0"
+dependencies = [
+ "earcutr",
+ "js-sys",
+ "kittycad-modeling-cmds 0.2.259",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "displaydoc"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1234,6 +1246,16 @@ name = "dyn-stack-macros"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e1d926b4d407d372f141f93bb444696142c29d32962ccbd3531117cf3aa0bfa9"
+
+[[package]]
+name = "earcutr"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79127ed59a85d7687c409e9978547cffb7dc79675355ed22da6b66fd5f6ead01"
+dependencies = [
+ "itertools 0.11.0",
+ "num-traits",
+]
 
 [[package]]
 name = "either"
@@ -1357,7 +1379,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2438,7 +2460,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2622,7 +2644,7 @@ dependencies = [
 name = "kcl-engine-codec"
 version = "0.2.198"
 dependencies = [
- "kittycad-modeling-cmds",
+ "kittycad-modeling-cmds 0.2.263",
  "rmp-serde",
  "serde_json",
 ]
@@ -2662,7 +2684,7 @@ dependencies = [
  "futures",
  "kcl-lib",
  "kittycad",
- "kittycad-modeling-cmds",
+ "kittycad-modeling-cmds 0.2.263",
  "lazy_static",
  "log",
  "pretty_assertions",
@@ -2744,7 +2766,7 @@ dependencies = [
  "kcl-error",
  "kcl-syntax",
  "kittycad",
- "kittycad-modeling-cmds",
+ "kittycad-modeling-cmds 0.2.263",
  "lazy_static",
  "libm",
  "miette",
@@ -2793,7 +2815,7 @@ dependencies = [
  "anyhow",
  "kcl-api",
  "kcl-lib",
- "kittycad-modeling-cmds",
+ "kittycad-modeling-cmds 0.2.263",
  "miette",
  "pyo3",
  "pyo3-stub-gen",
@@ -2842,7 +2864,7 @@ dependencies = [
  "kcl-language-server",
  "kcl-lib",
  "kittycad",
- "kittycad-modeling-cmds",
+ "kittycad-modeling-cmds 0.2.263",
  "rayon",
  "serde",
  "serde_json",
@@ -2916,6 +2938,34 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
+version = "0.2.259"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=e185c32ca4f03abd06a2f167206effcc5e527c42#e185c32ca4f03abd06a2f167206effcc5e527c42"
+dependencies = [
+ "anyhow",
+ "bon",
+ "chrono",
+ "data-encoding",
+ "enum-iterator",
+ "enum-iterator-derive",
+ "euler",
+ "http",
+ "indexmap 2.14.2",
+ "kittycad-measurements",
+ "kittycad-modeling-cmds-macros 0.1.14 (git+https://github.com/KittyCAD/modeling-api.git?rev=e185c32ca4f03abd06a2f167206effcc5e527c42)",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-unit-conversion-derive",
+ "parse-display",
+ "parse-display-derive",
+ "schemars 0.8.22",
+ "serde",
+ "serde_bytes",
+ "serde_with",
+ "typed-path",
+ "uuid",
+]
+
+[[package]]
+name = "kittycad-modeling-cmds"
 version = "0.2.263"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c6fa6352e82145878b2558b68a78f81ef2171b8a08621a963ae1f6f33f32483"
@@ -2931,7 +2981,7 @@ dependencies = [
  "kcl-api",
  "kcl-error",
  "kittycad-measurements",
- "kittycad-modeling-cmds-macros",
+ "kittycad-modeling-cmds-macros 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
  "parse-display",
@@ -2954,7 +3004,18 @@ version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50c9f1366e47999291754861f2362774f1c98bf478819d3788e70b978381e230"
 dependencies = [
- "kittycad-modeling-cmds-macros-impl",
+ "kittycad-modeling-cmds-macros-impl 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2",
+ "quote",
+ "syn 3.0.10",
+]
+
+[[package]]
+name = "kittycad-modeling-cmds-macros"
+version = "0.1.14"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=e185c32ca4f03abd06a2f167206effcc5e527c42#e185c32ca4f03abd06a2f167206effcc5e527c42"
+dependencies = [
+ "kittycad-modeling-cmds-macros-impl 0.1.15 (git+https://github.com/KittyCAD/modeling-api.git?rev=e185c32ca4f03abd06a2f167206effcc5e527c42)",
  "proc-macro2",
  "quote",
  "syn 3.0.10",
@@ -2965,6 +3026,16 @@ name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "101a9b33a3af1c80223b1e34d8d4a28c7e09b61b43fa8ad643efba35bd2cc10e"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.10",
+]
+
+[[package]]
+name = "kittycad-modeling-cmds-macros-impl"
+version = "0.1.15"
+source = "git+https://github.com/KittyCAD/modeling-api.git?rev=e185c32ca4f03abd06a2f167206effcc5e527c42#e185c32ca4f03abd06a2f167206effcc5e527c42"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3481,7 +3552,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4340,7 +4411,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4725,7 +4796,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4782,7 +4853,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5568,7 +5639,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.6",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5577,7 +5648,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6075,9 +6146,9 @@ dependencies = [
 
 [[package]]
 name = "twenty-twenty"
-version = "0.8.5"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e8ff9079e9a19e9c79b2c1bcaf891a19267eeced42d855c8f269f5eb0125ad2"
+checksum = "6d411234fb5018ad8a6cc99279143ad57dfd5179a593394a9f76e5d7df9a6071"
 dependencies = [
  "image",
  "image-compare 0.4.2",
@@ -6509,7 +6580,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6918,9 +6989,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "9.8.1"
+version = "9.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9534624d547e3f516ecde0ed9a70d37788f01d340efcfdd03bf3ea8e163c1d0"
+checksum = "df3845f734baabdd02de353a20580e30ceccd03897def44a4eb8e9654992e294"
 dependencies = [
  "aes",
  "bzip2",
