@@ -1,194 +1,256 @@
-import { effect, signal, type ReadonlySignal } from '@preact/signals-core'
+import {
+  computed,
+  effect,
+  signal,
+  untracked,
+  type ReadonlySignal,
+} from '@preact/signals-core'
 import { editorMatchContext, matchesEditor } from '@src/lib/editors/matching'
 import type { Editor } from '@src/lib/editors/registry/contract'
-import {
-  createExecutorOutput,
-  type ExecutorResult,
-} from '@src/lib/executors/output'
+import { createExecutorOutput } from '@src/lib/executors/output'
 import type {
+  CapabilityData,
+  ExecutionInput,
+  ExecutionResult,
   Executor,
   ExecutorCapability,
-  ExecutorOutput,
 } from '@src/lib/executors/registry/contract'
-import { isErr, reportRejection } from '@src/lib/trap'
-import * as Cause from 'effect/Cause'
+import { isErr } from '@src/lib/trap'
 import * as Effect from 'effect/Effect'
-import * as Either from 'effect/Either'
-import * as Fiber from 'effect/Fiber'
 import * as Scope from 'effect/Scope'
 import * as Exit from 'effect/Exit'
 
-/** Inputs compared by `sameInput` to decide whether this editor needs a replacement run. */
-interface ExecutionInput {
-  src: string
-  contents: string
-  capabilities: readonly ExecutorCapability[]
-  revisions: readonly unknown[]
-  refresh: number
+/** One explicit `run` request; input equality does not make two requests the same attempt. */
+type Attempt = {
+  input: ExecutionInput
+  id: symbol
+  controller: AbortController
 }
 
-/** Watches one `Editor` and matching contributions; replacement input interrupts its Effect fiber before new results can publish. */
+/**
+ * Runs registry-contributed computations for one editor and retains their results.
+ *
+ * `input` observes the live document and capability dependencies; `run` captures
+ * them for an attempt. An edit makes an older result stale without cancelling
+ * that attempt or starting another. `acquireAutomaticExecution` supplies the
+ * separate policy that requests work in response to input changes.
+ *
+ * Each capability has at most one active attempt and one completed result.
+ * A newer request replaces only that capability's active attempt. Withdrawing
+ * its registry contribution removes both; disposing ends all active attempts.
+ */
 export function createExecutor(
   editor: Editor,
   contributions: ReadonlySignal<readonly ExecutorCapability[]>,
   onEditorDestroyed: () => void
 ): { executor: Executor; dispose: () => void } {
-  const refresh = signal(0)
   let disposed = false
-  const snapshot = (): ExecutionInput => {
-    const context = editorMatchContext(editor)
-    const capabilities = contributions.value.filter((capability) =>
-      matchesEditor(capability.matches, context)
-    )
-    return {
-      ...context,
-      refresh: refresh.value,
-      capabilities,
-      revisions: capabilities.map((capability) =>
-        typeof capability.revision === 'function'
-          ? capability.revision(executor)
-          : capability.revision?.value
-      ),
-    }
-  }
-  const pending = (input: ExecutionInput): ExecutorOutput =>
-    createExecutorOutput({
-      src: input.src,
-      contents: input.contents,
-      running: input.capabilities.length > 0,
-    })
-  // Revision readers receive the executor, so establish its output before the first snapshot.
-  const output = signal<ExecutorOutput>(
-    createExecutorOutput({
-      src: editor.src.peek() ?? '',
-      contents: editor.contents.peek(),
-      running: false,
-    })
-  )
-  const execute = (input: ExecutionInput) =>
-    Effect.gen(function* () {
-      if (input.capabilities.length === 0) return
-      // Delay capability calls by a microtask. Another edit in this JavaScript
-      // turn can interrupt this fiber before it starts expensive computation.
-      yield* Effect.promise(() => Promise.resolve())
-      const completed: ExecutorResult[] = []
-      const results = yield* Effect.forEach(
-        input.capabilities,
-        (capability) =>
-          Effect.tryPromise({
-            try: (signal) =>
-              Promise.resolve(
-                capability.execute(input.contents, {
-                  executor,
-                  editor,
-                  src: input.src,
-                  signal,
-                })
-              ),
-            catch: (cause) => (isErr(cause) ? cause : new Error(String(cause))),
-          }).pipe(
-            Effect.flatMap((result) =>
-              isErr(result) ? Effect.fail(result) : Effect.succeed(result)
-            ),
-            Effect.either,
-            Effect.map(
-              (result) =>
-                [
-                  capability,
-                  Either.isLeft(result) ? result.left : result.right,
-                ] as const
-            ),
-            Effect.tap((result) =>
-              Effect.sync(() => {
-                completed.push(result)
-                // Publish this capability's result immediately; other capabilities
-                // may still be waiting for resources such as a mounted viewport.
-                output.value = createExecutorOutput(
-                  { src: input.src, contents: input.contents, running: true },
-                  completed
-                )
-              })
-            )
-          ),
-        { concurrency: 'unbounded' }
-      )
-      output.value = createExecutorOutput(
-        {
-          src: input.src,
-          contents: input.contents,
-          running: false,
-        },
-        results
-      )
-    })
   const scope = Effect.runSync(Scope.make())
+  // Key by the contributed object, not its public `id`: a replacement with the
+  // same `id` must not inherit the old contribution's work or result.
+  const active = new Map<ExecutorCapability, Attempt>()
+  const completed = new Map<
+    ExecutorCapability,
+    {
+      input: ExecutionInput
+      id: symbol
+      value: Record<string, unknown> | Error
+    }
+  >()
+  // The maps are ordinary mutable collections. Publishing, starting, removing,
+  // or disposing work increments this signal so result observations recompute.
+  const changed = signal(0)
+  const inputs = new WeakMap<
+    ExecutorCapability,
+    ReadonlySignal<ExecutionInput | undefined>
+  >()
+  // Cache a lazy observation per capability. Reading inputs never calls `execute`;
+  // an installed contribution can also become ineligible as the editor changes.
+  const input = (capability: ExecutorCapability) => {
+    let observation = inputs.get(capability)
+    if (!observation) {
+      observation = computed(() => {
+        const context = editorMatchContext(editor)
+        if (
+          !contributions.value.includes(capability) ||
+          !matchesEditor(capability.matches, context)
+        )
+          return undefined
+        return {
+          src: context.src,
+          contents: context.contents,
+          revision:
+            typeof capability.revision === 'function'
+              ? capability.revision(executor)
+              : capability.revision?.value,
+        }
+      })
+      inputs.set(capability, observation)
+    }
+    return observation
+  }
+  const results = new WeakMap<
+    ExecutorCapability,
+    ReadonlySignal<ExecutionResult>
+  >()
+  const result = <C extends ExecutorCapability>(
+    capability: C
+  ): ReadonlySignal<ExecutionResult<CapabilityData<C>>> => {
+    let observation = results.get(capability)
+    if (!observation) {
+      observation = computed(() => {
+        void changed.value
+        const last = completed.get(capability)
+        const current = input(capability).value
+        // Keep the last completion visible during a replacement run. Freshness
+        // compares that completion with live inputs, not the pending request.
+        // A returned error is also a completion; `stale` does not mean success.
+        return {
+          requested: active.get(capability)?.input ?? last?.input,
+          input: last?.input,
+          completed: last?.id,
+          data: last?.value && !isErr(last.value) ? last.value : undefined,
+          error: isErr(last?.value) ? last.value : undefined,
+          running: active.has(capability),
+          stale: !last || !current || !sameExecutionInput(last.input, current),
+        } satisfies ExecutionResult
+      })
+      results.set(capability, observation)
+    }
+    // `results` stores observations for capabilities with different return types.
+    // The map erases that relationship; each observation above reads only the
+    // completion written for this same capability object by `publish`.
+    // This assertion restores the type relationship; it performs no runtime check.
+    return observation as ReadonlySignal<ExecutionResult<CapabilityData<C>>>
+  }
+  const initial = {
+    src: editor.src.peek() ?? '',
+    contents: editor.contents.peek(),
+  }
+  // The summary names the most recently requested document text. Individual
+  // capability completions can describe older inputs; `result` exposes those.
+  let latest = initial
+  const output = computed(() => {
+    void changed.value
+    return createExecutorOutput(
+      { ...latest, running: active.size > 0 },
+      [...completed].map(
+        ([capability, attempt]) => [capability, attempt.value] as const
+      )
+    )
+  })
   const executor: Executor = {
     id: Symbol(editor.src.peek()),
     editor,
-    output,
     scope,
-    refresh: () => {
-      if (!disposed && !editor.signal.aborted) refresh.value++
+    output,
+    input,
+    result,
+    run: async (capability) => {
+      if (disposed || editor.signal.aborted) return
+      const currentInput = input(capability).peek()
+      if (!currentInput) return
+      // A repeated request for unchanged text still has its own identity.
+      // Consumers can capture additional inputs once for each `requested` value.
+      const captured = { ...currentInput }
+      active.get(capability)?.controller.abort()
+      const attempt: Attempt = {
+        input: captured,
+        id: Symbol(),
+        controller: new AbortController(),
+      }
+      active.set(capability, attempt)
+      latest = captured
+      changed.value++
+      const signal = attempt.controller.signal
+      let abort = () => {}
+      // Let `run` settle on cancellation even if `execute` ignores its signal.
+      // This does not stop the underlying promise; `publish` rejects late replies.
+      const cancelled = new Promise<undefined>((resolve) => {
+        abort = () => resolve(undefined)
+        signal.addEventListener('abort', abort, { once: true })
+      })
+      // Cancellation can leave `execute` running. Only the attempt still stored
+      // in `active` may replace the retained completion, including with an error.
+      const publish = (value: Record<string, unknown> | Error) => {
+        if (disposed || signal.aborted || active.get(capability) !== attempt)
+          return
+        active.delete(capability)
+        completed.set(capability, { input: captured, id: attempt.id, value })
+        changed.value++
+      }
+      try {
+        // Call `execute` before the first `await`: adapters can capture imports
+        // or settings while they still correspond to this request. Only text,
+        // path, and the dependency revision are captured by this executor.
+        const value = await Promise.race([
+          Promise.resolve(
+            capability.execute(captured.contents, {
+              executor,
+              editor,
+              src: captured.src,
+              signal,
+            })
+          ),
+          cancelled,
+        ])
+        if (value !== undefined) publish(value)
+      } catch (cause) {
+        publish(isErr(cause) ? cause : new Error(String(cause)))
+      } finally {
+        signal.removeEventListener('abort', abort)
+      }
     },
   }
-  let currentRun: Fiber.RuntimeFiber<void, never> | undefined
-  let previous: ExecutionInput | undefined
-  Effect.runSync(
-    Effect.acquireRelease(
-      Effect.sync(() => {
-        editor.signal.addEventListener('abort', onEditorDestroyed, {
-          once: true,
-        })
-        return effect(() => {
-          const next = snapshot()
-          if (previous && sameInput(previous, next)) return
-          previous = next
-          // Cancel when the input signal changes, before queued Promise
-          // continuations from the old run can reach their output-publication effect.
-          if (currentRun) Effect.runSync(Fiber.interruptFork(currentRun))
-          output.value = pending(next)
-          currentRun = Effect.runSync(
-            Effect.forkIn(
-              execute(next).pipe(
-                Effect.catchAllCause((cause) =>
-                  Cause.isInterruptedOnly(cause)
-                    ? Effect.void
-                    : Effect.sync(() => reportRejection(Cause.pretty(cause)))
-                )
-              ),
-              scope
-            )
-          )
-        })
-      }),
-      (unsubscribe) =>
-        Effect.sync(() => {
-          unsubscribe()
-          editor.signal.removeEventListener('abort', onEditorDestroyed)
-        })
-    ).pipe(Scope.extend(scope))
-  )
+  // Removing a registry contribution cancels and forgets its work. A matcher
+  // becoming false instead makes `input` undefined and the retained result stale.
+  // Track only contribution changes: result publication must not rerun this effect.
+  const stop = effect(() => {
+    const installed = contributions.value
+    untracked(() => {
+      let removed = false
+      for (const capability of new Set([
+        ...active.keys(),
+        ...completed.keys(),
+      ])) {
+        if (installed.includes(capability)) continue
+        active.get(capability)?.controller.abort()
+        active.delete(capability)
+        completed.delete(capability)
+        inputs.delete(capability)
+        removed = true
+      }
+      if (removed) changed.value++
+    })
+  })
+  editor.signal.addEventListener('abort', onEditorDestroyed, { once: true })
   return {
     executor,
     dispose: () => {
+      if (disposed) return
       disposed = true
-      if (currentRun) Effect.runSync(Fiber.interruptFork(currentRun))
+      stop()
+      editor.signal.removeEventListener('abort', onEditorDestroyed)
+      for (const attempt of active.values()) attempt.controller.abort()
+      active.clear()
+      changed.value++
+      // Stop accepting replies before starting asynchronous resource cleanup.
+      // Policies such as `acquireAutomaticExecution` register cleanup in `scope`;
+      // this synchronous disposer does not wait for their finalizers to finish.
       Effect.runFork(Scope.close(scope, Exit.void))
-      output.value = { ...output.peek(), running: false }
     },
   }
 }
 
-function sameInput(previous: ExecutionInput, next: ExecutionInput) {
+/**
+ * Revisions are opaque dependency tokens, not values for this module to inspect.
+ * A capability must change its revision identity when those dependencies change;
+ * that producer contract makes `Object.is` sufficient for freshness comparisons.
+ */
+export function sameExecutionInput(a: ExecutionInput, b: ExecutionInput) {
   return (
-    previous.refresh === next.refresh &&
-    previous.src === next.src &&
-    previous.contents === next.contents &&
-    previous.capabilities.length === next.capabilities.length &&
-    previous.capabilities.every(
-      (capability, index) =>
-        capability === next.capabilities[index] &&
-        Object.is(previous.revisions[index], next.revisions[index])
-    )
+    a.src === b.src &&
+    a.contents === b.contents &&
+    Object.is(a.revision, b.revision)
   )
 }

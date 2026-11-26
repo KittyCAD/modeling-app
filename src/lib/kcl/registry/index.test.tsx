@@ -1,7 +1,14 @@
 import '@src/lib/projectSession/next/testFeature'
 import { contribute, provide, Registry } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
-import { editorsService } from '@src/lib/editors/registry/contract'
+import {
+  editorsService,
+  editorTabIndicatorsFacet,
+} from '@src/lib/editors/registry/contract'
+import { EditorsPane } from '@src/lib/editors/EditorsPane'
+import { LayoutType } from '@src/lib/layout/types'
+import { commandsFacet } from '@src/registry/contracts/commands'
+import { KCL_RENDER_COMMAND } from '@src/lib/kcl/registry/renderCommands'
 import { requireSuccess } from '@src/lib/editors/testViews'
 import executorsExtension from '@src/lib/executors/registry'
 import { executorsService } from '@src/lib/executors/registry/contract'
@@ -509,3 +516,139 @@ it.each([false, true])(
     }
   }
 )
+
+it('shows stale tabs with Automatically Render Off and refreshes through the Render command', async () => {
+  const { createSettings } = await import('@src/lib/settings/initialSettings')
+  const { defineBooleanExtensionSetting } = await import(
+    '@src/lib/settings/extensionSettings'
+  )
+  const settingsProvider = createTestSettings()
+  const automatic = defineBooleanExtensionSetting({
+    defaultValue: false,
+    description: 'Automatically render changes',
+  }).createSetting()
+  const settings = {
+    ...createSettings(),
+    textEditor: {
+      ...settingsProvider.current.peek().textEditor,
+      automaticallyRender: automatic,
+    },
+  }
+  settingsProvider.current.value = settings
+  const resource = createTestKclScene('streamed')
+  const initialExecution =
+    Promise.withResolvers<ReturnType<typeof resource.runtime.state.peek>>()
+  vi.mocked(resource.runtime.execute).mockImplementationOnce(
+    () => initialExecution.promise
+  )
+  vi.mocked(openKclScene).mockResolvedValue(resource)
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(640)
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(360)
+  const registry = new Registry()
+  await registry.configure([
+    editorsExtension,
+    executorsExtension,
+    kclExtension,
+    provide(settingsService, settingsProvider),
+    contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {})),
+  ])
+  let mounted: ReturnType<typeof render> | undefined
+  try {
+    const editors = registry.required(editorsService)
+    const editor = requireSuccess(
+      editors.createEditor('@settings(kclVersion = 3.0)\nanswer = 42')
+    )
+    requireSuccess(editors.setLanguage(editor.id, 'kcl'))
+    const instance = requireSuccess(editors.createView(editor, 'kcl.modeling'))
+    await vi.waitFor(() =>
+      expect(editors.viewState(instance).peek().binding.type).toBe('ready')
+    )
+    const binding = editors.viewState(instance).peek().binding
+    if (binding.type !== 'ready') return expect.fail('Modeling did not bind')
+    mounted = render(
+      <EditorsPane
+        editors={editors}
+        indicators={registry.observe(editorTabIndicatorsFacet)}
+        layout={{
+          id: 'editors',
+          label: 'Editors',
+          type: LayoutType.Simple,
+          areaType: 'editors',
+        }}
+      />
+    )
+    await vi.waitFor(() =>
+      expect(resource.runtime.execute).toHaveBeenCalledOnce()
+    )
+    expect(screen.getByRole('tab')).not.toHaveTextContent('Stale')
+    await act(async () => {
+      initialExecution.resolve(resource.runtime.state.peek())
+    })
+    expect(screen.getByRole('tab')).not.toHaveTextContent('Stale')
+    await act(async () => {
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: '@settings(kclVersion = 3.0)\nanswer = 84',
+        },
+      })
+      settings.modeling.defaultUnit.user = 'in'
+    })
+    expect(resource.runtime.execute).toHaveBeenCalledOnce()
+    expect(screen.getByRole('tab')).toHaveTextContent('Stale')
+    expect(screen.queryByLabelText('Model freshness')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /^Render$/ })
+    ).not.toBeInTheDocument()
+    act(() => instance.element.peek()?.focus())
+    const renderCommand = registry
+      .get(commandsFacet)
+      .find(({ id }) => id === KCL_RENDER_COMMAND)
+    if (!renderCommand) return expect.fail('Render command was not registered')
+    await act(async () => {
+      await renderCommand.onSubmit()
+    })
+    await vi.waitFor(() => {
+      expect(resource.runtime.execute).toHaveBeenCalledTimes(2)
+      expect(screen.getByRole('tab')).not.toHaveTextContent('Stale')
+    })
+    const [snapshot, configuration] = vi.mocked(resource.runtime.execute).mock
+      .calls[1]
+    expect(new TextDecoder().decode(snapshot.files.get('main.kcl'))).toContain(
+      'answer = 84'
+    )
+    expect(configuration).toEqual(
+      registry.required(kclExecutionSettingsService).configuration.peek()
+    )
+    await act(async () => {
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: '@settings(kclVersion = 3.0)\nanswer = 126',
+        },
+      })
+      automatic.user = true
+    })
+    await vi.waitFor(() =>
+      expect(resource.runtime.execute).toHaveBeenCalledTimes(3)
+    )
+    await act(async () => {
+      automatic.user = false
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: '@settings(kclVersion = 3.0)\nanswer = 168',
+        },
+      })
+    })
+    expect(resource.runtime.execute).toHaveBeenCalledTimes(3)
+    expect(screen.getByRole('tab')).toHaveTextContent('Stale')
+  } finally {
+    initialExecution.resolve(resource.runtime.state.peek())
+    mounted?.unmount()
+    await registry.dispose()
+  }
+})

@@ -16,14 +16,9 @@
     overlays = [
       (import rust-overlay)
       (self: super: {
-        rustToolchain = super.rust-bin.stable."1.96.0".default.override {
-          targets = ["wasm32-unknown-unknown"];
-          extensions = [
-            "rustfmt"
-            "llvm-tools-preview"
-            "rust-src"
-          ];
-        };
+        rustToolchain = (super.rust-bin.fromRustupToolchainFile ./rust/rust-toolchain.toml).override (args: {
+          extensions = args.extensions ++ ["llvm-tools-preview" "rust-src"];
+        });
 
         # stand-alone nightly formatter so we get the fancy unstable flags
         nightlyRustfmt = super.rust-bin.selectLatestNightlyWith (

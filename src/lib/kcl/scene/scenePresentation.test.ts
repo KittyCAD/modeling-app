@@ -1,3 +1,4 @@
+import { createSceneSelection } from '@src/lib/kcl/scene/selection'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { createScenePresentationPreferences } from '@src/lib/kcl/scene/presentationPreferences'
@@ -55,6 +56,10 @@ function setup(presentation: ScenePresentation) {
       connection,
       manager,
       sceneInfra: infra,
+      selection: createSceneSelection(
+        { pick: async () => undefined, present: async () => {} },
+        []
+      ),
       model: createTestKclRuntime(),
       settings,
     },

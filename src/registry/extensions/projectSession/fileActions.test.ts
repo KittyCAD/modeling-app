@@ -83,22 +83,29 @@ function createProject(path = '/project/parts/main.kcl') {
     resetForFileSwitch,
   }
 }
+// The project storage watcher runs for every open project, so cloud fixtures
+// also need what its watch uses.
+function cloudForTest(overrides: CloudStorageService): CloudStorageService {
+  const cloud: CloudStorageService = Object.assign(
+    {
+      root: '/',
+      idFor: (path: string) =>
+        posix.relative(cloud.root, path).match(/^[^/]+/)?.[0] ?? '',
+      saves: signal(new Map()),
+      isReadOnlyProject: () => false,
+      subscribe: () => () => {},
+    },
+    overrides
+  )
+  return cloud
+}
 async function setup(
   cloud?: CloudStorageService,
   storage?: ProjectStorage,
   operations?: FileOperationsRegistryService
 ) {
   if (cloud) {
-    cloud = Object.assign(
-      {
-        root: '/',
-        idFor: (path: string) =>
-          posix.relative(cloud!.root, path).match(/^[^/]+/)?.[0] ?? '',
-        saves: signal(new Map()),
-        isReadOnlyProject: () => false,
-      },
-      cloud
-    )
+    cloud = cloudForTest(cloud)
   }
   const exists = vi.fn(async () => false)
   const rename = vi.fn(async (_source: string, _destination: string) => {})
@@ -211,9 +218,12 @@ describe('direct project session file actions', () => {
     })
     await s.registry.replace(s.lateCloud, [
       [
-        provide(cloudStorageService, {
-          subscribeReconciled,
-        } as unknown as CloudStorageService),
+        provide(
+          cloudStorageService,
+          cloudForTest({
+            subscribeReconciled,
+          } as unknown as CloudStorageService)
+        ),
       ],
     ])
     await vi.waitFor(() => expect(subscribeReconciled).toHaveBeenCalledOnce())
@@ -607,10 +617,12 @@ it('releases captured watchers when a watch is replaced, removed, or the session
   const first = vi.fn()
   const second = vi.fn()
   const third = vi.fn()
-  vi.mocked(storage.watch)
-    .mockReturnValueOnce(first)
-    .mockReturnValueOnce(second)
-    .mockReturnValueOnce(third)
+  // The project watcher also watches through storage; only editor watches
+  // get the disposers under test.
+  const editorDisposers = [first, second, third]
+  vi.mocked(storage.watch).mockImplementation((_path, key) =>
+    key === 'editor' ? (editorDisposers.shift() ?? vi.fn()) : vi.fn()
+  )
   const s = await setup(undefined, storage)
   const io = s.session.textFileIO
   io.watch('/project/main.kcl', 'editor', vi.fn())

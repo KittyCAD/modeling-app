@@ -1845,6 +1845,15 @@ async fn start_call(
 ) -> Result<Control, KclError> {
     let callsite: SourceRange = SourceRange::from(node.as_ref());
 
+    // The Wasm API accepts serialized ASTs directly. Reject an unsupported
+    // trailing block before an argument can perform a modeling operation.
+    if let Some(block) = &node.block {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Calls with trailing blocks cannot be executed yet".to_owned(),
+            vec![block.into()],
+        )));
+    }
+
     // Resolve the function before evaluating arguments so calls can mutate
     // exec_state without holding a memory borrow.
     let func: KclValue = node.callee.get_result(exec_state, ctx).await?;

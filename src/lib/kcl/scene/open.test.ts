@@ -1,4 +1,5 @@
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
+import { SceneExecutionEvents } from '@src/lib/kcl/scene/execution'
 import { emptyExecState } from '@src/lang/wasm'
 import { createKclRuntime } from '@src/lib/kcl/execution/runtime'
 import { openKclScene } from '@src/lib/kcl/scene/open'
@@ -371,3 +372,42 @@ it('does not fit a newly loaded local model over a restored camera', async () =>
     preferences.dispose()
   }
 })
+it.each(['local', 'streamed'] as const)(
+  'invalidates %s view selection and dialog targets on each execution',
+  async (presentation) => {
+    const { model, options, preferences } = setup()
+    const scene = await openKclScene({ ...options, presentation })
+    if (scene instanceof Error) return expect.fail(scene.message)
+    const done = () =>
+      model.events.dispatchEvent(
+        new CustomEvent(SceneExecutionEvents.ExecutionDone, {
+          detail: { successful: true },
+        })
+      )
+    try {
+      expect(scene.selection.pickingEnabled.peek()).toBe(false)
+      done()
+      const original = scene.selection.model.peek()
+      expect(original).not.toBeNull()
+      model.events.dispatchEvent(
+        new CustomEvent(SceneExecutionEvents.ExecutionDone, {
+          detail: { successful: 'invalid payload' },
+        })
+      )
+      expect(scene.selection.model.peek()).toBe(original)
+      const dialog = scene.selection.beginPicking({ arguments: [] })
+      if (dialog instanceof Error) return expect.fail(dialog.message)
+      model.executing.value = true
+      expect(scene.selection.model.peek()).toBeNull()
+      expect(dialog.model.peek()).toBeNull()
+      model.executing.value = false
+      done()
+      expect(scene.selection.model.peek()).not.toBe(original)
+      expect(dialog.validate([])).toBeInstanceOf(Error)
+      expect(dialog.bindCurrentModel()).toBeUndefined()
+    } finally {
+      await scene.dispose()
+      preferences.dispose()
+    }
+  }
+)

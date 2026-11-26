@@ -96,8 +96,8 @@ const configureTestRegistry = async () => {
 const testEngineSceneContext = {
   modelingState: { matches: () => false },
   modelingSend: vi.fn(),
-  sketchSolveStreamDimming: 0.8,
-  setSketchSolveStreamDimming: vi.fn(),
+  sketchSolveDimming: 0.8,
+  setSketchSolveDimming: vi.fn(),
 } as unknown as EngineSceneExtensionContext
 
 const TestEngineSceneStreamLayers = () => {

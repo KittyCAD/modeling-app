@@ -39,6 +39,8 @@ This file applies to TypeScript and React development under `src/`. It supplemen
 
 ## Reviewing code
 
+- Check whether any new keyboard handler bypasses registered commands and the keymap extension. Application shortcuts must use command and keymap facet contributions; direct handlers are for intrinsic widget interactions. Check focus routing, availability, cleanup, and user remapping. See the [Modeling camera contributions](lib/kcl/registry/cameraCommands.ts) and their [regression tests](lib/kcl/registry/cameraCommands.spec.ts).
+
 - Treat KCL, engine behavior, generated artifacts, selections, constraints, and API changes as compatibility-sensitive. Ask whether old KCL, samples, or customer-like projects could now produce different geometry, no geometry, or subtly wrong geometry. Breaking changes need versioning, migration behavior, a feature flag, or clear rollout notes.
 - Treat project loading, filesystem state, cloud/local storage, editor state, Zookeeper, and app/project context as data-integrity risks. Look for one clear source of truth, synchronization rules, and coverage for reloads, large projects, nested files, project switching, web, and desktop.
 - Check async ownership where state changes, not just where work starts. Background jobs, websocket callbacks, Zookeeper runs, queues, and handoffs must not create stale state.

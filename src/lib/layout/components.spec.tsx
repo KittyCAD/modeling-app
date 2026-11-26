@@ -33,6 +33,7 @@ describe('LayoutRootNode', () => {
     const activeActionLibrary: ActionLibrary = {
       'plugin.action': {
         execute: vi.fn(),
+        shortcutKeystrokes: ['mod+shift+s'],
         useDisabled: usePluginActionDisabled,
         useHidden: () => false,
       },
@@ -54,6 +55,9 @@ describe('LayoutRootNode', () => {
     )
 
     expect(screen.getByTestId('plugin-action-pane-button')).toBeVisible()
+    expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent(
+      /Ctrl\+Shift\+S|⌘⬆S/
+    )
 
     rerender(
       <LayoutRootNode

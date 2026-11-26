@@ -46,6 +46,7 @@ export default defineConfig((env) => {
     optimizeDeps: {
       include: [
         '@lezer/lr',
+        'fzstd',
         'node:path',
         'path',
         'vite-plugin-node-polyfills/shims/buffer',

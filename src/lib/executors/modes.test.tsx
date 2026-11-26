@@ -60,8 +60,10 @@ async function installModes(
             definitions.get(name) ??
             (() => {
               const definition = defineEditorView(
-                executionContext(capability, () =>
-                  registry.required(executorsService)
+                executionContext(
+                  capability,
+                  () => registry.required(executorsService),
+                  () => true
                 )
               )({
                 id: name,

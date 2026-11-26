@@ -955,7 +955,7 @@ export const doExport = async (
 
     const exportMenuButton = page
       .getByTestId('project-sidebar-menu')
-      .getByRole('button', { name: 'Export' })
+      .getByText('Export 3D model', { exact: true })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {
@@ -971,11 +971,11 @@ export const doExport = async (
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const exportCommand = page.getByRole('option', {
-      name: 'floppy disk arrow Export',
+    const exportCommand = cmdBar.cmdOptions.getByText('Export 3D model', {
+      exact: true,
     })
-    await expect(exportCommand.first()).toBeVisible()
-    await exportCommand.first().click()
+    await expect(exportCommand).toBeVisible()
+    await exportCommand.click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 

@@ -1,7 +1,9 @@
+import type { Project } from '@src/lib/projectSession/next/types'
 import { computed } from '@preact/signals-core'
 import type { Editor } from '@src/lib/editors/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import type {
+  OpenProjectSession,
   ProjectSessionService,
   ProjectSourcesService,
 } from '@src/lib/projectSession/next/contract'
@@ -22,13 +24,53 @@ export function createProjectSources(
   const projectTree = computed(
     () => getProjects()?.currentSession.value?.project.value.contents
   )
-  const revision = computed(() => ({
-    project: projectTree.value,
-    documents: getDocuments().map((document) => ({
-      src: document.src.value,
-      contents: document.contents.value,
-    })),
-  }))
+  const encode = (text: string) => new TextEncoder().encode(text)
+  // Compare newly opened text buffers with the last storage reads for this opening
+  // and file tree. Capture still reads storage normally; this is not a read cache.
+  // Keep text rather than retaining binary import payloads.
+  const knownStoredText = new WeakMap<
+    OpenProjectSession,
+    {
+      project: Project['contents']
+      files: Map<string, string>
+    }
+  >()
+  let previous:
+    | {
+        session: OpenProjectSession | undefined
+        project: Project['contents'] | undefined
+        documents: ReadonlyMap<string, string>
+      }
+    | undefined
+  let version = Symbol('project sources')
+  const revision = computed(() => {
+    const session = getProjects()?.currentSession.value
+    const project = projectTree.value
+    const documents = new Map<string, string>()
+    for (const document of getDocuments()) {
+      const src = document.src.value
+      if (!src) continue
+      const path = fsZds.join(src)
+      if (!documents.has(path)) documents.set(path, document.contents.value)
+    }
+    const known = session && knownStoredText.get(session)
+    const stored = known?.project === project ? known?.files : undefined
+    const last = previous
+    const changed =
+      !last ||
+      last.session !== session ||
+      last.project !== project ||
+      [...documents].some(([path, text]) => {
+        const before = last.documents.get(path)
+        if (before !== undefined) return before !== text
+        return stored?.get(path) !== text
+      }) ||
+      [...last.documents.keys()].some((path) => !documents.has(path))
+    // Remember equal additions too, so later edits compare with their opening text.
+    previous = { session, project, documents }
+    if (changed) version = Symbol('project sources')
+    return version
+  })
   return {
     revision,
     capture: async ({
@@ -50,7 +92,6 @@ export function createProjectSources(
             session.project.peek().contents !== tree))
       if (cancelled()) return new Error('Source capture was cancelled')
       const src = document.src || unnamedPath
-      const encode = (text: string) => new TextEncoder().encode(text)
       const working = new Map<string, Uint8Array>()
       for (const open of getDocuments()) {
         const path = open.src.peek()
@@ -64,16 +105,44 @@ export function createProjectSources(
         return new Error('The source file is no longer in the project')
       try {
         const files = new Map<string, Uint8Array>()
+        const stored = new Map<string, string | undefined>()
         for (const path of paths) {
-          if (path !== fsZds.join(src) && !include(path)) continue
+          if (path !== fsZds.join(src) && !(await include(path))) continue
           if (cancelled()) return new Error('Source capture was cancelled')
-          const data =
-            working.get(path) ??
-            (await session.files.readBytes(fsZds.relative(tree.path, path)))
+          let data = working.get(path)
+          if (data === undefined) {
+            data = await session.files.readBytes(
+              fsZds.relative(tree.path, path)
+            )
+            try {
+              stored.set(
+                path,
+                new TextDecoder('utf-8', {
+                  fatal: true,
+                  ignoreBOM: true,
+                }).decode(data)
+              )
+            } catch {
+              // Invalid UTF-8 cannot be reproduced by a text buffer.
+              stored.set(path, undefined)
+            }
+          }
           if (cancelled()) return new Error('Source capture was cancelled')
           files.set(path, data.slice())
         }
         files.set(fsZds.join(src), encode(document.contents))
+        if (stored.size) {
+          const previous = knownStoredText.get(session)
+          const known =
+            previous?.project === tree
+              ? previous.files
+              : new Map<string, string>()
+          for (const [path, text] of stored) {
+            if (text === undefined) known.delete(path)
+            else known.set(path, text)
+          }
+          knownStoredText.set(session, { project: tree, files: known })
+        }
         return { src, files }
       } catch (cause) {
         return isErr(cause)

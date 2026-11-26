@@ -3,7 +3,7 @@ import { createEditorDocument } from '@src/lib/editors/document'
 import { createExecutor } from '@src/lib/executors/executor'
 import { expect, it, vi } from 'vitest'
 
-it('refreshes only the requested executor while keeping source and dependency inputs current', async () => {
+it('runs only the requested executor and ignores requests after disposal', async () => {
   const source = createEditorDocument('answer = 42')
   const editor = {
     ...source.document,
@@ -16,14 +16,16 @@ it('refreshes only the requested executor while keeping source and dependency in
   const contributions = signal([{ id: 'test', matches: '*' as const, execute }])
   const first = createExecutor(editor, contributions, () => {}),
     second = createExecutor(editor, contributions, () => {})
+  await first.executor.run(contributions.peek()[0])
+  await second.executor.run(contributions.peek()[0])
   await vi.waitFor(() => expect(execute).toHaveBeenCalledTimes(2))
-  first.executor.refresh()
+  await first.executor.run(contributions.peek()[0])
   await vi.waitFor(() => expect(execute).toHaveBeenCalledTimes(3))
   expect(execute.mock.calls.at(-1)?.[0]).toBe('answer = 42')
   first.dispose()
   second.dispose()
   source.dispose()
-  first.executor.refresh()
+  await first.executor.run(contributions.peek()[0])
   await Promise.resolve()
   expect(execute).toHaveBeenCalledTimes(3)
 })

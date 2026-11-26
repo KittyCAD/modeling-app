@@ -25,6 +25,8 @@ pub enum Step {
     CallKwCallee,
     CallKwUnlabeledArg,
     CallKwArg { index: usize },
+    CallKwBlock,
+    BlockItem { index: usize },
     BinaryLeft,
     BinaryRight,
     UnaryArg,

@@ -1357,7 +1357,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2438,7 +2438,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2568,7 +2568,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "arbitrary",
  "euler",
@@ -2591,7 +2591,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.197"
+version = "0.1.198"
 dependencies = [
  "anyhow",
  "clap",
@@ -2601,7 +2601,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2610,7 +2610,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.197"
+version = "0.1.198"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2620,7 +2620,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
@@ -2629,7 +2629,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "miette",
  "pyo3",
@@ -2642,7 +2642,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-grammar"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "datatest-stable",
  "kcl-syntax",
@@ -2652,13 +2652,14 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "anyhow",
  "async-trait",
  "clap",
  "criterion",
  "dashmap 6.2.1",
+ "futures",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2683,7 +2684,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.197"
+version = "0.1.198"
 dependencies = [
  "anyhow",
  "clap",
@@ -2703,7 +2704,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2787,7 +2788,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.197"
+version = "0.3.198"
 dependencies = [
  "anyhow",
  "kcl-api",
@@ -2804,7 +2805,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "logos",
  "proptest",
@@ -2813,7 +2814,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.197"
+version = "0.2.198"
 dependencies = [
  "anyhow",
  "http-body-util",
@@ -2828,7 +2829,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.197"
+version = "0.1.198"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2915,9 +2916,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.262"
+version = "0.2.263"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23965510c903ea67eca5dc178035c490a6866fe9970fe5be28ed5d22f896c3ab"
+checksum = "7c6fa6352e82145878b2558b68a78f81ef2171b8a08621a963ae1f6f33f32483"
 dependencies = [
  "bon",
  "chrono",
@@ -4339,7 +4340,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4724,7 +4725,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4781,7 +4782,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5567,7 +5568,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.6",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6508,7 +6509,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

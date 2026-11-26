@@ -622,6 +622,11 @@ impl Node<CallExpressionKw> {
             }
             hasher.update(argument.arg.compute_digest());
         }
+        // An absent block contributes zero bytes to preserve existing call
+        // digests. An empty trailing block contributes its own digest.
+        if let Some(block) = &mut slf.block {
+            hasher.update(block.compute_digest());
+        }
     });
 }
 
@@ -659,6 +664,9 @@ impl Node<Block> {
     compute_digest!(|slf, hasher| {
         for item in &mut slf.items {
             hasher.update(item.compute_digest());
+        }
+        for attr in &mut slf.inner_attrs {
+            hasher.update(attr.compute_digest());
         }
     });
 }

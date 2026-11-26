@@ -4,7 +4,7 @@ import { reportRejection } from '@src/lib/trap'
 
 /**
  * Request execution when a contributed input changes for the active, connected
- * legacy scene. Rust decides whether to reuse geometry or reapply settings.
+ * legacy scene. Inputs marked `legacyRefresh: 'direct'` have separate consumers;
  * `execute-streamed` inputs do not refresh geometry-only connections.
  *
  * `capture` binds the execution callback to the current file, project, and
@@ -27,13 +27,13 @@ export function observeLegacySceneExecutionSettings({
     execute: () => Promise<unknown>
   }
 }) {
-  let previousExecute = settings.executeRevision.peek()
-  let previousStreamed = settings.streamedRevision.peek()
+  let previousExecute = settings.legacyExecuteRevision.peek()
+  let previousStreamed = settings.legacyStreamedRevision.peek()
   return effect(() => {
     const enabled = active()
     const hasConnection = connected()
-    const execute = settings.executeRevision.value
-    const streamed = settings.streamedRevision.value
+    const execute = settings.legacyExecuteRevision.value
+    const streamed = settings.legacyStreamedRevision.value
     const executeChanged = execute !== previousExecute
     const streamedChanged = streamed !== previousStreamed
     previousExecute = execute

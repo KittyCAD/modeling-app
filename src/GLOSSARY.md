@@ -164,6 +164,18 @@ A contribution that acquires document behavior for matching editors. Capabilitie
 
 **Search anchors:** `EditorCapability`, `editorCapabilityValueSpec` in the [editors contract](lib/editors/registry/contract.ts); `EditorMatcher` and `matchesEditor` in [matching.ts](lib/editors/matching.ts).
 
+## Result freshness
+
+Whether a retained editor computation result corresponds to the editor's current source, contents, and declared dependencies. A stale result can remain available while another computation runs or automatic execution is disabled.
+
+**Related:** [Editor](#editor) supplies the working document; an [Automatic execution policy](#automatic-execution-policy) decides when input changes request another computation.
+
+## Automatic execution policy
+
+A policy that requests editor computations when their inputs change, independently of the executor that owns the work and results. Automatically Render is KCL's user-facing control for this policy.
+
+**Related:** [Result freshness](#result-freshness) describes whether a retained result matches current inputs, independently of whether another computation is requested.
+
 ## Editor language classification
 
 The language ID and optional media type associated with an editor. Registered language descriptors infer classification from the source and contents. A caller can explicitly choose a registered language, including for an unnamed buffer, or clear that choice to resume inference.
@@ -201,3 +213,16 @@ The current activity within a Modeling presentation, such as inspecting a model 
 ## Sketch editing session
 
 A period of editing one selected sketch, including its sketch plane, geometry, constraints, and active sketch tools. Entering or leaving sketch editing changes the modeling interaction state while retaining the same document.
+
+
+## View selection
+
+Geometry selected in one Modeling view, independently of other views of the same document. It refers to that view's displayed execution.
+
+## Dialog picking session
+
+Temporary ownership of geometry picking by an open command dialog. Picks populate the active selection argument while the underlying view selection stays unchanged; cancelling ends the session.
+
+## Model target
+
+The particular model view and completed execution bound to a command. A new execution invalidates that target and requires binding and picking again.
