@@ -1,4 +1,9 @@
-import type { OkWebSocketResponseData, WebSocketRequest } from '@kittycad/lib'
+import type {
+  ModelingCmd,
+  OkWebSocketResponseData,
+  WebSocketRequest,
+} from '@kittycad/lib'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 import type {
   Cap,
@@ -75,7 +80,21 @@ export interface WallArtifactRich extends BaseArtifact {
   faceCodeRef: CodeRef
 }
 
-export type EngineCommand = WebSocketRequest
+// Use the Rust contract for native exports until the published SDK includes them.
+type ExportCommand = Extract<ModelingCmd, { type: 'export' | 'export3d' }>
+type UnreleasedExportRequest = Omit<
+  Extract<WebSocketRequest, { type: 'modeling_cmd_req' }>,
+  'cmd'
+> & {
+  cmd: Omit<ExportCommand, 'format'> & {
+    format:
+      | ExportCommand['format']
+      | Extract<OutputFormat3d, { type: 'native_brep' }>
+      | (Extract<OutputFormat3d, { type: 'gltf' }> & { brep_only: true })
+  }
+}
+
+export type EngineCommand = WebSocketRequest | UnreleasedExportRequest
 
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData

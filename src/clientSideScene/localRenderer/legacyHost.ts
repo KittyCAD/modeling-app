@@ -7,6 +7,8 @@ export function legacyLocalRendererHost(
   manager: KclManager
 ): LocalRendererHost {
   return {
+    filePath: () => manager.path,
+    onDiagnosticsChanged: (listener) => manager.diagnosticsSignal.subscribe(listener),
     executionEvents: manager,
     executing: manager.isExecutingSignal,
     sceneGeneration: manager.engineSceneGenerationSignal,

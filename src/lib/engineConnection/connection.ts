@@ -1,6 +1,6 @@
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type {
   ClientMetrics,
-  WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -1088,7 +1088,7 @@ export class Connection extends EventTarget {
 
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
-  unreliableSend(message: WebSocketRequest) {
+  unreliableSend(message: EngineCommand) {
     if (!this.unreliableDataChannel) {
       console.warn('race condition my guy, unreliableSend')
       return
@@ -1116,7 +1116,7 @@ export class Connection extends EventTarget {
     )
   }
 
-  send(message: WebSocketRequest) {
+  send(message: EngineCommand) {
     if (!this.websocket) {
       console.warn('send, websocket is undefined')
       return

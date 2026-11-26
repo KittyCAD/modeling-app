@@ -8,6 +8,8 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 /** Execution and interaction inputs consumed by the local presentation, independent of editor ownership. */
 export interface LocalRendererHost {
+  filePath?: () => string | undefined
+  onDiagnosticsChanged?: (listener: () => void) => () => void
   readonly executionEvents: Pick<
     EventTarget,
     'addEventListener' | 'removeEventListener'
@@ -20,7 +22,7 @@ export interface LocalRendererHost {
   readonly selectionFilter: ReadonlySignal<EntityType[]>
   readonly commands: Pick<
     ConnectionManager,
-    'sendSceneCommand' | 'setLocalSelectionCommandHandler' | 'pendingCommands'
+    'sendSceneCommand' | 'setLocalSelectionCommandHandler' | 'pendingCommands' | 'sendCommand' | 'executionBatchPreview' | 'executionIsStale' | 'connection'
   >
   readonly sceneInfra: SceneInfra
   readonly settingsActor: SettingsActorType
