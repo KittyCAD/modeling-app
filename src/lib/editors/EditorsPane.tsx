@@ -133,7 +133,7 @@ export function EditorsPane({
                     : 'Untitled'}
                 </span>
                 {tabIndicators.map(({ id, component: Indicator }) => (
-                  <Indicator key={id} editor={editor} />
+                  <Indicator key={id} editor={editor} instance={instance} />
                 ))}
               </span>
             ),

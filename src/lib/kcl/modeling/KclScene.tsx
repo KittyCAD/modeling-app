@@ -23,6 +23,7 @@ export function KclScene({
   context: {
     cameraShortcuts: ReadonlySignal<CameraShortcutHints>
     attachCameraViewport: AttachCameraViewport
+    render: () => Promise<void>
     executor: Executor
     session: KclSession
     viewExecution: KclViewExecution

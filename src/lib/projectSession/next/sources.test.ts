@@ -1,4 +1,4 @@
-import { signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import type { Editor } from '@src/lib/editors/registry/contract'
 import { createProjectSources } from '@src/lib/projectSession/next/sources'
 import { createProjectSessionService } from '@src/lib/projectSession/next/session'
@@ -76,6 +76,7 @@ it.each(['replace', 'close', 'abort', 'change membership'] as const)(
     const read = Promise.withResolvers<Uint8Array>()
     storage.readFile.mockReturnValue(read.promise)
     const pending = sources.capture(request)
+    await vi.waitFor(() => expect(storage.readFile).toHaveBeenCalledOnce())
     if (action === 'replace') projects.openProject(project('/other'))
     if (action === 'close') projects.closeProject()
     if (action === 'abort') cancellation.abort()
@@ -139,3 +140,73 @@ it('invalidates readers for source changes while ignoring metadata-only updates'
   projects.openProject(project('/other'))
   expect(sources.revision.value).not.toBe(renamed)
 })
+
+it('captures working imports before asynchronous file eligibility is resolved', async () => {
+  const { documents, sources, request } = setup()
+  const text = signal('requested import')
+  documents.value = [{ src: signal('/model/module.kcl'), contents: text }]
+  const eligible = Promise.withResolvers<boolean>()
+  const pending = sources.capture({
+    ...request,
+    include: () => eligible.promise,
+  })
+  text.value = 'unrequested edit'
+  eligible.resolve(true)
+  const snapshot = await pending
+  if (snapshot instanceof Error) return expect.fail(snapshot.message)
+  expect(
+    new TextDecoder().decode(snapshot.files.get('/model/module.kcl'))
+  ).toBe('requested import')
+})
+
+it('keeps a captured import fresh when an identical buffer opens, then invalidates on edits', async () => {
+  const { documents, sources, request, storage } = setup()
+  const original = sources.revision.value
+  const captured = await sources.capture(request)
+  if (captured instanceof Error) throw captured
+  const observed: unknown[] = []
+  const stop = effect(() => {
+    observed.push(sources.revision.value)
+  })
+  try {
+    const contents = signal('stored')
+    documents.value = [{ src: signal('/model/module.kcl'), contents }]
+    expect(sources.revision.value).toBe(original)
+    expect(observed).toHaveLength(1)
+    // The comparison must not borrow the snapshot's mutable byte arrays.
+    captured.files.get('/model/module.kcl')?.fill(0)
+    documents.value = [...documents.peek()]
+    expect(sources.revision.value).toBe(original)
+    contents.value = 'unsaved import edit'
+    const edited = sources.revision.value
+    expect(edited).not.toBe(original)
+    expect(observed).toHaveLength(2)
+    storage.readFile.mockClear()
+    const next = await sources.capture(request)
+    if (next instanceof Error) throw next
+    expect(new TextDecoder().decode(next.files.get('/model/module.kcl'))).toBe(
+      'unsaved import edit'
+    )
+    expect(storage.readFile).not.toHaveBeenCalledWith('/model/module.kcl')
+    documents.value = [...documents.peek()]
+    expect(sources.revision.value).toBe(edited)
+  } finally {
+    stop()
+  }
+})
+
+it.each(['stored', 'different text', '\ufffd'])(
+  'invalidates when an opened buffer differs from captured storage: %s',
+  async (text) => {
+    const { documents, sources, request, storage } = setup()
+    await sources.capture(request)
+    storage.readFile.mockResolvedValue(new Uint8Array([255]))
+    const original = sources.revision.value
+    const captured = await sources.capture(request)
+    if (captured instanceof Error) throw captured
+    documents.value = [
+      { src: signal('/model/module.kcl'), contents: signal(text) },
+    ]
+    expect(sources.revision.value).not.toBe(original)
+  }
+)

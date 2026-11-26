@@ -108,25 +108,30 @@ function savePreferences(preferences: PhysicalAnalysisPreferences) {
   }
 }
 
-export const physicalAnalysisService = {
-  isOpen: signal(false),
-  preferences: signal<PhysicalAnalysisPreferences>(loadPreferences()),
-  open() {
-    physicalAnalysisService.isOpen.value = true
-  },
-  close() {
-    physicalAnalysisService.isOpen.value = false
-  },
-  setPreference<K extends keyof PhysicalAnalysisPreferences>(
-    key: K,
-    value: PhysicalAnalysisPreferences[K]
-  ) {
-    const next = { ...physicalAnalysisService.preferences.value, [key]: value }
-    physicalAnalysisService.preferences.value = next
-    savePreferences(next)
-  },
-  /** Re-reads localStorage. Exposed for tests. */
-  reloadPreferences() {
-    physicalAnalysisService.preferences.value = loadPreferences()
-  },
+export function createPhysicalAnalysisService() {
+  const service = {
+    isOpen: signal(false),
+    preferences: signal<PhysicalAnalysisPreferences>(loadPreferences()),
+    open() {
+      service.isOpen.value = true
+    },
+    close() {
+      service.isOpen.value = false
+    },
+    setPreference<K extends keyof PhysicalAnalysisPreferences>(
+      key: K,
+      value: PhysicalAnalysisPreferences[K]
+    ) {
+      const next = { ...service.preferences.value, [key]: value }
+      service.preferences.value = next
+      savePreferences(next)
+    },
+    /** Re-reads localStorage. Exposed for tests. */
+    reloadPreferences() {
+      service.preferences.value = loadPreferences()
+    },
+  }
+  return service
 }
+
+export const physicalAnalysisService = createPhysicalAnalysisService()

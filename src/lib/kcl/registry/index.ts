@@ -1,4 +1,8 @@
+import { createStaleModelIndicator } from '@src/lib/kcl/modeling/StaleIndicator'
 import { cameraCommands } from '@src/lib/kcl/registry/cameraCommands'
+import { renderCommands } from '@src/lib/kcl/registry/renderCommands'
+import { acquireKclExecutionPolicy } from '@src/lib/kcl/modeling/executionPolicy'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import {
   kclExecutionSettingsExtension,
   kclExecutionSettingsFactory,
@@ -11,6 +15,8 @@ import {
   codeEditorsExtensionFacet,
   editorLanguagesFacet,
   editorViewsFacet,
+  editorTabIndicatorsFacet,
+  observations as editorInputs,
 } from '@src/lib/editors/registry/contract'
 import { defineEditorView } from '@src/lib/editors/views'
 import {
@@ -22,6 +28,7 @@ import {
   type KclViewExecution,
 } from '@src/lib/kcl/modeling/viewExecution'
 import { createKclExecution } from '@src/lib/kcl/execution/executor'
+import { defineVariablesView } from '@src/lib/kcl/registry/variables'
 import { KclScene } from '@src/lib/kcl/modeling/KclScene'
 import { openKclScene } from '@src/lib/kcl/scene/open'
 import { createKclSession } from '@src/lib/kcl/modeling/session'
@@ -40,6 +47,7 @@ import {
   readKclVersion,
 } from '@src/lib/kcl/execution/nativeInputs'
 import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 
 /**
  * Contributes KCL Code syntax, execution, and a Modeling mode for KCL documents.
@@ -50,38 +58,59 @@ const extension = factory({
   key: 'kcl',
   dependencies: {
     camera: cameraCommands,
+    render: renderCommands,
     nativeSettings: kclExecutionSettingsFactory,
     sources: projectSourcesExtension,
     settingsInput: settingsInputs,
     auth: authInputs,
     wasmInput: wasmInputs,
     executorsInput: executorInputs,
+    editorsInput: editorInputs,
   },
   create: ({
     camera,
+    render,
     nativeSettings,
     sources,
     settingsInput,
     auth,
     wasmInput,
     executorsInput,
+    editorsInput,
   }) => {
+    const freshness = createStaleModelIndicator(
+      (instance) =>
+        editorsInput.editorsService.current.value?.viewState(instance).value
+          .selected?.id === 'kcl.modeling'
+    )
     const getWasm = () =>
       wasmInput.wasmPromiseFacet.value ??
       Promise.reject(new Error('Missing WASM promise registry value.'))
-    const execution = createKclExecution(async (contents, context) => {
-      const extensions = await readKclFileExtensions(getWasm())
-      return sources.capture({
+    const execution = createKclExecution((contents, context) => {
+      const extensions = readKclFileExtensions(getWasm())
+      const captured = sources.capture({
         document: { src: context.src || undefined, contents },
         unnamedPath: 'main.kcl',
         signal: context.signal,
-        include: (path) =>
-          extensions.some((extension) =>
+        include: async (path) =>
+          (await extensions).some((extension) =>
             path.toLowerCase().endsWith(extension)
           ),
       })
+      return Promise.all([captured, extensions]).then(([snapshot]) => snapshot)
     }, sources.revision)
-    const modelingView = defineEditorView(({ editor, onDispose }) => {
+    const variablesView = defineVariablesView({
+      capability: execution.capability,
+      getExecutors: () => executorsInput.executorsService.required(),
+      getWasm: () => wasmInput.wasmPromiseFacet.value,
+      nativeSettings,
+      readTheme: () =>
+        getResolvedTheme(
+          settingsInput.settingsService.current.value?.current.value.app.theme
+            .currentSignal.value ?? Themes.System
+        ),
+    })
+    const modelingView = defineEditorView(({ editor, instance, onDispose }) => {
       const executors = executorsInput.executorsService.required()
       const lease = executors.acquireExecutor(editor)
       if (isErr(lease)) return lease
@@ -107,7 +136,8 @@ const extension = factory({
           const wasm = getWasm()
           const renderer = presentation.peek()
           const version = await readKclVersion(
-            executor.editor.contents.peek(),
+            executor.result(execution.capability).peek().requested?.contents ??
+              executor.editor.contents.peek(),
             wasm
           )
           if (signal.aborted)
@@ -148,7 +178,10 @@ const extension = factory({
             },
           })
         },
-        () => viewExecution?.refresh(),
+        () =>
+          viewExecution?.refresh(
+            getAutomaticallyRenderEnabledFromSettings(settings.current.peek())
+          ),
         () =>
           viewExecution?.state.peek().running ?? executor.output.peek().running
       )
@@ -157,9 +190,23 @@ const extension = factory({
         executor,
         execution.capability,
         session,
-        () => settingsRevision.value
+        () => settingsRevision.value,
+        () => nativeSettings.configuration.peek()
       )
       onDispose(viewExecution.dispose)
+      onDispose(freshness.track(instance, viewExecution.state))
+      onDispose(
+        acquireKclExecutionPolicy(
+          executor,
+          execution.capability,
+          viewExecution,
+          () =>
+            getAutomaticallyRenderEnabledFromSettings(settings.current.value, {
+              reactive: true,
+            }),
+          () => settingsRevision.value
+        )
+      )
       onDispose(
         effect(() => {
           const renderer = choosePresentation()
@@ -174,10 +221,13 @@ const extension = factory({
           })
         })
       )
+      const requestRender = () => executor.run(execution.capability)
+      onDispose(render.attach(editor, requestRender))
       return {
         executor,
         session,
         viewExecution,
+        render: requestRender,
         attachCameraViewport: camera.attach,
         cameraShortcuts: camera.shortcuts,
       }
@@ -190,8 +240,10 @@ const extension = factory({
     })
     return {
       items: [
+        contribute(editorTabIndicatorsFacet, () => freshness.indicator),
         contribute(executorCapabilityFacet, () => execution.capability),
         contribute(editorViewsFacet, () => modelingView),
+        contribute(editorViewsFacet, () => variablesView),
         contribute(editorLanguagesFacet, () => ({
           id: 'kcl',
           matches: '.kcl' as const,

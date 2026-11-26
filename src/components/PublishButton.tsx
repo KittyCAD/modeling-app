@@ -1,5 +1,6 @@
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { getProjectHeaderButtonClasses } from '@src/components/actionButtonStyles'
 import { getAquariumStatusBadge } from '@src/components/AquariumStatusBadge'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
@@ -288,7 +289,7 @@ function PublishPopoverContent({
       <Popover.Button
         type="button"
         disabled={buttonDisabled}
-        className={`relative inline-flex min-w-max items-center gap-1 border py-0 pl-0.5 pr-2 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70 ${buttonPresentation.highlight ? 'border-warn-80 bg-warn-10/60 text-warn-90 hover:bg-warn-20 dark:border-warn-40 dark:bg-warn-80/30 dark:text-warn-10 dark:hover:bg-warn-80/50' : 'border-chalkboard-30 bg-chalkboard-10/80 text-chalkboard-100 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100'}`}
+        className={`${getProjectHeaderButtonClasses(buttonPresentation.highlight)} disabled:cursor-wait disabled:opacity-70`}
         data-testid="publish-button"
       >
         <CustomIcon

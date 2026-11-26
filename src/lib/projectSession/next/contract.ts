@@ -19,7 +19,7 @@ export interface ProjectSourceSnapshot {
 
 /** Supplies execution consumers with open-document text in preference to storage, using the project opening captured at the start of `capture`. */
 export interface ProjectSourcesService {
-  /** Changes when the set of open documents, their text or paths, or the project's file tree changes; consumers can use it to request a fresh capture. */
+  /** Changes for working-text/path edits, document closure, or project replacement/tree changes. Opening a buffer equal to its captured storage bytes preserves the revision. */
   readonly revision: ReadonlySignal<unknown>
   capture: (request: {
     /** Explicit run input takes precedence over a live document at the same source path. */
@@ -29,7 +29,7 @@ export interface ProjectSourcesService {
     /** Cancels this capture independently of project replacement. */
     signal: AbortSignal
     /** Select other project files; the explicit entrypoint is always included. */
-    include?: (path: string) => boolean
+    include?: (path: string) => boolean | Promise<boolean>
   }) => Promise<ProjectSourceSnapshot | Error>
 }
 
