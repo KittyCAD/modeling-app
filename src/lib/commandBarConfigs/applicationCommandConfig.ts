@@ -15,6 +15,7 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -25,6 +26,7 @@ import {
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import { getStringAfterLastSeparator, joinOSPaths } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
+import { getUniqueProjectNameFromNames } from '@src/lib/projectName'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -38,14 +40,28 @@ import {
 import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
 
-// The cached project list can miss projects created elsewhere, so a new
-// project's folder is reserved against storage instead.
-function createNewProjectDirectory(
+// The cached project list can miss projects created elsewhere, so the name is
+// picked from the library's folder on disk. If another window takes the name
+// before the folder is created, that name counts as taken and the next is tried.
+async function createNewProjectDirectory(
   app: App,
   libraryPath: string,
   requestedName: string
 ) {
-  return app.fileOperations.createUniqueDirectory(libraryPath, requestedName)
+  const takenNames = [...(await app.fileOperations.readDirectory(libraryPath))]
+  while (true) {
+    const name = getUniqueProjectNameFromNames(requestedName, takenNames)
+    const path = fsZds.join(libraryPath, name)
+    try {
+      await app.fileOperations.createDirectory(path)
+      return path
+    } catch (error) {
+      if (!(error instanceof FileAlreadyExists)) {
+        return Promise.reject(error)
+      }
+      takenNames.push(name)
+    }
+  }
 }
 
 async function onSubmitKCLSampleCreation({
