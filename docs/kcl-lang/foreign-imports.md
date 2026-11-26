@@ -30,8 +30,7 @@ import "tests/inputs/cube.obj"
 
 When importing a GLTF file, the bin file will be imported as well.
 
-Import paths are relative to the current project directory. Imports currently only work when
-using the native Design Studio, not in the browser.
+Import paths are relative to the importing KCL file's folder.
 
 ### Supported values
 
