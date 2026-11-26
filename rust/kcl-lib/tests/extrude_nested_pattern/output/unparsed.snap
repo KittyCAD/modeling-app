@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing extrude_nested_pattern.kcl
+---
+profile = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+patterned = region(segments = [profile.circle1])
+  |> patternLinear2d(instances = 2, distance = 10mm, axis = X)
+
+bodies = extrude([patterned], length = 5mm)
+assertIs(count(bodies) == 2)
