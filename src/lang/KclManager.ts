@@ -47,7 +47,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import {
-  applyOperationCallbackToOperationsByModule,
   emptyExecState,
   emptyOperationsByModule,
   execStateFromRust,
@@ -851,48 +850,67 @@ export class KclManager extends File {
 
   private createExecutionCallbacks(executionId: number): ExecCallbacks {
     let liveOperationUpdatesFailed = false
+    let framePending = false
+    let latest: OperationCallbackArgs | undefined
+    const pending = new Map<number, Map<number, Operation>>()
+    const isActive = () =>
+      !liveOperationUpdatesFailed &&
+      this.activeLiveOperationExecutionId === executionId &&
+      !this._cancelTokens.get(executionId)
+
+    const fail = (error: unknown) => {
+      liveOperationUpdatesFailed = true
+      const message =
+        error instanceof Error ? (error.stack ?? error.message) : String(error)
+      queueMicrotask(() =>
+        reportRejection(`Live operation updates failed: ${message}`)
+      )
+    }
+    const flush = () => {
+      framePending = false
+      try {
+        if (!isActive() || !latest) return
+        const map = { ...this._liveOperationsByModule.value.map }
+        for (const [moduleId, updates] of pending) {
+          const operations = [...(map[moduleId] ?? [])]
+          for (const [index, operation] of updates) operations[index] = operation
+          map[moduleId] = operations
+        }
+        const operationsByModule = { map }
+        this._liveActiveModuleId.value = latest.moduleId
+        this._liveLatestOperationKey.value = getOperationKey(latest.operation)
+        this._liveOperationsByModule.value = operationsByModule
+        this.dispatchUpdateOperations(
+          getOperationsForCurrentFile({
+            operationsByModule,
+            filenames: this.execState.filenames,
+            currentPath: this.path,
+          })
+        )
+      } catch (error) {
+        fail(error)
+      } finally {
+        pending.clear()
+      }
+    }
 
     return {
       onOperation: (callback: OperationCallbackArgs) => {
         try {
-          if (
-            liveOperationUpdatesFailed ||
-            this.activeLiveOperationExecutionId !== executionId ||
-            this._cancelTokens.get(executionId)
-          ) {
-            return
+          if (!isActive()) return
+          latest = callback
+          let updates = pending.get(callback.moduleId)
+          if (!updates) {
+            updates = new Map()
+            pending.set(callback.moduleId, updates)
           }
-
-          this._liveActiveModuleId.value = callback.moduleId
-          this._liveLatestOperationKey.value = getOperationKey(
-            callback.operation
-          )
-
-          const operationsByModule = applyOperationCallbackToOperationsByModule(
-            {
-              operationsByModule: this._liveOperationsByModule.value,
-              callback,
-            }
-          )
-          this._liveOperationsByModule.value = operationsByModule
-          this.dispatchUpdateOperations(
-            getOperationsForCurrentFile({
-              operationsByModule,
-              filenames: this.execState.filenames,
-              currentPath: this.path,
-            })
-          )
+          updates.set(callback.index, callback.operation)
+          if (framePending) return
+          framePending = true
+          requestAnimationFrame(flush)
         } catch (error) {
           // An exception escaping into WASM can strand its async execution.
-          // Stop progressive updates for this run and let finalization continue.
-          liveOperationUpdatesFailed = true
-          const message =
-            error instanceof Error
-              ? (error.stack ?? error.message)
-              : String(error)
-          queueMicrotask(() =>
-            reportRejection(`Live operation updates failed: ${message}`)
-          )
+          fail(error)
         }
       },
     }

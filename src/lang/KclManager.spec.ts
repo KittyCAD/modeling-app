@@ -1876,6 +1876,13 @@ describe('KclManager live operation updates', () => {
         }
         dispatchUpdateOperations(operations)
       })
+    let flush: FrameRequestCallback | undefined
+    const requestFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        flush = callback
+        return 1
+      })
 
     kclManager.engineCommandManager.started = true
     vi.spyOn(kclManager.rustContext, 'execute').mockImplementation(
@@ -1885,6 +1892,7 @@ describe('KclManager live operation updates', () => {
           operation: failedLiveOperation,
           index: 0,
         })
+        flush?.(0)
         callbacks?.onOperation({
           moduleId: 0,
           operation: ignoredLiveOperation,
@@ -1898,6 +1906,7 @@ describe('KclManager live operation updates', () => {
     await kclManager.executeAst({ ast: createEmptyAst(), executionId: 101 })
 
     expect(executionContinued).toBe(true)
+    expect(requestFrame).toHaveBeenCalledOnce()
     expect(kclManager.isExecuting).toBe(false)
     expect(kclManager.operationsByModule).toBe(finalExecState.operations)
     expect(dispatchSpy).not.toHaveBeenCalledWith([ignoredLiveOperation])
@@ -1906,6 +1915,7 @@ describe('KclManager live operation updates', () => {
       expect.stringContaining('Live operation updates failed')
     )
     consoleErrorSpy.mockRestore()
+    requestFrame.mockRestore()
   })
 })
 
