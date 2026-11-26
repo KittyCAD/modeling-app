@@ -4183,8 +4183,22 @@ impl Node<BinaryExpression> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
         // Repeated arithmetic must not multiply copies of the same source range.
-        let mut seen = HashSet::new();
-        meta.retain(|metadata| seen.insert(metadata.source_range));
+        if meta.len() <= 8 {
+            let mut seen = [None; 8];
+            let mut len = 0;
+            meta.retain(|metadata| {
+                let range = Some(metadata.source_range);
+                if seen[..len].contains(&range) {
+                    return false;
+                }
+                seen[len] = range;
+                len += 1;
+                true
+            });
+        } else {
+            let mut seen = HashSet::new();
+            meta.retain(|metadata| seen.insert(metadata.source_range));
+        }
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
