@@ -555,7 +555,7 @@ description: Result of parsing dining-table.kcl
                 }
               }
             ],
-            "body": {
+            "block": {
               "commentStart": 0,
               "end": 0,
               "items": [
@@ -2419,12 +2419,30 @@ description: Result of parsing dining-table.kcl
               "start": 0,
               "type": "Block"
             },
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
             "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
           "moduleId": 0,
           "start": 0,
@@ -3151,7 +3169,7 @@ description: Result of parsing dining-table.kcl
                 }
               }
             ],
-            "body": {
+            "block": {
               "commentStart": 0,
               "end": 0,
               "items": [
@@ -5015,12 +5033,30 @@ description: Result of parsing dining-table.kcl
               "start": 0,
               "type": "Block"
             },
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
             "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
           "moduleId": 0,
           "start": 0,
@@ -6923,7 +6959,7 @@ description: Result of parsing dining-table.kcl
                 }
               }
             ],
-            "body": {
+            "block": {
               "commentStart": 0,
               "end": 0,
               "items": [
@@ -8787,12 +8823,30 @@ description: Result of parsing dining-table.kcl
               "start": 0,
               "type": "Block"
             },
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
             "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
           "moduleId": 0,
           "start": 0,
@@ -9548,7 +9602,7 @@ description: Result of parsing dining-table.kcl
                 }
               }
             ],
-            "body": {
+            "block": {
               "commentStart": 0,
               "end": 0,
               "items": [
@@ -11412,12 +11466,30 @@ description: Result of parsing dining-table.kcl
               "start": 0,
               "type": "Block"
             },
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sketch",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
             "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
           "moduleId": 0,
           "start": 0,

@@ -105,10 +105,10 @@ description: Operations executed kcl_v3_stable_execution.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {

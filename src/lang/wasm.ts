@@ -163,7 +163,6 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
   | 'ImportStatement'
-  | 'SketchBlock'
 
 export type { ExtrudeSurfaceView as ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurfaceView'
 export type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
@@ -1072,16 +1071,6 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         break
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
-        break
-      case 'SketchBlockArgs':
-        pathToNode.push(['arguments', 'SketchBlockArgs'])
-        break
-      case 'SketchBlockBody':
-        pathToNode.push(['body', 'SketchBlockBody'])
-        break
-      case 'SketchBlockBodyItem':
-        pathToNode.push(['items', 'SketchBlockBodyItem'])
-        pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':
         // TODO: sketch-api: implement initial.

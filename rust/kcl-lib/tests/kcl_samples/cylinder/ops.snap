@@ -167,10 +167,10 @@ description: Operations executed cylinder.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -238,10 +238,10 @@ description: Operations executed cylinder.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -274,10 +274,10 @@ description: Operations executed cylinder.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {

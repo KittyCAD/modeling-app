@@ -109,10 +109,10 @@ description: Operations executed sketch_block_compatibility_bindings.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -153,10 +153,10 @@ description: Operations executed sketch_block_compatibility_bindings.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -248,10 +248,10 @@ description: Operations executed sketch_block_compatibility_bindings.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -342,10 +342,10 @@ description: Operations executed sketch_block_compatibility_bindings.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {

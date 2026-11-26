@@ -1436,11 +1436,6 @@ fn collect_defined_names_expr(expr: &Expr, out: &mut Vec<String>) {
         Expr::AscribedExpression(expr) => {
             collect_defined_names_expr(&expr.expr, out);
         }
-        Expr::SketchBlock(sketch_block) => {
-            for labeled_arg in &sketch_block.arguments {
-                collect_defined_names_expr(&labeled_arg.arg, out);
-            }
-        }
     }
 }
 
@@ -1512,7 +1507,6 @@ pub enum Expr {
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
-    SketchBlock(BoxNode<SketchBlock>),
     SketchVar(BoxNode<SketchVar>),
     None(Node<KclNone>),
 }
@@ -1554,7 +1548,7 @@ impl Expr {
             Expr::MemberExpression(_mem_exp) => None,
             Expr::Literal(_literal) => None,
             Expr::FunctionExpression(_func_exp) => None,
-            Expr::CallExpressionKw(_call_exp) => None,
+            Expr::CallExpressionKw(call) => call.sketch_block().map(|_| &call.non_code_meta),
             Expr::Name(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
             Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
@@ -1563,7 +1557,6 @@ impl Expr {
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
-            Expr::SketchBlock(expr) => Some(&expr.non_code_meta),
             Expr::SketchVar(_) => None,
             Expr::None(_none) => None,
         }
@@ -1592,7 +1585,6 @@ impl Expr {
             Expr::PipeSubstitution(_) => {}
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
-            Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
             Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
@@ -1616,7 +1608,6 @@ impl Expr {
             Expr::IfExpression(expr) => expr.start,
             Expr::LabelledExpression(expr) => expr.start,
             Expr::AscribedExpression(expr) => expr.start,
-            Expr::SketchBlock(sketch_block) => sketch_block.start,
             Expr::SketchVar(expr) => expr.start,
             Expr::None(none) => none.start,
         }
@@ -1640,7 +1631,6 @@ impl Expr {
             Expr::IfExpression(expr) => expr.end,
             Expr::LabelledExpression(expr) => expr.end,
             Expr::AscribedExpression(expr) => expr.end,
-            Expr::SketchBlock(expr) => expr.end,
             Expr::SketchVar(expr) => expr.end,
             Expr::None(none) => none.end,
         }
@@ -1664,7 +1654,6 @@ impl Expr {
             Expr::IfExpression(node) => node.node_path.as_ref(),
             Expr::LabelledExpression(node) => node.node_path.as_ref(),
             Expr::AscribedExpression(node) => node.node_path.as_ref(),
-            Expr::SketchBlock(node) => node.node_path.as_ref(),
             Expr::SketchVar(node) => node.node_path.as_ref(),
             Expr::None(node) => node.node_path.as_ref(),
         }
@@ -1723,9 +1712,6 @@ impl Expr {
             Expr::AscribedExpression(expr) => {
                 expr.expr.rename_identifiers(old_name, new_name, excluded);
             }
-            Expr::SketchBlock(expr) => {
-                expr.rename_identifiers(old_name, new_name, excluded);
-            }
             Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
@@ -1753,9 +1739,6 @@ impl Expr {
             Expr::IfExpression(expr) => expr.get_constraint_level(),
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
-            Expr::SketchBlock(expr) => ConstraintLevel::Ignore {
-                source_ranges: vec![expr.into()],
-            },
             Expr::SketchVar(expr) => expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
         }
@@ -1819,7 +1802,6 @@ impl Expr {
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(node) => node.expr.fn_declaring_name(),
             Expr::AscribedExpression(node) => node.expr.fn_declaring_name(),
-            Expr::SketchBlock(_) => None,
             Expr::SketchVar(_) => None,
             Expr::None(_) => None,
         }
@@ -1865,7 +1847,7 @@ impl TryFrom<Expr> for BinaryPart {
             Expr::Literal(n) => Ok(BinaryPart::Literal(n)),
             Expr::Name(n) => Ok(BinaryPart::Name(n)),
             Expr::BinaryExpression(n) => Ok(BinaryPart::BinaryExpression(n)),
-            Expr::CallExpressionKw(n) => Ok(BinaryPart::CallExpressionKw(n)),
+            Expr::CallExpressionKw(n) if n.sketch_block().is_none() => Ok(BinaryPart::CallExpressionKw(n)),
             Expr::UnaryExpression(n) => Ok(BinaryPart::UnaryExpression(n)),
             Expr::MemberExpression(n) => Ok(BinaryPart::MemberExpression(n)),
             Expr::ArrayExpression(n) => Ok(BinaryPart::ArrayExpression(n)),
@@ -1930,60 +1912,13 @@ impl AscribedExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub struct SketchBlock {
-    pub arguments: Vec<LabeledArg>,
-    pub body: Node<Block>,
-
-    /// Transient field to indicate whether the sketch block is being edited.
-    #[serde(skip)]
-    pub is_being_edited: bool,
-
-    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
-    pub non_code_meta: NonCodeMeta,
-
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub digest: Option<Digest>,
-}
-
-impl SketchBlock {
-    #[doc(hidden)]
-    pub const CALLEE_NAME: &str = "sketch";
-
-    /// Iterate over all arguments.
-    pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
-        self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
-    }
-
-    /// Iterate over all arguments.
-    pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
-        self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg))
-    }
-
-    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for arg in &mut self.arguments {
-            arg.arg.replace_value(source_range, new_value.clone());
-        }
-
-        self.body.replace_value(source_range, new_value);
-    }
-
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        for arg in &mut self.arguments {
-            arg.arg.rename_identifiers(old_name, new_name, excluded);
-        }
-
-        self.body.rename_identifiers(old_name, new_name, excluded);
-    }
-}
-
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Block {
+    /// Sketch preview stops execution after evaluating the block under edit.
+    #[serde(skip)]
+    pub is_being_edited: bool,
     pub items: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
@@ -1999,6 +1934,7 @@ impl From<Program> for Block {
     fn from(program: Program) -> Self {
         Block {
             items: program.body,
+            is_being_edited: false,
             non_code_meta: program.non_code_meta,
             inner_attrs: program.inner_attrs,
             digest: None,
@@ -2793,8 +2729,6 @@ pub struct CallExpressionKw {
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
-    // Ordinary calls omit this field in JSON. The parser still emits SketchBlock
-    // for sketches until their Rust and TypeScript consumers migrate in #15147.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub block: Option<BoxNode<Block>>,
@@ -2817,7 +2751,7 @@ impl From<Node<CallExpressionKw>> for Expr {
 impl Node<CallExpressionKw> {
     /// Return the constraint level for this call expression.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        if self.arguments.is_empty() {
+        if self.arguments.is_empty() || self.sketch_block().is_some() {
             return ConstraintLevel::Ignore {
                 source_ranges: vec![self.into()],
             };
@@ -2834,6 +2768,28 @@ impl Node<CallExpressionKw> {
 }
 
 impl CallExpressionKw {
+    pub const SKETCH_NAME: &str = "sketch";
+
+    pub fn has_sketch_callee(&self) -> bool {
+        !self.callee.abs_path && self.callee.path.is_empty() && self.callee.name.name == Self::SKETCH_NAME
+    }
+
+    pub fn sketch_block(&self) -> Option<&Node<Block>> {
+        if self.has_sketch_callee() {
+            self.block.as_deref()
+        } else {
+            None
+        }
+    }
+
+    pub fn sketch_block_mut(&mut self) -> Option<&mut Node<Block>> {
+        if self.has_sketch_callee() {
+            self.block.as_deref_mut()
+        } else {
+            None
+        }
+    }
+
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Node<Self> {
         Node::no_src(Self {
             callee: Name::new(name),
@@ -2880,7 +2836,7 @@ impl CallExpressionKw {
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        if !excluded.contains(&self.callee.name.name.as_str()) {
+        if self.sketch_block().is_none() && !excluded.contains(&self.callee.name.name.as_str()) {
             self.callee.rename(old_name, new_name);
         }
 

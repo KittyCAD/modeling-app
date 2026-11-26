@@ -135,10 +135,10 @@ description: Operations executed sketch_block_arc_using_center_simple.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -206,10 +206,10 @@ description: Operations executed sketch_block_arc_using_center_simple.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -274,10 +274,10 @@ description: Operations executed sketch_block_arc_using_center_simple.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {

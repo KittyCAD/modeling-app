@@ -57,7 +57,6 @@ function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
     case 'FunctionExpression':
     case 'PipeExpression':
     case 'UnaryExpression':
-    case 'SketchBlock':
     case 'TagDeclarator':
     case 'ArrayRangeExpression':
     case 'IfExpression':

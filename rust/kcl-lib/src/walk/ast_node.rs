@@ -37,7 +37,6 @@ pub enum Node<'a> {
     ElseIf(&'a types::ElseIf),
     LabelledExpression(NodeRef<'a, types::LabelledExpression>),
     AscribedExpression(NodeRef<'a, types::AscribedExpression>),
-    SketchBlock(NodeRef<'a, types::SketchBlock>),
     Block(NodeRef<'a, types::Block>),
     SketchVar(NodeRef<'a, types::SketchVar>),
 
@@ -81,7 +80,6 @@ pub enum NodeMut<'a> {
     ElseIf(&'a mut types::ElseIf),
     LabelledExpression(NodeRefMut<'a, types::LabelledExpression>),
     AscribedExpression(NodeRefMut<'a, types::AscribedExpression>),
-    SketchBlock(NodeRefMut<'a, types::SketchBlock>),
     Block(NodeRefMut<'a, types::Block>),
     SketchVar(NodeRefMut<'a, types::SketchVar>),
 
@@ -128,7 +126,6 @@ impl Node<'_> {
             Node::KclNone(n) => n.digest,
             Node::LabelledExpression(n) => n.digest,
             Node::AscribedExpression(n) => n.digest,
-            Node::SketchBlock(n) => n.digest,
             Node::Block(n) => n.digest,
             Node::SketchVar(n) => n.digest,
         }
@@ -179,7 +176,6 @@ impl Node<'_> {
             Node::KclNone(n) => *n as *const _ as *const (),
             Node::LabelledExpression(n) => *n as *const _ as *const (),
             Node::AscribedExpression(n) => *n as *const _ as *const (),
-            Node::SketchBlock(n) => *n as *const _ as *const (),
             Node::Block(n) => *n as *const _ as *const (),
             Node::SketchVar(n) => *n as *const _ as *const (),
         }
@@ -225,7 +221,6 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::IfExpression(n) => SourceRange::from(*n),
             Node::LabelledExpression(n) => SourceRange::from(*n),
             Node::AscribedExpression(n) => SourceRange::from(*n),
-            Node::SketchBlock(n) => SourceRange::from(*n),
             Node::Block(n) => SourceRange::from(*n),
             Node::SketchVar(n) => SourceRange::from(*n),
 
@@ -271,7 +266,6 @@ impl TryFrom<&NodeMut<'_>> for SourceRange {
             NodeMut::IfExpression(n) => SourceRange::from(&**n),
             NodeMut::LabelledExpression(n) => SourceRange::from(&**n),
             NodeMut::AscribedExpression(n) => SourceRange::from(&**n),
-            NodeMut::SketchBlock(n) => SourceRange::from(&**n),
             NodeMut::Block(n) => SourceRange::from(&**n),
             NodeMut::SketchVar(n) => SourceRange::from(&**n),
 
@@ -317,7 +311,6 @@ impl TryFrom<&Node<'_>> for Option<AstNodePath> {
             Node::IfExpression(n) => n.node_path.clone(),
             Node::LabelledExpression(n) => n.node_path.clone(),
             Node::AscribedExpression(n) => n.node_path.clone(),
-            Node::SketchBlock(n) => n.node_path.clone(),
             Node::Block(n) => n.node_path.clone(),
             Node::SketchVar(n) => n.node_path.clone(),
 
@@ -363,7 +356,6 @@ impl TryFrom<&NodeMut<'_>> for Option<AstNodePath> {
             NodeMut::IfExpression(n) => n.node_path.clone(),
             NodeMut::LabelledExpression(n) => n.node_path.clone(),
             NodeMut::AscribedExpression(n) => n.node_path.clone(),
-            NodeMut::SketchBlock(n) => n.node_path.clone(),
             NodeMut::Block(n) => n.node_path.clone(),
             NodeMut::SketchVar(n) => n.node_path.clone(),
 
@@ -420,7 +412,6 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::IfExpression(e) => e.as_ref().into(),
             types::Expr::LabelledExpression(e) => e.as_ref().into(),
             types::Expr::AscribedExpression(e) => e.as_ref().into(),
-            types::Expr::SketchBlock(e) => e.as_ref().into(),
             types::Expr::SketchVar(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
@@ -446,7 +437,6 @@ impl<'tree> From<&'tree mut types::Expr> for NodeMut<'tree> {
             types::Expr::IfExpression(e) => e.as_mut().into(),
             types::Expr::LabelledExpression(e) => e.as_mut().into(),
             types::Expr::AscribedExpression(e) => e.as_mut().into(),
-            types::Expr::SketchBlock(e) => e.as_mut().into(),
             types::Expr::SketchVar(e) => e.as_mut().into(),
             types::Expr::None(n) => n.into(),
         }
@@ -551,7 +541,6 @@ impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
 impl_from!(Node, LabelledExpression);
 impl_from!(Node, AscribedExpression);
-impl_from!(Node, SketchBlock);
 impl_from!(Node, Block);
 impl_from!(Node, SketchVar);
 impl_from!(Node, KclNone);

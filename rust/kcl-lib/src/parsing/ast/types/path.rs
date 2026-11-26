@@ -315,25 +315,6 @@ impl NodePathExt for NodePath {
                 }
                 // TODO: Check the type annotation.
             }
-            Expr::SketchBlock(node) => {
-                if node.iter_arguments().any(|(label, arg)| {
-                    label.map(|label| label.contains_range(&range)).unwrap_or(false) || arg.contains_range(&range)
-                }) {
-                    path.push(Step::SketchBlockArgs);
-                    // TODO: Should we dig deeper into the arguments?
-                    return Some(path);
-                }
-                if node.body.contains_range(&range) {
-                    path.push(Step::SketchBlockBody);
-                    for (i, item) in node.body.items.iter().enumerate() {
-                        if item.contains_range(&range) {
-                            path.push(Step::SketchBlockBodyItem { index: i });
-                            return Self::from_body_item(item, range, path);
-                        }
-                    }
-                    return Some(path);
-                }
-            }
             Expr::SketchVar(node) => {
                 if node.contains_range(&range) {
                     path.push(Step::SketchVar);
@@ -523,24 +504,6 @@ fn fill_node_paths_expr(expr: &mut Expr, mut path: NodePath) {
             node.node_path = Some(path.clone());
             path.push(Step::AscribedExpressionExpr);
             fill_node_paths_expr(&mut node.expr, path);
-        }
-        Expr::SketchBlock(node) => {
-            node.node_path = Some(path.clone());
-            for (label, arg) in node.iter_arguments_mut() {
-                let mut path = path.clone();
-                path.push(Step::SketchBlockArgs);
-                if let Some(label) = label {
-                    label.node_path = Some(path.clone());
-                }
-                fill_node_paths_expr(arg, path);
-            }
-            path.push(Step::SketchBlockBody);
-            node.body.node_path = Some(path.clone());
-            for (i, item) in node.body.items.iter_mut().enumerate() {
-                let mut item_path = path.clone();
-                item_path.push(Step::SketchBlockBodyItem { index: i });
-                fill_node_paths_body_item(item, item_path);
-            }
         }
         Expr::SketchVar(node) => {
             path.push(Step::SketchVar);

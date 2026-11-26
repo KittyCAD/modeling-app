@@ -40,7 +40,6 @@ use crate::parsing::ast::types::PipeSubstitution;
 use crate::parsing::ast::types::PrimitiveType;
 use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::ReturnStatement;
-use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
@@ -218,7 +217,6 @@ impl Expr {
             Expr::IfExpression(e) => e.compute_digest(),
             Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::AscribedExpression(e) => e.compute_digest(),
-            Expr::SketchBlock(e) => e.compute_digest(),
             Expr::SketchVar(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
@@ -647,21 +645,11 @@ impl Node<ElseIf> {
     });
 }
 
-impl Node<SketchBlock> {
-    compute_digest!(|slf, hasher| {
-        for argument in &mut slf.arguments {
-            if let Some(l) = &mut argument.label {
-                hasher.update(l.compute_digest());
-            }
-            hasher.update(argument.arg.compute_digest());
-        }
-        hasher.update(slf.body.compute_digest());
-        hasher.update(if slf.is_being_edited { [1] } else { [0] });
-    });
-}
-
 impl Node<Block> {
     compute_digest!(|slf, hasher| {
+        if slf.is_being_edited {
+            hasher.update(b"editing");
+        }
         for item in &mut slf.items {
             hasher.update(item.compute_digest());
         }

@@ -322,7 +322,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -459,10 +460,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -554,10 +555,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -679,10 +680,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -774,10 +775,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -1156,7 +1157,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -1319,10 +1321,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -1457,10 +1459,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -1595,10 +1597,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -1740,10 +1742,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -2013,7 +2015,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -2146,10 +2149,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -2254,10 +2257,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -2797,7 +2800,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -2960,10 +2964,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -3098,10 +3102,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -3236,10 +3240,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -3381,10 +3385,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -3654,7 +3658,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -3787,10 +3792,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -3895,10 +3900,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -4438,7 +4443,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -4601,10 +4607,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -4739,10 +4745,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -4877,10 +4883,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -5022,10 +5028,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -5295,7 +5301,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -5428,10 +5435,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -5536,10 +5543,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -6079,7 +6086,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -6242,10 +6250,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -6380,10 +6388,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -6518,10 +6526,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -6663,10 +6671,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -6936,7 +6944,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -7069,10 +7078,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -7177,10 +7186,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -7720,7 +7729,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -7883,10 +7893,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -8021,10 +8031,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -8159,10 +8169,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -8304,10 +8314,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -8577,7 +8587,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -8710,10 +8721,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -8818,10 +8829,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -9361,7 +9372,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -9524,10 +9536,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -9662,10 +9674,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -9800,10 +9812,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -9945,10 +9957,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -10218,7 +10230,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -10351,10 +10364,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -10459,10 +10472,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -11002,7 +11015,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -11165,10 +11179,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -11303,10 +11317,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {
@@ -11441,10 +11455,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 2
           },
           {
@@ -11586,10 +11600,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 3
           },
           {
@@ -11859,7 +11873,8 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockArgs"
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -11992,10 +12007,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 0
           },
           {
@@ -12100,10 +12115,10 @@ description: Operations executed cassette.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlockBody"
+            "type": "CallKwBlock"
           },
           {
-            "type": "SketchBlockBodyItem",
+            "type": "BlockItem",
             "index": 1
           },
           {

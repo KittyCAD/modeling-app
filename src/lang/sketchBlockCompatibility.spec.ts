@@ -4,7 +4,7 @@ import { createLiteral } from '@src/lang/create'
 import { getNodeFromPath, traverse } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
-import type { Expr, LabeledArg, Literal, Program } from '@src/lang/wasm'
+import type { Expr, Literal, Program } from '@src/lang/wasm'
 import {
   assertParse,
   nodePathFromRange,
@@ -36,7 +36,8 @@ second = sketch(on = XZ) {
 }
 `
 
-const bodySelections = [
+const selections = [
+  'planeArg',
   'arc(start = [var 1mm, 0mm], end = [0mm, var 2mm], center = [0mm, 0mm])',
   'var 1mm',
   'var 2mm',
@@ -72,7 +73,7 @@ function transportedAst(): Node<Program> {
 describe('sketch block application contracts', () => {
   // Check selected source ranges so AST fields and path steps can change
   // when blocks are generalized.
-  it.each(['planeArg', ...bodySelections])(
+  it.each(selections)(
     'resolves an editor selection after JSON transport: %s',
     (text) => {
       const ast = transportedAst()
@@ -100,7 +101,7 @@ describe('sketch block application contracts', () => {
     }
   )
 
-  it.each(bodySelections)(
+  it.each(selections)(
     'converts a Rust source path into a usable application path: %s',
     async (text) => {
       const ast = transportedAst()
@@ -115,26 +116,19 @@ describe('sketch block application contracts', () => {
     }
   )
 
-  // Rust source lookup returns the sketch's argument list. App lookup returns
-  // the argument expression. Test this separately from bodySelections, where
-  // each converted path must point to the selected expression.
-  it('converts the Rust argument-container path for a sketch surface selection', async () => {
+  it('targets the call inside the selected sketch for a segment edit', () => {
     const ast = transportedAst()
-    const rustPath = await nodePathFromRange(
+    const path = getNodePathFromSourceRange(ast, selection('var 7mm'))
+    const result = getNodeFromPath<Node<Expr>>(
       ast,
-      selection('planeArg'),
-      instance
-    )
-    if (!rustPath) throw new Error('Missing argument path')
-    const result = getNodeFromPath<LabeledArg[]>(
-      ast,
-      pathToNodeFromRustNodePath(rustPath),
-      instance
+      path,
+      instance,
+      'CallExpressionKw',
+      true
     )
     if (err(result)) throw result
-    expect(result.node).toHaveLength(1)
-    expect(source.slice(result.node[0].arg.start, result.node[0].arg.end)).toBe(
-      'planeArg'
+    expect(source.slice(result.node.start, result.node.end)).toBe(
+      'point(at = [var 7mm, var 8mm])'
     )
   })
 

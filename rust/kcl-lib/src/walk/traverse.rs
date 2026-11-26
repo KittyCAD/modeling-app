@@ -291,21 +291,6 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 return ret;
             }
         }
-        ast::Expr::SketchBlock(node) => {
-            // TODO: Should we visit the argument label Identifiers?
-            for (_, arg) in &mut node.iter_arguments_mut() {
-                ret = dfs_mut_expr(arg, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
-            }
-            // TODO: Should we visit the inner Block node?
-            let block = &mut node.body.inner;
-            ret = dfs_mut_body(&mut block.items, &mut block.non_code_meta, visitor, ret);
-            if ret.is_break() {
-                return ret;
-            }
-        }
         ast::Expr::SketchVar(node) => {
             if let Some(initial) = &mut node.initial {
                 ret = visitor.visit(NodeMut::from(&mut **initial));
@@ -686,7 +671,6 @@ mod tests {
             NodeMut::ElseIf(_) => "ElseIf",
             NodeMut::LabelledExpression(_) => "LabelledExpression",
             NodeMut::AscribedExpression(_) => "AscribedExpression",
-            NodeMut::SketchBlock(_) => "SketchBlock",
             NodeMut::Block(_) => "Block",
             NodeMut::SketchVar(_) => "SketchVar",
             NodeMut::Parameter(_) => "Parameter",
@@ -883,7 +867,7 @@ sk = sketch() {
         // The top-level program, three if-expression branch blocks, and the
         // function body.
         assert_eq!(count("Program"), 5);
-        assert_eq!(count("SketchBlock"), 1);
+        assert_eq!(count("Block"), 1);
         assert_eq!(count("SketchVar"), 1);
         // The sketch var's initial value.
         assert_eq!(count("NumericLiteral"), 1);

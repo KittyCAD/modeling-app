@@ -97,7 +97,6 @@ use crate::parsing::ast::types::PrimitiveType;
 use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::ReturnStatement;
 use crate::parsing::ast::types::Shebang;
-use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
@@ -1051,8 +1050,10 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::FunctionExpression(_)
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
-                | Expr::LabelledExpression(..)
-                | Expr::SketchBlock(_) => return Err(CompilationIssue::fatal(source_range, TODO_783)),
+                | Expr::LabelledExpression(..) => return Err(CompilationIssue::fatal(source_range, TODO_783)),
+                Expr::CallExpressionKw(call) if call.block.is_some() => {
+                    return Err(CompilationIssue::fatal(source_range, TODO_783));
+                }
                 Expr::None(_) => {
                     return Err(CompilationIssue::fatal(
                         source_range,
@@ -2323,6 +2324,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     end += 1;
     Ok(Node::new(
         Block {
+            is_being_edited: false,
             items: body,
             non_code_meta,
             inner_attrs,
@@ -4390,10 +4392,6 @@ fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
     }
 }
 
-fn is_callee_sketch_block(callee: &Name) -> bool {
-    callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
-}
-
 fn is_sketch_block_arg_shorthand(arg: &Expr) -> bool {
     let Expr::Name(name) = arg else {
         return false;
@@ -4408,35 +4406,15 @@ fn is_sketch_block_arg_shorthand(arg: &Expr) -> bool {
 }
 
 fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
-    let fn_call = fn_call_kw.parse_next(i)?;
-    if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+    let mut fn_call = fn_call_kw.parse_next(i)?;
+    if fn_call.has_sketch_callee() && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         // We have `sketch() {`. Parse the block.
         // Cut on error: no other parser accepts `sketch(...) {`, so backtracking would only move the error to `sketch(`.
         ignore_whitespace(i);
         let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i)).map_err(|e| e.cut())?;
-        let end = close.end;
-
-        let Node {
-            start,
-            end: _,
-            module_id,
-            node_path: _,
-            pre_comments,
-            comment_start,
-            outer_attrs,
-            inner:
-                CallExpressionKw {
-                    callee: _,
-                    unlabeled,
-                    mut arguments,
-                    mut non_code_meta,
-                    block: _,
-                    digest: _,
-                },
-        } = fn_call;
-        if let Some(unlabeled) = unlabeled {
+        if let Some(unlabeled) = fn_call.unlabeled.take() {
             if is_sketch_block_arg_shorthand(&unlabeled) {
-                arguments.insert(
+                fn_call.arguments.insert(
                     0,
                     LabeledArg {
                         label: None,
@@ -4446,8 +4424,8 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 // The shorthand argument now occupies the first slot of the
                 // argument sequence, so shift the non-code nodes (e.g.
                 // comments) to keep them positioned after it.
-                non_code_meta.non_code_nodes = non_code_meta
-                    .non_code_nodes
+                let non_code_meta = &mut fn_call.non_code_meta;
+                non_code_meta.non_code_nodes = std::mem::take(&mut non_code_meta.non_code_nodes)
                     .into_iter()
                     .map(|(index, nodes)| (index + 1, nodes))
                     .collect();
@@ -4458,22 +4436,8 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 ));
             }
         }
-        return Ok(Expr::SketchBlock(BoxNode::new(Node {
-            start,
-            end,
-            module_id,
-            node_path: None,
-            outer_attrs,
-            pre_comments,
-            comment_start,
-            inner: SketchBlock {
-                arguments,
-                body,
-                is_being_edited: false,
-                non_code_meta,
-                digest: None,
-            },
-        })));
+        fn_call.end = close.end;
+        fn_call.block = Some(BoxNode::new(body));
     }
     Ok(Expr::CallExpressionKw(BoxNode::new(fn_call)))
 }
@@ -4770,7 +4734,7 @@ e
     // generalizing blocks.
     #[test]
     fn historical_sketch_call_recognition() {
-        for version in ["1.0", "2.0", "3.0"] {
+        for version in ["1.0", "2.0", "3.0", "4.0-preview"] {
             let header = format!("@settings(kclVersion = \"{version}\", experimentalFeatures = allow)\n");
             for code in [
                 "sketch(on = XY) {}",
@@ -4785,6 +4749,7 @@ e
                 "std::sketch::sketch(on = XY) {}",
                 "::sketch(on = XY) {}",
                 "draw(on = XY) {}",
+                "1 + sketch(on = XY) {}",
                 "sketch(on = XY, on = XZ) {}",
                 "sketch(on = XY) { value = var foo }",
             ] {
@@ -4879,7 +4844,7 @@ e
         let tokens = crate::parsing::token::lex("sketch() {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
-        assert!(matches!(actual, Expr::SketchBlock { .. }));
+        assert!(matches!(actual, Expr::CallExpressionKw(call) if call.sketch_block().is_some()));
     }
 
     #[test]
@@ -4887,7 +4852,7 @@ e
         let tokens = crate::parsing::token::lex("sketch(on = XY) {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
-        assert!(matches!(actual, Expr::SketchBlock { .. }));
+        assert!(matches!(actual, Expr::CallExpressionKw(call) if call.sketch_block().is_some()));
     }
 
     #[test]
@@ -4895,7 +4860,7 @@ e
         let tokens = crate::parsing::token::lex("sketch(on) {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
-        let Expr::SketchBlock(sketch_block) = actual else {
+        let Expr::CallExpressionKw(sketch_block) = actual else {
             panic!("not a sketch block")
         };
         assert_eq!(sketch_block.arguments.len(), 1);
@@ -4986,10 +4951,10 @@ e
         .unwrap();
         let tokens = tokens.as_slice();
         let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
-        let Expr::SketchBlock(sketch_block) = actual else {
+        let Expr::CallExpressionKw(sketch_block) = actual else {
             panic!("not a sketch block")
         };
-        let item = sketch_block.body.items.first().unwrap();
+        let item = sketch_block.block.as_ref().unwrap().items.first().unwrap();
         let BodyItem::VariableDeclaration(var_dec) = item else {
             panic!("not a variable declaration")
         };

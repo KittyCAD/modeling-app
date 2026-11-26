@@ -1246,7 +1246,6 @@ function isNestedScopePath(pathToNode: PathToNode): boolean {
   return pathToNode.some(
     ([, owner]) =>
       owner === 'FunctionExpression' ||
-      owner === 'SketchBlock' ||
       owner === 'Block' ||
       owner === 'IfExpression'
   )

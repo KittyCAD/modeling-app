@@ -15,7 +15,6 @@ import type { Node } from "./Node";
 import type { ObjectExpression } from "./ObjectExpression";
 import type { PipeExpression } from "./PipeExpression";
 import type { PipeSubstitution } from "./PipeSubstitution";
-import type { SketchBlock } from "./SketchBlock";
 import type { SketchVar } from "./SketchVar";
 import type { TagDeclarator } from "./TagDeclarator";
 import type { UnaryExpression } from "./UnaryExpression";
@@ -23,4 +22,4 @@ import type { UnaryExpression } from "./UnaryExpression";
 /**
  * An expression can be evaluated to yield a single KCL value.
  */
-export type Expr = { "type": "Literal" } & Node<Literal> | { "type": "Name" } & Node<Name> | { "type": "TagDeclarator" } & Node<TagDeclarator> | { "type": "BinaryExpression" } & Node<BinaryExpression> | { "type": "FunctionExpression" } & Node<FunctionExpression> | { "type": "CallExpressionKw" } & Node<CallExpressionKw> | { "type": "PipeExpression" } & Node<PipeExpression> | { "type": "PipeSubstitution" } & Node<PipeSubstitution> | { "type": "ArrayExpression" } & Node<ArrayExpression> | { "type": "ArrayRangeExpression" } & Node<ArrayRangeExpression> | { "type": "ObjectExpression" } & Node<ObjectExpression> | { "type": "MemberExpression" } & Node<MemberExpression> | { "type": "UnaryExpression" } & Node<UnaryExpression> | { "type": "IfExpression" } & Node<IfExpression> | { "type": "LabelledExpression" } & Node<LabelledExpression> | { "type": "AscribedExpression" } & Node<AscribedExpression> | { "type": "SketchBlock" } & Node<SketchBlock> | { "type": "SketchVar" } & Node<SketchVar> | { "type": "None" } & Node<KclNone>;
+export type Expr = { "type": "Literal" } & Node<Literal> | { "type": "Name" } & Node<Name> | { "type": "TagDeclarator" } & Node<TagDeclarator> | { "type": "BinaryExpression" } & Node<BinaryExpression> | { "type": "FunctionExpression" } & Node<FunctionExpression> | { "type": "CallExpressionKw" } & Node<CallExpressionKw> | { "type": "PipeExpression" } & Node<PipeExpression> | { "type": "PipeSubstitution" } & Node<PipeSubstitution> | { "type": "ArrayExpression" } & Node<ArrayExpression> | { "type": "ArrayRangeExpression" } & Node<ArrayRangeExpression> | { "type": "ObjectExpression" } & Node<ObjectExpression> | { "type": "MemberExpression" } & Node<MemberExpression> | { "type": "UnaryExpression" } & Node<UnaryExpression> | { "type": "IfExpression" } & Node<IfExpression> | { "type": "LabelledExpression" } & Node<LabelledExpression> | { "type": "AscribedExpression" } & Node<AscribedExpression> | { "type": "SketchVar" } & Node<SketchVar> | { "type": "None" } & Node<KclNone>;

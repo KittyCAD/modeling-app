@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import { convertLegacyAngleToAngleDimension } from '@src/lang/modifyAst/angle'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { isSketchBlock } from '@src/lang/util'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Program, SourceRange } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -19,8 +20,8 @@ function legacyAngleRange(ast: Node<Program>): SourceRange {
   const call = ast.body[0]
   if (call.type !== 'ExpressionStatement') throw new Error('Expected sketch')
   const sketch = call.expression
-  if (sketch.type !== 'SketchBlock') throw new Error('Expected sketch block')
-  const statement = sketch.body.items[0]
+  if (!isSketchBlock(sketch)) throw new Error('Expected sketch block')
+  const statement = sketch.block.items[0]
   if (statement.type !== 'ExpressionStatement')
     throw new Error('Expected expression')
   const binary = statement.expression

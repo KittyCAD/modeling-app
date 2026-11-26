@@ -190,7 +190,6 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
-use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::UnaryExpression;
 
 /// Keep large executor futures pointer-sized in debug builds without paying
@@ -233,15 +232,13 @@ impl ToMachineBlock for Node<Block> {
     }
 }
 
-/// An owned handle to a block of statements. Function and sketch bodies are
-/// projected out of their enclosing node's `Arc` so pushing a call costs no
-/// clone.
+/// An owned handle to a block of statements. Function bodies are projected
+/// out of the enclosing function. Trailing blocks have their own shared handle.
 #[derive(Debug, Clone)]
 pub(crate) enum BlockRef {
     Program(Arc<Node<Program>>),
     Block(Arc<Node<Block>>),
     FnBody(Arc<Node<FunctionExpression>>),
-    SketchBody(Arc<Node<SketchBlock>>),
 }
 
 impl BlockRef {
@@ -250,7 +247,6 @@ impl BlockRef {
             BlockRef::Program(p) => p.body(),
             BlockRef::Block(b) => b.body(),
             BlockRef::FnBody(f) => f.body.body(),
-            BlockRef::SketchBody(s) => s.body.body(),
         }
     }
 
@@ -259,7 +255,6 @@ impl BlockRef {
             BlockRef::Program(p) => p.to_source_range(),
             BlockRef::Block(b) => b.to_source_range(),
             BlockRef::FnBody(f) => f.body.to_source_range(),
-            BlockRef::SketchBody(s) => s.body.to_source_range(),
         }
     }
 }
@@ -609,7 +604,7 @@ enum BoundaryCompletion {
 /// Argument-evaluation state for a sketch block (non-sketch-mode).
 #[derive(Debug)]
 struct SketchArgsState {
-    node: Arc<Node<SketchBlock>>,
+    node: Arc<Node<CallExpressionKw>>,
     index: usize,
     labeled: IndexMap<String, Arg>,
 }
@@ -617,7 +612,7 @@ struct SketchArgsState {
 /// Ambient state a sketch-block body wraps; restored on every exit path.
 #[derive(Debug)]
 struct SketchBodyState {
-    node: Arc<Node<SketchBlock>>,
+    node: Arc<Node<CallExpressionKw>>,
     sketch_id: ObjectId,
     sketch_surface: SketchSurface,
     sketch_block_artifact_id: ArtifactId,
@@ -1236,12 +1231,6 @@ async fn step_eval(
             let node = node.arc();
             start_call(node, konts, exec_state, ctx).await
         }
-
-        // ---- sketch blocks ----
-        Expr::SketchBlock(node) => {
-            let node = node.arc();
-            start_sketch_block(node, konts, exec_state, ctx).await
-        }
     }
 }
 
@@ -1848,6 +1837,9 @@ async fn start_call(
     // The Wasm API accepts serialized ASTs directly. Reject an unsupported
     // trailing block before an argument can perform a modeling operation.
     if let Some(block) = &node.block {
+        if node.has_sketch_callee() && node.unlabeled.is_none() {
+            return start_sketch_block(node, konts, exec_state, ctx).await;
+        }
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Calls with trailing blocks cannot be executed yet".to_owned(),
             vec![block.into()],
@@ -2483,10 +2475,9 @@ fn finish_call_value(
     }
 }
 
-/// Begin a sketch block: nested check, then argument evaluation (or the
-/// sketch-mode cache path), mirroring `Node<SketchBlock>::get_result`.
+/// Check for nested sketches before evaluating arguments or using the sketch-mode cache.
 async fn start_sketch_block(
-    node: Arc<Node<SketchBlock>>,
+    node: Arc<Node<CallExpressionKw>>,
     konts: &mut Vec<Kont>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
@@ -2577,11 +2568,9 @@ async fn sketch_args_finish(
 }
 
 /// Scene setup, ambient sketch state, the sketch2 alias scope, and the body's
-/// child environment -- then start the body. Mirrors the middle of
-/// `Node<SketchBlock>::get_result`, with the same ordering of pushes so
-/// unwinding restores in exactly the reverse order.
+/// child environment, in the reverse order of unwind cleanup.
 async fn sketch_block_body_setup(
-    node: Arc<Node<SketchBlock>>,
+    node: Arc<Node<CallExpressionKw>>,
     sketch_id: ObjectId,
     sketch_surface: SketchSurface,
     konts: &mut Vec<Kont>,
@@ -2589,10 +2578,16 @@ async fn sketch_block_body_setup(
     ctx: &ExecutorContext,
 ) -> Result<Control, KclError> {
     let range = SourceRange::from(node.as_ref());
+    let block = node
+        .block
+        .as_ref()
+        .ok_or_else(|| KclError::new_internal(KclErrorDetails::new("Missing sketch body".to_owned(), vec![range])))?
+        .arc();
     let sketch_block_artifact_id = node.scene_setup(sketch_id, &sketch_surface, exec_state)?;
 
     // Don't early return until the stack frame is popped!
-    node.prep_mem(exec_state.mut_stack().snapshot()?, exec_state)?;
+    let parent = exec_state.mut_stack().snapshot()?;
+    exec_state.mut_stack().push_new_env_for_call(parent)?;
 
     // Track that we're executing a sketch block.
     let initial_sketch_block_state = SketchBlockState {
@@ -2638,7 +2633,7 @@ async fn sketch_block_body_setup(
     }
     body_state.child_env_pushed = true;
 
-    let body = BlockRef::SketchBody(node);
+    let body = BlockRef::Block(block);
     konts.push(Kont::SketchBody(Box::new(body_state)));
     push_block(body, BodyType::Block, konts);
     step_block_kick(konts, exec_state, ctx).await
@@ -2703,7 +2698,7 @@ async fn sketch_body_finish(
         )
         .await?;
 
-    if node.is_being_edited {
+    if node.block.as_ref().is_some_and(|block| block.is_being_edited) {
         // When the sketch block is being edited, we exit the program
         // immediately.
         Ok(Control::Exit(return_value.exit()))

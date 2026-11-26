@@ -4,7 +4,7 @@ flowchart LR
     2["Path<br>[39, 109, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     3["Segment<br>[59, 107, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, ExpressionStatementExpr]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwBlock, BlockItem { index: 0 }, ExpressionStatementExpr]
   end
   subgraph path4 [Path]
     4["Path Region<br>[127, 171, 0]<br>Consumed: true"]
