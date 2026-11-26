@@ -12,6 +12,8 @@ import { Signal } from '@src/lib/signal'
 import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 import { Themes } from '@src/lib/theme'
 import {
+  BufferGeometry,
+  Float32BufferAttribute,
   Group,
   Mesh,
   OrthographicCamera,
@@ -54,6 +56,7 @@ type RendererInternals = {
   scheduleRender(): void
   gpu: FakeGpu | null
   currentModel: Group | null
+  targetsByEntityId: Map<string, Mesh[]>
   loadedSceneGeneration: number | null
   rebuildSelectionTargets(): void
   camera: PerspectiveCamera | OrthographicCamera | null
@@ -242,6 +245,104 @@ describe('local GLB loading', () => {
     vi.mocked(resetCameraPosition).mockClear()
   })
   afterEach(() => vi.restoreAllMocks())
+
+  it.each([true, false])(
+    'limits projected face lookups after filtering visibility (%s)',
+    async (visible) => {
+      const { renderer, state, gpu } = fixture()
+      const camera = new PerspectiveCamera(45, 1, 0.1, 100)
+      camera.position.z = 10
+      state.camera = camera
+      state.currentModel = new Group()
+      state.loadedSceneGeneration = 0
+      vi.spyOn(
+        gpu.renderer.domElement,
+        'getBoundingClientRect'
+      ).mockReturnValue(new DOMRect(0, 0, 800, 800))
+      const geometry = new BufferGeometry()
+      geometry.setAttribute(
+        'position',
+        new Float32BufferAttribute([-1, -1, 0, 1, -1, 0, 0, 2, 0], 3)
+      )
+      geometry.setAttribute(
+        'instanceStart',
+        new Float32BufferAttribute([-1, 0, 0], 3)
+      )
+      geometry.setAttribute(
+        'instanceEnd',
+        new Float32BufferAttribute([1, 0, 0], 3)
+      )
+      const edge = new Mesh(geometry)
+      edge.userData.edgeUuid = 'edge'
+      const faces = Array.from({ length: 4 }, () => new Mesh(geometry))
+      state.targetsByEntityId.set('edge', [edge])
+      faces.forEach((face, index) => {
+        state.targetsByEntityId.set(`face-${index}`, [face])
+      })
+      faces[2].userData.isSketchRegion = true
+      const hits = [null, faces[1], null, faces[3]]
+      gpu.integerIdPicker.pick.mockResolvedValueOnce({
+        target: edge,
+        stale: false,
+      })
+      for (const target of hits) {
+        gpu.integerIdPicker.pick.mockResolvedValueOnce({ target, stale: false })
+      }
+      const allCounters = { entitiesVisited: 0, pickerCalls: 0 }
+      const all = await renderer.getProjectedEntities({}, allCounters)
+      expect(all).toHaveLength(5)
+      expect(gpu.integerIdPicker.pick).toHaveBeenCalledTimes(5)
+      expect(allCounters).toEqual({ entitiesVisited: 5, pickerCalls: 5 })
+
+      gpu.integerIdPicker.pick.mockClear()
+      for (const target of hits) {
+        gpu.integerIdPicker.pick.mockResolvedValueOnce({ target, stale: false })
+      }
+      const filteredCounters = { entitiesVisited: 0, pickerCalls: 0 }
+      const filtered = await renderer.getProjectedEntities(
+        { kind: 'face', visible, limit: 1 },
+        filteredCounters
+      )
+      expect(filtered).toEqual(
+        all
+          .filter(
+            (entity) => entity.kind !== 'edge' && entity.visible === visible
+          )
+          .slice(0, 1)
+      )
+      expect(gpu.integerIdPicker.pick).toHaveBeenCalledTimes(visible ? 2 : 1)
+      expect(filteredCounters).toEqual({
+        entitiesVisited: visible ? 2 : 1,
+        pickerCalls: visible ? 2 : 1,
+      })
+      gpu.integerIdPicker.pick.mockReset()
+      gpu.integerIdPicker.pick.mockResolvedValue({
+        target: faces[3],
+        stale: false,
+      })
+      const idCounters = { entitiesVisited: 0, pickerCalls: 0 }
+      expect(
+        await renderer.getProjectedEntities(
+          { kind: 'bodyFace', id: 'face-3', visible: true, limit: 1 },
+          idCounters
+        )
+      ).toEqual([all[4]])
+      expect(idCounters).toEqual({ entitiesVisited: 1, pickerCalls: 1 })
+      gpu.integerIdPicker.pick.mockResolvedValue({ target: null, stale: false })
+      expect(
+        await renderer.getProjectedEntities({
+          kind: 'sketchFace',
+          visible: false,
+          limit: 1,
+        })
+      ).toEqual([all[3]])
+      gpu.integerIdPicker.pick.mockClear()
+      expect(await renderer.getProjectedEntities({ limit: 0 })).toEqual([])
+      expect(gpu.integerIdPicker.pick).not.toHaveBeenCalled()
+      renderer.dispose()
+      geometry.dispose()
+    }
+  )
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()

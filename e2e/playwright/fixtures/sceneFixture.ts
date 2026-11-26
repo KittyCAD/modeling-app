@@ -1,5 +1,8 @@
-import type { Locator, Page } from '@playwright/test'
-import type { ProjectedEntity } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import type { Locator, Page, TestInfo } from '@playwright/test'
+import type {
+  LocalRenderer,
+  ProjectedEntity,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import {
@@ -21,6 +24,9 @@ type MouseParams = {
   shouldRightClick?: boolean
   delay?: number
 }
+const reportedGraphicsBackends = new Set<string>()
+type ProjectionOptions = Parameters<LocalRenderer['getProjectedEntities']>[0]
+type GraphicsInfo = ReturnType<LocalRenderer['getGraphicsInfo']>
 type MouseDragToParams = MouseParams & {
   fromPoint: { x: number; y: number }
 }
@@ -117,6 +123,14 @@ async function markClickDebugPoint(
 }
 
 export class SceneFixture {
+  private graphicsInfo: GraphicsInfo = null
+  private readonly projectionLookups: Array<{
+    options: ProjectionOptions
+    durationMs: number
+    entitiesVisited: number
+    pickerCalls: number
+    returnedEntities: number
+  }> = []
   public page: Page
   public streamWrapper!: Locator
   public networkToggleConnected!: Locator
@@ -140,13 +154,73 @@ export class SceneFixture {
     this.appHeader = this.page.getByTestId('app-header')
   }
   /** Read current CSS viewport coordinates; refresh after camera or model changes. */
-  getProjectedEntities = async () =>
-    this.page.evaluate(async () => {
-      const view = window.app.singletons.kclManager.sceneInfra.localRenderer
-      if (!view)
-        throw new Error('Projected entities require the local renderer')
-      return view.getProjectedEntities()
+  getProjectedEntities = async (options?: ProjectionOptions) => {
+    const result = await this.page.evaluate(
+      async ({ options, includeGraphicsInfo }) => {
+        const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+        if (!view)
+          throw new Error('Projected entities require the local renderer')
+        const counters = { entitiesVisited: 0, pickerCalls: 0 }
+        const start = performance.now()
+        const entities = await view.getProjectedEntities(options, counters)
+        const durationMs = performance.now() - start
+        return {
+          entities,
+          durationMs,
+          ...counters,
+          graphicsInfo: includeGraphicsInfo ? view.getGraphicsInfo() : null,
+        }
+      },
+      { options, includeGraphicsInfo: this.graphicsInfo === null }
+    )
+    if (result.graphicsInfo) {
+      this.graphicsInfo = result.graphicsInfo
+      const backend = JSON.stringify(result.graphicsInfo)
+      if (!reportedGraphicsBackends.has(backend)) {
+        reportedGraphicsBackends.add(backend)
+        console.log(`[scene graphics] ${backend}`)
+      }
+    }
+    this.projectionLookups.push({
+      options,
+      durationMs: result.durationMs,
+      entitiesVisited: result.entitiesVisited,
+      pickerCalls: result.pickerCalls,
+      returnedEntities: result.entities.length,
     })
+    return result.entities
+  }
+
+  async attachProjectionDiagnostics(testInfo: TestInfo) {
+    if (this.projectionLookups.length === 0) return
+    const totals = this.projectionLookups.reduce(
+      (sum, lookup) => ({
+        durationMs: sum.durationMs + lookup.durationMs,
+        pickerCalls: sum.pickerCalls + lookup.pickerCalls,
+        entitiesVisited: sum.entitiesVisited + lookup.entitiesVisited,
+      }),
+      { durationMs: 0, pickerCalls: 0, entitiesVisited: 0 }
+    )
+    console.log(
+      `[scene picking] ${JSON.stringify({
+        test: testInfo.title,
+        lookups: this.projectionLookups.length,
+        ...totals,
+      })}`
+    )
+    await testInfo.attach('scene-picking-diagnostics', {
+      contentType: 'application/json',
+      body: JSON.stringify(
+        {
+          graphics: this.graphicsInfo,
+          totals,
+          lookups: this.projectionLookups,
+        },
+        null,
+        2
+      ),
+    })
+  }
 
   /**
    * Both modes share the same mouse actions; only the selection point differs.
@@ -201,15 +275,14 @@ export class SceneFixture {
       throw new Error('Entity index must be a non-negative integer')
     }
     const lookup = async () => {
-      const entities = (await this.getProjectedEntities()).filter(
-        (entity) =>
-          (kind === 'face'
-            ? entity.kind === 'bodyFace' || entity.kind === 'sketchFace'
-            : entity.kind === kind) && entity.visible === visible
-      )
-      return typeof indexOrId === 'number'
-        ? entities[indexOrId]
-        : entities.find((entity) => entity.id === indexOrId)
+      const entities = await this.getProjectedEntities({
+        kind,
+        visible,
+        ...(typeof indexOrId === 'number'
+          ? { limit: indexOrId + 1 }
+          : { id: indexOrId, limit: 1 }),
+      })
+      return entities[typeof indexOrId === 'number' ? indexOrId : 0]
     }
     // Pane resizing and camera updates can settle after the UI action completes.
     let entity: Awaited<ReturnType<typeof lookup>> | undefined
