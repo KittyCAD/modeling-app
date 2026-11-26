@@ -186,6 +186,38 @@ body = profile |> sweep(path = path)
   )
 })
 
+it('blocks 3D export while KCL is executing', () => {
+  const world = worldWithoutEngine
+  const isExecuting = vi
+    .spyOn(world.kclManager, 'isExecuting', 'get')
+    .mockReturnValue(true)
+  const toastError = vi.spyOn(toast, 'error').mockReturnValue('export-busy')
+  const exportFromEngine = vi
+    .fn<() => Promise<Error | undefined>>()
+    .mockResolvedValue(undefined)
+  const machine = modelingMachine.provide({
+    guards: { 'Has exportable geometry': () => true },
+    actors: { exportFromEngine: fromPromise(exportFromEngine) },
+  })
+  const actor = createActor(machine, {
+    input: { ...world, wasmInstance: world.instance },
+  }).start()
+  const event = { type: 'Export', data: { type: 'stl' } } as const
+  try {
+    actor.send(event)
+    expect(exportFromEngine).not.toHaveBeenCalled()
+    expect(toastError).toHaveBeenCalledOnce()
+
+    isExecuting.mockReturnValue(false)
+    actor.send(event)
+    expect(exportFromEngine).toHaveBeenCalledOnce()
+  } finally {
+    actor.stop()
+    toastError.mockRestore()
+    isExecuting.mockRestore()
+  }
+})
+
 describe('STEP schema export requests', () => {
   async function exportFormat(data: ModelingCommandSchema['Export']) {
     const world = worldWithoutEngine
