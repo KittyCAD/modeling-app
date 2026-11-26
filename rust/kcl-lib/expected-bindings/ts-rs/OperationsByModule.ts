@@ -2,4 +2,4 @@
 import type { ModuleId } from "./ModuleId";
 import type { Operation } from "./Operation";
 
-export type OperationsByModule = { map: { [key in ModuleId]: Array<Operation> }, };
+export type OperationsByModule = { map: { [key in ModuleId]: Array<Operation> }, omittedOperationCount?: number, };

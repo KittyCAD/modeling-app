@@ -197,6 +197,98 @@ impl GlobalState {
 
         operations
     }
+
+    pub(crate) fn operations_for_outcome(&self, ctx: &ExecutorContext) -> OperationsByModule {
+        if cfg!(target_arch = "wasm32") && !ctx.is_mock() {
+            return self.bounded_operations_for_outcome();
+        }
+        self.operations_by_module()
+    }
+
+    fn bounded_operations_for_outcome(&self) -> OperationsByModule {
+        const TOTAL_ROWS: usize = 20_000;
+        const TOTAL_BYTES: usize = 8 * 1024 * 1024;
+        const MODULE_ROWS: usize = 2_048;
+        const MODULE_BYTES: usize = 1024 * 1024;
+
+        let mut output = OperationsByModule::default();
+        let mut total_rows = TOTAL_ROWS;
+        let mut total_bytes = TOTAL_BYTES;
+        let mut omitted = 0;
+        let mut append = |module_id, input: &[Operation]| {
+            let mut rows = MODULE_ROWS.min(total_rows);
+            let initial_bytes = MODULE_BYTES.min(total_bytes);
+            let mut bytes = initial_bytes;
+            let retained = bounded_operation_groups(input, &mut rows, &mut bytes);
+            omitted += input.len() - retained.len();
+            total_rows -= retained.len();
+            total_bytes -= initial_bytes - bytes;
+            output.insert(module_id, retained);
+        };
+
+        append(ModuleId::default(), &self.root_module_artifacts.operations);
+        for (module_id, info) in &self.module_infos {
+            match &info.repr {
+                ModuleRepr::Kcl(_, Some(outcome)) => append(*module_id, &outcome.artifacts.operations),
+                ModuleRepr::Foreign(_, Some((_, artifacts))) => append(*module_id, &artifacts.operations),
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+        output.omitted_operation_count = (omitted > 0).then_some(omitted);
+        output
+    }
+}
+
+fn bounded_operation_groups(input: &[Operation], rows: &mut usize, bytes: &mut usize) -> Vec<Operation> {
+    struct ByteBudget(usize);
+
+    impl std::io::Write for ByteBudget {
+        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+            self.0 = self
+                .0
+                .checked_sub(buf.len())
+                .ok_or_else(|| std::io::Error::other("operation export budget exceeded"))?;
+            Ok(buf.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+
+    let mut retained = Vec::new();
+    let mut depth: usize = 0;
+    let mut start = 0;
+    for (index, operation) in input.iter().enumerate() {
+        if *rows == 0 || *bytes == 0 {
+            break;
+        }
+        if depth == 0 {
+            start = index;
+        }
+        match operation {
+            Operation::GroupBegin { .. } => depth += 1,
+            Operation::GroupEnd if depth == 0 => continue,
+            Operation::GroupEnd => depth -= 1,
+            _ => {}
+        }
+        if depth != 0 {
+            continue;
+        }
+        let chunk = &input[start..=index];
+        if chunk.len() > *rows {
+            continue;
+        }
+        // Count bytes without allocating a JSON buffer for a group we may omit.
+        let mut budget = ByteBudget(*bytes);
+        if serde_json::to_writer(&mut budget, chunk).is_err() {
+            continue;
+        }
+        *rows -= chunk.len();
+        *bytes = budget.0;
+        retained.extend_from_slice(chunk);
+    }
+    retained
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -831,7 +923,7 @@ impl ExecState {
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
         let filenames = self.global.filenames();
-        let operations = self.global.operations_by_module();
+        let operations = self.global.operations_for_outcome(ctx);
         let issues = collect_execution_issues(self.global.issues, self.global.named_views.as_ref());
         Ok(ExecOutcome {
             variables,
@@ -2090,6 +2182,7 @@ mod tests {
     use kcl_api::Object;
     use kcl_api::ObjectId;
     use kcl_api::ObjectKind;
+    use kcl_api::Operation;
     use kcl_api::Plane;
     use kcl_api::SourceRef;
     use uuid::Uuid;
@@ -2100,6 +2193,46 @@ mod tests {
     use crate::NodePathExt;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
+
+    #[test]
+    fn bounded_operation_groups_skip_oversized_groups_and_keep_following_rows() {
+        let row = Operation::StdLibCall {
+            name: "extrude".to_owned(),
+            unlabeled_arg: None,
+            labeled_args: Default::default(),
+            node_path: NodePath::default(),
+            source_range: SourceRange::default(),
+            stdlib_entry_source_range: None,
+            is_error: false,
+        };
+        let start = Operation::GroupBegin {
+            group: kcl_api::Group::FunctionCall {
+                name: None,
+                function_source_range: SourceRange::default(),
+                unlabeled_arg: None,
+                labeled_args: Default::default(),
+            },
+            node_path: NodePath::default(),
+            source_range: SourceRange::default(),
+        };
+        let input = [
+            start.clone(),
+            start,
+            row.clone(),
+            Operation::GroupEnd,
+            Operation::GroupEnd,
+            row.clone(),
+        ];
+        let mut rows = 4;
+        let mut bytes = 10_000;
+        assert_eq!(super::bounded_operation_groups(&input, &mut rows, &mut bytes), [row]);
+        assert_eq!(rows, 3);
+
+        let mut rows = 10;
+        let mut bytes = 1;
+        assert!(super::bounded_operation_groups(&input, &mut rows, &mut bytes).is_empty());
+        assert_eq!((rows, bytes), (10, 1));
+    }
 
     #[test]
     fn declared_kcl_version_finds_the_setting_and_its_range() {

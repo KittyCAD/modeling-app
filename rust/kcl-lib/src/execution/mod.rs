@@ -122,6 +122,9 @@ use crate::parsing::ast::types::NodeRef;
 #[ts(export)]
 pub struct OperationsByModule {
     pub map: IndexMap<ModuleId, Vec<Operation>>,
+    #[serde(rename = "omittedOperationCount", skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub omitted_operation_count: Option<usize>,
 }
 
 #[derive(Clone, Serialize, ts_rs::TS)]

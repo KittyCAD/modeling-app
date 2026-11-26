@@ -316,6 +316,13 @@ export const FeatureTreePaneContents = memo(() => {
               Updating feature tree...
             </div>
           )}
+          {!kclManager.isExecuting && (
+            <FeatureTreeOmissionNotice
+              omittedOperationCount={
+                unfilteredOperationsByModule.omittedOperationCount
+              }
+            />
+          )}
           {!modelingState.matches('Sketch') && (
             <DefaultPlanes
               systemDeps={systemDeps}
@@ -400,6 +407,26 @@ export const FeatureTreePaneContents = memo(() => {
     </div>
   )
 })
+
+export function FeatureTreeOmissionNotice({
+  omittedOperationCount,
+}: {
+  omittedOperationCount?: number
+}) {
+  if (!omittedOperationCount) return null
+  return (
+    <div
+      role="status"
+      className="mb-2 rounded border border-primary/20 bg-primary/10 px-2 py-2 text-xs text-primary"
+    >
+      <p className="font-medium">Showing a partial feature tree</p>
+      <p>
+        Some operations were omitted to limit the tree size. This does not
+        affect the generated geometry.
+      </p>
+    </div>
+  )
+}
 
 interface VisibilityToggleProps {
   visible: boolean

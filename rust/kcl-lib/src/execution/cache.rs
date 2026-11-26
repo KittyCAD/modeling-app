@@ -297,7 +297,7 @@ impl GlobalState {
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
         let filenames = self.exec_state.filenames();
-        let operations = self.exec_state.operations_by_module();
+        let operations = self.exec_state.operations_for_outcome(ctx);
         let issues = exec_state::collect_execution_issues(self.exec_state.issues, self.exec_state.named_views.as_ref());
         Ok(ExecOutcome {
             variables,

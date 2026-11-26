@@ -11,9 +11,31 @@ vi.mock('@src/lib/boot', () => ({
   useSingletons: vi.fn(),
 }))
 
-import { OperationItem } from '@src/lib/featureTree/FeatureTreePane'
+import {
+  FeatureTreeOmissionNotice,
+  OperationItem,
+} from '@src/lib/featureTree/FeatureTreePane'
 
 type OperationItemProps = ComponentProps<typeof OperationItem>
+
+describe('partial feature tree notice', () => {
+  it('explains that operations were omitted without affecting geometry', () => {
+    render(<FeatureTreeOmissionNotice omittedOperationCount={100} />)
+    const notice = within(screen.getByRole('status'))
+    expect(notice.getByText('Showing a partial feature tree')).toBeVisible()
+    expect(
+      notice.getByText(/does not affect the generated geometry/)
+    ).toBeVisible()
+  })
+
+  it.each([undefined, 0])(
+    'hides the notice when the omitted count is %s',
+    (count) => {
+      render(<FeatureTreeOmissionNotice omittedOperationCount={count} />)
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    }
+  )
+})
 
 describe('imported feature tree menus', () => {
   it.each<Operation>([

@@ -315,6 +315,7 @@ impl UploadedProject {
                     error.variables = response.variables;
                     error.operations = OperationsByModule {
                         map: response.operations,
+                        ..Default::default()
                     };
                     error.artifact_graph = response.artifact_graph;
                     error.scene_objects = response.scene_objects;
@@ -346,6 +347,7 @@ impl UploadedProject {
             variables: response.variables,
             operations: OperationsByModule {
                 map: response.operations,
+                ..Default::default()
             },
             artifact_graph: response.artifact_graph,
             named_views: None,

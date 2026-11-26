@@ -314,6 +314,7 @@ export type VariableMap = { [key in string]?: KclValueView }
 
 export interface OperationsByModule {
   map: { [moduleId: number]: Operation[] }
+  omittedOperationCount?: number
 }
 
 export interface ExecCallbacks {
