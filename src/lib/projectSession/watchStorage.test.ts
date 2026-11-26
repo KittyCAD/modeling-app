@@ -21,7 +21,6 @@ function setup(externalChanges: ProjectStorage['externalChanges'] = 'files') {
     },
     isCurrent: () => current,
     fileOperations: { pending: vi.fn(async () => 0) },
-    projectLibraries: { refreshProjects: vi.fn(async () => {}) },
     session: { refreshProject: vi.fn(async () => undefined) },
     router: { navigate: vi.fn(async () => {}) },
   }
@@ -43,23 +42,14 @@ afterEach(() => {
 
 describe('project storage observation', () => {
   it.each(['files', 'snapshot'] as const)(
-    'refreshes the owning %s storage through its supported behavior',
+    'refreshes the owning %s storage project',
     async (kind) => {
       const watcher = setup(kind)
       try {
         watcher.change()
         await vi.waitFor(() => {
-          expect(
-            kind === 'files'
-              ? watcher.projectLibraries.refreshProjects
-              : watcher.session.refreshProject
-          ).toHaveBeenCalledOnce()
+          expect(watcher.session.refreshProject).toHaveBeenCalledOnce()
         })
-        expect(
-          kind === 'files'
-            ? watcher.session.refreshProject
-            : watcher.projectLibraries.refreshProjects
-        ).not.toHaveBeenCalled()
       } finally {
         watcher.stop()
       }
@@ -72,7 +62,7 @@ describe('project storage observation', () => {
       watcher.fileOperations.pending.mockResolvedValue(1)
       watcher.change()
       await watcher.fileOperations.pending.mock.results[0].value
-      expect(watcher.projectLibraries.refreshProjects).not.toHaveBeenCalled()
+      expect(watcher.session.refreshProject).not.toHaveBeenCalled()
     } finally {
       watcher.stop()
     }
@@ -92,7 +82,6 @@ describe('project storage observation', () => {
         else watcher.stop()
         pending.resolve(0)
         await pending.promise
-        expect(watcher.projectLibraries.refreshProjects).not.toHaveBeenCalled()
         expect(watcher.session.refreshProject).not.toHaveBeenCalled()
         expect(watcher.router.navigate).not.toHaveBeenCalled()
       } finally {
