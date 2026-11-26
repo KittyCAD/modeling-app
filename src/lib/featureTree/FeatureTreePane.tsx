@@ -29,7 +29,6 @@ import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import {
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
-  getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
   type OperationTreeNode,
@@ -291,10 +290,6 @@ export const FeatureTreePaneContents = memo(() => {
   )
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
-  const liveLatestOperationKey = kclManager.liveLatestOperationKey
-
   function goToError() {
     layout.openPane(DefaultLayoutPaneID.Code)
     kclManager.scrollToFirstErrorDiagnosticIfExists()
@@ -398,8 +393,6 @@ export const FeatureTreePaneContents = memo(() => {
               onSelect={selectOperation}
               visibilityOperations={visibilityOperations}
               editorSelection={editorSelection}
-              liveActiveModuleId={liveActiveModuleId}
-              liveLatestOperationKey={liveLatestOperationKey}
             />
           ))}
         </>
@@ -428,7 +421,6 @@ function OperationItemGroup({
   visibilityOperations,
   editorSelection,
   isModuleOwned = false,
-  liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   items: Operation[]
   isModuleOwned?: boolean
@@ -462,7 +454,6 @@ function OperationItemGroup({
           visibilityOperations={visibilityOperations}
           editorSelection={editorSelection}
           isModuleOwned={isModuleOwned}
-          liveLatestOperationKey={liveLatestOperationKey}
         />
       )
     }
@@ -493,7 +484,6 @@ function OperationItemGroup({
               visibilityOperations={visibilityOperations}
               editorSelection={editorSelection}
               isModuleOwned={isModuleOwned}
-              liveLatestOperationKey={liveLatestOperationKey}
             />
           </div>
         </div>
@@ -515,7 +505,6 @@ function OperationItemGroup({
                   editorSelection={editorSelection}
                   size="sm"
                   isModuleOwned={isModuleOwned}
-                  liveLatestOperationKey={liveLatestOperationKey}
                 />
               )
             })}
@@ -555,7 +544,6 @@ function OperationItemGroup({
                 editorSelection={editorSelection}
                 size="sm"
                 isModuleOwned={isModuleOwned}
-                liveLatestOperationKey={liveLatestOperationKey}
               />
             )
           })}
@@ -578,8 +566,6 @@ function OperationBranchGroup({
   visibilityOperations,
   editorSelection,
   isModuleOwned = false,
-  liveActiveModuleId,
-  liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   parentItem: ModuleInstanceOperation
   childItems: OperationTreeNode[]
@@ -599,23 +585,12 @@ function OperationBranchGroup({
         visibilityOperations={visibilityOperations}
         editorSelection={editorSelection}
         isModuleOwned={true}
-        liveLatestOperationKey={liveLatestOperationKey}
       />
     )
   }
 
-  // During live execution, only expand the branch whose module received the
-  // latest operation.  Outside live execution every branch defaults open.
-  // Changing the key forces a Disclosure remount with the new defaultOpen
-  // (headlessui v1 does not support a controlled `open` prop).
-  const isLive = liveActiveModuleId != null
-  const shouldBeOpen = !isLive || liveActiveModuleId === parentItem.moduleId
-
   return (
-    <Disclosure
-      key={`${parentItem.moduleId}-${shouldBeOpen}`}
-      defaultOpen={shouldBeOpen}
-    >
+    <Disclosure defaultOpen>
       <div
         className="flex items-start gap-1"
         data-module-branch={parentItem.moduleId}
@@ -643,7 +618,6 @@ function OperationBranchGroup({
             visibilityOperations={visibilityOperations}
             editorSelection={editorSelection}
             isModuleOwned={true}
-            liveLatestOperationKey={liveLatestOperationKey}
           />
         </div>
       </div>
@@ -664,7 +638,6 @@ function OperationBranchGroup({
                 visibilityOperations={visibilityOperations}
                 editorSelection={editorSelection}
                 isModuleOwned={true}
-                liveLatestOperationKey={liveLatestOperationKey}
               />
             )
           })}
@@ -855,10 +828,6 @@ interface OperationProps {
   editorSelection: EditorSelection
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
-  /** During live execution, the module that received the latest operation. */
-  liveActiveModuleId?: number | null
-  /** During live execution, the operation that was most recently added. */
-  liveLatestOperationKey: string | null
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */
   referenceModuleId?: number
 }
@@ -990,7 +959,6 @@ export const OperationItem = ({
   referenceModuleId,
   visibilityOperations,
   editorSelection,
-  liveLatestOperationKey,
 }: OperationProps) => {
   useSignals()
   const app = useApp()
@@ -1007,7 +975,6 @@ export const OperationItem = ({
     !isModuleOwned &&
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
-  const isLiveLatest = liveLatestOperationKey === getOperationKey(item)
   const isEditorSelected = useMemo(() => {
     if (!sourceRange) {
       return false
@@ -1017,7 +984,7 @@ export const OperationItem = ({
       return isOverlap(sourceRange, topLevelRange(from, to))
     })
   }, [editorSelection, sourceRange])
-  const isSelected = isLiveLatest || isEditorSelected
+  const isSelected = isEditorSelected
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
   }, [item, code])

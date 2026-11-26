@@ -58,7 +58,6 @@ describe('imported feature tree menus', () => {
             onSelect={vi.fn()}
             visibilityOperations={[]}
             editorSelection={EditorSelection.single(0)}
-            liveLatestOperationKey={null}
           />
         </MemoryRouter>
       )

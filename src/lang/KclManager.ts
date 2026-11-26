@@ -38,9 +38,7 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
-  ExecCallbacks,
   ExecState,
-  OperationCallbackArgs,
   OperationsByModule,
   PathToNode,
   Program,
@@ -65,7 +63,6 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
@@ -528,15 +525,8 @@ export class KclManager extends File {
     afterGeneration: number
     resolve: (result: ExecutionCompletionResult) => void
   }[] = []
-  private _liveOperationsByModule = signal<OperationsByModule>(
-    emptyOperationsByModule()
-  )
-  private _showLiveOperationsByModule = signal(false)
-  /** The module that received the most recent live operation callback. */
-  private _liveActiveModuleId = signal<number | null>(null)
-  /** Operation key (from getOperationKey) of the most recent live operation. */
-  private _liveLatestOperationKey = signal<string | null>(null)
-  private activeLiveOperationExecutionId: number | null = null
+  private readonly pendingOperationsByModule = emptyOperationsByModule()
+  private readonly waitingForOperations = signal(false)
   private executionGeneration = 0
 
   private _variables = signal<VariableMap>({})
@@ -596,15 +586,9 @@ export class KclManager extends File {
     })
   }
   get operationsByModule() {
-    return this._showLiveOperationsByModule.value
-      ? this._liveOperationsByModule.value
+    return this.waitingForOperations.value
+      ? this.pendingOperationsByModule
       : this.execState.operations
-  }
-  get liveActiveModuleId() {
-    return this._liveActiveModuleId.value
-  }
-  get liveLatestOperationKey() {
-    return this._liveLatestOperationKey.value
   }
   /**
    * A client-side representation of the commands that have been sent,
@@ -789,7 +773,7 @@ export class KclManager extends File {
     const emptyState = emptyExecState()
     this.execState = emptyState
     this.lastSuccessfulOperations = emptyState.operations
-    this.endLiveOperationUpdates()
+    this.waitingForOperations.value = false
     this.dispatchUpdateOperations([])
     this.setArtifactGraphState(emptyState.artifactGraph)
     this.lastExecutedCode = ''
@@ -829,91 +813,6 @@ export class KclManager extends File {
     this.stopNamedViewInvalidation = this.rustContext.namedViewsInvalidated.add(
       () => this.clearNamedViews()
     )
-  }
-
-  private beginLiveOperationUpdates(executionId: number) {
-    this.activeLiveOperationExecutionId = executionId
-    this._liveOperationsByModule.value = emptyOperationsByModule()
-    this._liveActiveModuleId.value = null
-    this._liveLatestOperationKey.value = null
-    this._showLiveOperationsByModule.value = true
-    this.dispatchUpdateOperations([])
-  }
-
-  private endLiveOperationUpdates() {
-    this.activeLiveOperationExecutionId = null
-    this._showLiveOperationsByModule.value = false
-    this._liveActiveModuleId.value = null
-    this._liveLatestOperationKey.value = null
-    this._liveOperationsByModule.value = emptyOperationsByModule()
-  }
-
-  private createExecutionCallbacks(executionId: number): ExecCallbacks {
-    let liveOperationUpdatesFailed = false
-    let framePending = false
-    let latest: OperationCallbackArgs | undefined
-    const pending = new Map<number, Map<number, Operation>>()
-    const isActive = () =>
-      !liveOperationUpdatesFailed &&
-      this.activeLiveOperationExecutionId === executionId &&
-      !this._cancelTokens.get(executionId)
-
-    const fail = (error: unknown) => {
-      liveOperationUpdatesFailed = true
-      const message =
-        error instanceof Error ? (error.stack ?? error.message) : String(error)
-      queueMicrotask(() =>
-        reportRejection(`Live operation updates failed: ${message}`)
-      )
-    }
-    const flush = () => {
-      framePending = false
-      try {
-        if (!isActive() || !latest) return
-        const map = { ...this._liveOperationsByModule.value.map }
-        for (const [moduleId, updates] of pending) {
-          const operations = [...(map[moduleId] ?? [])]
-          for (const [index, operation] of updates) operations[index] = operation
-          map[moduleId] = operations
-        }
-        const operationsByModule = { map }
-        this._liveActiveModuleId.value = latest.moduleId
-        this._liveLatestOperationKey.value = getOperationKey(latest.operation)
-        this._liveOperationsByModule.value = operationsByModule
-        this.dispatchUpdateOperations(
-          getOperationsForCurrentFile({
-            operationsByModule,
-            filenames: this.execState.filenames,
-            currentPath: this.path,
-          })
-        )
-      } catch (error) {
-        fail(error)
-      } finally {
-        pending.clear()
-      }
-    }
-
-    return {
-      onOperation: (callback: OperationCallbackArgs) => {
-        try {
-          if (!isActive()) return
-          latest = callback
-          let updates = pending.get(callback.moduleId)
-          if (!updates) {
-            updates = new Map()
-            pending.set(callback.moduleId, updates)
-          }
-          updates.set(callback.index, callback.operation)
-          if (framePending) return
-          framePending = true
-          requestAnimationFrame(flush)
-        } catch (error) {
-          // An exception escaping into WASM can strand its async execution.
-          fail(error)
-        }
-      },
-    }
   }
 
   get execState() {
@@ -2040,7 +1939,7 @@ export class KclManager extends File {
     // if the user returns to that path before an old execution finishes.
     providedEditor.executionGeneration += 1
     providedEditor.fileSelectionGeneration += 1
-    providedEditor.endLiveOperationUpdates()
+    providedEditor.waitingForOperations.value = false
     providedEditor.isExecuting = false
     providedEditor.editorOwnershipVersion += 1
     providedEditor.path = file.path
@@ -2432,7 +2331,8 @@ export class KclManager extends File {
       this.errors = []
       this.logs = []
       this.setSketchSolveDiagnostics([])
-      this.beginLiveOperationUpdates(currentExecutionId)
+      this.waitingForOperations.value = true
+      this.dispatchUpdateOperations([])
       this.captureProjectThumbnail = undefined
 
       const codeThatExecuted = this.code
@@ -2440,7 +2340,6 @@ export class KclManager extends File {
         ast,
         path: this.path,
         rustContext: this.rustContext,
-        callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
 
       if (!isCurrent()) return
@@ -2482,7 +2381,7 @@ export class KclManager extends File {
 
       // Check the cancellation token for this execution before applying side effects
       if (this._cancelTokens.get(currentExecutionId)) {
-        this.endLiveOperationUpdates()
+        this.waitingForOperations.value = false
         this._cancelTokens.delete(currentExecutionId)
         markOnce('code/endExecuteAst')
         completion = 'cancelled'
@@ -2525,7 +2424,7 @@ export class KclManager extends File {
         this.lastSuccessfulOperations = execState.operations
         this.lastSuccessfulCode = codeThatExecuted
       }
-      this.endLiveOperationUpdates()
+      this.waitingForOperations.value = false
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
@@ -2643,6 +2542,7 @@ export class KclManager extends File {
             // Invalid new code may never reach executeAst to clear this flag.
             this.engineCommandManager.executionIsStale = false
           }
+          this.waitingForOperations.value = false
           this.isExecuting = false
         }
         this.notifyExecutionCompletion(completion)
@@ -2670,7 +2570,7 @@ export class KclManager extends File {
    * to properly restore the TS application state.
    */
   executeAstCleanUp() {
-    this.endLiveOperationUpdates()
+    this.waitingForOperations.value = false
     // Discard queued execution before the setter can start it.
     this.executeIsStale = null
     this.isExecuting = false

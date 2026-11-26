@@ -1851,71 +1851,40 @@ describe('KclManager live operation updates', () => {
     }
   )
 
-  it('finishes execution when a live UI publication throws', async () => {
+  it('publishes feature tree operations only after execution returns', async () => {
     const { kclManager } = createKclManagerTestHarness()
     const liveOperations = liveOperationTestApi(kclManager)
-    const dispatchUpdateOperations =
-      liveOperations.dispatchUpdateOperations.bind(liveOperations)
-    const failedLiveOperation = createLiveOperation('failedLive', 0)
-    const ignoredLiveOperation = createLiveOperation('ignoredLive', 1)
     const authoritativeOperation = createLiveOperation('authoritative', 2)
     const finalExecState = {
       ...kclManager.execState,
       operations: { map: { 0: [authoritativeOperation] } },
     }
-    let executionContinued = false
-
-    const consoleErrorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {})
-    const dispatchSpy = vi
-      .spyOn(liveOperations, 'dispatchUpdateOperations')
-      .mockImplementation((operations) => {
-        if (operations.includes(failedLiveOperation)) {
-          throw new Error('live UI publication failed')
-        }
-        dispatchUpdateOperations(operations)
-      })
-    let flush: FrameRequestCallback | undefined
-    const requestFrame = vi
-      .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((callback) => {
-        flush = callback
-        return 1
-      })
-
+    const dispatchSpy = vi.spyOn(liveOperations, 'dispatchUpdateOperations')
+    const started = Promise.withResolvers<void>()
+    const finished = Promise.withResolvers<typeof finalExecState>()
     kclManager.engineCommandManager.started = true
-    vi.spyOn(kclManager.rustContext, 'execute').mockImplementation(
-      async (_ast, _settings, _path, callbacks) => {
-        callbacks?.onOperation({
-          moduleId: 0,
-          operation: failedLiveOperation,
-          index: 0,
-        })
-        flush?.(0)
-        callbacks?.onOperation({
-          moduleId: 0,
-          operation: ignoredLiveOperation,
-          index: 1,
-        })
-        executionContinued = true
-        return finalExecState
-      }
-    )
-
-    await kclManager.executeAst({ ast: createEmptyAst(), executionId: 101 })
-
-    expect(executionContinued).toBe(true)
-    expect(requestFrame).toHaveBeenCalledOnce()
+    const execute = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockImplementation(() => {
+        started.resolve()
+        return finished.promise
+      })
+    const run = kclManager.executeAst({
+      ast: createEmptyAst(),
+      executionId: 101,
+    })
+    try {
+      await started.promise
+      expect(execute.mock.calls[0][3]).toBeUndefined()
+      expect(kclManager.operationsByModule).toEqual({ map: {} })
+      expect(dispatchSpy).toHaveBeenCalledExactlyOnceWith([])
+    } finally {
+      finished.resolve(finalExecState)
+      await run
+    }
     expect(kclManager.isExecuting).toBe(false)
     expect(kclManager.operationsByModule).toBe(finalExecState.operations)
-    expect(dispatchSpy).not.toHaveBeenCalledWith([ignoredLiveOperation])
     expect(dispatchSpy).toHaveBeenLastCalledWith([authoritativeOperation])
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Live operation updates failed')
-    )
-    consoleErrorSpy.mockRestore()
-    requestFrame.mockRestore()
   })
 })
 
