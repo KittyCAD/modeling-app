@@ -4,4 +4,4 @@ import type { ModuleId } from "./ModuleId";
 import type { SourceRange } from "./SourceRange";
 import type { ViewResolutionError } from "./ViewResolutionError";
 
-export type NamedViewResolutionFailure = { artifactId: ArtifactId, name: string, moduleId: ModuleId, sourceRange: SourceRange, error: ViewResolutionError, };
+export type NamedViewResolutionFailure = { artifactId: ArtifactId, name: string, moduleId: ModuleId, sourceRange: SourceRange, error: ViewResolutionError, message: string, };

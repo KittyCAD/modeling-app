@@ -8,6 +8,7 @@ import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import {
   reapplyActiveViewAfterReconnect,
   startTrackingActiveViewCamera,
+  stopTrackingActiveViewCamera,
 } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -246,21 +247,24 @@ describe('tryConnecting', () => {
 })
 
 describe('reconnect camera restoration', () => {
-  it.each(
-    ['reconnect', 'idle', 'both'].flatMap((source) =>
+  it.each([
+    ...['reconnect', 'idle', 'both'].flatMap((source) =>
       ['none', 'execute', 'camera', 'named'].map((retired) => ({
         source,
         retired,
+        geometryOnly: false,
       }))
-    )
-  )(
-    'restores $source camera before rebuilding (retired at $retired)',
-    async ({ source, retired }) => {
+    ),
+    { source: 'reconnect', retired: 'none', geometryOnly: true },
+  ])(
+    'handles the $source camera on reconnect (retired at $retired, geometry only $geometryOnly)',
+    async ({ source, retired, geometryOnly }) => {
       vi.mocked(getKclLanguageVersion).mockReturnValue('2.0')
       const snapshot = { pivot_position: { x: 4, y: 5, z: 6 } }
       const events: string[] = []
       const manager = {
         started: false,
+        geometryOnly,
         connection: { mediaStream: {} },
         start: vi.fn(async () => {
           manager.started = true
@@ -291,11 +295,12 @@ describe('reconnect camera restoration', () => {
         async () => {
           events.push('named view')
           if (retired === 'named') manager.connection = { mediaStream: {} }
-          return true
+          return false
         }
       )
       vi.mocked(resetCameraPosition).mockClear()
       vi.mocked(startTrackingActiveViewCamera).mockClear()
+      vi.mocked(stopTrackingActiveViewCamera).mockClear()
       await tryConnecting({
         abnormalCloseRetries: { current: 0 },
         isConnecting: { current: false },
@@ -314,7 +319,20 @@ describe('reconnect camera restoration', () => {
         engineCommandManager: manager as unknown as ConnectionManager,
         kclManager: { executeCode } as unknown as KclManager,
         rustContext: {} as RustContext,
+        geometryOnly,
       })
+      expect(stopTrackingActiveViewCamera).toHaveBeenCalledOnce()
+      if (geometryOnly) {
+        expect(events).toEqual(['execute'])
+        expect(camControls.reconnectCameraState).toBeUndefined()
+        expect(camControls.setCameraView).not.toHaveBeenCalled()
+        expect(camControls.clearOldCameraState).toHaveBeenCalledOnce()
+        expect(reapplyActiveViewAfterReconnect).not.toHaveBeenCalled()
+        expect(resetCameraPosition).not.toHaveBeenCalled()
+        expect(startTrackingActiveViewCamera).not.toHaveBeenCalled()
+        return
+      }
+
       expect(events).toEqual(
         retired === 'camera'
           ? ['camera']

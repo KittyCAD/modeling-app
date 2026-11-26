@@ -4546,8 +4546,7 @@ export const modelingMachine = setup({
         if (format.type === 'gltf' || format.type === 'step') {
           const { camControls } = kclManager.sceneInfra
           format.views = namedViewsForExport({
-            artifactGraph: kclManager.artifactGraph,
-            filenames: kclManager.execState.filenames,
+            namedViewResolution: kclManager.execState.namedViews,
             fallbackDistance: camControls.camera.position.distanceTo(
               camControls.target
             ),

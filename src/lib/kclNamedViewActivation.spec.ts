@@ -30,10 +30,17 @@ vi.mock('@src/lib/isPlaywright', () => ({
 
 import { signal } from '@preact/signals-core'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { ResolvedViewBatch } from '@rust/kcl-lib/bindings/ResolvedViewBatch'
 
+import {
+  canManageNamedView,
+  viewRows,
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclManager } from '@src/lang/KclManager'
-import type { KclNamedView } from '@src/lang/std/kclNamedViews'
+import { filterArtifacts } from '@src/lang/std/artifactGraph'
+import { namedViewsForExport } from '@src/lang/std/kclNamedViews'
 import type { Artifact, ExecState, KclNamedViewArtifact } from '@src/lang/wasm'
+import { emptyExecState } from '@src/lang/wasm'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
   activateNamedView,
@@ -86,6 +93,7 @@ function namedViewArtifact(name: string): KclNamedViewArtifact {
   return {
     id: `view-${name}`,
     name,
+    declaringModuleId: 0,
     camera: {
       look: { type: 'oriented', orientation: 'front' },
       target: null,
@@ -99,20 +107,14 @@ function namedViewArtifact(name: string): KclNamedViewArtifact {
   }
 }
 
-function declaredView(name: string): KclNamedView {
-  return {
-    artifact: namedViewArtifact(name),
-    moduleId: 0,
-    modulePath: MAIN_PATH,
-  }
-}
-
 function execStateWith({
   views = ['Front'],
   bodies = ['body-1'],
+  namedViews,
 }: {
   views?: string[]
   bodies?: string[]
+  namedViews?: ResolvedViewBatch | null
 } = {}): ExecState {
   const artifacts: Artifact[] = [
     ...bodies.map(body),
@@ -122,13 +124,59 @@ function execStateWith({
     })),
   ]
 
+  const artifactGraph = new Map(
+    artifacts.map((artifact) => [artifact.id, artifact])
+  )
+  const filenames = { 0: MAIN_PATH }
+  const visibility = Object.fromEntries(bodies.map((id) => [id, false]))
+  const batch =
+    namedViews === undefined
+      ? {
+          defaultView: visibility,
+          namedViews: views.map((name) => resolvedView(name, visibility)),
+          failures: [],
+        }
+      : namedViews
+
   return {
-    artifactGraph: new Map(
-      artifacts.map((artifact) => [artifact.id, artifact])
-    ),
-    operations: [],
-    filenames: { 0: MAIN_PATH },
-  } as unknown as ExecState
+    ...emptyExecState(),
+    artifactGraph,
+    filenames,
+    namedViews: batch && {
+      batch,
+      artifacts: filterArtifacts({ types: ['namedView'] }, artifactGraph),
+      filenames,
+    },
+  }
+}
+
+function resolvedDefault(
+  defaultView: Record<string, boolean>
+): ResolvedViewBatch {
+  return { defaultView, namedViews: [], failures: [] }
+}
+
+function resolvedView(name: string, visibility: Record<string, boolean>) {
+  const artifact = namedViewArtifact(name)
+  return {
+    info: {
+      artifactId: artifact.id,
+      name: artifact.name,
+      moduleId: 0,
+      modulePath: MAIN_PATH,
+    },
+    cameraIntent: artifact.camera,
+    visibility,
+  }
+}
+
+function resolvedFront(objectId: string): ResolvedViewBatch {
+  const visibility = { [objectId]: false }
+  return {
+    defaultView: visibility,
+    namedViews: [resolvedView('Front', visibility)],
+    failures: [],
+  }
 }
 
 type ModelingStateFake = Parameters<typeof isSketchSessionOpen>[0]
@@ -150,6 +198,7 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   const viewIsometric = vi.fn().mockResolvedValue(undefined)
   const setCameraProjection = vi.fn().mockResolvedValue(undefined)
   const engineSceneGenerationSignal = signal(0)
+  const execStateSignal = signal(execStateWith())
   const modelingStateSignal = signal<ModelingStateFake>(null)
   const camera = new PerspectiveCamera()
   camera.position.z = 1
@@ -164,7 +213,13 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
         }),
       },
     },
-    execState: execStateWith(),
+    get execState() {
+      return execStateSignal.value
+    },
+    set execState(state: ExecState) {
+      execStateSignal.value = state
+    },
+    execStateSignal,
     errors: [] as unknown[],
     get modelingState() {
       return modelingStateSignal.value
@@ -198,9 +253,17 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   }
 }
 
+function frontTarget(f: ReturnType<typeof fakes>) {
+  const view = f.raw.execState.namedViews?.batch.namedViews.find(
+    ({ info }) => info.name === 'Front'
+  )
+  if (!view) throw new Error('Expected a resolved Front view')
+  return { kind: 'declared' as const, view }
+}
+
 async function activateFront(f: ReturnType<typeof fakes>) {
   await activateNamedView({
-    target: { kind: 'declared', view: declaredView('Front') },
+    target: frontTarget(f),
     kclManager: f.kclManager,
   })
   f.setObjectsHidden.mockClear()
@@ -292,7 +355,7 @@ describe('activateNamedView', () => {
     const f = fakes({ isReady: false })
 
     await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
+      target: frontTarget(f),
       kclManager: f.kclManager,
     })
 
@@ -301,16 +364,28 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toBeNull()
   })
 
-  it('sends the visibility of every universe member and the camera', async () => {
+  it('does not apply a result from a replaced execution', async () => {
+    const f = fakes()
+    const target = frontTarget(f)
+    f.raw.execState = execStateWith({
+      namedViews: resolvedFront('rebuilt-body'),
+    })
+
+    await activateNamedView({ target, kclManager: f.kclManager })
+
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toBeNull()
+  })
+
+  it('sends Rust visibility and camera intent', async () => {
     const f = fakes()
 
     await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
+      target: frontTarget(f),
       kclManager: f.kclManager,
     })
 
-    // No path artifact points back at this extrusion, so it answers to its own
-    // id rather than to `pathId`.
     expect(f.setObjectsHidden).toHaveBeenCalledWith(
       new Map([['body-1', false]])
     )
@@ -322,36 +397,19 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
 
-  it('sends every newly nameable artifact kind to the engine', async () => {
+  it('sends every visibility entry from Rust even when the graph omits the objects', async () => {
     const f = fakes()
-    const artifacts: Artifact[] = [
-      {
-        type: 'plane',
-        id: 'plane-1',
-        pathIds: [],
-        codeRef: CODE_REF,
-      },
-      {
-        type: 'helix',
-        id: 'helix-1',
-        axisId: null,
-        trajectorySweepId: null,
-        consumed: false,
-        codeRef: CODE_REF,
-      },
-      {
-        type: 'importedGeometry',
-        id: 'imported-1',
-        consumed: false,
-        codeRef: CODE_REF,
-      },
-    ]
-    for (const artifact of artifacts) {
-      f.raw.execState.artifactGraph.set(artifact.id, artifact)
+    const batch = resolvedFront('body-1')
+    batch.namedViews[0].visibility = {
+      'body-1': false,
+      'plane-1': false,
+      'helix-1': false,
+      'imported-1': false,
     }
+    f.raw.execState = execStateWith({ namedViews: batch })
 
     await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
+      target: frontTarget(f),
       kclManager: f.kclManager,
     })
 
@@ -367,24 +425,13 @@ describe('activateNamedView', () => {
 
   it('restores KCL visibility after camera movement without resetting the camera', async () => {
     const f = fakes()
-    f.raw.execState = execStateWith({ bodies: ['body-1', 'body-2'] })
-    f.raw.execState.operations = {
-      map: {
-        0: [
-          {
-            type: 'StdLibCall',
-            name: 'hide',
-            unlabeledArg: {
-              value: { type: 'Solid', value: { artifactId: 'body-1' } },
-              sourceRange: CODE_REF.range,
-            },
-            labeledArgs: {},
-            nodePath: CODE_REF.nodePath,
-            sourceRange: CODE_REF.range,
-          },
-        ],
+    f.raw.execState = execStateWith({
+      bodies: ['body-1', 'body-2'],
+      namedViews: {
+        ...resolvedFront('body-1'),
+        defaultView: { 'body-1': true, 'body-2': false },
       },
-    }
+    })
     await activateFront(f)
     const controls = f.raw.sceneInfra.camControls
 
@@ -450,12 +497,246 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toBeNull()
   })
 
+  it('restores Default visibility using the retained actual batch after a mock publishes a different graph', async () => {
+    const f = fakes()
+    f.raw.execState = execStateWith({
+      bodies: ['mock-body'],
+      namedViews: resolvedFront('actual-body'),
+    })
+    await activateFront(f)
+
+    const controls = f.raw.sceneInfra.camControls
+    controls.camera.position.x += 1
+    controls.cameraChange.dispatch()
+
+    expect(activeViewSignal.value).toBeNull()
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['actual-body', false]])
+    )
+    expect(resetCameraPosition).not.toHaveBeenCalled()
+  })
+
+  it('clears the active selection on camera movement after the actual batch is invalidated', async () => {
+    const f = fakes()
+    f.raw.execState = execStateWith({ namedViews: resolvedFront('body-1') })
+    await activateFront(f)
+    f.raw.execState = { ...f.raw.execState, namedViews: null }
+
+    const controls = f.raw.sceneInfra.camControls
+    controls.camera.position.x += 1
+    controls.cameraChange.dispatch()
+
+    expect(activeViewSignal.value).toBeNull()
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(resetCameraPosition).not.toHaveBeenCalled()
+  })
+
+  it('applies the Default camera without visibility when the actual batch is missing', async () => {
+    const f = fakes()
+    await activateFront(f)
+    f.raw.execState = { ...f.raw.execState, namedViews: null }
+
+    await activateNamedView({
+      target: { kind: 'kclDefault' },
+      kclManager: f.kclManager,
+    })
+
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(activeViewSignal.value).toBe('kclDefault')
+  })
+
+  it('resets the camera and selects Default for an empty actual result', async () => {
+    const f = fakes()
+    f.raw.execState = execStateWith({
+      views: [],
+      bodies: [],
+      namedViews: resolvedDefault({}),
+    })
+    const [row] = viewRows([])
+    if (!row.target) throw new Error('Expected Default View to be available')
+
+    await activateNamedView({ target: row.target, kclManager: f.kclManager })
+
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(new Map())
+    expect(resetCameraPosition).toHaveBeenCalledOnce()
+    expect(activeViewSignal.value).toBe('kclDefault')
+  })
+
+  it('still tracks camera movement after a newer result arrives during activation', async () => {
+    const f = fakes()
+    f.raw.execState = execStateWith({ namedViews: resolvedFront('body-1') })
+    const cameraStarted = Promise.withResolvers<undefined>()
+    const finishCamera = Promise.withResolvers<undefined>()
+    f.setCameraToAxis.mockImplementationOnce(() => {
+      cameraStarted.resolve(undefined)
+      return finishCamera.promise
+    })
+
+    const activation = activateNamedView({
+      target: frontTarget(f),
+      kclManager: f.kclManager,
+    })
+    await cameraStarted.promise
+    f.raw.execState = execStateWith({
+      bodies: ['rebuilt-body'],
+      namedViews: resolvedFront('rebuilt-body'),
+    })
+    f.engineSceneGenerationSignal.value += 1
+    finishCamera.resolve(undefined)
+    await activation
+
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['body-1', false]])
+    )
+    f.setObjectsHidden.mockClear()
+
+    const controls = f.raw.sceneInfra.camControls
+    controls.camera.position.x += 1
+    controls.cameraChange.dispatch()
+
+    expect(activeViewSignal.value).toBeNull()
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['rebuilt-body', false]])
+    )
+  })
+
+  it('uses the declaring module of a whole-module import for row identity and reapplication', async () => {
+    const f = fakes()
+    const root: ModulePath = {
+      type: 'Local',
+      value: '/project/main.kcl',
+      original_import_path: null,
+    }
+    const imported: ModulePath = {
+      type: 'Local',
+      value: '/project/panel.kcl',
+      original_import_path: 'panel.kcl',
+    }
+    const importedView: Extract<Artifact, { type: 'namedView' }> = {
+      ...namedViewArtifact('Front'),
+      type: 'namedView',
+      id: 'imported-front',
+      declaringModuleId: 1,
+      hideIds: ['body-1'],
+      codeRef: {
+        ...CODE_REF,
+        pathToNode: [
+          ['body', 'Program'],
+          [0, 'ImportStatement'],
+        ],
+      },
+    }
+    const localView: Extract<Artifact, { type: 'namedView' }> = {
+      ...namedViewArtifact('Front'),
+      type: 'namedView',
+      id: 'local-front',
+    }
+    localView.camera.look = { type: 'oriented', orientation: 'top' }
+    const execState = execStateWith({ views: [] })
+    execState.filenames = { 0: root, 1: imported }
+    execState.artifactGraph.set(importedView.id, importedView)
+    execState.artifactGraph.set(localView.id, localView)
+    const batch: ResolvedViewBatch = {
+      defaultView: { 'body-1': false },
+      namedViews: [
+        {
+          info: {
+            artifactId: importedView.id,
+            name: 'Front',
+            moduleId: 1,
+            modulePath: imported,
+          },
+          cameraIntent: importedView.camera,
+          visibility: { 'body-1': true },
+        },
+        {
+          info: {
+            artifactId: localView.id,
+            name: 'Front',
+            moduleId: 0,
+            modulePath: root,
+          },
+          cameraIntent: localView.camera,
+          visibility: { 'body-1': false },
+        },
+      ],
+      failures: [],
+    }
+    f.raw.execState = {
+      ...execState,
+      namedViews: {
+        batch,
+        artifacts: filterArtifacts(
+          { types: ['namedView'] },
+          execState.artifactGraph
+        ),
+        filenames: execState.filenames,
+      },
+    }
+
+    const views = [
+      { artifact: importedView, moduleId: 1, modulePath: imported },
+      { artifact: localView, moduleId: 0, modulePath: root },
+    ]
+    const [defaultRow, importedRow, localRow] = viewRows(
+      views,
+      f.raw.execState.namedViews
+    )
+    expect([defaultRow.key, importedRow.key, localRow.key]).toEqual([
+      'kcl-default',
+      'imported-front',
+      'local-front',
+    ])
+    expect([importedRow.label, localRow.label]).toEqual([
+      'panel::Front',
+      'main::Front',
+    ])
+    expect(views.map(canManageNamedView)).toEqual([false, true])
+
+    if (!localRow.target)
+      throw new Error('Expected the local view to be available')
+    await activateNamedView({
+      target: localRow.target,
+      kclManager: f.kclManager,
+    })
+    expect(isSameView(importedRow.identity, activeViewSignal.value)).toBe(false)
+    expect(isSameView(localRow.identity, activeViewSignal.value)).toBe(true)
+    expect(f.setCameraToAxis).toHaveBeenCalledWith(
+      expect.objectContaining({ axis: 'z' })
+    )
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['body-1', false]])
+    )
+    f.setObjectsHidden.mockClear()
+    f.setCameraToAxis.mockClear()
+
+    f.engineSceneGenerationSignal.value += 1
+
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['body-1', false]])
+    )
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+
+    const exported = namedViewsForExport({
+      namedViewResolution: f.raw.execState.namedViews,
+      fallbackDistance: 12,
+    })
+    expect(Object.keys(exported)).toEqual(['panel::Front', 'main::Front'])
+    expect(exported['panel::Front'].except_ids).toEqual(['body-1'])
+    expect(exported['main::Front'].except_ids).toEqual([])
+  })
+
   it('restores KCL visibility and the preferred projection for Default View', async () => {
     const { resetCameraPosition: resetCamera } = await vi.importActual<{
       resetCameraPosition: typeof resetCameraPosition
     }>('@src/lib/resetCameraPosition')
     vi.mocked(resetCameraPosition).mockImplementationOnce(resetCamera)
     const f = fakes()
+    f.raw.execState = execStateWith({
+      namedViews: resolvedFront('actual-body'),
+    })
 
     await activateNamedView({
       target: { kind: 'kclDefault' },
@@ -463,7 +744,7 @@ describe('activateNamedView', () => {
     })
 
     expect(f.setObjectsHidden).toHaveBeenCalledWith(
-      new Map([['body-1', false]])
+      new Map([['actual-body', false]])
     )
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
     expect(
@@ -483,7 +764,7 @@ describe('reapplying the active view after an execution', () => {
     resetNamedViewSession()
   })
 
-  it('reads the graph of the execution that just finished', async () => {
+  it('reads the Rust batch from the execution that just finished', async () => {
     const f = fakes()
     await activateFront(f)
 
@@ -594,7 +875,7 @@ describe('reapplying the active view after an execution', () => {
 
     // The shape a sketch-solve sync writes: a mock run over a program truncated
     // to the sketch block, so the views are missing and no command was sent.
-    f.raw.execState = execStateWith({ views: [], bodies: [] })
+    f.raw.execState = execStateWith({ views: [], bodies: [], namedViews: null })
     await flush()
 
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
@@ -614,7 +895,7 @@ describe('reapplying the active view after an execution', () => {
     await activateFront(f)
 
     await activateNamedView({
-      target: { kind: 'declared', view: declaredView('Front') },
+      target: frontTarget(f),
       kclManager: f.kclManager,
     })
     f.setObjectsHidden.mockClear()
@@ -625,16 +906,57 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
+  it('remembers the active view after a resolution failure and reapplies on recovery', async () => {
+    const f = fakes()
+    await activateFront(f)
+    const failedBatch = resolvedDefault({ 'default-body': true })
+    failedBatch.failures.push({
+      artifactId: 'view-Front',
+      name: 'Front',
+      moduleId: 0,
+      sourceRange: [0, 0, 0],
+      error: { type: 'missingModulePath', moduleId: 0 },
+      message: 'Could not resolve Front.',
+    })
+    f.raw.execState = execStateWith({ namedViews: failedBatch })
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(await reapplyActiveViewAfterReconnect(f.kclManager)).toBe(false)
+    expect(mockToast.error).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+
+    f.raw.execState = execStateWith({ namedViews: resolvedFront('recovered') })
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['recovered', false]])
+    )
+  })
+
   it('falls back to Default View, and says so, once the view is gone', async () => {
     const f = fakes()
     await activateFront(f)
 
-    f.raw.execState = execStateWith({ views: ['Back'] })
+    f.raw.execState = execStateWith({ views: [], namedViews: null })
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(resetCameraPosition).not.toHaveBeenCalled()
+    expect(mockToast.error).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+
+    f.raw.execState = execStateWith({
+      views: [],
+      namedViews: resolvedDefault({ 'actual-body': true }),
+    })
     f.engineSceneGenerationSignal.value += 1
     await flush()
 
     expect(f.setObjectsHidden).toHaveBeenCalledWith(
-      new Map([['body-1', false]])
+      new Map([['actual-body', true]])
     )
     expect(resetCameraPosition).toHaveBeenCalledOnce()
     expect(activeViewSignal.value).toBe('kclDefault')
@@ -671,6 +993,32 @@ describe('reapplying the active view after a reconnection', () => {
     })
   })
 
+  it('reports a restored camera when a newer result arrives during reconnect', async () => {
+    const f = fakes()
+    f.raw.execState = execStateWith({ namedViews: resolvedFront('body-1') })
+    await activateFront(f)
+    const cameraStarted = Promise.withResolvers<undefined>()
+    const finishCamera = Promise.withResolvers<undefined>()
+    f.setCameraToAxis.mockImplementationOnce(() => {
+      cameraStarted.resolve(undefined)
+      return finishCamera.promise
+    })
+
+    const reconnect = reapplyActiveViewAfterReconnect(f.kclManager)
+    await cameraStarted.promise
+    f.raw.execState = execStateWith({
+      bodies: ['rebuilt-body'],
+      namedViews: resolvedFront('rebuilt-body'),
+    })
+    finishCamera.resolve(undefined)
+
+    await expect(reconnect).resolves.toBe(true)
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['body-1', false]])
+    )
+    expect(resetCameraPosition).not.toHaveBeenCalled()
+  })
+
   it('restores visibility without replacing a preserved reconnect camera', async () => {
     const f = fakes()
     await activateFront(f)
@@ -692,11 +1040,17 @@ describe('reapplying the active view after a reconnection', () => {
     const cameraChange = f.raw.sceneInfra.camControls.cameraChange
     const subscribe = vi.spyOn(cameraChange, 'add')
     const unsubscribe = vi.spyOn(cameraChange, 'remove')
-    f.raw.execState = execStateWith({ views: [] })
+    f.raw.execState = execStateWith({
+      views: [],
+      namedViews: resolvedDefault({ 'actual-body': true }),
+    })
     const moved = await reapplyActiveViewAfterReconnect(f.kclManager, {
       restoreCamera: false,
     })
     expect(moved).toBe(false)
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['actual-body', true]])
+    )
     expect(resetCameraPosition).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toBeNull()
     expect(subscribe).not.toHaveBeenCalled()
@@ -731,10 +1085,16 @@ describe('reapplying the active view after a reconnection', () => {
     const f = fakes()
     await activateFront(f)
 
-    f.raw.execState = execStateWith({ views: [] })
+    f.raw.execState = execStateWith({
+      views: [],
+      namedViews: resolvedDefault({ 'actual-body': false }),
+    })
     const movedTheCamera = await reapplyActiveViewAfterReconnect(f.kclManager)
 
     expect(movedTheCamera).toBe(true)
+    expect(f.setObjectsHidden).toHaveBeenCalledExactlyOnceWith(
+      new Map([['actual-body', false]])
+    )
     expect(resetCameraPosition).toHaveBeenCalledOnce()
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
     expect(activeViewSignal.value).toBe('kclDefault')

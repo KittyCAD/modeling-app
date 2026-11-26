@@ -1928,11 +1928,32 @@ describe('KclManager resolved views', () => {
     vi.restoreAllMocks()
   })
 
-  async function executeActualViews(namedViews: ResolvedViewBatch) {
-    const delta = createSceneGraphDelta([])
+  async function executeActualViews(
+    namedViews: ResolvedViewBatch,
+    delta = createSceneGraphDelta([])
+  ) {
     delta.exec_outcome.namedViews = namedViews
     vi.spyOn(instance.Context.prototype, 'execute').mockResolvedValueOnce(delta)
     await kclManager.executeAst({ ast: createEmptyAst() })
+  }
+
+  function viewArtifact(id: string): Extract<Artifact, { type: 'namedView' }> {
+    return {
+      id,
+      name: id,
+      type: 'namedView',
+      declaringModuleId: 0,
+      camera: {
+        look: { type: 'oriented', orientation: 'front' },
+        target: null,
+        distance: null,
+        projection: 'orthographic',
+      },
+      baseline: 'show',
+      showIds: [],
+      hideIds: [],
+      codeRef: { range: [0, 0, 0], nodePath: { steps: [] }, pathToNode: [] },
+    }
   }
 
   it('notifies renderer consumers only after execution becomes idle', async () => {
@@ -1951,7 +1972,7 @@ describe('KclManager resolved views', () => {
     expect(kclManager.execState.namedViews).toBeNull()
     const first = resolvedViews('first-object')
     await executeActualViews(first)
-    expect(kclManager.execState.namedViews).toBe(first)
+    expect(kclManager.execState.namedViews?.batch).toBe(first)
 
     const empty: ResolvedViewBatch = {
       defaultView: {},
@@ -1959,7 +1980,7 @@ describe('KclManager resolved views', () => {
       failures: [],
     }
     await executeActualViews(empty)
-    expect(kclManager.execState.namedViews).toBe(empty)
+    expect(kclManager.execState.namedViews?.batch).toBe(empty)
   })
 
   it('preserves valid results when an individual view produces an error diagnostic', async () => {
@@ -1970,6 +1991,7 @@ describe('KclManager resolved views', () => {
       moduleId: 7,
       sourceRange: [0, 0, 0],
       error: { type: 'missingModulePath', moduleId: 7 },
+      message: 'Could not resolve named view Front',
     })
     const delta = createSceneGraphDelta([])
     delta.exec_outcome.namedViews = views
@@ -1986,11 +2008,11 @@ describe('KclManager resolved views', () => {
 
     await kclManager.executeAst({ ast: createEmptyAst() })
 
-    expect(kclManager.execState.namedViews).toBe(views)
+    expect(kclManager.execState.namedViews?.batch).toBe(views)
     expect(kclManager.errors).toEqual([])
   })
 
-  it('preserves the latest actual batch when an earlier mock completes', async () => {
+  it('publishes the mock graph while preserving a newer actual batch', async () => {
     await executeActualViews(resolvedViews('first-object'))
     const pending = createDeferred<ExecState>()
     const executeMock = vi
@@ -2000,14 +2022,31 @@ describe('KclManager resolved views', () => {
     await vi.waitFor(() => expect(executeMock).toHaveBeenCalledOnce())
 
     const latest = resolvedViews('latest-object')
-    await executeActualViews(latest)
+    const actualView = viewArtifact('shared-view')
+    const delta = createSceneGraphDelta([])
+    delta.exec_outcome.artifactGraph.map[actualView.id] = actualView
+    delta.exec_outcome.filenames[0] = {
+      type: 'Local',
+      value: '/project/actual.kcl',
+      original_import_path: null,
+    }
+    await executeActualViews(latest, delta)
+    const stored = kclManager.execState.namedViews
     const mockState = emptyExecState()
     mockState.variables = { updated: { type: 'Bool', value: true } }
+    const mockView = { ...actualView, baseline: 'hide' as const }
+    mockState.artifactGraph.set(mockView.id, mockView)
     pending.resolve(mockState)
     await mockExecution
 
-    expect(kclManager.execState.namedViews).toBe(latest)
+    expect(kclManager.execState.namedViews).toBe(stored)
+    expect(stored?.batch).toBe(latest)
+    expect(stored?.artifacts.get(actualView.id)).toEqual(actualView)
+    expect(stored?.filenames).toEqual(delta.exec_outcome.filenames)
     expect(kclManager.variables).toBe(mockState.variables)
+    expect(kclManager.execState.artifactGraph.get(mockView.id)).toEqual(
+      mockView
+    )
   })
 
   it('clears results on an actual failure and does not restore them from a late mock', async () => {
@@ -2019,11 +2058,17 @@ describe('KclManager resolved views', () => {
     const mockExecution = kclManager.executeAstMock(createEmptyAst())
     await vi.waitFor(() => expect(executeMock).toHaveBeenCalledOnce())
 
+    const partialView = viewArtifact('partial-view')
+    const failure = engineExecutionError()
+    failure.artifactGraph.map[partialView.id] = partialView
     vi.spyOn(instance.Context.prototype, 'execute').mockRejectedValueOnce(
-      engineExecutionError()
+      failure
     )
     await kclManager.executeAst({ ast: createEmptyAst() })
     expect(kclManager.execState.namedViews).toBeNull()
+    expect(kclManager.execState.artifactGraph.get(partialView.id)).toEqual(
+      partialView
+    )
 
     pending.resolve(emptyExecState())
     await mockExecution
@@ -2043,7 +2088,7 @@ describe('KclManager resolved views', () => {
 
     await kclManager.executeAstMock(createEmptyAst())
 
-    expect(kclManager.execState.namedViews).toBe(views)
+    expect(kclManager.execState.namedViews?.batch).toBe(views)
     expect(invalidate).not.toHaveBeenCalled()
   })
 
@@ -2066,24 +2111,36 @@ describe('KclManager resolved views', () => {
     pending.resolve(delta)
     await execution
 
-    expect(kclManager.execState.namedViews).toBe(previous)
+    expect(kclManager.execState.namedViews?.batch).toBe(previous)
   })
 
   it('distinguishes actual Sketch Solve results from outcomes without a batch', async () => {
     const previous = resolvedViews('previous-object')
     await executeActualViews(previous)
+    const stored = kclManager.execState.namedViews
     const delta = createSceneGraphDelta([])
+    const sketchView = viewArtifact('sketch-view')
+    delta.exec_outcome.artifactGraph.map[sketchView.id] = sketchView
+    delta.invalidates_ids = true
     kclManager.syncSketchSolveOutcome('', delta, {
       refreshLintDiagnostics: false,
     })
-    expect(kclManager.execState.namedViews).toBe(previous)
+    expect(kclManager.execState.namedViews).toBe(stored)
+    expect(stored?.batch).toBe(previous)
+    expect(stored?.artifacts.size).toBe(0)
+    expect(kclManager.execState.artifactGraph.get(sketchView.id)).toEqual(
+      sketchView
+    )
 
     const latest = resolvedViews('latest-object')
     delta.exec_outcome.namedViews = latest
     kclManager.syncSketchSolveOutcome('', delta, {
       refreshLintDiagnostics: false,
     })
-    expect(kclManager.execState.namedViews).toBe(latest)
+    expect(kclManager.execState.namedViews?.batch).toBe(latest)
+    expect(
+      kclManager.execState.namedViews?.artifacts.get(sketchView.id)
+    ).toEqual(sketchView)
 
     kclManager.rustContext.namedViewsInvalidated.dispatch()
     delta.exec_outcome.namedViews = null
@@ -2294,7 +2351,11 @@ describe('KclManager file switching', () => {
     const previousArtifactGraph = createArtifactGraphWithPreviousFileEntry()
     const previousExecState = {
       ...emptyExecState(),
-      namedViews: resolvedViews('previous-file-object'),
+      namedViews: {
+        batch: resolvedViews('previous-file-object'),
+        artifacts: new Map(),
+        filenames: {},
+      },
       artifactGraph: previousArtifactGraph,
       operations: { map: { 0: [previousOperation] } },
     }
