@@ -10,6 +10,7 @@ import {
   EXPORT_PROJECT_ARCHIVE_LABEL,
 } from '@src/lib/constants'
 import {
+  isPathNotFoundError,
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
@@ -40,6 +41,18 @@ import {
 import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
 
+// A missing library folder counts as empty; creating the project creates it.
+async function readLibraryEntryNames(app: App, libraryPath: string) {
+  try {
+    return await app.fileOperations.readDirectory(libraryPath)
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      return []
+    }
+    return Promise.reject(error)
+  }
+}
+
 // The cached project list can miss projects created elsewhere, so the name is
 // picked from the library's folder on disk. If another window takes the name
 // before the folder is created, that name counts as taken and the next is tried.
@@ -48,7 +61,7 @@ async function createNewProjectDirectory(
   libraryPath: string,
   requestedName: string
 ) {
-  const takenNames = [...(await app.fileOperations.readDirectory(libraryPath))]
+  const takenNames = [...(await readLibraryEntryNames(app, libraryPath))]
   while (true) {
     const name = getUniqueProjectNameFromNames(requestedName, takenNames)
     const path = fsZds.join(libraryPath, name)
