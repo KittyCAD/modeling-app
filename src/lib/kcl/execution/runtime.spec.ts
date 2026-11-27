@@ -1,5 +1,6 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { encode } from '@msgpack/msgpack'
+import { Context as NativeContext } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
@@ -10,6 +11,7 @@ import { SceneExecutionEvents } from '@src/lib/kcl/scene/execution'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { createTestKclExecutionSettings } from '@src/lib/kcl/scene/executionSettingsTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import * as wasmRuntime from '@src/lib/wasmRuntime'
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 
 let wasm: ModuleType
@@ -22,6 +24,7 @@ beforeAll(async () => {
 })
 afterEach(async () => {
   await Promise.all(runtimes.splice(0).map((runtime) => runtime.dispose()))
+  vi.restoreAllMocks()
 })
 function snapshot(code: string, imports: Record<string, string> = {}) {
   return {
@@ -46,6 +49,7 @@ async function runtime(
 ) {
   const engine = {
     engineSessionId: undefined,
+    geometryOnly: false,
     startNewSession: vi.fn(async () => {}),
     trackExecution: () => () => {},
     waitForAllModelingCommands: async () => [],
@@ -141,10 +145,8 @@ it('serializes native exports with execution and waits for borrowed memory befor
   const execution = Promise.withResolvers<undefined>()
   const exporting = Promise.withResolvers<undefined>()
   const events: string[] = []
-  class Context extends wasm.Context {
-    async execute(
-      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
-    ) {
+  class Context extends NativeContext {
+    async execute(...args: Parameters<NativeContext['execute']>) {
       events.push('execute')
       await execution.promise
       return super.execute(...args)
@@ -159,7 +161,10 @@ it('serializes native exports with execution and waits for borrowed memory befor
       super.free()
     }
   }
-  const model = await runtime({ ...wasm, Context })
+  vi.spyOn(wasmRuntime, 'createNativeContext').mockImplementationOnce(
+    (_module, ...args) => new Context(...args)
+  )
+  const model = await runtime()
   const run = model.execute(
     snapshot('@settings(kclVersion = 3.0)\nanswer = 42')
   )
@@ -242,10 +247,8 @@ it.each(['execute', 'drain'] as const)(
   async (stage) => {
     const failure = new Error('The engine operation failed')
     let failNext = true
-    class Context extends wasm.Context {
-      async execute(
-        ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
-      ) {
+    class Context extends NativeContext {
+      async execute(...args: Parameters<NativeContext['execute']>) {
         if (stage === 'execute' && failNext) {
           failNext = false
           throw failure
@@ -254,7 +257,10 @@ it.each(['execute', 'drain'] as const)(
       }
     }
     const stopTracking = vi.fn()
-    const model = await runtime({ ...wasm, Context }, createSettings(), [], {
+    vi.spyOn(wasmRuntime, 'createNativeContext').mockImplementationOnce(
+      (_module, ...args) => new Context(...args)
+    )
+    const model = await runtime(wasm, createSettings(), [], {
       trackExecution: () => stopTracking,
       waitForAllModelingCommands: async () => {
         if (stage === 'drain' && failNext) {
@@ -317,10 +323,8 @@ it('waits for native execution and command draining before closing, without publ
   const execution = Promise.withResolvers<undefined>()
   const commands = Promise.withResolvers<undefined>()
   const calls: string[] = []
-  class Context extends wasm.Context {
-    async execute(
-      ...args: Parameters<InstanceType<ModuleType['Context']>['execute']>
-    ) {
+  class Context extends NativeContext {
+    async execute(...args: Parameters<NativeContext['execute']>) {
       calls.push('execute')
       await execution.promise
       return super.execute(...args)
@@ -334,7 +338,10 @@ it('waits for native execution and command draining before closing, without publ
       super.free()
     }
   }
-  const model = await runtime({ ...wasm, Context }, createSettings(), [], {
+  vi.spyOn(wasmRuntime, 'createNativeContext').mockImplementationOnce(
+    (_module, ...args) => new Context(...args)
+  )
+  const model = await runtime(wasm, createSettings(), [], {
     trackExecution: () => () => calls.push('stop'),
     waitForAllModelingCommands: async () => {
       calls.push('drain')

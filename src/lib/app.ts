@@ -76,7 +76,10 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
-import { wasmPromiseFacet } from '@src/registry/contracts/wasm'
+import {
+  provideWasmPromise,
+  wasmPromiseFacet,
+} from '@src/registry/contracts/wasm'
 import {
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsFacet,
@@ -97,6 +100,7 @@ import type { SnapshotFrom } from 'xstate'
 
 const appCommandsSlot = createSlot([], Symbol())
 const appViewportScreenshotSlot = createSlot([], Symbol())
+const activeWasmSlot = createSlot([], Symbol())
 type AppRegistryOptions = {
   registryOverrides?: readonly Extension[]
 }
@@ -236,8 +240,12 @@ export class App implements AppSubsystems {
     this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
       this.setActiveWasmInstance
     )
-    void this.wasmPromise
-      .then(this.setActiveWasmInstance)
+    const startupWasmPromise = this.wasmPromise
+    void startupWasmPromise
+      .then((instance) => {
+        if (this.wasmPromise === startupWasmPromise)
+          return this.setActiveWasmInstance(instance)
+      })
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.singletons = this.buildSingletons()
@@ -254,6 +262,7 @@ export class App implements AppSubsystems {
   }: AppRegistryOptions = {}) {
     const appRegistry = new Registry()
     const registryReady = appRegistry.configure([
+      activeWasmSlot,
       createSlot([...registryOverrides], appRegistryOverridesSlot.key),
       defineFactory({
         ...appCommandsSlot,
@@ -438,9 +447,18 @@ export class App implements AppSubsystems {
       })
     }
   }
-  setActiveWasmInstance = (wasmInstance: ModuleType) => {
+  setActiveWasmInstance = async (wasmInstance: ModuleType) => {
+    if (this.hasStoppedSubsystems) return
     this.activeWasmInstance = wasmInstance
     this.syncKclRuntimeFlags()
+    const wasmPromise = Promise.resolve(wasmInstance)
+    this.wasmPromise = wasmPromise
+    this.queueRegistry(() =>
+      this.registry.replace(activeWasmSlot, [
+        provideWasmPromise(() => wasmPromise),
+      ])
+    )
+    await this.registryReady
   }
   syncKclRuntimeFlags = () => {
     if (!this.activeWasmInstance) {

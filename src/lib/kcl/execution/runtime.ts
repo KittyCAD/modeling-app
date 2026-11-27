@@ -21,10 +21,12 @@ import {
 } from '@src/lib/kcl/scene/execution'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { createNativeContext } from '@src/lib/wasmRuntime'
 
 type NativeEngine = Pick<
   ConnectionManager,
   | 'engineSessionId'
+  | 'geometryOnly'
   | 'sendModelingCommandFromWasm'
   | 'fireModelingCommandFromWasm'
   | 'startNewSession'
@@ -55,7 +57,7 @@ export async function createKclRuntime(
   const executing = signal(false)
   const failed = signal(false)
   const events = new EventTarget()
-  const native = new wasm.Context(engine, {
+  const native = createNativeContext(wasm, engine, {
     async readFile(path: string) {
       const contents = files.get(fsZds.join(path))
       if (!contents)
