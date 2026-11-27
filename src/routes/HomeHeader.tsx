@@ -19,6 +19,8 @@ type ReadWriteProjectState = {
 
 interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   title: string
+  onRefresh?: () => void
+  isRefreshing?: boolean
   library?: ProjectLibrary
   isOverview?: boolean
   showLibraryBackLink?: boolean
@@ -32,6 +34,8 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
 
 export function HomeHeader({
   title,
+  onRefresh,
+  isRefreshing = false,
   library,
   isOverview = false,
   showLibraryBackLink = false,
@@ -43,6 +47,13 @@ export function HomeHeader({
   libraryDetails,
   ...rest
 }: HomeHeaderProps) {
+  const [refreshCoolingDown, setRefreshCoolingDown] = useState(false)
+  useEffect(() => {
+    if (!refreshCoolingDown) return
+    const timeout = setTimeout(() => setRefreshCoolingDown(false), 5_000)
+    return () => clearTimeout(timeout)
+  }, [refreshCoolingDown])
+
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
   const libraryDetailsDescription = library
     ? getProjectLibraryDetailsDescription(library)
@@ -88,6 +99,26 @@ export function HomeHeader({
             isOverview ? 'w-full sm:justify-end' : ''
           }`}
         >
+          {onRefresh && (
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                setRefreshCoolingDown(true)
+                onRefresh()
+              }}
+              disabled={isRefreshing || refreshCoolingDown}
+              aria-label="Refresh projects"
+              aria-busy={isRefreshing}
+              className="text-xs border-primary/10"
+              iconStart={{
+                icon: 'arrowRotateRight',
+                bgClassName: 'bg-transparent',
+                iconClassName: isRefreshing ? 'animate-spin' : '',
+              }}
+            >
+              Refresh
+            </ActionButton>
+          )}
           <ProjectSearchBar
             setQuery={setQuery}
             keybinding={projectSearchKeybinding}
@@ -174,44 +205,6 @@ export function HomeHeader({
         </section>
       )}
     </section>
-  )
-}
-
-export function HomeRefreshButton({
-  onRefresh,
-  isRefreshing,
-}: {
-  onRefresh: () => void
-  isRefreshing: boolean
-}) {
-  const [refreshCoolingDown, setRefreshCoolingDown] = useState(false)
-  useEffect(() => {
-    if (!refreshCoolingDown) return
-    const timeout = setTimeout(() => setRefreshCoolingDown(false), 5_000)
-    return () => clearTimeout(timeout)
-  }, [refreshCoolingDown])
-
-  return (
-    <ActionButton
-      Element="button"
-      type="button"
-      tabIndex={0}
-      onClick={() => {
-        setRefreshCoolingDown(true)
-        onRefresh()
-      }}
-      disabled={isRefreshing || refreshCoolingDown}
-      aria-label="Refresh projects"
-      aria-busy={isRefreshing}
-      className="text-xs border-primary/10"
-      iconStart={{
-        icon: 'arrowRotateRight',
-        bgClassName: 'bg-transparent',
-        iconClassName: isRefreshing ? 'animate-spin' : '',
-      }}
-    >
-      Refresh
-    </ActionButton>
   )
 }
 

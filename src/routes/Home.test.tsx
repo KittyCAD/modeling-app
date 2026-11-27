@@ -2,7 +2,7 @@ import { signal } from '@preact/signals-core'
 import { describeCloudLibrary } from '@src/lib/cloudProjects/libraryPresentation'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
-import { HomeHeader, HomeRefreshButton } from '@src/routes/HomeHeader'
+import { HomeHeader } from '@src/routes/HomeHeader'
 import { ProjectLibraryPreviewRow } from '@src/routes/HomeProjectCards'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
@@ -41,15 +41,21 @@ function renderHomeHeader({
   library = cloudLibrary,
   libraryDetails,
   showLibraryBackLink = false,
+  onRefresh,
+  isRefreshing = false,
 }: {
   library?: ProjectLibrary
   libraryDetails?: ReactNode
   showLibraryBackLink?: boolean
+  onRefresh?: () => void
+  isRefreshing?: boolean
 } = {}) {
   render(
     <MemoryRouter>
       <HomeHeader
         title="Personal Cloud"
+        onRefresh={onRefresh}
+        isRefreshing={isRefreshing}
         library={library}
         setQuery={vi.fn()}
         sort="modified:desc"
@@ -82,13 +88,13 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
   )
 }
 
-describe('HomeRefreshButton', () => {
+describe('HomeHeader', () => {
   afterEach(() => vi.useRealTimers())
 
   it('allows another refresh after five seconds without showing it as busy during cooldown', async () => {
     vi.useFakeTimers()
     const onRefresh = vi.fn()
-    render(<HomeRefreshButton onRefresh={onRefresh} isRefreshing={false} />)
+    renderHomeHeader({ onRefresh })
     const button = screen.getByRole('button', { name: 'Refresh projects' })
     fireEvent.click(button)
     expect(button).toBeDisabled()
@@ -104,7 +110,7 @@ describe('HomeRefreshButton', () => {
 
   it('keeps refresh disabled after the cooldown while a request is still running', async () => {
     vi.useFakeTimers()
-    render(<HomeRefreshButton onRefresh={vi.fn()} isRefreshing />)
+    renderHomeHeader({ onRefresh: vi.fn(), isRefreshing: true })
     await act(() => vi.advanceTimersByTime(5_000))
     expect(
       screen.getByRole('button', { name: 'Refresh projects' })
@@ -115,9 +121,7 @@ describe('HomeRefreshButton', () => {
     'shows the refresh button with loading=%s',
     (isRefreshing) => {
       const onRefresh = vi.fn()
-      render(
-        <HomeRefreshButton onRefresh={onRefresh} isRefreshing={isRefreshing} />
-      )
+      renderHomeHeader({ onRefresh, isRefreshing })
       const button = screen.getByRole('button', { name: 'Refresh projects' })
       expect(button).toHaveAttribute('aria-busy', String(isRefreshing))
       if (isRefreshing) expect(button).toBeDisabled()
@@ -126,9 +130,6 @@ describe('HomeRefreshButton', () => {
       expect(onRefresh).toHaveBeenCalledTimes(isRefreshing ? 0 : 1)
     }
   )
-})
-
-describe('HomeHeader', () => {
   it('renders contributed library details with the description', () => {
     renderHomeHeader({
       libraryDetails: <span>Additional library details</span>,

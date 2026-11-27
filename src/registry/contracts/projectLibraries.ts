@@ -189,6 +189,12 @@ export interface ProjectLibraryCloneProjectToOperation
   ) => boolean
 }
 export interface ProjectLibraryTypeOperations {
+  refresh?: ProjectLibraryOperation<
+    {
+      library: ProjectLibrary
+    },
+    Error | undefined
+  >
   createProject?: ProjectLibraryOperation<
     ProjectLibraryCreateProjectInput,
     Project | undefined
@@ -253,7 +259,6 @@ export interface ProjectLibraryTypeContribution {
   /** Group this library type on Home, after libraries without a section. */
   homeSection?: {
     title: string
-    refresh?: () => Promise<Error | undefined>
   }
   /** Policies assigning provider relationships to specific libraries. */
   relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]

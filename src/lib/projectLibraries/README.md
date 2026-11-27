@@ -13,8 +13,8 @@ presentation.
   project operations through the file-operations service.
 - **`cloud`** comes from the [cloud projects extension](../cloudProjects/registry/library.ts).
   It contributes Personal Cloud and the libraries discovered from the API, along
-  with cloud project entries and operations. Its **Cloud Libraries** section on
-  Home supplies **Refresh**, which reloads the cloud library catalog and projects.
+  with cloud project entries and operations. Its refresh operation reloads the
+  cloud library catalog and projects.
 
 ## How Home assembles the list
 
@@ -24,9 +24,12 @@ matching ID. Pickers use library IDs for selection and titles for display.
 
 The [Home overview](../../routes/Home.tsx) renders **Local Libraries** first in
 settings order, followed by the sections contributed through `homeSection`. A new
-provider can contribute its own discovered libraries, section title and actions,
-and project operations through the registry. Provider-specific discovery and
+provider can contribute its own discovered libraries, section title, and project
+operations through the registry. Provider-specific discovery and
 management belong in that provider's extension.
+
+**Refresh** next to Search reloads the visible libraries on the overview or the
+selected library on its detail page.
 
 **Legacy browser default.** The cloud extension still defaults browser settings
 to Personal Cloud. This keeps fresh browser profiles from falling back to a

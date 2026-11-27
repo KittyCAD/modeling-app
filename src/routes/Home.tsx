@@ -65,6 +65,7 @@ import {
 import {
   getHomeProjectEntriesForLibrary,
   getProjectLibraryCreateProjectOperation,
+  getProjectLibraryOperation,
   projectLibraryRealizationsService,
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
@@ -75,7 +76,7 @@ import {
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { HomeHeader, HomeRefreshButton } from '@src/routes/HomeHeader'
+import { HomeHeader } from '@src/routes/HomeHeader'
 import {
   type ProjectCardDragProps,
   ProjectCardList,
@@ -364,40 +365,11 @@ const Home = () => {
       (type === DIRECTORY_PROJECT_LIBRARY_TYPE ||
         projectLibraryTypes.get(type)?.homeSection)
   )
-  const loadingLibraryIds = registry.observe(
-    homeProjectLoadingLibraryIdsFacet
-  ).value
-  const settledLibraryIds = registry.observe(
-    homeProjectSettledLibraryIdsFacet
-  ).value
-  const projectOperationsPending = app.projectOperations.pending.value !== 0
   const librarySections = [...projectLibraryTypes.values()]
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .flatMap(({ type, homeSection }) => {
       if (!homeSection || type === DIRECTORY_PROJECT_LIBRARY_TYPE) return []
-      const { title, refresh } = homeSection
-      const libraries = visibleProjectLibraries.filter(
-        (library) => library.type === type
-      )
-      return [
-        {
-          type,
-          title,
-          onRefresh:
-            refresh && libraries.length > 0
-              ? () => {
-                  void refresh().then(trap).catch(reportRejection)
-                }
-              : undefined,
-          isRefreshing:
-            projectOperationsPending ||
-            libraries.some(
-              ({ id }) =>
-                !settledLibraryIds.includes(id) ||
-                loadingLibraryIds.includes(id)
-            ),
-        },
-      ]
+      return [{ type, title: homeSection.title }]
     })
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
@@ -407,7 +379,7 @@ const Home = () => {
   const singleProjectLibrary =
     !libraryId &&
     visibleProjectLibraries.length === 1 &&
-    !librarySections.some(({ onRefresh }) => onRefresh)
+    visibleProjectLibraries[0].type === DIRECTORY_PROJECT_LIBRARY_TYPE
       ? visibleProjectLibraries[0]
       : undefined
   const selectedProjectLibrary =
@@ -416,6 +388,12 @@ const Home = () => {
     selectedProjectLibrary &&
     projectLibraryTypes.get(selectedProjectLibrary.type)?.homeDetails
   const selectedProjectLibraryId = selectedProjectLibrary?.id
+  const loadingLibraryIds = registry.observe(
+    homeProjectLoadingLibraryIdsFacet
+  ).value
+  const settledLibraryIds = registry.observe(
+    homeProjectSettledLibraryIdsFacet
+  ).value
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
     : visibleProjectLibraries
@@ -423,9 +401,35 @@ const Home = () => {
     settledLibraryIds.includes(library.id)
   )
   const projectsLoaded =
-    !projectOperationsPending &&
+    app.projectOperations.pending.value === 0 &&
     projectsInitiallyLoaded &&
     !visibleLibraries.some(({ id }) => loadingLibraryIds.includes(id))
+  const refreshProjectList = () => {
+    if (!projectsLoaded) return
+    void Promise.all(
+      visibleLibraries.map((library) => {
+        const operation = getProjectLibraryOperation(
+          projectLibraryTypes.get(library.type),
+          library,
+          'refresh'
+        )
+        if (operation)
+          return Promise.resolve(
+            operation.run({
+              library,
+            })
+          )
+        projectLibraryRealizations?.invalidate({
+          libraryId: library.id,
+        })
+        return Promise.resolve()
+      })
+    )
+      .then((results) => {
+        for (const result of results) trap(result)
+      })
+      .catch(reportRejection)
+  }
   const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
@@ -635,6 +639,8 @@ const Home = () => {
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           data-testid="home-header"
+          onRefresh={refreshProjectList}
+          isRefreshing={!projectsLoaded}
           title={
             selectedProjectLibrary
               ? selectedProjectLibrary.title
@@ -790,7 +796,6 @@ const Home = () => {
         <div className="home-project-list col-start-2 -col-end-1 min-h-0">
           {selectedProjectLibrary || libraryId ? (
             <ProjectGrid
-              aria-busy={!projectsLoaded}
               projectShellEnabled={projectShellEnabled}
               searchResults={searchResults ?? []}
               projects={scopedHomeProjectEntries}
@@ -807,7 +812,6 @@ const Home = () => {
             />
           ) : (
             <ProjectLibraryOverview
-              aria-busy={!projectsLoaded}
               projectShellEnabled={projectShellEnabled}
               libraries={visibleProjectLibraries}
               searchResults={searchResults ?? []}
@@ -881,8 +885,6 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   librarySections: readonly {
     type: ProjectLibrary['type']
     title: string
-    onRefresh?: () => void
-    isRefreshing: boolean
   }[]
 }
 function ProjectLibraryOverview({
@@ -965,18 +967,8 @@ function ProjectLibraryOverview({
       </section>
     )
   }
-  const sections = librarySections.map(
-    ({ type, title, onRefresh, isRefreshing }) =>
-      renderSection(
-        type,
-        title,
-        onRefresh && (
-          <HomeRefreshButton
-            onRefresh={onRefresh}
-            isRefreshing={isRefreshing}
-          />
-        )
-      )
+  const sections = librarySections.map(({ type, title }) =>
+    renderSection(type, title)
   )
   if (libraries.length === 0) {
     return (

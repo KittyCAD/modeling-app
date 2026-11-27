@@ -165,20 +165,6 @@ export default defineFactory({
       getDefaultLibraries: ({ isDesktop }) =>
         isDesktop ? undefined : [getDefaultCloudProjectLibrarySetting()],
     } satisfies InputOf<typeof projectLibrarySettingDefaultPoliciesFacet>
-    const refreshCloudLibraries = async () => {
-      if (isOffline())
-        return new Error('Connect to the internet to refresh cloud projects.')
-      if (!auth.peek()?.isLoggedIn.peek())
-        return new Error('Sign in to refresh cloud projects.')
-      const storage = cloud()
-      if (storage.projectsLoading.peek()) return
-      refreshCatalog.value += 1
-      try {
-        await storage.listProjects()
-      } catch (cause) {
-        return new Error('Could not refresh projects. Try again.', { cause })
-      }
-    }
     const _projectLibraryTypesContribution: InputOf<
       typeof projectLibraryTypesFacet
     > = {
@@ -190,6 +176,26 @@ export default defineFactory({
       homeDetails: CloudLibraryTrainingDisclosure,
       readRealizations: async () => [],
       operations: {
+        refresh: {
+          run: async () => {
+            if (isOffline())
+              return new Error(
+                'Connect to the internet to refresh cloud projects.'
+              )
+            if (!auth.peek()?.isLoggedIn.peek())
+              return new Error('Sign in to refresh cloud projects.')
+            const storage = cloud()
+            if (storage.projectsLoading.peek()) return
+            refreshCatalog.value += 1
+            try {
+              await storage.listProjects()
+            } catch (cause) {
+              return new Error('Could not refresh projects. Try again.', {
+                cause,
+              })
+            }
+          },
+        },
         createProject: {
           isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({
@@ -402,7 +408,6 @@ export default defineFactory({
           libraries: libraries.value,
           homeSection: {
             title: 'Cloud Libraries',
-            refresh: refreshCloudLibraries,
           },
         })),
       ],

@@ -633,6 +633,12 @@ const directoryProjectLibraryType: Factory = defineFactory({
       }
     }
     const operations: ProjectLibraryTypeOperations = {
+      refresh: {
+        run: ({ library }) => {
+          refreshLocalProjectRealizations(library)
+          return undefined
+        },
+      },
       createProject: {
         run: async ({
           library,

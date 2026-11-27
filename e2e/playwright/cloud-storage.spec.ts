@@ -95,9 +95,7 @@ for (const startEmpty of [false, true]) {
         const cloudLibraries = page.getByRole('region', {
           name: 'Cloud Libraries',
         })
-        const refresh = cloudLibraries.getByRole('button', {
-          name: 'Refresh projects',
-        })
+        const refresh = page.getByRole('button', { name: 'Refresh projects' })
         await expect(refresh).toHaveAttribute('aria-busy', 'false')
         await expect(loading).toHaveCount(0)
         const contents = startEmpty
@@ -127,13 +125,13 @@ test(
     await setup(context, page, testInfo)
     await page.goto('/home')
     await waitForAppLoad(page)
-    const cloudLibraries = page.getByRole('region', { name: 'Cloud Libraries' })
+    await expect(
+      page.getByRole('region', { name: 'Cloud Libraries' })
+    ).toBeVisible()
     await expect(
       page.getByRole('region', { name: 'Local Libraries' })
     ).toHaveCount(0)
-    const refresh = cloudLibraries.getByRole('button', {
-      name: 'Refresh projects',
-    })
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
     await expect(refresh).toHaveAttribute('aria-busy', 'false')
     await expect(
       page.getByText('Cloud memory model', { exact: true })
@@ -170,9 +168,7 @@ test(
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
       'Personal Cloud'
     )
-    await expect(
-      page.getByRole('button', { name: 'Refresh projects' })
-    ).toHaveCount(0)
+    await expect(refresh).toBeEnabled()
     await page.getByText('Changed elsewhere', { exact: true }).dblclick()
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     remote.project.title = 'Changed while modeling'
