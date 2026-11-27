@@ -9,8 +9,15 @@ authors = ["KittyCAD, Inc"]
 publish = false
 
 [dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+ignore = "0.4.34"
 kcl-syntax = { version = "=0.2.198", path = "../kcl-syntax" }
 lalrpop-util = { version = "=0.23.2", default-features = false, features = ["std"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tempfile = "3"
+walkdir = "2.5"
 
 [build-dependencies]
 lalrpop = { version = "=0.23.2", default-features = false }

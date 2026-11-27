@@ -449,6 +449,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bstr"
+version = "1.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6bb31b46c14244e20ee9984b11bf5c992b91fb6939fea616e3512c8baecdbe5f"
+dependencies = [
+ "memchr",
+ "serde_core",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1842,6 +1852,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "globset"
+version = "0.4.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52dfc19153a48bde0cbd630453615c8151bce3a5adfac7a0aebfbf0a1e1f57e3"
+dependencies = [
+ "aho-corasick",
+ "bstr",
+ "log",
+ "regex-automata",
+ "regex-syntax 0.8.11",
+]
+
+[[package]]
 name = "gloo-utils"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2268,6 +2291,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ignore"
+version = "0.4.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "484be5657551d7868d67587df967fb4fcbe9d266a761cc855aaa148fda0b3cc7"
+dependencies = [
+ "crossbeam-deque",
+ "globset",
+ "log",
+ "memchr",
+ "regex-automata",
+ "same-file",
+ "walkdir",
+ "winapi-util",
+]
+
+[[package]]
 name = "image"
 version = "0.25.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2644,10 +2683,17 @@ dependencies = [
 name = "kcl-grammar"
 version = "0.2.198"
 dependencies = [
+ "anyhow",
+ "clap",
  "datatest-stable",
+ "ignore",
  "kcl-syntax",
  "lalrpop",
  "lalrpop-util 0.23.2",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "walkdir",
 ]
 
 [[package]]
