@@ -429,17 +429,16 @@ extrude002 = extrude(profile002, length = 150)`
       // Click the code editor
       await page.locator('.cm-content').click()
 
-      await page.waitForTimeout(2000)
-
       // Expect the toast to be gone
-      await expect(engineErrorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible({ timeout: 7_000 })
 
       // Now add in code that works.
-      await page.locator('.cm-content').fill(bracket)
-      await page.keyboard.press('End')
-      await page.keyboard.press('Enter')
+      await scene.waitForExecutionDoneAfter(async () => {
+        await page.locator('.cm-content').fill(bracket)
+        await page.keyboard.press('End')
+        await page.keyboard.press('Enter')
+      })
       await scene.settled()
-      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Click the export button
       await expect(exportButton).toBeEnabled()

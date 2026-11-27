@@ -58,8 +58,6 @@ test.describe('Debug pane', { tag: ['@desktop', '@localRenderer'] }, () => {
     // that is being sidestepped in this test until https://github.com/KittyCAD/modeling-app/issues/9609 is addressed.
     await test.step('Enter a line', async () => {
       await page.keyboard.type('|> line(end = [1, 1])', { delay: 10 })
-      // Wait for keyboard input debounce and updated artifact graph.
-      await page.waitForTimeout(1000)
     })
     await expect(segment).not.toHaveText(lastSegmentText)
     // The artifact ID should include a UUID.
@@ -71,8 +69,6 @@ test.describe('Debug pane', { tag: ['@desktop', '@localRenderer'] }, () => {
     await test.step('Enter another line', async () => {
       lastSegmentText = await segment.innerText()
       await page.keyboard.type('\n|> line(end = [2, 2])', { delay: 10 })
-      // Wait for keyboard input debounce and updated artifact graph.
-      await page.waitForTimeout(1000)
     })
 
     // Expect the artifact IDs to be changed (by adding another),
