@@ -1,5 +1,9 @@
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { ExchangeCard } from '@src/components/ExchangeCard'
+import {
+  ExchangeCard,
+  type ExchangeCardProps,
+} from '@src/components/ExchangeCard'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 describe('ExchangeCard replay attachments', () => {
@@ -180,5 +184,164 @@ describe('ExchangeCard reasoning after replay', () => {
 
     expect(screen.queryByText(/Reasoned for/)).not.toBeInTheDocument()
     expect(vi.getTimerCount()).toBe(0)
+  })
+})
+
+const manual = 'Manual edits detected since the last Zookeeper state.'
+const retry = 'Temporary connection issue. Retrying automatically…'
+function renderExchange(notice: MlCopilotServerMessage, answer = '') {
+  render(
+    <ExchangeCard
+      request={{ type: 'user', content: 'Update the model' }}
+      responses={[
+        { reasoning: { type: 'text', content: 'Checking the current model' } },
+        notice,
+      ]}
+      deltasAggregated={answer}
+      startedAt={new Date()}
+      isLastResponse={true}
+      onClickClearChat={() => {}}
+    />
+  )
+}
+
+describe('ExchangeCard informational responses', () => {
+  test.each([manual, `${manual} Rebuilding the model.`])(
+    'shows the manual-edit notice without ending reasoning: %s',
+    (text) => {
+      renderExchange({ info: { text } })
+      expect(
+        screen.getByTestId('ml-response-info-chat-bubble')
+      ).toHaveTextContent(text)
+      expect(screen.getByText('Collapse')).toBeInTheDocument()
+      expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+    }
+  )
+  test('shows retry information once as inline status and keeps reasoning active', () => {
+    renderExchange({ info: { text: retry } })
+    expect(screen.getByTestId('ml-response-retry-status')).toHaveTextContent(
+      retry
+    )
+    expect(
+      screen.queryByTestId('ml-response-info-chat-bubble')
+    ).not.toBeInTheDocument()
+    expect(screen.getAllByText(retry)).toHaveLength(1)
+    expect(screen.getByText('Collapse')).toBeInTheDocument()
+  })
+  test('shows terminal informational text and collapses reasoning', () => {
+    renderExchange({ info: { text: 'Message canceled by user.' } })
+    expect(
+      screen.getByTestId('ml-response-info-chat-bubble')
+    ).toHaveTextContent('Message canceled by user.')
+    expect(screen.getByText('See reasoning')).toBeInTheDocument()
+    expect(screen.queryByText('Collapse')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('ml-response-chat-bubble-thinking')
+    ).not.toBeInTheDocument()
+  })
+  test('shows terminal errors and collapses reasoning', () => {
+    renderExchange({ error: { detail: 'Request failed.' } })
+    expect(screen.getByText('Request failed.')).toBeInTheDocument()
+    expect(screen.getByText('See reasoning')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('ml-response-chat-bubble-thinking')
+    ).not.toBeInTheDocument()
+  })
+  test('shows the completed answer and collapses reasoning', () => {
+    renderExchange(
+      {
+        end_of_stream: {
+          started_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+        },
+      },
+      'Model updated.'
+    )
+    expect(
+      within(screen.getByTestId('ml-response-chat-bubble')).getByText(
+        'Model updated.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('See reasoning')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('ml-response-chat-bubble-thinking')
+    ).not.toBeInTheDocument()
+  })
+})
+
+describe('ExchangeCard manual-edit notice lifetime', () => {
+  const exchange: ExchangeCardProps = {
+    request: { type: 'user', content: 'Update the model' },
+    responses: [
+      { reasoning: { type: 'text', content: 'Checking the current model' } },
+      { info: { text: manual } },
+    ],
+    deltasAggregated: 'The model has been updated.',
+    isLastResponse: true,
+    onClickClearChat: () => {},
+  }
+  const endings: { name: string; response: MlCopilotServerMessage }[] = [
+    {
+      name: 'completion',
+      response: {
+        end_of_stream: {
+          started_at: '2026-11-16T12:00:00Z',
+          completed_at: '2026-11-16T12:00:01Z',
+        },
+      },
+    },
+    { name: 'an error', response: { error: { detail: 'Request failed.' } } },
+    {
+      name: 'cancellation',
+      response: { info: { text: 'Message canceled by user.' } },
+    },
+  ]
+
+  test.each(endings)(
+    'removes the manual-edit notice after $name and preserves the answer and reasoning',
+    ({ response }) => {
+      const { rerender } = render(<ExchangeCard {...exchange} />)
+      expect(screen.getByText(manual)).toBeInTheDocument()
+
+      rerender(
+        <ExchangeCard
+          {...exchange}
+          responses={[...exchange.responses, response]}
+        />
+      )
+
+      expect(screen.queryByText(manual)).not.toBeInTheDocument()
+      expect(
+        screen.getByText('The model has been updated.')
+      ).toBeInTheDocument()
+      fireEvent.click(screen.getByText('See reasoning'))
+      expect(screen.getByText('Checking the current model')).toBeInTheDocument()
+    }
+  )
+
+  test('removes the manual-edit notice when a newer prompt starts and preserves the earlier answer', () => {
+    const { rerender } = render(<ExchangeCard {...exchange} />)
+    expect(screen.getByText(manual)).toBeInTheDocument()
+
+    rerender(<ExchangeCard {...exchange} isLastResponse={false} />)
+
+    expect(screen.queryByText(manual)).not.toBeInTheDocument()
+    expect(screen.getByText('The model has been updated.')).toBeInTheDocument()
+  })
+
+  test('keeps terminal notices visible in older exchanges', () => {
+    render(
+      <ExchangeCard
+        {...exchange}
+        responses={[
+          ...exchange.responses,
+          { info: { text: 'Message canceled by user.' } },
+        ]}
+        isLastResponse={false}
+      />
+    )
+
+    expect(screen.queryByText(manual)).not.toBeInTheDocument()
+    expect(screen.getByText('Message canceled by user.')).toBeInTheDocument()
   })
 })
