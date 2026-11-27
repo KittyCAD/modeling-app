@@ -1,4 +1,4 @@
-import type { Locator, Page, TestInfo } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import type {
   LocalRenderer,
   ProjectedEntity,
@@ -24,9 +24,7 @@ type MouseParams = {
   shouldRightClick?: boolean
   delay?: number
 }
-const reportedGraphicsBackends = new Set<string>()
 type ProjectionOptions = Parameters<LocalRenderer['getProjectedEntities']>[0]
-type GraphicsInfo = ReturnType<LocalRenderer['getGraphicsInfo']>
 type MouseDragToParams = MouseParams & {
   fromPoint: { x: number; y: number }
 }
@@ -123,14 +121,6 @@ async function markClickDebugPoint(
 }
 
 export class SceneFixture {
-  private graphicsInfo: GraphicsInfo = null
-  private readonly projectionLookups: Array<{
-    options: ProjectionOptions
-    durationMs: number
-    entitiesVisited: number
-    pickerCalls: number
-    returnedEntities: number
-  }> = []
   public page: Page
   public streamWrapper!: Locator
   public networkToggleConnected!: Locator
@@ -154,73 +144,13 @@ export class SceneFixture {
     this.appHeader = this.page.getByTestId('app-header')
   }
   /** Read current CSS viewport coordinates; refresh after camera or model changes. */
-  getProjectedEntities = async (options?: ProjectionOptions) => {
-    const result = await this.page.evaluate(
-      async ({ options, includeGraphicsInfo }) => {
-        const view = window.app.singletons.kclManager.sceneInfra.localRenderer
-        if (!view)
-          throw new Error('Projected entities require the local renderer')
-        const counters = { entitiesVisited: 0, pickerCalls: 0 }
-        const start = performance.now()
-        const entities = await view.getProjectedEntities(options, counters)
-        const durationMs = performance.now() - start
-        return {
-          entities,
-          durationMs,
-          ...counters,
-          graphicsInfo: includeGraphicsInfo ? view.getGraphicsInfo() : null,
-        }
-      },
-      { options, includeGraphicsInfo: this.graphicsInfo === null }
-    )
-    if (result.graphicsInfo) {
-      this.graphicsInfo = result.graphicsInfo
-      const backend = JSON.stringify(result.graphicsInfo)
-      if (!reportedGraphicsBackends.has(backend)) {
-        reportedGraphicsBackends.add(backend)
-        console.log(`[scene graphics] ${backend}`)
-      }
-    }
-    this.projectionLookups.push({
-      options,
-      durationMs: result.durationMs,
-      entitiesVisited: result.entitiesVisited,
-      pickerCalls: result.pickerCalls,
-      returnedEntities: result.entities.length,
-    })
-    return result.entities
-  }
-
-  async attachProjectionDiagnostics(testInfo: TestInfo) {
-    if (this.projectionLookups.length === 0) return
-    const totals = this.projectionLookups.reduce(
-      (sum, lookup) => ({
-        durationMs: sum.durationMs + lookup.durationMs,
-        pickerCalls: sum.pickerCalls + lookup.pickerCalls,
-        entitiesVisited: sum.entitiesVisited + lookup.entitiesVisited,
-      }),
-      { durationMs: 0, pickerCalls: 0, entitiesVisited: 0 }
-    )
-    console.log(
-      `[scene picking] ${JSON.stringify({
-        test: testInfo.title,
-        lookups: this.projectionLookups.length,
-        ...totals,
-      })}`
-    )
-    await testInfo.attach('scene-picking-diagnostics', {
-      contentType: 'application/json',
-      body: JSON.stringify(
-        {
-          graphics: this.graphicsInfo,
-          totals,
-          lookups: this.projectionLookups,
-        },
-        null,
-        2
-      ),
-    })
-  }
+  getProjectedEntities = async (options?: ProjectionOptions) =>
+    this.page.evaluate(async (options) => {
+      const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+      if (!view)
+        throw new Error('Projected entities require the local renderer')
+      return view.getProjectedEntities(options)
+    }, options)
 
   /**
    * Both modes share the same mouse actions; only the selection point differs.

@@ -288,21 +288,19 @@ describe('local GLB loading', () => {
       for (const target of hits) {
         gpu.integerIdPicker.pick.mockResolvedValueOnce({ target, stale: false })
       }
-      const allCounters = { entitiesVisited: 0, pickerCalls: 0 }
-      const all = await renderer.getProjectedEntities({}, allCounters)
+      const all = await renderer.getProjectedEntities()
       expect(all).toHaveLength(5)
       expect(gpu.integerIdPicker.pick).toHaveBeenCalledTimes(5)
-      expect(allCounters).toEqual({ entitiesVisited: 5, pickerCalls: 5 })
 
       gpu.integerIdPicker.pick.mockClear()
       for (const target of hits) {
         gpu.integerIdPicker.pick.mockResolvedValueOnce({ target, stale: false })
       }
-      const filteredCounters = { entitiesVisited: 0, pickerCalls: 0 }
-      const filtered = await renderer.getProjectedEntities(
-        { kind: 'face', visible, limit: 1 },
-        filteredCounters
-      )
+      const filtered = await renderer.getProjectedEntities({
+        kind: 'face',
+        visible,
+        limit: 1,
+      })
       expect(filtered).toEqual(
         all
           .filter(
@@ -311,23 +309,20 @@ describe('local GLB loading', () => {
           .slice(0, 1)
       )
       expect(gpu.integerIdPicker.pick).toHaveBeenCalledTimes(visible ? 2 : 1)
-      expect(filteredCounters).toEqual({
-        entitiesVisited: visible ? 2 : 1,
-        pickerCalls: visible ? 2 : 1,
-      })
       gpu.integerIdPicker.pick.mockReset()
       gpu.integerIdPicker.pick.mockResolvedValue({
         target: faces[3],
         stale: false,
       })
-      const idCounters = { entitiesVisited: 0, pickerCalls: 0 }
       expect(
-        await renderer.getProjectedEntities(
-          { kind: 'bodyFace', id: 'face-3', visible: true, limit: 1 },
-          idCounters
-        )
+        await renderer.getProjectedEntities({
+          kind: 'bodyFace',
+          id: 'face-3',
+          visible: true,
+          limit: 1,
+        })
       ).toEqual([all[4]])
-      expect(idCounters).toEqual({ entitiesVisited: 1, pickerCalls: 1 })
+      expect(gpu.integerIdPicker.pick).toHaveBeenCalledTimes(1)
       gpu.integerIdPicker.pick.mockResolvedValue({ target: null, stale: false })
       expect(
         await renderer.getProjectedEntities({

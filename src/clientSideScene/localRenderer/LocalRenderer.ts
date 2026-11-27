@@ -94,7 +94,6 @@ import {
   type Node,
   type PassNode,
   RenderPipeline,
-  WebGLBackend,
   WebGPURenderer,
 } from 'three/webgpu'
 import type {
@@ -198,12 +197,6 @@ type DisposableGpuDevice = {
 /** Created together by initialize(), once the renderer is ready. */
 type GpuResources = {
   renderer: WebGPURenderer
-  adapterInfo?: {
-    vendor: string
-    architecture: string
-    device: string
-    description: string
-  }
   device: DisposableGpuDevice | null
   scene: Scene
   envMapLoader: EnvMapLoader
@@ -1130,53 +1123,18 @@ export class LocalRenderer {
     }
   }
 
-  getGraphicsInfo() {
-    if (!this.gpu) return null
-    const { renderer, adapterInfo } = this.gpu
-    if (renderer.backend instanceof WebGLBackend) {
-      const context = renderer.getContext()
-      if (context instanceof WebGL2RenderingContext) {
-        const debug = context.getExtension('WEBGL_debug_renderer_info')
-        return {
-          backend: 'webgl2',
-          vendor: String(
-            context.getParameter(debug?.UNMASKED_VENDOR_WEBGL ?? context.VENDOR)
-          ),
-          renderer: String(
-            context.getParameter(
-              debug?.UNMASKED_RENDERER_WEBGL ?? context.RENDERER
-            )
-          ),
-        }
-      }
-      return { backend: 'webgl2' }
-    }
-    return {
-      backend: 'webgpu',
-      ...(adapterInfo && {
-        vendor: adapterInfo.vendor,
-        architecture: adapterInfo.architecture,
-        device: adapterInfo.device,
-        description: adapterInfo.description,
-      }),
-    }
-  }
-
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
-  async getProjectedEntities(
-    {
-      kind: requestedKind,
-      id: requestedId,
-      visible: requestedVisibility,
-      limit = Infinity,
-    }: {
-      kind?: ProjectedEntity['kind'] | 'face'
-      id?: string
-      visible?: boolean
-      limit?: number
-    } = {},
-    counters?: { entitiesVisited: number; pickerCalls: number }
-  ) {
+  async getProjectedEntities({
+    kind: requestedKind,
+    id: requestedId,
+    visible: requestedVisibility,
+    limit = Infinity,
+  }: {
+    kind?: ProjectedEntity['kind'] | 'face'
+    id?: string
+    visible?: boolean
+    limit?: number
+  } = {}) {
     const camera = this.camera
     const canvas = this.gpu?.renderer.domElement
     if (
@@ -1208,7 +1166,6 @@ export class LocalRenderer {
         (requestedKind === 'face' ? kind === 'edge' : kind !== requestedKind)
       )
         continue
-      if (counters) counters.entitiesVisited += 1
       const geometryKind = kind === 'edge' ? 'edge' : 'face'
       let projected: { x: number; y: number } | undefined
       let visible = false
@@ -1227,7 +1184,6 @@ export class LocalRenderer {
             if (tried.has(key)) continue
             tried.add(key)
             projected ??= pixel
-            if (counters) counters.pickerCalls += 1
             const result = await this.gpu?.integerIdPicker.pick({
               x: pixel.x - rect.left,
               y: pixel.y - rect.top,
@@ -1437,7 +1393,6 @@ export class LocalRenderer {
     integerIdPicker.setEdgesVisible(shouldHighlightEdges)
     this.gpu = {
       renderer,
-      adapterInfo: device ? adapter?.info : undefined,
       device: device ?? null,
       scene,
       envMapLoader,

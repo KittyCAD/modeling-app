@@ -752,12 +752,7 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(new ToolbarFixture(page))
   },
   scene: async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
-    const scene = new SceneFixture(page, geometryOnlyForTestTags(testInfo.tags))
-    try {
-      await use(scene)
-    } finally {
-      await scene.attachProjectionDiagnostics(testInfo)
-    }
+    await use(new SceneFixture(page, geometryOnlyForTestTags(testInfo.tags)))
   },
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))
