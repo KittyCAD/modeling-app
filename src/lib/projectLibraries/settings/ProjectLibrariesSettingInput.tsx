@@ -355,7 +355,7 @@ export function ProjectLibrariesSettingInput({
         iconStart={{ icon: 'folder', size: 'sm', className: 'p-1' }}
         data-testid="project-library-add"
       >
-        New local library
+        Create local library
       </ActionButton>
     </div>
   )
