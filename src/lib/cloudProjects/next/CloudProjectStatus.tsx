@@ -1,3 +1,5 @@
+import { ProjectArchiveLimitMessage } from '@src/components/ProjectArchiveLimitMessage'
+import { getProjectArchiveLimitError } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -58,6 +60,13 @@ export function CloudProjectStatus({
       </span>
     )
   if (status?.state !== 'failed') return null
+  const limitError = getProjectArchiveLimitError(status.error)
+  if (limitError)
+    return (
+      <div role="status" className={className}>
+        <ProjectArchiveLimitMessage error={limitError} align="right" />
+      </div>
+    )
   return (
     <div role="status" className={className}>
       <span title="Your edits remain local.">Save failed</span>

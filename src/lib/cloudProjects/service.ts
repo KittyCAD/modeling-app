@@ -1,4 +1,8 @@
-import { effect, signal } from '@preact/signals-core'
+import {
+  getProjectArchiveLimitError,
+  type ProjectArchiveLimitError,
+} from '@src/lib/cloudProjects/runtime/archiveContents'
+import { computed, effect, signal } from '@preact/signals-core'
 import type * as Publication from '@src/lib/publishing/publication'
 import type { PublishCurrentProjectArgs } from '@src/lib/publishing/publication'
 import type {
@@ -105,8 +109,53 @@ export function createCloudProjectsServices(
       await scoped.dispose()
     }
   }
+  const archiveFailure = signal<
+    | {
+        owner: string | undefined
+        error: ProjectArchiveLimitError
+      }
+    | undefined
+  >(undefined)
+  let archiveAttempt = 0
+  const archiveOperation = async <T>(run: () => Promise<T>): Promise<T> => {
+    const attempt = ++archiveAttempt
+    const owner = config().accountId
+    const recordFailure = (error: unknown) => {
+      const limitError = getProjectArchiveLimitError(error)
+      if (
+        !disposed &&
+        attempt === archiveAttempt &&
+        owner === config().accountId &&
+        limitError
+      )
+        archiveFailure.value = { owner, error: limitError }
+    }
+    try {
+      const result = await run()
+      recordFailure(result)
+      return result
+    } catch (error) {
+      recordFailure(error)
+      return Promise.reject(error)
+    }
+  }
   const cloud = {
     ...fileSystem,
+    archiveLimitFailure: computed(() =>
+      archiveFailure.value?.owner === config().accountId
+        ? archiveFailure.value?.error
+        : undefined
+    ),
+    dismissArchiveLimitFailure: () => {
+      archiveFailure.value = undefined
+    },
+    openProject: (...args: Parameters<typeof fileSystem.openProject>) =>
+      archiveOperation(() => fileSystem.openProject(...args)),
+    createProject: (...args: Parameters<typeof fileSystem.createProject>) =>
+      archiveOperation(() => fileSystem.createProject(...args)),
+    duplicateProject: (
+      ...args: Parameters<typeof fileSystem.duplicateProject>
+    ) => archiveOperation(() => fileSystem.duplicateProject(...args)),
     projects,
     thumbnails,
     watchThumbnail: (id: string) => {
@@ -133,10 +182,12 @@ export function createCloudProjectsServices(
       (await loadPublication()).getCloudPublicationStatus(id, config().token),
     getProjectStatuses: async () =>
       (await loadPublication()).getCloudPublicationStatuses(config().token),
-    downloadProjectById: async (id: string) =>
-      (
-        await import('@src/lib/cloudProjects/runtime/project')
-      ).downloadProjectById(id),
+    downloadProjectById: (id: string) =>
+      archiveOperation(async () =>
+        (
+          await import('@src/lib/cloudProjects/runtime/project')
+        ).downloadProjectById(id)
+      ),
     getProjectNameById: async (id: string) =>
       (
         await import('@src/lib/cloudProjects/runtime/project')

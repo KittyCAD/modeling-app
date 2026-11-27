@@ -1,3 +1,5 @@
+import { ProjectArchiveLimitMessage } from '@src/components/ProjectArchiveLimitMessage'
+import { getProjectArchiveLimitError } from '@src/lib/cloudProjects/runtime/archiveContents'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { KclManager } from '@src/lang/KclManager'
@@ -47,6 +49,9 @@ export function FileSaveStatus({
   const unsaved =
     (editorCode !== undefined && editor?.hasUnsavedLocalChanges()) ||
     (status !== undefined && status.state !== 'saved')
+  const limitError = getProjectArchiveLimitError(
+    storage.saveState?.value?.error
+  )
   let message: ReactNode
   if (!availability.writable) {
     message = (
@@ -57,6 +62,8 @@ export function FileSaveStatus({
     )
   } else if (status?.state === 'saving') {
     message = 'Saving...'
+  } else if (status?.state === 'failed' && limitError) {
+    message = <ProjectArchiveLimitMessage error={limitError} />
   } else if (status?.state === 'failed') {
     message = (
       <button

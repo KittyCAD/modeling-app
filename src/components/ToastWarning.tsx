@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import toast from 'react-hot-toast'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -12,7 +13,7 @@ export function ToastWarning({
   toastId: string
   visible: boolean
   title?: string
-  message: string
+  message: ReactNode
   onDismiss?: () => void
 }) {
   return (
@@ -40,6 +41,8 @@ export function ToastWarning({
               icon: 'close',
             }}
             name="dismiss"
+            aria-label="Dismiss"
+            tabIndex={0}
             onClick={() => {
               toast.dismiss(toastId)
               onDismiss?.()
@@ -68,7 +71,7 @@ export function ToastWarning({
  * showWarningToast('File not supported', { duration: 5000 })
  */
 export function showWarningToast(
-  message: string,
+  message: ReactNode,
   options?: {
     title?: string
     duration?: number

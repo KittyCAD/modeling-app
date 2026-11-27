@@ -1,5 +1,6 @@
+import { ProjectArchiveLimitError } from '@src/lib/cloudProjects/runtime/archiveContents'
 import '@src/lib/projectSession/next/testFeature'
-import { act, cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { CloudProjectStatus } from '@src/lib/cloudProjects/next/CloudProjectStatus'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
 import { codeSurface } from '@src/lib/editors/testViews'
@@ -497,4 +498,21 @@ it('shows offline status, blocks Code edits, and autosaves the pending cloud edi
       name: 'Unsaved changes',
     })
   ).not.toBeInTheDocument()
+})
+
+it('offers support instead of retry when a cloud shell save exceeds the size limit', async () => {
+  const { editor } = await openCloudShell()
+  vi.mocked(api.updateRemoteProject).mockRejectedValueOnce(
+    new ProjectArchiveLimitError('bytes')
+  )
+  await act(async () => {
+    editor.dispatch({ changes: { from: 0, insert: 'new ' } })
+    await vi.advanceTimersByTimeAsync(EDITOR_SAVE_DEBOUNCE_MS + 1)
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Project exceeds 1 GiB' }))
+  expect(screen.getByRole('link', { name: 'Contact support' })).toBeVisible()
+  expect(
+    screen.queryByRole('button', { name: 'Retry' })
+  ).not.toBeInTheDocument()
+  expect(editor.contents.peek()).toBe('new original')
 })

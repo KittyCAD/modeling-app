@@ -1,12 +1,39 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 import {
+  ProjectArchiveLimitError,
   PROJECT_ARCHIVE_LIMITS,
   readProjectZip,
   validateProjectUpload,
 } from '@src/lib/cloudProjects/runtime/archiveContents'
 
 describe('project ZIP boundaries', () => {
+  it('names the compressed byte limit and gives a recovery action', async () => {
+    const zip = new JSZip()
+    zip.file('main.kcl', 'cube()')
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+    await expect(
+      readProjectZip(archive, {
+        maxEntries: 10,
+        maxBytes: archive.byteLength - 1,
+      })
+    ).rejects.toMatchObject({
+      message: expect.stringMatching(/size limit.*Reduce.*support/),
+      limit: 'bytes',
+    })
+  })
+
+  it('keeps unsupported multi-disk ZIPs distinct from file count limits', async () => {
+    const zip = new JSZip()
+    zip.file('main.kcl', '')
+    const archive = await zip.generateAsync({ type: 'arraybuffer' })
+    new DataView(archive).setUint16(archive.byteLength - 22 + 4, 1, true)
+    await expect(readProjectZip(archive)).rejects.toThrow(/format/)
+    await expect(readProjectZip(archive)).rejects.not.toBeInstanceOf(
+      ProjectArchiveLimitError
+    )
+  })
+
   it('supports the agreed 1 GiB and 10,000-entry project budget', () => {
     expect(PROJECT_ARCHIVE_LIMITS).toEqual({
       maxBytes: 1024 * 1024 * 1024,
