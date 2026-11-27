@@ -413,7 +413,13 @@ export class SceneEntities {
       const scale = orthoFactor / this.sceneInfra.baseUnitMultiplier
       draftPoint.scale.set(scale, scale, scale)
     }
-    this.sceneInfra.overlayCallbacks(callbacks)
+    // Overlays only exist while editing a legacy sketch. Sending an empty update
+    // would still give the modeling machine a new snapshot every camera frame,
+    // which re-renders every useModelingContext() consumer, such as each Feature
+    // Tree and Bodies pane row, and drops the frame rate on large models.
+    if (callbacks.length > 0) {
+      this.sceneInfra.overlayCallbacks(callbacks)
+    }
   }
 
   private static createIntersectionPlane(sceneInfra: SceneInfra) {
