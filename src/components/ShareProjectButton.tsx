@@ -4,13 +4,13 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { getProjectHeaderButtonClasses } from '@src/components/actionButtonStyles'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { apiProjectLibraryId } from '@src/lib/cloudProjects/apiProjectLibraries'
 import { cloudStorageService } from '@src/lib/cloudProjects/registry/contract'
 import type { CloudStorageService } from '@src/lib/cloudProjects/service'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
 } from '@src/lib/projectLibraries'
-import { apiProjectLibraryId } from '@src/lib/projectLibraries/apiProjectLibraries'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import { PATHS } from '@src/lib/routePaths'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'

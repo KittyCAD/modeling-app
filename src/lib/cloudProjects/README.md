@@ -11,10 +11,12 @@ cloud API access, and recovery lifecycle. It uses `fs-zds/memory` for file bytes
   thumbnail cache. It exposes a filesystem mount rather than constructing the
   application's local filesystem runtime.
 - `registry/extension.ts` wires authentication and contributes the mount and cloud
-  service. `registry/library.ts` contributes the Cloud library and its operations,
-  including project storage addresses and thumbnail watchers for Home entries.
-  Its refresh operation owns cloud connectivity and listing policy; Home invokes
-  the selected library's refresh capability for both cloud and directory storage.
+  service. `registry/library.ts` contributes the cloud libraries and their project
+  operations, along with project storage addresses and thumbnail watchers for Home
+  entries. It provides the **Cloud Libraries** section and a refresh operation
+  that reloads the cloud catalog and projects. See
+  [Project libraries](../projectLibraries/README.md) for how Home combines cloud
+  and directory libraries.
 - `storage.ts` binds a cloud path to a `ProjectStorage` handle. Editors consume
   write availability, save state, watch events, and refresh through that handle;
   they do not derive storage policy from a cloud ID or path prefix.

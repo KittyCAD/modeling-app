@@ -1,15 +1,14 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import Tooltip from '@src/components/Tooltip'
+import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import {
-  formatProjectLibraryPathForDisplay,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getProjectLibraryDetailsDescription,
-  getProjectLibraryLocationLabel,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import { type HTMLProps, type ReactNode, useEffect, useState } from 'react'
@@ -25,14 +24,14 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   onRefresh?: () => void
   isRefreshing?: boolean
   library?: ProjectLibrary
+  isOverview?: boolean
   showLibraryBackLink?: boolean
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
-  libraryHomeSummary?: ReactNode
-  showFreeCloudProjectTrainingDisclosure?: boolean
+  libraryDetails?: ReactNode
 }
 
 export function HomeHeader({
@@ -40,14 +39,14 @@ export function HomeHeader({
   onRefresh,
   isRefreshing = false,
   library,
+  isOverview = false,
   showLibraryBackLink = false,
   setQuery,
   sort,
   setSearchParams,
   readWriteProjectDir,
   projectSearchKeybinding,
-  libraryHomeSummary,
-  showFreeCloudProjectTrainingDisclosure = false,
+  libraryDetails,
   ...rest
 }: HomeHeaderProps) {
   const [refreshCoolingDown, setRefreshCoolingDown] = useState(false)
@@ -58,6 +57,7 @@ export function HomeHeader({
   }, [refreshCoolingDown])
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
+  const canManageLocalLibraries = isDesktop()
   const libraryDetailsDescription = library
     ? getProjectLibraryDetailsDescription(library)
     : undefined
@@ -65,7 +65,7 @@ export function HomeHeader({
   return (
     <section {...rest}>
       <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
-        <div className="flex gap-8 items-center">
+        <div className={isOverview ? 'sr-only' : 'flex gap-8 items-center'}>
           <div className="flex flex-col gap-1">
             {library && showLibraryBackLink && (
               <Link
@@ -97,27 +97,11 @@ export function HomeHeader({
             </div>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          {onRefresh && (
-            <ActionButton
-              Element="button"
-              onClick={() => {
-                setRefreshCoolingDown(true)
-                onRefresh()
-              }}
-              disabled={isRefreshing || refreshCoolingDown}
-              aria-label="Refresh projects"
-              aria-busy={isRefreshing}
-              className="text-xs border-primary/10"
-              iconStart={{
-                icon: 'arrowRotateRight',
-                bgClassName: 'bg-transparent',
-                iconClassName: isRefreshing ? 'animate-spin' : '',
-              }}
-            >
-              Refresh
-            </ActionButton>
-          )}
+        <div
+          className={`flex flex-col gap-2 sm:flex-row sm:items-center ${
+            isOverview ? 'w-full sm:justify-end' : ''
+          }`}
+        >
           <ProjectSearchBar
             setQuery={setQuery}
             keybinding={projectSearchKeybinding}
@@ -164,46 +148,49 @@ export function HomeHeader({
             >
               Last Modified
             </ActionButton>
+            {onRefresh && (
+              <ActionButton
+                Element="button"
+                type="button"
+                tabIndex={0}
+                onClick={() => {
+                  setRefreshCoolingDown(true)
+                  onRefresh()
+                }}
+                disabled={isRefreshing || refreshCoolingDown}
+                aria-label="Refresh projects"
+                aria-busy={isRefreshing}
+                className="ml-auto w-6 shrink-0 justify-center border-primary/10 !p-0"
+                iconStart={{
+                  icon: 'arrowRotateRight',
+                  bgClassName: 'bg-transparent',
+                  iconClassName: isRefreshing ? 'animate-spin' : '',
+                }}
+              >
+                <Tooltip position="bottom-right">Refresh projects</Tooltip>
+              </ActionButton>
+            )}
           </div>
         </div>
       </div>
       {library ? (
-        <div className="my-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-          {libraryHomeSummary && (
-            <div className="flex flex-none sm:order-2 sm:ml-auto">
-              {libraryHomeSummary}
-            </div>
-          )}
-          <p className="m-0 min-w-0 flex-1 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30 sm:order-1">
+        <div className="my-4">
+          <p className="m-0 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
             {libraryDetailsDescription ? `${libraryDetailsDescription} ` : null}
-            {library.type !== 'cloud' && (
-              <span className="whitespace-nowrap">
-                {libraryDetailsDescription
-                  ? `${getProjectLibraryLocationLabel(library)}: `
-                  : 'Loaded from '}
-                <Link
-                  data-testid="project-directory-settings-link"
-                  to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                  className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-                >
-                  {formatProjectLibraryPathForDisplay(library)}
-                </Link>
-              </span>
-            )}
-            {showFreeCloudProjectTrainingDisclosure && (
-              <>
-                . Zoo trains on Free user cloud projects.{' '}
-                <a
-                  href={FREE_CLOUD_PROJECT_TRAINING_POLICY_URL}
-                  onClick={openExternalBrowserIfDesktop(
-                    FREE_CLOUD_PROJECT_TRAINING_POLICY_URL
-                  )}
-                  className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-                >
-                  See our policy
-                </a>
-              </>
-            )}
+            {canManageLocalLibraries &&
+              library.type === DIRECTORY_PROJECT_LIBRARY_TYPE && (
+                <span className="whitespace-nowrap">
+                  Folder:{' '}
+                  <Link
+                    data-testid="project-directory-settings-link"
+                    to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                    className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+                  >
+                    {library.path}
+                  </Link>
+                </span>
+              )}
+            {libraryDetails}
           </p>
         </div>
       ) : null}
@@ -212,13 +199,15 @@ export function HomeHeader({
           <div className="flex items-center select-none">
             <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
               <p className="">{errorMessage(readWriteProjectDir.error)}</p>
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                className="py-1 text-white underline underline-offset-2 text-sm"
-              >
-                Manage Project Libraries
-              </Link>
+              {canManageLocalLibraries && (
+                <Link
+                  data-testid="project-directory-settings-link"
+                  to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                  className="py-1 text-white underline underline-offset-2 text-sm"
+                >
+                  Manage Project Libraries
+                </Link>
+              )}
             </div>
           </div>
         </section>

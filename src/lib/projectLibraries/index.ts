@@ -11,43 +11,23 @@ export const PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE = 'Personal Cloud'
 export const CLOUD_PROJECT_LIBRARY_TYPE = 'cloud'
 export const LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
 export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH = `/documents/${PROJECT_FOLDER}`
-export const CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX = 'zoo://'
-
-export function formatProjectLibraryPathForDisplay(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
-) {
-  if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
-    return library.path
-  }
-
-  const cloudSource =
-    library.source?.trim() || LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH
-  return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${cloudSource.replace(/^\/+/, '')}`
-}
 
 export function getProjectLibrarySummaryDescription(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrary, 'path' | 'type' | 'presentation'>
 ) {
-  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return 'Projects in this library are saved to your Zoo account'
-  }
+  if (library.presentation) return library.presentation.summaryDescription
 
   if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
     return 'Projects in this library are saved only on this computer'
   }
 
-  return formatProjectLibraryPathForDisplay(library)
+  return library.path
 }
 
 export function getProjectLibraryDetailsDescription(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrary, 'type' | 'presentation'>
 ) {
-  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return [
-      'Projects in this library are saved to your Zoo account.',
-      'Storage type and model-training controls depend on your plan.',
-    ].join(' ')
-  }
+  if (library.presentation) return library.presentation.detailsDescription
 
   if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
     return 'Projects in this library are saved only on this computer.'
@@ -56,32 +36,15 @@ export function getProjectLibraryDetailsDescription(
   return undefined
 }
 
-export function getProjectLibraryLocationLabel(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
-) {
-  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return 'Technical source'
-  }
-
-  if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
-    return 'Folder'
-  }
-
-  return 'Location'
-}
-
 export function getProjectLibrarySummaryTooltip(
-  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+  library: Pick<ProjectLibrary, 'path' | 'type' | 'presentation'>
 ) {
   const description = getProjectLibraryDetailsDescription(library)
-  const locationLabel = getProjectLibraryLocationLabel(library)
-  const technicalLocation = formatProjectLibraryPathForDisplay(library)
+  if (!description) return library.path
 
-  if (description) {
-    return `${description} ${locationLabel}: ${technicalLocation}`
-  }
-
-  return technicalLocation
+  return library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+    ? `${description} Folder: ${library.path}`
+    : description
 }
 
 export type ProjectLibraryType = string
@@ -95,9 +58,16 @@ export interface ProjectLibrarySetting {
 
 export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
+  presentation?: ProjectLibraryPresentation
   icon?: string
   order?: number
   hiddenByDefault?: boolean
+  organizationId?: string
+}
+
+export interface ProjectLibraryPresentation {
+  summaryDescription: string
+  detailsDescription: string
 }
 
 export interface ProjectLibraryInitialProject {
@@ -135,20 +105,6 @@ export function getDefaultCloudProjectLibrarySetting(
     path: localMaterializationPath,
     type: CLOUD_PROJECT_LIBRARY_TYPE,
   }
-}
-
-export function canRemoveProjectLibrary(
-  library: Pick<ProjectLibrarySetting, 'type'>,
-  options: { canManageLibraries: boolean }
-) {
-  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
-    return false
-  }
-
-  return (
-    options.canManageLibraries ||
-    library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
-  )
 }
 
 export function getDefaultDirectoryProjectLibrarySetting(
@@ -458,12 +414,7 @@ export function projectLibrariesFromSettings(
 ): ProjectLibrary[] {
   const defaultProjectDirectory =
     getDefaultDirectoryProjectLibraryPath(libraries)
-  const configured = libraries.some(
-    (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
-  )
-    ? libraries
-    : [...libraries, getDefaultCloudProjectLibrarySetting()]
-  const result = configured.map((library, index) =>
+  const result = libraries.map((library, index) =>
     projectLibraryFromSetting(library, index, { defaultProjectDirectory })
   )
   const byId = new Map(result.map((library) => [library.id, library]))

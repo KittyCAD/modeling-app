@@ -13,7 +13,6 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
-import type { ProjectLibraryTypeContribution } from '@src/registry/contracts/projectLibraries'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
@@ -41,7 +40,6 @@ export interface ProjectLibraryDragController {
 interface ProjectLibraryPreviewRowProps {
   library: ProjectLibrary
   projects: HomeProjectEntry[]
-  libraryProjects?: HomeProjectEntry[]
   query: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
@@ -50,7 +48,6 @@ interface ProjectLibraryPreviewRowProps {
   showCloudSyncUi: boolean
   onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
-  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
 function getProjectLibraryRoute(library: ProjectLibrary) {
@@ -61,26 +58,9 @@ function projectCountLabel(count: number) {
   return `${count} project${count === 1 ? '' : 's'}`
 }
 
-export function ProjectLibraryHomeSummarySlot({
-  library,
-  projects,
-  projectLibraryTypes,
-}: {
-  library: ProjectLibrary
-  projects: readonly HomeProjectEntry[]
-  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
-}) {
-  const HomeSummary = projectLibraryTypes?.get(library.type)?.homeSummary
-
-  return HomeSummary ? (
-    <HomeSummary library={library} projects={projects} />
-  ) : null
-}
-
 export function ProjectLibraryPreviewRow({
   library,
   projects,
-  libraryProjects = projects,
   query,
   projectStatuses,
   projectActions,
@@ -89,7 +69,6 @@ export function ProjectLibraryPreviewRow({
   showCloudSyncUi,
   onDuplicateToLibrary,
   projectLibraryDrag,
-  projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
   const previewProjects =
     query.length > 0
@@ -99,9 +78,9 @@ export function ProjectLibraryPreviewRow({
     projectLibraryDrag?.getLibraryDropTargetProps(library)
   const isActiveDropTarget =
     projectLibraryDrag?.isLibraryDragOver(library) ?? false
-  const sectionClassName = `mx-1 flex flex-col gap-3 rounded-sm border p-2 ${
+  const sectionClassName = `flex flex-col gap-3 rounded-sm border py-2 ${
     isActiveDropTarget
-      ? 'border-primary bg-primary/5 ring-2 ring-primary/30 dark:bg-primary/10'
+      ? 'border-primary bg-primary/5 ring-2 ring-inset ring-primary/30 dark:bg-primary/10'
       : 'border-transparent'
   }`
 
@@ -112,7 +91,7 @@ export function ProjectLibraryPreviewRow({
       aria-label={`${library.title} library`}
       {...libraryDropTargetProps}
     >
-      <div className="group flex items-center gap-3 rounded-sm border border-transparent p-1 hover:border-primary/30 hover:bg-primary/5">
+      <div className="group flex items-center gap-3 rounded-sm border border-transparent py-1 hover:border-primary/30 hover:bg-primary/5">
         <Link
           to={getProjectLibraryRoute(library)}
           className="flex min-w-0 flex-1 items-center gap-3 !no-underline"
@@ -139,11 +118,6 @@ export function ProjectLibraryPreviewRow({
             </span>
           </span>
         </Link>
-        <ProjectLibraryHomeSummarySlot
-          library={library}
-          projects={libraryProjects}
-          projectLibraryTypes={projectLibraryTypes}
-        />
         <Link
           to={getProjectLibraryRoute(library)}
           className="hidden flex-none select-none text-xs text-chalkboard-70 !no-underline dark:text-chalkboard-30 sm:block"

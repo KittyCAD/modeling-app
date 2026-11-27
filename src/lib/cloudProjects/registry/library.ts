@@ -1,4 +1,12 @@
+import type { ProjectLibraryResponse } from '@kittycad/lib'
 import { computed, effect, signal } from '@preact/signals-core'
+import { CloudLibraryTrainingDisclosure } from '@src/lib/cloudProjects/CloudLibraryTrainingDisclosure'
+import {
+  apiProjectLibraries,
+  apiProjectLibraryId,
+  isApiProjectLibrary,
+} from '@src/lib/cloudProjects/apiProjectLibraries'
+import { describeCloudLibrary } from '@src/lib/cloudProjects/libraryPresentation'
 import { newKclFile } from '@src/lang/project'
 import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
 import { listRemoteProjectLibraries } from '@src/lib/cloudProjects/runtime/api'
@@ -16,11 +24,6 @@ import {
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
-import {
-  apiProjectLibraries,
-  apiProjectLibraryId,
-  isApiProjectLibrary,
-} from '@src/lib/projectLibraries/apiProjectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -75,12 +78,17 @@ export default defineFactory({
     const auth = authInputs.authService.current
     const router = routerInputs.routerService.current
     const runtime = runtimeInput.current
-    const libraries = signal<ReturnType<typeof apiProjectLibraries>>([])
-    const refreshCatalog = signal(0)
-    const libraryIds = computed(() => [
-      PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-      ...libraries.value.map((library) => library.id),
+    const remoteLibraries = signal<ProjectLibraryResponse[]>([])
+    const personalCloudLibrary = {
+      ...getDefaultCloudProjectLibrarySetting(),
+      id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+    }
+    const libraries = computed(() => [
+      personalCloudLibrary,
+      ...apiProjectLibraries(remoteLibraries.value),
     ])
+    const refreshCatalog = signal(0)
+    const libraryIds = computed(() => libraries.value.map(({ id }) => id))
     const pathname = computed(() => router.value?.location.value.pathname)
     const settledAccount = signal<
       | {
@@ -164,7 +172,8 @@ export default defineFactory({
       title: 'Cloud',
       icon: 'cloud',
       order: 10,
-      defaultSetting: getDefaultCloudProjectLibrarySetting(),
+      describeLibrary: describeCloudLibrary,
+      homeDetails: CloudLibraryTrainingDisclosure,
       readRealizations: async () => [],
       operations: {
         refresh: {
@@ -319,17 +328,15 @@ export default defineFactory({
           const nextScope = JSON.stringify([token, account, baseUrl, loggedIn])
           if (scope !== nextScope) {
             scope = nextScope
-            libraries.value = []
+            remoteLibraries.value = []
           }
           if (!loggedIn || !token) return
           const controller = new AbortController()
-          void listRemoteProjectLibraries(
-            { enabled: true, token, baseUrl },
-            controller.signal
-          )
+          const config = { enabled: true, token, baseUrl }
+          void listRemoteProjectLibraries(config, controller.signal)
             .then((result) => {
               if (!controller.signal.aborted && !disposed)
-                libraries.value = apiProjectLibraries(result)
+                remoteLibraries.value = result
             })
             .catch((error: unknown) => {
               if (!controller.signal.aborted && !disposed)
@@ -399,6 +406,9 @@ export default defineFactory({
         contribute(projectLibraryTypesFacet, () => ({
           ..._projectLibraryTypesContribution,
           libraries: libraries.value,
+          homeSection: {
+            title: 'Cloud Libraries',
+          },
         })),
       ],
       dispose: () => {
