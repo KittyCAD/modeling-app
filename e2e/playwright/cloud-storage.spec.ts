@@ -92,11 +92,16 @@ for (const startEmpty of [false, true]) {
         const loading = page.getByRole('status', { name: 'Loading projects' })
         await expect(loading).toBeVisible()
         release.resolve(undefined)
-        const refresh = page.getByRole('button', { name: 'Refresh projects' })
+        const cloudLibraries = page.getByRole('region', {
+          name: 'Cloud Libraries',
+        })
+        const refresh = cloudLibraries.getByRole('button', {
+          name: 'Refresh projects',
+        })
         await expect(refresh).toHaveAttribute('aria-busy', 'false')
         await expect(loading).toHaveCount(0)
         const contents = startEmpty
-          ? page.getByTestId('projects-none')
+          ? cloudLibraries.getByTestId('project-library-empty')
           : page.getByText('Cloud memory model', { exact: true })
         await expect(contents).toBeVisible()
         release = Promise.withResolvers<undefined>()
@@ -122,7 +127,13 @@ test(
     await setup(context, page, testInfo)
     await page.goto('/home')
     await waitForAppLoad(page)
-    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    const cloudLibraries = page.getByRole('region', { name: 'Cloud Libraries' })
+    await expect(
+      page.getByRole('region', { name: 'Local Libraries' })
+    ).toHaveCount(0)
+    const refresh = cloudLibraries.getByRole('button', {
+      name: 'Refresh projects',
+    })
     await expect(refresh).toHaveAttribute('aria-busy', 'false')
     await expect(
       page.getByText('Cloud memory model', { exact: true })
@@ -153,6 +164,15 @@ test(
     await expect(refresh).toBeDisabled()
     await page.clock.runFor(1)
     await expect(refresh).toBeEnabled()
+    await page
+      .getByRole('link', { name: 'Open Personal Cloud library' })
+      .click()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Personal Cloud'
+    )
+    await expect(
+      page.getByRole('button', { name: 'Refresh projects' })
+    ).toHaveCount(0)
     await page.getByText('Changed elsewhere', { exact: true }).dblclick()
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
     remote.project.title = 'Changed while modeling'

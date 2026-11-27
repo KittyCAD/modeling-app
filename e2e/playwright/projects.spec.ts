@@ -14,11 +14,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import {
-  DEFAULT_PROJECT_KCL_FILE,
-  PROJECT_IMAGE_NAME,
-  REGEXP_UUIDV4,
-} from '@src/lib/constants'
+import { PROJECT_IMAGE_NAME, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import nodeFsSync from 'fs'
@@ -127,62 +123,6 @@ async function clickProjectCardContextMenuItem(
   await expect(menuItem).toBeVisible()
   await menuItem.click()
 }
-
-test(
-  'refreshes external project changes when requested',
-  { tag: ['@desktop', '@macos', '@windows', '@localRenderer'] },
-  async ({ context, page, fs, folderSetupFn }, testInfo) => {
-    const appLogo = page.getByTestId('app-logo')
-    await expect(appLogo).toBeVisible()
-
-    let targetDir = ''
-    let externalCreatedProjectName = 'external-created-project-name'
-
-    await folderSetupFn(async (dir) => {
-      targetDir = dir
-      const myDir = path.join(dir, externalCreatedProjectName)
-      await fs.mkdir(myDir, { recursive: true })
-      await fs.writeFile(
-        path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
-        new TextEncoder().encode('meaningless nonsense here')
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    const projectLinks = page.getByTestId('project-link')
-    await projectLinks.first().waitFor()
-    await expect(projectLinks).toContainText(externalCreatedProjectName)
-    const refresh = page.getByRole('button', { name: 'Refresh projects' })
-    await expect(refresh).toHaveAttribute('aria-busy', 'false')
-    await page.clock.install()
-
-    await fs.rename(
-      path.join(targetDir, externalCreatedProjectName),
-      path.join(targetDir, externalCreatedProjectName + '1')
-    )
-
-    await page.clock.runFor(7_000)
-    await expect(page.getByTestId('project-title')).toHaveText(
-      externalCreatedProjectName
-    )
-    externalCreatedProjectName += '1'
-    await refresh.click()
-    await expect(projectLinks).toContainText(externalCreatedProjectName)
-
-    await fs.rm(path.join(targetDir, externalCreatedProjectName), {
-      recursive: true,
-      force: true,
-    })
-
-    await page.clock.runFor(5_000)
-    await expect(projectLinks).toContainText(externalCreatedProjectName)
-    await expect(refresh).toBeEnabled()
-    await refresh.click()
-    await expect(projectLinks).toHaveCount(0)
-    await page.clock.resume()
-  }
-)
 
 test(
   'click help/keybindings from home page',
@@ -1592,12 +1532,11 @@ test(
     await homePage.projectsLoaded()
 
     await test.step('We can change the root project directory', async () => {
-      // expect to see the project directory settings link
-      await expect(
-        page.getByTestId('project-directory-settings-link')
-      ).toBeVisible()
-
-      await page.getByTestId('project-directory-settings-link').click()
+      await page.getByTestId('app-logo').click()
+      await page
+        .getByRole('region', { name: 'Local Libraries' })
+        .getByRole('link', { name: 'Manage in Settings' })
+        .click()
 
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
       originalProjectDirName = await page

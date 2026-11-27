@@ -1,6 +1,11 @@
 import { validateProjectUpload } from '@src/lib/cloudProjects/runtime/archiveContents'
 import { collectApiPages } from '@src/lib/apiPagination'
-import { ApiError, type Client, projects } from '@kittycad/lib'
+import {
+  ApiError,
+  type Client,
+  projects,
+  type ProjectLibraryResponse,
+} from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
 import {
   CloudStorageError,
@@ -96,16 +101,10 @@ export async function listRemoteProjects(
   return [...response]
 }
 
-export interface RemoteProjectLibrary {
-  id: string
-  name: string
-  source?: string
-}
-
 export async function listRemoteProjectLibraries(
   config: CloudApiConfig,
   signal?: AbortSignal
-): Promise<RemoteProjectLibrary[]> {
+): Promise<ProjectLibraryResponse[]> {
   const libraries = await cloudCall(
     config,
     (client) =>

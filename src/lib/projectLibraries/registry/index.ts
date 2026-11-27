@@ -30,8 +30,8 @@ import {
   readProjectLibraryRealizationsInvalidation,
 } from '@src/lib/projectLibraries/registry/invalidation'
 import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
-import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
-import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
+import { DirectoryLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/DirectoryLibrarySettingInput'
+import { directoryLibrarySettingsContribution } from '@src/lib/projectLibraries/settings/directoryLibrarySettingsContribution'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
@@ -64,25 +64,6 @@ import {
   provide,
   type Factory,
 } from 'plankton'
-function areProjectLibrariesEqual(
-  left: readonly ProjectLibrary[],
-  right: readonly ProjectLibrary[]
-) {
-  return (
-    left.length === right.length &&
-    left.every((library, index) => {
-      const otherLibrary = right[index]
-      return (
-        otherLibrary !== undefined &&
-        library.id === otherLibrary.id &&
-        library.title === otherLibrary.title &&
-        library.path === otherLibrary.path &&
-        library.type === otherLibrary.type &&
-        library.order === otherLibrary.order
-      )
-    })
-  )
-}
 type ProjectLibraryInvalidationGeneration = {
   global: number
   library: number
@@ -91,7 +72,7 @@ type ProjectLibraryInvalidationGeneration = {
 /** Inputs whose change requires one configured library to be rediscovered. */
 type ConfiguredProjectLibraryScanInput = {
   library: ProjectLibrary
-  libraryType?: ProjectLibraryTypeContribution
+  readRealizations?: ProjectLibraryTypeContribution['readRealizations']
   invalidation: ProjectLibraryInvalidationGeneration
 }
 type ConfiguredProjectLibraryScanState = {
@@ -104,22 +85,29 @@ function configuredProjectLibraryScanInputIsEqual(
   left: ConfiguredProjectLibraryScanInput | undefined,
   right: ConfiguredProjectLibraryScanInput
 ) {
-  return Boolean(
-    left &&
-      left.libraryType === right.libraryType &&
-      left.invalidation.global === right.invalidation.global &&
-      left.invalidation.library === right.invalidation.library &&
-      areProjectLibrariesEqual([left.library], [right.library])
+  return (
+    left !== undefined &&
+    left.invalidation.global === right.invalidation.global &&
+    left.invalidation.library === right.invalidation.library &&
+    configuredProjectLibrarySourceIsEqual(left, right)
   )
 }
 function configuredProjectLibrarySourceIsEqual(
   left: ConfiguredProjectLibraryScanInput | undefined,
   right: ConfiguredProjectLibraryScanInput
 ) {
-  return Boolean(
-    left &&
-      left.libraryType === right.libraryType &&
-      areProjectLibrariesEqual([left.library], [right.library])
+  if (!left) return false
+  const previous = left.library
+  const library = right.library
+  return (
+    left.readRealizations === right.readRealizations &&
+    previous.id === library.id &&
+    previous.title === library.title &&
+    previous.path === library.path &&
+    previous.type === library.type &&
+    previous.source === library.source &&
+    previous.order === library.order &&
+    previous.organizationId === library.organizationId
   )
 }
 function warnMissingProjectLibraryTypeHandler(
@@ -142,20 +130,15 @@ function warnMissingProjectLibraryTypeHandler(
  */
 async function readConfiguredProjectLibraryRealizations({
   library,
-  libraryType,
-  warnedMissingTypeLibraryIds,
+  readRealizations,
   signal,
 }: {
   library: ProjectLibrary
-  libraryType?: ProjectLibraryTypeContribution
-  warnedMissingTypeLibraryIds: Set<string>
+  readRealizations: NonNullable<
+    ProjectLibraryTypeContribution['readRealizations']
+  >
   signal: AbortSignal
 }): Promise<ProjectLibraryRealizationContribution[]> {
-  const readRealizations = libraryType?.readRealizations
-  if (!readRealizations) {
-    warnMissingProjectLibraryTypeHandler(library, warnedMissingTypeLibraryIds)
-    return []
-  }
   try {
     return await readRealizations({
       library,
@@ -372,7 +355,7 @@ const configuredProjectLibraryRealizations: Factory = defineFactory({
     }
     const scanLibrary = (
       library: ProjectLibrary,
-      libraryType: ProjectLibraryTypeContribution | undefined,
+      readRealizations: ProjectLibraryTypeContribution['readRealizations'],
       invalidation: ProjectLibraryRealizationsInvalidationSnapshot
     ) => {
       /**
@@ -385,7 +368,7 @@ const configuredProjectLibraryRealizations: Factory = defineFactory({
       const cachedScan = scanStates.get(library.id)
       const input: ConfiguredProjectLibraryScanInput = {
         library,
-        libraryType,
+        readRealizations,
         invalidation: readProjectLibraryRealizationInvalidationForLibrary(
           invalidation,
           library.id
@@ -395,7 +378,6 @@ const configuredProjectLibraryRealizations: Factory = defineFactory({
         return
       }
       cachedScan?.abortController?.abort()
-      const readRealizations = libraryType?.readRealizations
       if (!readRealizations) {
         warnMissingProjectLibraryTypeHandler(
           library,
@@ -422,8 +404,7 @@ const configuredProjectLibraryRealizations: Factory = defineFactory({
       scanStates.set(library.id, state)
       void readConfiguredProjectLibraryRealizations({
         library,
-        libraryType,
-        warnedMissingTypeLibraryIds,
+        readRealizations,
         signal: abortController.signal,
       }).then((nextRealizations) => {
         if (
@@ -462,7 +443,11 @@ const configuredProjectLibraryRealizations: Factory = defineFactory({
             }
           }
           libraries.forEach((library) => {
-            scanLibrary(library, typeById.get(library.type), invalidation)
+            scanLibrary(
+              library,
+              typeById.get(library.type)?.readRealizations,
+              invalidation
+            )
           })
           updateRealizations()
         }),
@@ -648,12 +633,6 @@ const directoryProjectLibraryType: Factory = defineFactory({
       }
     }
     const operations: ProjectLibraryTypeOperations = {
-      refresh: {
-        run: ({ library }) => {
-          refreshLocalProjectRealizations(library)
-          return undefined
-        },
-      },
       createProject: {
         run: async ({
           library,
@@ -781,8 +760,7 @@ const directoryProjectLibraryType: Factory = defineFactory({
         path: 'projects',
         type: DIRECTORY_PROJECT_LIBRARY_TYPE,
       },
-      settingsDetails: DirectoryProjectLibrarySettingsDetails,
-      hideInSettingsOnPlatform: 'web',
+      settingsDetails: DirectoryLibrarySettingsDetails,
       /**
        * Directory libraries return concrete folders on disk. Any cloud
        * project ID found in project metadata is carried as an observation,
@@ -850,7 +828,7 @@ const projectLibrariesExtension = [
   directoryProjectLibraryDefaultPolicy,
   directoryProjectLibraryType,
   projectLibraryRealizationsRegistryService,
-  contribute(settingsFacet, () => projectLibrariesSettingsContribution),
+  contribute(settingsFacet, () => directoryLibrarySettingsContribution),
 ]
 export {
   invalidateProjectLibraryRealizations,

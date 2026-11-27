@@ -89,6 +89,8 @@ This uses the `panels` Facet from the first example. Configuring `outline` creat
 
 The Markdown example contributes to `editorLanguagesFacet`, which the editor system uses to discover language descriptors from installed features. Both import the same token. A Contract groups these shared tokens under names, giving producers and consumers a common set of contribution points.
 
+The [project libraries guide](../../src/lib/projectLibraries/README.md) shows how a built-in library type and a separate extension use the same contract to supply libraries and their operations to Home.
+
 Facets can collect many contributions, as `panels` does above. A contract can also declare a Service when consumers need one implementation of a capability, such as file access. A Service is a specialized Facet that reports an absent provider, selects one provider, or reports a conflict. `service<T>(name)` declares the token and `provide(token, implementation)` supplies a provider. After configuration, `registry.required(token)` requires one provider; `registry.optional(token)` permits absence. Both report conflicts rather than choosing by registration order.
 
 ### Read live inputs after construction

@@ -8,27 +8,28 @@ import type { ExtensionSettingsContribution } from '@src/lib/settings/extensionS
 import { Setting } from '@src/lib/settings/Setting'
 import { Suspense, lazy } from 'react'
 
-const ProjectLibrariesSetting = lazy(() =>
-  import('@src/lib/projectLibraries/settings/ProjectLibrariesSetting').then(
+const DirectoryLibrarySetting = lazy(() =>
+  import('@src/lib/projectLibraries/settings/DirectoryLibrarySetting').then(
     (module) => ({
-      default: module.ProjectLibrariesSetting,
+      default: module.DirectoryLibrarySetting,
     })
   )
 )
 
-export const projectLibrariesSettingsContribution: ExtensionSettingsContribution =
+export const directoryLibrarySettingsContribution: ExtensionSettingsContribution =
   {
     app: {
       libraries: {
         createSetting: () =>
           new Setting<ProjectLibrarySetting[]>({
             defaultValue: [],
-            description: 'Project libraries shown on the home page.',
+            title: 'Local Libraries',
+            description: 'Folders on this computer shown as libraries on Home.',
             hideOnLevel: 'project',
             validate: isProjectLibrarySettings,
             Component: (props) => (
               <Suspense fallback={null}>
-                <ProjectLibrariesSetting {...props} />
+                <DirectoryLibrarySetting {...props} />
               </Suspense>
             ),
           }),

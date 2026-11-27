@@ -120,9 +120,13 @@ for (const cached of [false, true]) {
     if (cached) {
       await storage.refresh()
       await storage.home.projectsLoaded()
+      await page.getByRole('link', { name: 'All libraries' }).click()
       await expect(
         storage.home.projectCard.filter({ hasText: 'Slow listing' })
       ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'Refresh projects' })
+      ).toBeEnabled()
       await storage.seed('Added during refresh', blankCode)
       await pauseAppClock(page)
       await expect(
@@ -256,6 +260,9 @@ test('refreshes cloud project membership only on request or entry @web', async (
   const card = (title: string) =>
     storage.home.projectCard.filter({ hasText: title })
   await expect(card('Original cloud project')).toBeVisible()
+  await page.getByRole('link', { name: 'All libraries' }).click()
+  const refresh = page.getByRole('button', { name: 'Refresh projects' })
+  await expect(refresh).toBeEnabled()
   await installPausedClock(page)
   const listRoute = /\/user\/projects(?:\?.*)?$/
   let requests = 0
@@ -268,7 +275,6 @@ test('refreshes cloud project membership only on request or entry @web', async (
     await page.clock.runFor(60_000)
     await expect(card('Added on another device')).not.toBeAttached()
     expect(requests).toBe(0)
-    const refresh = page.getByRole('button', { name: 'Refresh projects' })
     await refresh.click()
     await expect(card('Added on another device')).toBeVisible()
     const remote = storage.remote.projects.findIndex(
@@ -454,34 +460,33 @@ for (const kind of storageKinds) {
     `${kind} project workflow contract`,
     { tag: kind === 'local' ? '@desktop' : ['@web', '@desktop'] },
     () => {
-      test('refreshes the project list and keeps existing cards', async ({
-        page,
-        context,
-      }, testInfo) => {
-        await page.clock.install()
-        const storage = await prepareStorage(kind, page, context, testInfo)
-        await storage.seed('Original project', blankCode)
-        await storage.refresh()
-        const card = (title: string) =>
-          storage.home.projectCard.filter({ hasText: title })
-        await expect(card('Original project')).toBeVisible()
-        const gate = Promise.withResolvers<undefined>()
-        let started = false
-        const listRoute = /\/user\/projects(?:\?.*)?$/
-        const button = page.getByRole('button', { name: 'Refresh projects' })
-        await pauseAppClock(page)
-        await expect(button).toBeEnabled()
-        if (kind === 'cloud') {
+      if (kind === 'cloud') {
+        test('refreshes the project list and keeps existing cards', async ({
+          page,
+          context,
+        }, testInfo) => {
+          await page.clock.install()
+          const storage = await prepareStorage(kind, page, context, testInfo)
+          await storage.seed('Original project', blankCode)
+          await storage.refresh()
+          const card = (title: string) =>
+            storage.home.projectCard.filter({ hasText: title })
+          await expect(card('Original project')).toBeVisible()
+          await page.getByRole('link', { name: 'All libraries' }).click()
+          const gate = Promise.withResolvers<undefined>()
+          let started = false
+          const listRoute = /\/user\/projects(?:\?.*)?$/
+          const button = page.getByRole('button', { name: 'Refresh projects' })
+          await expect(button).toBeEnabled()
+          await pauseAppClock(page)
           await context.route(listRoute, async (route) => {
             started = true
             await gate.promise
             await route.fallback()
           })
-        }
-        try {
-          await storage.seed('Added project', blankCode)
-          await button.click()
-          if (kind === 'cloud') {
+          try {
+            await storage.seed('Added project', blankCode)
+            await button.click()
             await expect.poll(() => started).toBe(true)
             await expect(button).toBeDisabled()
             await expect(button).toHaveAttribute('aria-busy', 'true')
@@ -490,21 +495,16 @@ for (const kind of storageKinds) {
             await expect(card('Original project')).toBeVisible()
             gate.resolve(undefined)
             await page.clock.resume()
+            await expect(card('Added project')).toBeVisible()
+            await expect(button).toBeEnabled()
+            await expect(card('Original project')).toBeVisible()
+          } finally {
+            gate.resolve(undefined)
+            await context.unroute(listRoute)
+            await page.clock.resume()
           }
-          await expect(card('Added project')).toBeVisible()
-          if (kind === 'local') {
-            await expect(button).toHaveAttribute('aria-busy', 'false')
-            await expect(button).toBeDisabled()
-            await page.clock.runFor(5_000)
-          }
-          await expect(button).toBeEnabled()
-          await expect(card('Original project')).toBeVisible()
-        } finally {
-          gate.resolve(undefined)
-          if (kind === 'cloud') await context.unroute(listRoute)
-          await page.clock.resume()
-        }
-      })
+        })
+      }
 
       test('adds a shape to a sketch that already contains a line', async ({
         page,

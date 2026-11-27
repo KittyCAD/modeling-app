@@ -35,10 +35,10 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import { shouldShowFreeCloudProjectTrainingDisclosure } from '@src/lib/projectLibraries/trainingDisclosure'
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
 import { getSortFunction } from '@src/lib/sorting'
 import { reportRejection, trap } from '@src/lib/trap'
@@ -65,8 +65,6 @@ import {
 import {
   getHomeProjectEntriesForLibrary,
   getProjectLibraryCreateProjectOperation,
-  getProjectLibraryOperation,
-  type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
   projectLibraryTypesFacet,
 } from '@src/registry/contracts/projectLibraries'
@@ -77,13 +75,12 @@ import {
   statusBarLocalItemsFacet,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { HomeHeader } from '@src/routes/HomeHeader'
+import { HomeHeader, HomeRefreshButton } from '@src/routes/HomeHeader'
 import {
   type ProjectCardDragProps,
   ProjectCardList,
   type ProjectLibraryDragController,
   type ProjectLibraryDropTargetProps,
-  ProjectLibraryHomeSummarySlot,
   ProjectLibraryPreviewRow,
 } from '@src/routes/HomeProjectCards'
 import {
@@ -92,7 +89,7 @@ import {
   onDismissOnboardingInvite,
   reportOnboardingStartFailure,
 } from '@src/routes/Onboarding/utils'
-import type { HTMLProps } from 'react'
+import type { HTMLProps, ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -327,7 +324,6 @@ const Home = () => {
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
-  const billingContext = billing.useContext()
   const homeProjectEntries = registry.observe(homeProjectEntriesFacet).value
   const projectStatuses = useProjectStatuses(
     registry.required(cloudStorageService),
@@ -336,45 +332,90 @@ const Home = () => {
   )
   const homeSidebarItems = registry.observe(homeSidebarItemsFacet).value
   const settingsValues = settings.useSettings()
+  const librarySettings = settingsValues.app.libraries.current
   const [searchParams, setSearchParams] = useSearchParams()
   const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
   const projectLibraries = projectLibrariesFromSettings(
-    settingsValues.app.libraries.current,
+    librarySettings,
     projectLibraryTypes
-  ).map((library) => ({
-    ...library,
-    icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
-  }))
+  ).map((library) => {
+    const libraryType = projectLibraryTypes.get(library.type)
+    return {
+      ...library,
+      icon: libraryType?.icon ?? library.icon,
+      presentation:
+        libraryType?.describeLibrary?.(library) ?? library.presentation,
+    }
+  })
   const projectLibraryRealizations = registry.optional(
     projectLibraryRealizationsService
   )
-  const projectLibraryWatchKey = projectLibraries
-    .map((library) =>
-      [library.id, library.type, library.path, library.source ?? ''].join(':')
-    )
-    .join('|')
+  const directoryLibraryIds = useMemo(
+    () =>
+      projectLibrariesFromSettings(librarySettings)
+        .filter(({ type }) => type === DIRECTORY_PROJECT_LIBRARY_TYPE)
+        .map(({ id }) => id),
+    [librarySettings]
+  )
   const homeProjectActions = registry.required(homeProjectActionsService)
   const visibleProjectLibraries = projectLibraries.filter(
-    (library) => !library.hiddenByDefault
+    ({ type, hiddenByDefault }) =>
+      !hiddenByDefault &&
+      (type === DIRECTORY_PROJECT_LIBRARY_TYPE ||
+        projectLibraryTypes.get(type)?.homeSection)
   )
-  const session = registry.required(projectSession)
-  const { libraryId } = useParams()
-  const routeSelectedProjectLibrary = libraryId
-    ? projectLibraries.find((library) => library.id === libraryId)
-    : undefined
-  const singleProjectLibrary =
-    !libraryId && visibleProjectLibraries.length === 1
-      ? visibleProjectLibraries[0]
-      : undefined
-  const selectedProjectLibrary =
-    routeSelectedProjectLibrary ?? singleProjectLibrary
-  const selectedProjectLibraryId = selectedProjectLibrary?.id
   const loadingLibraryIds = registry.observe(
     homeProjectLoadingLibraryIdsFacet
   ).value
   const settledLibraryIds = registry.observe(
     homeProjectSettledLibraryIdsFacet
   ).value
+  const projectOperationsPending = app.projectOperations.pending.value !== 0
+  const librarySections = [...projectLibraryTypes.values()]
+    .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .flatMap(({ type, homeSection }) => {
+      if (!homeSection || type === DIRECTORY_PROJECT_LIBRARY_TYPE) return []
+      const { title, refresh } = homeSection
+      const libraries = visibleProjectLibraries.filter(
+        (library) => library.type === type
+      )
+      return [
+        {
+          type,
+          title,
+          onRefresh:
+            refresh && libraries.length > 0
+              ? () => {
+                  void refresh().then(trap).catch(reportRejection)
+                }
+              : undefined,
+          isRefreshing:
+            projectOperationsPending ||
+            libraries.some(
+              ({ id }) =>
+                !settledLibraryIds.includes(id) ||
+                loadingLibraryIds.includes(id)
+            ),
+        },
+      ]
+    })
+  const session = registry.required(projectSession)
+  const { libraryId } = useParams()
+  const routeSelectedProjectLibrary = libraryId
+    ? projectLibraries.find((library) => library.id === libraryId)
+    : undefined
+  const singleProjectLibrary =
+    !libraryId &&
+    visibleProjectLibraries.length === 1 &&
+    !librarySections.some(({ onRefresh }) => onRefresh)
+      ? visibleProjectLibraries[0]
+      : undefined
+  const selectedProjectLibrary =
+    routeSelectedProjectLibrary ?? singleProjectLibrary
+  const LibraryDetails =
+    selectedProjectLibrary &&
+    projectLibraryTypes.get(selectedProjectLibrary.type)?.homeDetails
+  const selectedProjectLibraryId = selectedProjectLibrary?.id
   const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
     : visibleProjectLibraries
@@ -382,37 +423,9 @@ const Home = () => {
     settledLibraryIds.includes(library.id)
   )
   const projectsLoaded =
-    app.projectOperations.pending.value === 0 &&
+    !projectOperationsPending &&
     projectsInitiallyLoaded &&
-    !loadingLibraryIds.some(
-      (id) => !selectedProjectLibraryId || id === selectedProjectLibraryId
-    )
-  const refreshProjectList = () => {
-    if (!projectsLoaded) return
-    void Promise.all(
-      visibleLibraries.map((library) => {
-        const operation = getProjectLibraryOperation(
-          projectLibraryTypes.get(library.type),
-          library,
-          'refresh'
-        )
-        if (operation)
-          return Promise.resolve(
-            operation.run({
-              library,
-            })
-          )
-        projectLibraryRealizations?.invalidate({
-          libraryId: library.id,
-        })
-        return Promise.resolve()
-      })
-    )
-      .then((results) => {
-        for (const result of results) trap(result)
-      })
-      .catch(reportRejection)
-  }
+    !visibleLibraries.some(({ id }) => loadingLibraryIds.includes(id))
   const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
@@ -468,17 +481,13 @@ const Home = () => {
     onDuplicateToLibrary: duplicateProjectToLibrary,
   })
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   useEffect(() => {
-    for (const library of projectLibraries) {
-      projectLibraryRealizations?.invalidate({ libraryId: library.id })
+    for (const id of directoryLibraryIds) {
+      if (!libraryId || id === libraryId) {
+        projectLibraryRealizations?.invalidate({ libraryId: id })
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
-  }, [
-    projectLibraryRealizations,
-    projectLibraryWatchKey,
-    selectedProjectLibraryId,
-  ])
+  }, [directoryLibraryIds, libraryId, projectLibraryRealizations])
 
   useEffect(() => {
     session.setCurrentProjectLibraryId(selectedProjectLibraryId)
@@ -626,8 +635,6 @@ const Home = () => {
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           data-testid="home-header"
-          onRefresh={refreshProjectList}
-          isRefreshing={!projectsLoaded}
           title={
             selectedProjectLibrary
               ? selectedProjectLibrary.title
@@ -636,27 +643,21 @@ const Home = () => {
                 : 'Project Libraries'
           }
           library={selectedProjectLibrary}
+          isOverview={!selectedProjectLibrary && !libraryId}
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
-          libraryHomeSummary={
-            selectedProjectLibrary ? (
-              <ProjectLibraryHomeSummarySlot
-                library={selectedProjectLibrary}
-                projects={scopedHomeProjectEntries}
-                projectLibraryTypes={projectLibraryTypes}
-              />
-            ) : undefined
-          }
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
           readWriteProjectDir={readWriteProjectDir}
           projectSearchKeybinding={projectSearchKeybinding}
-          showFreeCloudProjectTrainingDisclosure={shouldShowFreeCloudProjectTrainingDisclosure(
-            {
-              library: selectedProjectLibrary,
-              hasSubscription: billingContext.hasSubscription,
-            }
-          )}
+          libraryDetails={
+            selectedProjectLibrary && LibraryDetails ? (
+              <LibraryDetails
+                library={selectedProjectLibrary}
+                registry={registry}
+              />
+            ) : undefined
+          }
           className="col-start-2 -col-end-1"
         />
         <aside
@@ -788,6 +789,7 @@ const Home = () => {
         </aside>
         {selectedProjectLibrary || libraryId ? (
           <ProjectGrid
+            aria-busy={!projectsLoaded}
             projectShellEnabled={projectShellEnabled}
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
@@ -801,14 +803,15 @@ const Home = () => {
             showSourceStatusBadges={false}
             onDuplicateToLibrary={duplicateProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
-            className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
+            className="flex-1 col-start-2 -col-end-1 overflow-y-auto pb-24"
           />
         ) : (
           <ProjectLibraryOverview
+            aria-busy={!projectsLoaded}
             projectShellEnabled={projectShellEnabled}
             libraries={visibleProjectLibraries}
             searchResults={searchResults ?? []}
-            projects={homeProjectEntries}
+            projects={scopedHomeProjectEntries}
             projectsLoaded={projectsInitiallyLoaded}
             query={query}
             sort={sort}
@@ -818,8 +821,8 @@ const Home = () => {
             showCloudSyncUi
             onDuplicateToLibrary={duplicateProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
-            projectLibraryTypes={projectLibraryTypes}
-            className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
+            librarySections={librarySections}
+            className="flex-1 col-start-2 -col-end-1 overflow-y-auto pb-24"
           />
         )}
       </div>
@@ -875,7 +878,12 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   showCloudSyncUi: boolean
   onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
-  projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
+  librarySections: readonly {
+    type: ProjectLibrary['type']
+    title: string
+    onRefresh?: () => void
+    isRefreshing: boolean
+  }[]
 }
 function ProjectLibraryOverview({
   projectShellEnabled,
@@ -891,80 +899,133 @@ function ProjectLibraryOverview({
   showCloudSyncUi,
   onDuplicateToLibrary,
   projectLibraryDrag,
-  projectLibraryTypes,
+  librarySections,
   ...rest
 }: ProjectLibraryOverviewProps) {
+  const displayedProjects = query.length > 0 ? searchResults : projects
+  const sortProjects = getSortFunction(sort)
   const libraryRows = libraries
-    .map((library) => {
-      const libraryProjects = getHomeProjectEntriesForLibrary(
-        projects,
+    .map((library) => ({
+      library,
+      projects: getHomeProjectEntriesForLibrary(
+        displayedProjects,
         library.id
-      ).toSorted(getSortFunction(sort))
-      const displayedProjects =
-        query.length > 0
-          ? getHomeProjectEntriesForLibrary(searchResults, library.id).toSorted(
-              getSortFunction(sort)
-            )
-          : libraryProjects
-      return {
-        library,
-        libraryProjects,
-        projects: displayedProjects,
-      }
-    })
+      ).toSorted(sortProjects),
+    }))
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
+  const initiallyLoading = !projectsLoaded && projects.length === 0
+  const renderLibraryRow = ({
+    library,
+    projects,
+  }: (typeof libraryRows)[number]) => (
+    <ProjectLibraryPreviewRow
+      projectShellEnabled={projectShellEnabled}
+      key={library.id}
+      library={library}
+      projects={projects}
+      query={query}
+      projectStatuses={projectStatuses}
+      projectActions={projectActions}
+      fileOperations={fileOperations}
+      showCloudSyncUi={showCloudSyncUi}
+      onDuplicateToLibrary={onDuplicateToLibrary}
+      projectLibraryDrag={projectLibraryDrag}
+    />
+  )
   const loadingMore = !projectsLoaded ? (
     <div className="py-4">
       <ProjectsLoading />
     </div>
   ) : null
+  const renderSection = (
+    type: ProjectLibrary['type'],
+    title: string,
+    actions?: ReactNode
+  ) => {
+    const rows = libraryRows.filter(({ library }) => library.type === type)
+    return (
+      <section key={type} aria-label={title} className="border-t b-4 pt-3">
+        <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <h2 className="text-2xl font-bold">{title}</h2>
+          {actions && (
+            <div
+              role="group"
+              aria-label="Library actions"
+              className="ml-auto flex flex-wrap items-center justify-end gap-2"
+            >
+              {actions}
+            </div>
+          )}
+        </div>
+        {!initiallyLoading && rows.length > 0 && (
+          <div className="flex flex-col gap-8">
+            {rows.map(renderLibraryRow)}
+          </div>
+        )}
+      </section>
+    )
+  }
+  const sections = librarySections.map(
+    ({ type, title, onRefresh, isRefreshing }) =>
+      renderSection(
+        type,
+        title,
+        onRefresh && (
+          <HomeRefreshButton
+            onRefresh={onRefresh}
+            isRefreshing={isRefreshing}
+          />
+        )
+      )
+  )
   if (libraries.length === 0) {
-    return <ProjectLibrariesEmptyState {...rest} />
+    return (
+      <ProjectLibrariesEmptyState {...rest}>
+        {sections}
+      </ProjectLibrariesEmptyState>
+    )
   }
   return (
     <section data-testid="home-section" {...rest}>
-      {!projectsLoaded && projects.length === 0 ? (
-        <ProjectsLoading />
-      ) : (
-        <>
-          {libraryRows.length > 0 ? (
-            <div className="flex flex-col gap-8">
-              {libraryRows.map(({ library, libraryProjects, projects }) => (
-                <ProjectLibraryPreviewRow
-                  projectShellEnabled={projectShellEnabled}
-                  key={library.id}
-                  library={library}
-                  projects={projects}
-                  libraryProjects={libraryProjects}
-                  query={query}
-                  projectStatuses={projectStatuses}
-                  projectActions={projectActions}
-                  fileOperations={fileOperations}
-                  showCloudSyncUi={showCloudSyncUi}
-                  onDuplicateToLibrary={onDuplicateToLibrary}
-                  projectLibraryDrag={projectLibraryDrag}
-                  projectLibraryTypes={projectLibraryTypes}
-                />
-              ))}
-            </div>
-          ) : (
-            <p
-              data-testid="projects-none"
-              className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+      <div className="flex flex-col gap-8">
+        {initiallyLoading && <ProjectsLoading />}
+        {!initiallyLoading && libraryRows.length === 0 && (
+          <p
+            data-testid="projects-none"
+            className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
+          >
+            No projects found
+            {projects.length === 0
+              ? ', ready to make your first one?'
+              : ` with the search term "${query}"`}
+          </p>
+        )}
+        {libraries.some(
+          ({ type }) => type === DIRECTORY_PROJECT_LIBRARY_TYPE
+        ) &&
+          renderSection(
+            DIRECTORY_PROJECT_LIBRARY_TYPE,
+            'Local Libraries',
+            <ActionButton
+              Element="link"
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+              aria-label="Manage in Settings"
+              className="text-xs border-primary/10"
+              iconStart={{ icon: 'settings', bgClassName: '!bg-transparent' }}
             >
-              No projects found
-              {projects.length === 0
-                ? ', ready to make your first one?'
-                : ` with the search term "${query}"`}
-            </p>
+              Manage in Settings
+            </ActionButton>
           )}
-          {loadingMore}
-        </>
-      )}
+        {sections}
+      </div>
+      {!initiallyLoading && loadingMore}
     </section>
   )
 }
-function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
+function ProjectLibrariesEmptyState({
+  children,
+  ...props
+}: HTMLProps<HTMLDivElement>) {
   return (
     <section data-testid="home-section" {...props}>
       <div
@@ -992,6 +1053,7 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
           Add library
         </ActionButton>
       </div>
+      {children}
     </section>
   )
 }

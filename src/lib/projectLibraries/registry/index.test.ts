@@ -48,6 +48,54 @@ describe('project library realizations registry service', () => {
     vi.restoreAllMocks()
     vi.useRealTimers()
   })
+  it('keeps directory scans cached when the cloud catalog changes', async () => {
+    const readRealizations = vi.fn(async () => [])
+    const readCloudRealizations = async () => []
+    const cloudLibraries = signal<ProjectLibraryTypeContribution['libraries']>(
+      []
+    )
+    registry = new Registry()
+    await registry.configure([
+      provide(
+        settingsService,
+        createSettingsService([
+          {
+            title: 'Local projects',
+            path: '/projects',
+            type: 'custom-directory',
+          },
+        ])
+      ),
+      contribute(projectLibraryTypesFacet, () => ({
+        type: 'custom-directory',
+        title: 'Directory',
+        readRealizations,
+      })),
+      contribute(projectLibraryTypesFacet, () => ({
+        type: 'cloud',
+        title: 'Cloud',
+        libraries: cloudLibraries.value,
+        readRealizations: readCloudRealizations,
+      })),
+      projectLibrariesExtension,
+    ])
+    await vi.waitFor(() => expect(readRealizations).toHaveBeenCalledOnce())
+
+    cloudLibraries.value = [
+      {
+        id: 'cloud-new',
+        title: 'New cloud library',
+        path: '/cloud',
+        type: 'cloud',
+      },
+    ]
+    await vi.waitFor(() =>
+      expect(
+        registry?.get(projectLibraryTypesFacet).get('cloud')?.libraries
+      ).toHaveLength(1)
+    )
+    expect(readRealizations).toHaveBeenCalledOnce()
+  })
   it.each(['success', 'failure'] as const)(
     'reports directory discovery pending for seven seconds through %s',
     async (outcome) => {

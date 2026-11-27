@@ -1,11 +1,8 @@
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import {
-  DirectoryProjectLibrarySettingsDetails,
-  filterProjectLibraryTypeOptionsForSettings,
-  ProjectLibrariesSettingInput,
-  type ProjectLibraryTypeOption,
-  projectLibraryTypeOptionsFromContributions,
-} from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+  DirectoryLibrarySettingsDetails,
+  DirectoryLibrarySettingInput,
+} from '@src/lib/projectLibraries/settings/DirectoryLibrarySettingInput'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
@@ -23,53 +20,29 @@ const defaultLibraries: ProjectLibrarySetting[] = [
   },
 ]
 
-const libraryTypeOptions: ProjectLibraryTypeOption[] = [
-  {
-    label: 'Directory',
-    icon: 'folder',
-    value: 'directory',
-    defaultLibrary: {
-      title: 'Default Projects Directory',
-      path: 'projects',
-      type: 'directory',
-    },
-    newLibrary: {
-      title: 'Project Library',
-      path: 'projects',
-      type: 'directory',
-    },
-    settingsDetails: DirectoryProjectLibrarySettingsDetails,
+const directoryType = {
+  title: 'Directory',
+  icon: 'folder',
+  type: 'directory',
+  defaultSetting: {
+    title: 'Default Projects Directory',
+    path: 'projects',
+    type: 'directory',
   },
-]
-
-const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
-  ...libraryTypeOptions,
-  {
-    label: 'Cloud',
-    icon: 'cloud',
-    value: 'cloud',
-    defaultLibrary: {
-      title: 'Cloud',
-      path: 'zoo-cloud',
-      type: 'cloud',
-    },
-    newLibrary: {
-      title: 'Cloud',
-      path: 'zoo-cloud',
-      type: 'cloud',
-    },
-    settingsDetails: () => <></>,
+  newLibrarySetting: {
+    title: 'Project Library',
+    path: 'projects',
+    type: 'directory',
   },
-]
+  settingsDetails: DirectoryLibrarySettingsDetails,
+}
 
-describe('ProjectLibrariesSettingInput', () => {
+describe('DirectoryLibrarySettingInput', () => {
   test('does not invent a directory library type when none are registered', () => {
     const updateValue = vi.fn()
 
-    expect(projectLibraryTypeOptionsFromContributions(new Map())).toEqual([])
-
     render(
-      <ProjectLibrariesSettingInput value={[]} updateValue={updateValue} />
+      <DirectoryLibrarySettingInput value={[]} updateValue={updateValue} />
     )
 
     const addButton = screen.getByTestId('project-library-add')
@@ -83,10 +56,10 @@ describe('ProjectLibrariesSettingInput', () => {
   test('does not update project libraries when blurring unchanged fields', () => {
     const updateValue = vi.fn()
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        libraryTypeOptions={libraryTypeOptions}
+        directoryType={directoryType}
       />
     )
 
@@ -99,65 +72,27 @@ describe('ProjectLibrariesSettingInput', () => {
   test('does not render implicit details for library types without a settings details contribution', () => {
     const updateValue = vi.fn()
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        libraryTypeOptions={projectLibraryTypeOptionsFromContributions(
-          new Map([
-            [
-              'directory',
-              {
-                type: 'directory',
-                title: 'Directory',
-                defaultSetting: {
-                  title: 'Default Projects Directory',
-                  path: 'projects',
-                  type: 'directory',
-                },
-              },
-            ],
-          ])
-        )}
+        directoryType={{
+          type: 'directory',
+          title: 'Directory',
+          defaultSetting: defaultLibraries[0],
+        }}
       />
     )
 
     expect(screen.queryByTestId('project-directory-input')).toBeNull()
   })
 
-  test('filters library types hidden on the current platform from settings options', () => {
-    expect(
-      filterProjectLibraryTypeOptionsForSettings(
-        projectLibraryTypeOptionsFromContributions(
-          new Map([
-            [
-              'directory',
-              {
-                type: 'directory',
-                title: 'Directory',
-                hideInSettingsOnPlatform: 'web',
-              },
-            ],
-            [
-              'cloud',
-              {
-                type: 'cloud',
-                title: 'Cloud',
-              },
-            ],
-          ])
-        ),
-        { isDesktop: false }
-      ).map((option) => option.value)
-    ).toEqual(['cloud'])
-  })
-
   test('does not update project libraries when normalization matches the current value', () => {
     const updateValue = vi.fn()
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        libraryTypeOptions={libraryTypeOptions}
+        directoryType={directoryType}
       />
     )
 
@@ -182,10 +117,10 @@ describe('ProjectLibrariesSettingInput', () => {
     window.electron = { getPath, open } as unknown as Window['electron']
 
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        libraryTypeOptions={libraryTypeOptions}
+        directoryType={directoryType}
       />
     )
 
@@ -239,13 +174,12 @@ describe('ProjectLibrariesSettingInput', () => {
   test('hides library management controls when management is disabled', () => {
     const updateValue = vi.fn()
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        libraryTypeOptions={libraryTypeOptions}
+        directoryType={directoryType}
         canAddLibraries={false}
         canReorderLibraries={false}
-        canChangeLibraryType={false}
         canEditLibraryDetails={false}
         canRemoveLibrary={() => false}
       />
@@ -263,77 +197,22 @@ describe('ProjectLibrariesSettingInput', () => {
     )
   })
 
-  test('allows directory library removal without enabling web library management', () => {
-    const updateValue = vi.fn()
-    const cloudLibrary: ProjectLibrarySetting = {
-      title: 'Personal Cloud',
-      path: '/cloud/personal',
-      type: 'cloud',
-    }
-
-    render(
-      <ProjectLibrariesSettingInput
-        value={[...defaultLibraries, cloudLibrary]}
-        updateValue={updateValue}
-        libraryTypeOptions={multipleLibraryTypeOptions}
-        selectableLibraryTypeOptions={multipleLibraryTypeOptions.filter(
-          (option) => option.value !== 'directory'
-        )}
-        canAddLibraries={false}
-        canReorderLibraries={false}
-        canChangeLibraryType={false}
-        canEditLibraryDetails={false}
-        canRemoveLibrary={(library) => library.type === 'directory'}
-      />
-    )
-
-    expect(screen.queryByTestId('project-library-add')).toBeNull()
-    expect(screen.queryByTestId('project-library-drag-handle')).toBeNull()
-    const libraryTypes = screen.getAllByTestId('project-library-type')
-    expect(libraryTypes).toHaveLength(2)
-    expect(libraryTypes[0]).toHaveAttribute(
-      'aria-label',
-      'Library type: Directory'
-    )
-    expect(libraryTypes[1]).toHaveAttribute('aria-label', 'Library type: Cloud')
-
-    const removeButtons = screen.getAllByTestId('project-library-remove')
-    expect(removeButtons).toHaveLength(1)
-
-    fireEvent.click(removeButtons[0])
-
-    expect(updateValue).toHaveBeenLastCalledWith([cloudLibrary])
-  })
-
-  test('shows library type as an icon button with icon and label options', () => {
+  test('allows directory library removal while edits and reordering are disabled', () => {
     const updateValue = vi.fn()
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        libraryTypeOptions={multipleLibraryTypeOptions}
+        directoryType={directoryType}
+        canAddLibraries={false}
+        canReorderLibraries={false}
+        canEditLibraryDetails={false}
       />
     )
 
-    const typeButton = screen.getByLabelText('Library type: Directory')
-    expect(
-      typeButton.querySelector('svg[aria-label="folder"]')
-    ).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('project-library-remove'))
 
-    fireEvent.click(typeButton)
-
-    expect(screen.getByRole('option', { name: /Directory/ })).toBeVisible()
-    expect(screen.getByRole('option', { name: /Cloud/ })).toBeVisible()
-
-    fireEvent.click(screen.getByRole('option', { name: /Cloud/ }))
-
-    expect(updateValue).toHaveBeenLastCalledWith([
-      {
-        title: 'Cloud',
-        path: '/projects',
-        type: 'cloud',
-      },
-    ])
+    expect(updateValue).toHaveBeenLastCalledWith([])
   })
 
   test('reorders project libraries with drag and drop', () => {
@@ -350,7 +229,7 @@ describe('ProjectLibrariesSettingInput', () => {
     }
 
     render(
-      <ProjectLibrariesSettingInput
+      <DirectoryLibrarySettingInput
         value={[
           ...defaultLibraries,
           {
@@ -360,7 +239,7 @@ describe('ProjectLibrariesSettingInput', () => {
           },
         ]}
         updateValue={updateValue}
-        libraryTypeOptions={libraryTypeOptions}
+        directoryType={directoryType}
       />
     )
 
