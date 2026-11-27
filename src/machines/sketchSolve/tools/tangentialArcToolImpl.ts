@@ -13,7 +13,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   addVec,
   cross2d,
@@ -521,34 +520,30 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
               ctor: {
                 type: 'Arc',
                 center: {
-                  x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-                  y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+                  x: { type: 'Var', value: centerPoint[0], units },
+                  y: { type: 'Var', value: centerPoint[1], units },
                 },
                 start: {
                   x: {
                     type: 'Var',
-                    value: roundOff(
-                      context.tangentInfo.tangentStart.position[0]
-                    ),
+                    value: context.tangentInfo.tangentStart.position[0],
                     units,
                   },
                   y: {
                     type: 'Var',
-                    value: roundOff(
-                      context.tangentInfo.tangentStart.position[1]
-                    ),
+                    value: context.tangentInfo.tangentStart.position[1],
                     units,
                   },
                 },
                 end: {
                   x: {
                     type: 'Var',
-                    value: roundOff(endPoint[0]),
+                    value: endPoint[0],
                     units,
                   },
                   y: {
                     type: 'Var',
-                    value: roundOff(endPoint[1]),
+                    value: endPoint[1],
                     units,
                   },
                 },
@@ -766,16 +761,16 @@ export async function createArcActor({
     const segmentCtor: SegmentCtor = {
       type: 'Arc',
       center: {
-        x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-        y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+        x: { type: 'Var', value: centerPoint[0], units },
+        y: { type: 'Var', value: centerPoint[1], units },
       },
       start: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
+        x: { type: 'Var', value: startPoint[0], units },
+        y: { type: 'Var', value: startPoint[1], units },
       },
       end: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
+        x: { type: 'Var', value: startPoint[0], units },
+        y: { type: 'Var', value: startPoint[1], units },
       },
     }
 
@@ -870,30 +865,30 @@ export async function finalizeArcActor({
           ctor: {
             type: 'Arc',
             center: {
-              x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-              y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+              x: { type: 'Var', value: centerPoint[0], units },
+              y: { type: 'Var', value: centerPoint[1], units },
             },
             start: {
               x: {
                 type: 'Var',
-                value: roundOff(startPoint[0]),
+                value: startPoint[0],
                 units,
               },
               y: {
                 type: 'Var',
-                value: roundOff(startPoint[1]),
+                value: startPoint[1],
                 units,
               },
             },
             end: {
               x: {
                 type: 'Var',
-                value: roundOff(endPoint[0]),
+                value: endPoint[0],
                 units,
               },
               y: {
                 type: 'Var',
-                value: roundOff(endPoint[1]),
+                value: endPoint[1],
                 units,
               },
             },

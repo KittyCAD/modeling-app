@@ -12,7 +12,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import {
   getControlPointSplinePoints,
@@ -173,12 +172,12 @@ function toPointExpr(point: Coords2d, units: string) {
   return {
     x: {
       type: 'Var' as const,
-      value: roundOff(point[0]),
+      value: point[0],
       units,
     },
     y: {
       type: 'Var' as const,
-      value: roundOff(point[1]),
+      value: point[1],
       units,
     },
   }
@@ -819,8 +818,8 @@ function animateDraftPointListener({
               ctor: {
                 type: 'Point',
                 position: {
-                  x: { type: 'Var', value: roundOff(x), units },
-                  y: { type: 'Var', value: roundOff(y), units },
+                  x: { type: 'Var', value: x, units },
+                  y: { type: 'Var', value: y, units },
                 },
               },
             },

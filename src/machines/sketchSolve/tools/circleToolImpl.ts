@@ -9,7 +9,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   isCircleSegment,
   isPointSegment,
@@ -348,12 +347,12 @@ function circleSegment(input: CircleGeometryInput): SegmentCtor {
   return {
     type: 'Circle',
     center: {
-      x: { type: 'Var', value: roundOff(input.centerPoint[0]), units },
-      y: { type: 'Var', value: roundOff(input.centerPoint[1]), units },
+      x: { type: 'Var', value: input.centerPoint[0], units },
+      y: { type: 'Var', value: input.centerPoint[1], units },
     },
     start: {
-      x: { type: 'Var', value: roundOff(input.startPoint[0]), units },
-      y: { type: 'Var', value: roundOff(input.startPoint[1]), units },
+      x: { type: 'Var', value: input.startPoint[0], units },
+      y: { type: 'Var', value: input.startPoint[1], units },
     },
   }
 }
