@@ -1124,7 +1124,17 @@ export class LocalRenderer {
   }
 
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
-  async getProjectedEntities() {
+  async getProjectedEntities({
+    kind: requestedKind,
+    id: requestedId,
+    visible: requestedVisibility,
+    limit = Infinity,
+  }: {
+    kind?: ProjectedEntity['kind'] | 'face'
+    id?: string
+    visible?: boolean
+    limit?: number
+  } = {}) {
     const camera = this.camera
     const canvas = this.gpu?.renderer.domElement
     if (
@@ -1132,7 +1142,8 @@ export class LocalRenderer {
       !canvas ||
       !this.currentModel ||
       !this.isLoadedSceneCurrent() ||
-      this.host.executing.peek()
+      this.host.executing.peek() ||
+      limit <= 0
     )
       return []
     this.prepareDepth()
@@ -1142,6 +1153,7 @@ export class LocalRenderer {
     camera.updateMatrixWorld(true)
     const entities: ProjectedEntity[] = []
     for (const [id, meshes] of this.targetsByEntityId) {
+      if (requestedId !== undefined && id !== requestedId) continue
       const { edgeUuid, isSketchRegion } = meshes[0].userData
       const kind =
         typeof edgeUuid === 'string'
@@ -1149,6 +1161,11 @@ export class LocalRenderer {
           : isSketchRegion === true
             ? 'sketchFace'
             : 'bodyFace'
+      if (
+        requestedKind !== undefined &&
+        (requestedKind === 'face' ? kind === 'edge' : kind !== requestedKind)
+      )
+        continue
       const geometryKind = kind === 'edge' ? 'edge' : 'face'
       let projected: { x: number; y: number } | undefined
       let visible = false
@@ -1188,7 +1205,10 @@ export class LocalRenderer {
           }
         }
       }
+      if (requestedVisibility !== undefined && visible !== requestedVisibility)
+        continue
       if (projected) entities.push({ id, kind, ...projected, visible })
+      if (entities.length >= limit) break
     }
     return entities
   }
