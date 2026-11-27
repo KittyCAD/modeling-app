@@ -17,7 +17,6 @@ import {
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'
@@ -98,11 +97,10 @@ test.describe(
     test(
       'Keybindings display the correct hotkey for Command Palette',
       { tag: ['@macos', '@windows', '@localRenderer'] },
-      async ({ page, homePage }) => {
-        const u = await getUtils(page)
+      async ({ page, homePage, scene: sceneFixture }) => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await sceneFixture.waitForSketchButtonEnabled()
 
         await test.step('Open keybindings settings', async () => {
           // Open the settings modal with the keyboard shortcut
@@ -405,7 +403,16 @@ test.describe(
     test(
       `Closing settings modal should go back to the original file being viewed`,
       { tag: ['@macos', '@windows', '@localRenderer'] },
-      async ({ page, folderSetupFn }, testInfo) => {
+      async (
+        {
+          page,
+          folderSetupFn,
+          scene: sceneFixture,
+          editor: editorFixture,
+          fileTree: fileTreeFixture,
+        },
+        testInfo
+      ) => {
         await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
@@ -427,27 +434,19 @@ test.describe(
           'utf8'
         )
 
-        const {
-          openKclCodePanel,
-          openFilePanel,
-          waitForPageLoad,
-          selectFile,
-          editorTextMatches,
-        } = await getUtils(page, test)
-
         await page.setBodyDimensions({ width: 1200, height: 500 })
         page.on('console', console.log)
 
         await test.step('Precondition: Open to second project file', async () => {
           await expect(page.getByTestId('home-section')).toBeVisible()
           await page.getByText('project-000').click()
-          await waitForPageLoad()
-          await openKclCodePanel()
-          await openFilePanel()
-          await editorTextMatches(kclCube)
+          await sceneFixture.waitForSketchButtonEnabled()
+          await editorFixture.openPaneAndRevealCode()
+          await fileTreeFixture.openPane()
+          await editorFixture.expectNormalizedCode(kclCube)
 
-          await selectFile('2.kcl')
-          await editorTextMatches(kclCylinder)
+          await fileTreeFixture.selectFile('2.kcl')
+          await editorFixture.expectNormalizedCode(kclCylinder)
         })
 
         const settingsOpenButton = page.getByRole('link', {
@@ -464,7 +463,7 @@ test.describe(
         })
 
         await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
-          await editorTextMatches(kclCylinder)
+          await editorFixture.expectNormalizedCode(kclCylinder)
         })
       }
     )
@@ -660,15 +659,13 @@ test.describe(
       test(
         `Changing system theme preferences (via media query) should update UI and stream ${rendererTag}`,
         { tag: ['@macos', '@windows'] },
-        async ({ page, homePage, tronApp }) => {
+        async ({ page, homePage, tronApp, scene: sceneFixture }) => {
           if (!tronApp) throwTronAppMissing()
 
           await tronApp.cleanProjectDir({
             // Override the settings so that the theme is set to `system`
             ...TEST_SETTINGS_DEFAULT_THEME,
           })
-
-          const u = await getUtils(page)
 
           // Selectors and constants
           const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
@@ -685,7 +682,7 @@ test.describe(
             )
             // Probe clear canvas in local mode; the old point includes translucent
             // stream planes whose colours differ between renderers.
-            return u.getGreatestPixDiff(
+            return sceneFixture.getGreatestPixDiff(
               local ? { x: 1180, y: 20 } : { x: 1000, y: 200 },
               local ? localColor : streamColor
             )
@@ -698,7 +695,7 @@ test.describe(
             await page.emulateMedia({ colorScheme: 'light' })
             await page.setBodyDimensions({ width: 1200, height: 500 })
             await homePage.goToModelingScene()
-            await u.waitForPageLoad()
+            await sceneFixture.waitForSketchButtonEnabled()
             await page.waitForTimeout(1000)
             await expect(toolbar).toBeVisible()
           })
@@ -737,7 +734,7 @@ test.describe(
     test(
       `Changing system theme preferences should not override fixed light theme`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, tronApp }) => {
+      async ({ page, homePage, tronApp, scene: sceneFixture }) => {
         if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
@@ -748,15 +745,13 @@ test.describe(
           },
         })
 
-        const u = await getUtils(page)
-
         const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
         const lightBackgroundColor: [number, number, number] = [227, 222, 230]
         const streamBackgroundColorTolerance = 20
         const streamBackgroundPixelIsColor = async (
           color: [number, number, number]
         ) => {
-          return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+          return sceneFixture.getGreatestPixDiff({ x: 1000, y: 200 }, color)
         }
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
         const codeMirrorContent = page
@@ -782,7 +777,7 @@ test.describe(
           await page.emulateMedia({ colorScheme: 'light' })
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
-          await u.waitForPageLoad()
+          await sceneFixture.waitForSketchButtonEnabled()
           await page.waitForTimeout(1000)
           await expect(toolbar).toBeVisible()
         })
@@ -1033,8 +1028,13 @@ test.describe(
     test(
       `Change inline units setting`,
       { tag: ['@macos', '@windows', '@localRenderer'] },
-      async ({ page, homePage, editor, folderSetupFn }) => {
-        const u = await getUtils(page)
+      async ({
+        page,
+        homePage,
+        editor,
+        folderSetupFn,
+        debug: debugFixture,
+      }) => {
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -1062,17 +1062,20 @@ test.describe(
         await test.step(`Manually write inline settings`, async () => {
           await editor.openPane()
           // Clear debug logs so expectCmdLog waits for executeAst from this edit, not a prior run.
-          await u.openDebugPanel()
-          await u.clearCommandLogs()
-          await u.closeDebugPanel()
+          await debugFixture.open()
+          await debugFixture.clearCommandLogs()
+          await debugFixture.close()
           await editor.replaceCode(
             `fn cube`,
             `${inlineSettingsString(initialInlineUnits)}
 fn cube`
           )
-          await u.openDebugPanel()
-          await u.expectCmdLog('[data-message-type="execution-done"]', 20_000)
-          await u.closeDebugPanel()
+          await debugFixture.open()
+          await debugFixture.expectCommandLog(
+            '[data-message-type="execution-done"]',
+            20_000
+          )
+          await debugFixture.close()
           await expect(unitsIndicator).toContainText(initialInlineUnits)
         })
 

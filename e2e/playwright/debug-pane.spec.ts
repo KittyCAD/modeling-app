@@ -1,4 +1,3 @@
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 function countNewlines(input: string): number {
@@ -16,11 +15,13 @@ test.describe('Debug pane', { tag: ['@desktop', '@localRenderer'] }, () => {
     page,
     context,
     homePage,
+    editor: editorFixture,
+    debug: debugFixture,
   }) => {
     const code = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 0])
   `
-    const u = await getUtils(page)
+
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const tree = page.getByTestId('debug-feature-tree')
@@ -31,10 +32,10 @@ test.describe('Debug pane', { tag: ['@desktop', '@localRenderer'] }, () => {
 
     await test.step('Test setup', async () => {
       await homePage.goToModelingScene()
-      await u.openKclCodePanel()
-      await u.openDebugPanel()
+      await editorFixture.openPaneAndRevealCode()
+      await debugFixture.open()
       // Set the code in the code editor.
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       await page.keyboard.type(code, { delay: 0 })
       // Scroll to the artifact graph.
       await tree.scrollIntoViewIfNeeded()
@@ -45,7 +46,7 @@ test.describe('Debug pane', { tag: ['@desktop', '@localRenderer'] }, () => {
     })
     await test.step('Move cursor to the bottom of the code editor', async () => {
       // Focus on the code editor.
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       // Make sure the cursor is at the end of the code.
       const lines = countNewlines(code) + 1
       for (let i = 0; i < lines; i++) {

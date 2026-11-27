@@ -3,7 +3,6 @@ import type { TestColor } from '@e2e/playwright/lib/imageAssertions'
 import { TEST_COLORS } from '@e2e/playwright/lib/imageAssertions'
 import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -23,6 +22,7 @@ test.describe('Regression tests', { tag: '@web' }, () => {
     toolbar,
     scene,
     editor,
+    fileTree,
   }) => {
     await homePage.createAndGoToProject('sketch-file-switching')
     await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -35,12 +35,12 @@ test.describe('Regression tests', { tag: '@web' }, () => {
     ].entries()) {
       await test.step(`Sketch in ${fileName}`, async () => {
         if (fileName === 'foo.kcl') {
-          await toolbar.createFile({
+          await fileTree.createFile({
             fileName,
             waitForToastToDisappear: false,
           })
         } else if (index > 0) {
-          await toolbar.openFile(fileName)
+          await fileTree.openFile(fileName)
         }
         await expect(page).toHaveURL(new RegExp(`${fileName}$`))
         await scene.settled()
@@ -66,11 +66,11 @@ test.describe('Regression tests', { tag: '@desktop' }, () => {
   test(
     'user should not have to press down twice in cmdbar',
     { tag: '@localRenderer' },
-    async ({ page, homePage, cmdBar }) => {
+    async ({ page, homePage, cmdBar, scene: sceneFixture }) => {
       // because the model has `line([0,0]..` it is valid code, but the model is invalid
       // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
       // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
-      const u = await getUtils(page)
+
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -87,7 +87,7 @@ extrude001 = extrude(sketch001, length = 50)
       })
 
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+      await sceneFixture.waitForSketchButtonEnabled()
 
       await test.step('Check arrow down works', async () => {
         await cmdBar.cmdBarOpenBtn.click()
@@ -128,8 +128,7 @@ extrude001 = extrude(sketch001, length = 50)
   test(
     'executes on load',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, scene: sceneFixture }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -143,7 +142,7 @@ extrude001 = extrude(sketch001, length = 50)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+      await sceneFixture.waitForSketchButtonEnabled()
 
       // expand variables section
       const variablesTabButton = page.getByTestId('variables-pane-button')
@@ -163,35 +162,38 @@ extrude001 = extrude(sketch001, length = 50)
     }
   )
 
-  test('re-executes', { tag: '@localRenderer' }, async ({ page, homePage }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem('persistCode', `myVar = 5`)
-    })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+  test(
+    're-executes',
+    { tag: '@localRenderer' },
+    async ({ page, homePage, scene: sceneFixture }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', `myVar = 5`)
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+      await homePage.goToModelingScene()
+      await sceneFixture.waitForSketchButtonEnabled()
 
-    const variablesTabButton = page.getByTestId('variables-pane-button')
-    await variablesTabButton.click()
-    // expect to see "myVar:5"
-    await expect(
-      // There's a double quote before the number value since the units are
-      // formatted into a string.
-      page.locator('.pretty-json-container >> text=myVar:"5')
-    ).toBeVisible()
+      const variablesTabButton = page.getByTestId('variables-pane-button')
+      await variablesTabButton.click()
+      // expect to see "myVar:5"
+      await expect(
+        // There's a double quote before the number value since the units are
+        // formatted into a string.
+        page.locator('.pretty-json-container >> text=myVar:"5')
+      ).toBeVisible()
 
-    // change 5 to 67
-    await page.locator('#code-mirror-override').getByText('myVar').click()
-    await page.keyboard.press('End')
-    await page.keyboard.press('Backspace')
-    await page.keyboard.type('67')
+      // change 5 to 67
+      await page.locator('#code-mirror-override').getByText('myVar').click()
+      await page.keyboard.press('End')
+      await page.keyboard.press('Backspace')
+      await page.keyboard.type('67')
 
-    await expect(
-      page.locator('.pretty-json-container >> text=myVar:"67')
-    ).toBeVisible()
-  })
+      await expect(
+        page.locator('.pretty-json-container >> text=myVar:"67')
+      ).toBeVisible()
+    }
+  )
   test(
     'ProgramMemory can be serialised',
     { tag: '@localRenderer' },
@@ -235,8 +237,7 @@ extrude001 = extrude(sketch001, length = 50)
   test(
     'Position _ Is Out Of Range... regression test',
     { tag: '@localRenderer' },
-    async ({ context, page, homePage, scene }) => {
-      const u = await getUtils(page)
+    async ({ context, page, homePage, scene, editor: editorFixture }) => {
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await context.addInitScript(async () => {
@@ -273,7 +274,7 @@ extrude001 = extrude(sketch001, length = 50)
       await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
       // Okay execution finished, let's start editing text below the error.
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       // Go to the end of the editor
       // This bug happens when there is a diagnostic in the editor and you try to
       // edit text below it.
@@ -463,8 +464,13 @@ extrude002 = extrude(profile002, length = 150)`
   test(
     'ensure you CAN export while an export is already going',
     { tag: ['@skipLocalEngine', '@localRenderer'] },
-    async ({ page, homePage, cmdBar }) => {
-      const u = await getUtils(page)
+    async ({
+      page,
+      homePage,
+      cmdBar,
+      scene: sceneFixture,
+      debug: debugFixture,
+    }) => {
       await test.step('Set up the code and durations', async () => {
         await page.addInitScript(
           async ({ code }) => {
@@ -479,12 +485,14 @@ extrude002 = extrude(profile002, length = 150)`
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await sceneFixture.waitForSketchButtonEnabled()
 
         // wait for execution done
-        await u.openDebugPanel()
-        await u.expectCmdLog('[data-message-type="execution-done"]')
-        await u.closeDebugPanel()
+        await debugFixture.open()
+        await debugFixture.expectCommandLog(
+          '[data-message-type="execution-done"]'
+        )
+        await debugFixture.close()
 
         // expect zero errors in guter
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -580,14 +588,13 @@ extrude002 = extrude(profile002, length = 150)`
     page,
     homePage,
     scene,
+    editor: editorFixture,
   }) => {
-    const u = await getUtils(page)
-
     // Constants and locators
     const planeColor: [number, number, number] = [50, 44, 45]
     const bgColor: [number, number, number] = [30, 30, 30]
     const middlePixelIsColor = async (color: [number, number, number]) => {
-      return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
+      return scene.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
     const gizmo = page.locator('[aria-label*=gizmo]')
 
@@ -597,8 +604,8 @@ extrude002 = extrude(profile002, length = 150)`
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
-      await u.closeKclCodePanel()
+      await scene.waitForSketchButtonEnabled()
+      await editorFixture.closePane()
     })
 
     await test.step(`Zoom out until you can't see the default planes`, async () => {
@@ -752,10 +759,9 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
 
   test.fail(
     'Console errors cause tests to fail',
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, debug: debugFixture }) => {
       await homePage.goToModelingScene()
-      await u.openAndClearDebugPanel()
+      await debugFixture.openAndClear()
 
       await page.getByTestId('custom-cmd-input').fill('foobar')
       await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
@@ -766,7 +772,15 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
   test(
     'Interrupting a long-executing file with navigation executes the new file',
     { tag: '@localRenderer' },
-    async ({ page, homePage, scene, toolbar, folderSetupFn }) => {
+    async ({
+      page,
+      homePage,
+      scene,
+      toolbar,
+      folderSetupFn,
+      debug: debugFixture,
+      fileTree,
+    }) => {
       await folderSetupFn(async (dir) => {
         const testDir = path.join(dir, 'test')
         await fsp.mkdir(testDir, { recursive: true })
@@ -808,16 +822,15 @@ extrude001 = extrude(profile001, length = 5)
         )
       })
 
-      const u = await getUtils(page)
       await homePage.openProject('test')
       await toolbar.openPane(DefaultLayoutPaneID.Debug)
       await toolbar.openPane(DefaultLayoutPaneID.Files)
 
       await scene.connectionEstablished()
-      await toolbar.openFile('target.kcl')
+      await fileTree.openFile('target.kcl')
       // Extrude is only present in the target file, not main.kcl, so we know the new file has executed
       // just by navigating
-      await u.waitForCmdReceive('extrude')
+      await debugFixture.waitForCommandReceived('extrude')
     }
   )
 })

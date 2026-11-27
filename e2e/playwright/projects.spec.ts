@@ -14,7 +14,6 @@ import {
   expectRenderedDiagnosticText,
   isOutOfViewInScrollContainer,
 } from '@e2e/playwright/lib/textAssertions'
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -267,8 +266,6 @@ test(
       )
     })
 
-    const u = await getUtils(page)
-
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
       await scene.settled()
@@ -287,7 +284,7 @@ test(
       }).toPass()
     })
 
-    await u.doAndWaitForImageDiff(
+    await scene.doAndWaitForImageDiff(
       async () => {
         await toolbar.logoLink.click()
         await homePage.openProject('broken-code')
@@ -340,14 +337,12 @@ test(
       await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
     })
 
-    const u = await getUtils(page)
-
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
       await scene.settled()
     })
 
-    await u.doAndWaitForImageDiff(
+    await scene.doAndWaitForImageDiff(
       async () => {
         await toolbar.logoLink.click()
         await homePage.openProject('empty')
@@ -372,6 +367,7 @@ test(
     homePage,
     fs,
     folderSetupFn,
+    fileTree,
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -379,17 +375,15 @@ test(
       await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
     })
 
-    const u = await getUtils(page)
-
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
       await scene.settled()
     })
 
-    await u.doAndWaitForImageDiff(
+    await scene.doAndWaitForImageDiff(
       async () => {
         await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.openFile('empty.kcl')
+        await fileTree.openFile('empty.kcl')
         await toolbar.closePane(DefaultLayoutPaneID.Files)
         await scene.settled()
       },
@@ -416,6 +410,7 @@ test(
     editor,
     fs,
     folderSetupFn,
+    fileTree,
   }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -430,17 +425,15 @@ test(
       )
     })
 
-    const u = await getUtils(page)
-
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
       await scene.settled()
     })
 
-    await u.doAndWaitForImageDiff(
+    await scene.doAndWaitForImageDiff(
       async () => {
         await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.openFile('broken-code-test.kcl')
+        await fileTree.openFile('broken-code-test.kcl')
         await toolbar.closePane(DefaultLayoutPaneID.Files)
         await scene.settled({ expectError: true })
 
@@ -1233,7 +1226,17 @@ test(
   'File in the file pane should open with a single click',
   { tag: ['@desktop', '@localRenderer'] },
   async (
-    { context, homePage, page, scene, toolbar, fs, folderSetupFn },
+    {
+      context,
+      homePage,
+      page,
+      scene,
+      toolbar,
+      fs,
+      folderSetupFn,
+      editor: editorFixture,
+      fileTree,
+    },
     testInfo
   ) => {
     const projectName = 'router-template-slate'
@@ -1255,22 +1258,21 @@ test(
       )
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
 
     await page.getByText(projectName).click()
-    await u.waitForPageLoad()
+    await scene.waitForSketchButtonEnabled()
 
-    await expect(u.codeLocator).toContainText('routerDiameter')
-    await expect(u.codeLocator).toContainText('templateGap')
-    await expect(u.codeLocator).toContainText('minClampingDistance')
+    await expect(editorFixture.codeContent).toContainText('routerDiameter')
+    await expect(editorFixture.codeContent).toContainText('templateGap')
+    await expect(editorFixture.codeContent).toContainText('minClampingDistance')
 
     await page.getByRole('switch', { name: 'Project Files' }).click()
-    await toolbar.openFile('otherThingToClickOn.kcl')
+    await fileTree.openFile('otherThingToClickOn.kcl')
 
-    await expect(u.codeLocator).toContainText(
+    await expect(editorFixture.codeContent).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
     )
   }
@@ -1281,7 +1283,18 @@ test(
   {
     tag: ['@desktop', '@localRenderer'],
   },
-  async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
+  async (
+    {
+      scene,
+      cmdBar,
+      context,
+      page,
+      fs,
+      folderSetupFn,
+      fileTree: fileTreeFixture,
+    },
+    testInfo
+  ) => {
     let testDir: string | undefined
     await folderSetupFn(async (dir) => {
       await fs.mkdir(path.join(dir, 'router-template-slate', 'nested'), {
@@ -1305,7 +1318,7 @@ test(
 
       testDir = dir
     })
-    const u = await getUtils(page)
+
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
@@ -1315,7 +1328,7 @@ test(
       await scene.settled()
     })
 
-    await u.openFilePanel()
+    await fileTreeFixture.openPane()
 
     // Find the current file
     const filesPane = page.locator('#files-pane')
@@ -1730,7 +1743,18 @@ test(
   {
     tag: ['@desktop', '@localRenderer'],
   },
-  async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
+  async (
+    {
+      scene,
+      cmdBar,
+      context,
+      page,
+      fs,
+      folderSetupFn,
+      fileTree: fileTreeFixture,
+    },
+    testInfo
+  ) => {
     await folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
       await fs.mkdir(testDir, { recursive: true })
@@ -1835,8 +1859,7 @@ test(
     })
 
     await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
-      const u = await getUtils(page)
-      const element = u.locatorFile('tangential_arc.kcl')
+      const element = fileTreeFixture.file('tangential_arc.kcl')
       const container = page.getByTestId('file-pane-scroll-container')
 
       expect(await isOutOfViewInScrollContainer(element, container)).toBe(true)
@@ -1851,7 +1874,10 @@ test(
   {
     tag: ['@desktop', '@localRenderer'],
   },
-  async ({ context, page, fs, folderSetupFn, cmdBar, scene }, testInfo) => {
+  async (
+    { context, page, fs, folderSetupFn, cmdBar, scene, editor: editorFixture },
+    testInfo
+  ) => {
     await folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
       const name = 'mike_stress_test'
@@ -1865,7 +1891,7 @@ test(
         new Uint8Array(testFileData)
       )
     })
-    const u = await getUtils(page)
+
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
@@ -1874,9 +1900,9 @@ test(
     await closeOnboardingModalIfPresent(page)
 
     await test.step('select all in code editor, check its length', async () => {
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       // expect u.codeLocator to have some text
-      await expect(u.codeLocator).toContainText('line(')
+      await expect(editorFixture.codeContent).toContainText('line(')
       await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
       await page.keyboard.up('ControlOrMeta')
@@ -1905,7 +1931,7 @@ test(
         return selection ? selection.toString() : ''
       })
       expect(selectedText.length).toBe(0)
-      await expect(u.codeLocator).toHaveText('')
+      await expect(editorFixture.codeContent).toHaveText('')
     })
   }
 )
@@ -2023,13 +2049,13 @@ test.describe('Project id', { tag: ['@desktop', '@localRenderer'] }, () => {
     context,
     homePage,
     folderSetupFn,
+    scene: sceneFixture,
   }, testInfo) => {
-    const u = await getUtils(page)
     const { dir } = await folderSetupFn(async () => {})
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await createProject({ name: 'new-project', page, returnHome: true })
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await sceneFixture.waitForSketchButtonEnabled()
 
     await test.step('Open the project settings modal', async () => {
       await toolbar.projectSidebarToggle.click()
@@ -2058,15 +2084,15 @@ test.describe('Project id', { tag: ['@desktop', '@localRenderer'] }, () => {
     homePage,
     fs,
     folderSetupFn,
+    scene: sceneFixture,
   }, testInfo) => {
-    const u = await getUtils(page)
     const { dir } = await folderSetupFn(async () => {})
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await createProject({ name: 'new-project', page, returnHome: true })
     await homePage.goToModelingScene()
 
-    await u.waitForPageLoad()
+    await sceneFixture.waitForSketchButtonEnabled()
 
     await test.step('Open the project settings modal', async () => {
       await toolbar.projectSidebarToggle.click()

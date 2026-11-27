@@ -4,7 +4,6 @@ import { join } from 'path'
 import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { expectRenderedDiagnosticText } from '@e2e/playwright/lib/textAssertions'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -19,8 +18,6 @@ test.describe(
       cmdBar,
       editor,
     }) => {
-      const u = await getUtils(page)
-
       // Load the app with the working starter code
       await page.addInitScript(() => {
         localStorage.setItem(
@@ -46,7 +43,7 @@ extrude001 = extrude(sketch001, length = 5)`
       await expect(codeBadge).not.toBeVisible()
 
       // Delete a character to break the KCL
-      await u.openKclCodePanel()
+      await editor.openPaneAndRevealCode()
       await editor.codeContent.getByText('sketch001').last().click()
       await page.keyboard.press('Backspace')
 
@@ -241,7 +238,13 @@ import assembly.kcl`
 test(
   'Opening multiple panes persists when switching projects',
   { tag: ['@desktop', '@localRenderer'] },
-  async ({ page, folderSetupFn }) => {
+  async ({
+    page,
+    folderSetupFn,
+    scene: sceneFixture,
+    editor: editorFixture,
+    toolbar: toolbarFixture,
+  }) => {
     // Setup multiple projects.
     await folderSetupFn(async (dir) => {
       const routerTemplateDir = join(dir, 'router-template-slate')
@@ -262,7 +265,6 @@ test(
       ])
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await test.step('Opening the bracket project should load', async () => {
@@ -270,7 +272,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await u.waitForPageLoad()
+      await sceneFixture.waitForSketchButtonEnabled()
     })
 
     // If they're open by default, we're not actually testing anything.
@@ -280,9 +282,9 @@ test(
     })
 
     await test.step('Open multiple panes', async () => {
-      await u.openKclCodePanel()
-      await u.openVariablesPane()
-      await u.openLogsPane()
+      await editorFixture.openPaneAndRevealCode()
+      await toolbarFixture.openVariablesPane()
+      await toolbarFixture.openLogsPane()
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
@@ -298,7 +300,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await u.waitForPageLoad()
+      await sceneFixture.waitForSketchButtonEnabled()
     })
 
     await test.step('All panes opened before should be visible', async () => {
@@ -312,7 +314,13 @@ test(
 test(
   'external change of file contents are reflected in editor',
   { tag: ['@desktop', '@localRenderer'] },
-  async ({ page, folderSetupFn }) => {
+  async ({
+    page,
+    folderSetupFn,
+    scene: sceneFixture,
+    fileTree: fileTreeFixture,
+    editor: editorFixture,
+  }) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
     const initialContent = '@settings(kclVersion = 3.0)\nvalue = 1\n'
     const { dir: projectsDir } = await folderSetupFn(async (dir) => {
@@ -321,18 +329,17 @@ test(
       await fsp.writeFile(join(aProjectDir, 'main.kcl'), initialContent)
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await test.step('Open the project', async () => {
       await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
       await page.getByText(PROJECT_DIR_NAME).click()
-      await u.waitForPageLoad()
+      await sceneFixture.waitForSketchButtonEnabled()
     })
 
-    await u.openFilePanel()
-    await u.openKclCodePanel()
-    await u.editorTextMatches(initialContent)
+    await fileTreeFixture.openPane()
+    await editorFixture.openPaneAndRevealCode()
+    await editorFixture.expectNormalizedCode(initialContent)
 
     await test.step('Write to file externally and check for changed content', async () => {
       const content = 'foobar'
@@ -340,7 +347,7 @@ test(
         join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
         content
       )
-      await u.editorTextMatches(content)
+      await editorFixture.expectNormalizedCode(content)
     })
   }
 )

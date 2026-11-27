@@ -1,4 +1,3 @@
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Sketch exit after disconnect', { tag: '@desktop' }, () => {
@@ -9,7 +8,6 @@ test.describe('Sketch exit after disconnect', { tag: '@desktop' }, () => {
       `exits the disposed sketch and can sketch again after reconnect ${renderer}`,
       { tag: [renderer, '@skipLocalEngine'] },
       async ({ page, homePage, scene, toolbar }) => {
-        const utils = await getUtils(page)
         const network = {
           latency: 0,
           downloadThroughput: -1,
@@ -21,14 +19,14 @@ test.describe('Sketch exit after disconnect', { tag: '@desktop' }, () => {
         await expect(toolbar.exitSketchBtn).toBeEnabled()
 
         try {
-          await utils.emulateNetworkConditions({ ...network, offline: true })
+          await scene.emulateNetworkConditions({ ...network, offline: true })
           await expect(page.getByTestId(/network-toggle/)).toContainText(
             'Network health (Offline)'
           )
           await expect(toolbar.exitSketchBtn).toBeHidden()
           await expect(toolbar.startSketchBtn).toBeVisible()
         } finally {
-          await utils.emulateNetworkConditions({ ...network, offline: false })
+          await scene.emulateNetworkConditions({ ...network, offline: false })
         }
 
         await scene.settled()

@@ -1,11 +1,11 @@
-import type { Page } from '@playwright/test'
 import {
+  cacheSceneVolume,
   cacheModelCode as modelCode,
   cacheSceneReceipt as modelReceipt,
-  cacheSceneVolume,
   waitForExecutedModel as waitForValidModel,
 } from '@e2e/playwright/lib/cache-model'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.use({ mockApiRoutes: false })
@@ -52,6 +52,7 @@ test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
     toolbar,
     editor,
     scene,
+    fileTree,
   }) => {
     test.setTimeout(90_000)
     await folderSetupFn(async (directory) => {
@@ -91,7 +92,7 @@ test.describe('Rust-owned execution cache lifecycle', { tag: '@web' }, () => {
     }
 
     await toolbar.openPane(DefaultLayoutPaneID.Files)
-    await toolbar.openFile('invalid.kcl')
+    await fileTree.openFile('invalid.kcl')
     // Wait for the file handoff before accepting the previous file's diagnostics.
     const invalidPath = await fs.join(
       await fs.dirname(original.path),

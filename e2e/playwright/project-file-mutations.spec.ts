@@ -1,10 +1,22 @@
-import { expect, test as browserTest } from '@e2e/playwright/base-test'
-import { test as appTest } from '@e2e/playwright/zoo-test'
+import { test as browserTest, expect } from '@e2e/playwright/base-test'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import { FileTreeFixture } from '@e2e/playwright/fixtures/fileTreeFixture'
 import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
-import { getUtils } from '@e2e/playwright/test-utils'
+import { test as appTest } from '@e2e/playwright/zoo-test'
 
 const web = process.env.TARGET === 'web'
-const test = web ? browserTest : appTest
+const storageBrowserTest = browserTest.extend<{
+  editor: EditorFixture
+  fileTree: FileTreeFixture
+}>({
+  editor: async ({ page }, use) => {
+    await use(new EditorFixture(page))
+  },
+  fileTree: async ({ page }, use) => {
+    await use(new FileTreeFixture(page))
+  },
+})
+const test = web ? storageBrowserTest : appTest
 
 const code = '@settings(kclVersion = 3.0)\nvalue = 100\n'
 
@@ -14,16 +26,19 @@ for (const backing of storageKinds) {
   test(
     `file creation, sibling rename, and open-file moves preserve edits (${backing})`,
     { tag: backing === 'local' ? '@desktop' : ['@web', '@desktop'] },
-    async ({ context, page }, testInfo) => {
+    async (
+      { context, page, fileTree: fileTreeFixture, editor: editorFixture },
+      testInfo
+    ) => {
       const storage = await prepareStorage(backing, page, context, testInfo)
       const root = await storage.seedAndOpen('Mutation test', code, {
         'parts/component.kcl': code,
         'parts-extra/live.kcl': code,
       })
       await page.locator('.cm-content').first().waitFor({ state: 'visible' })
-      const u = await getUtils(page)
-      await u.openFilePanel()
-      await u.openKclCodePanel()
+
+      await fileTreeFixture.openPane()
+      await editorFixture.openPaneAndRevealCode()
       await expect(page.locator('.cm-content').first()).toContainText(
         'value = 100'
       )

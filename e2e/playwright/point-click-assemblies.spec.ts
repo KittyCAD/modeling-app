@@ -532,6 +532,7 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
+        fileTree,
       }) => {
         const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
         const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
@@ -569,7 +570,7 @@ test.describe(
 
         await test.step('Import step part as module', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
-          await toolbar.openFile('cube.step')
+          await fileTree.openFile('cube.step')
           await expect(
             page.getByText('Text files larger than 1 MiB cannot be edited.', {
               exact: false,
@@ -604,7 +605,7 @@ test.describe(
 
         await test.step('Import second foreign part from the binary-file preview', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
-          await toolbar.expectFileTreeState([
+          await fileTree.expectFileTreeState([
             'folder.prt',
             complexPlmFileName,
             'cube.step',
@@ -625,7 +626,7 @@ test.describe(
           await expect(importAction).not.toBeVisible()
           await page.keyboard.press('Escape')
 
-          await toolbar.openFile(complexPlmFileName)
+          await fileTree.openFile(complexPlmFileName)
           await page
             .locator('#code-pane')
             .getByRole('button', {

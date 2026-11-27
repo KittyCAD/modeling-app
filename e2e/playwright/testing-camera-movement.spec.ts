@@ -1,6 +1,5 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 
@@ -87,14 +86,14 @@ test.describe('Testing Camera Movement', { tag: '@web' }, () => {
     page,
     homePage,
     scene,
+    editor: editorFixture,
   }) => {
-    const u = await getUtils(page)
     const camInitialPosition: [number, number, number] = [0, 85, 85]
 
     await homePage.goToModelingScene()
     await scene.settled()
 
-    await u.closeKclCodePanel()
+    await editorFixture.closePane()
 
     await test.step('Pan', async () => {
       await bakeInRetries({
@@ -161,15 +160,15 @@ test.describe('Testing Camera Movement', { tag: '@web' }, () => {
     homePage,
     scene,
     cmdBar,
+    editor: editorFixture,
   }) => {
-    const u = await getUtils(page)
     const initialCamPosition: [number, number, number] = [0, 85, 85]
 
     await homePage.goToModelingScene()
     // this turns on the debug pane setting as well
     await scene.settled()
 
-    await u.closeKclCodePanel()
+    await editorFixture.closePane()
 
     await test.step('Test orbit with spherical mode', async () => {
       await bakeInRetries({
@@ -243,12 +242,10 @@ test.describe('Testing Camera Movement', { tag: '@web' }, () => {
   test(
     'Right-click opens context menu when not dragged',
     { tag: '@web' },
-    async ({ homePage, page }) => {
-      const u = await getUtils(page)
-
+    async ({ homePage, page, scene: sceneFixture }) => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+      await sceneFixture.waitForSketchButtonEnabled()
 
       await test.step(`The menu should not show if we drag the mouse`, async () => {
         await page.mouse.move(900, 200)
