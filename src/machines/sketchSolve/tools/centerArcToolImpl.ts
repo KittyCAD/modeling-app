@@ -10,7 +10,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   isArcSegment,
   isPointSegment,
@@ -328,30 +327,30 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                   center: {
                     x: {
                       type: 'Var',
-                      value: roundOff(context.centerPoint[0]),
+                      value: context.centerPoint[0],
                       units,
                     },
                     y: {
                       type: 'Var',
-                      value: roundOff(context.centerPoint[1]),
+                      value: context.centerPoint[1],
                       units,
                     },
                   },
                   start: {
                     x: {
                       type: 'Var',
-                      value: roundOff(finalStart[0]),
+                      value: finalStart[0],
                       units,
                     },
                     y: {
                       type: 'Var',
-                      value: roundOff(finalStart[1]),
+                      value: finalStart[1],
                       units,
                     },
                   },
                   end: {
-                    x: { type: 'Var', value: roundOff(finalEnd[0]), units },
-                    y: { type: 'Var', value: roundOff(finalEnd[1]), units },
+                    x: { type: 'Var', value: finalEnd[0], units },
+                    y: { type: 'Var', value: finalEnd[1], units },
                   },
                   direction: isSwapped ? 'cw' : 'ccw',
                 },
@@ -710,16 +709,16 @@ export async function createArcActor({
     const segmentCtor: SegmentCtor = {
       type: 'Arc',
       center: {
-        x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-        y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+        x: { type: 'Var', value: centerPoint[0], units },
+        y: { type: 'Var', value: centerPoint[1], units },
       },
       start: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
+        x: { type: 'Var', value: startPoint[0], units },
+        y: { type: 'Var', value: startPoint[1], units },
       },
       end: {
-        x: { type: 'Var', value: roundOff(startPoint[0]), units },
-        y: { type: 'Var', value: roundOff(startPoint[1]), units },
+        x: { type: 'Var', value: startPoint[0], units },
+        y: { type: 'Var', value: startPoint[1], units },
       },
     }
 
@@ -943,16 +942,16 @@ export async function finalizeArcActor({
     const segmentCtor: SegmentCtor = {
       type: 'Arc',
       center: {
-        x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-        y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+        x: { type: 'Var', value: centerPoint[0], units },
+        y: { type: 'Var', value: centerPoint[1], units },
       },
       start: {
-        x: { type: 'Var', value: roundOff(finalStart[0]), units },
-        y: { type: 'Var', value: roundOff(finalStart[1]), units },
+        x: { type: 'Var', value: finalStart[0], units },
+        y: { type: 'Var', value: finalStart[1], units },
       },
       end: {
-        x: { type: 'Var', value: roundOff(finalEnd[0]), units },
-        y: { type: 'Var', value: roundOff(finalEnd[1]), units },
+        x: { type: 'Var', value: finalEnd[0], units },
+        y: { type: 'Var', value: finalEnd[1], units },
       },
       direction: isSwapped ? 'cw' : 'ccw',
     }

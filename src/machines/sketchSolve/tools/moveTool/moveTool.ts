@@ -237,12 +237,12 @@ function buildSegmentCtorWithDrag({
         position: {
           x: {
             type: 'Var',
-            value: roundOff(currentCursorPosition.x),
+            value: currentCursorPosition.x,
             units,
           },
           y: {
             type: 'Var',
-            value: roundOff(currentCursorPosition.y),
+            value: currentCursorPosition.y,
             units,
           },
         },
@@ -308,27 +308,14 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
-function buildApiPoint2d(
-  position: Vector2,
-  units: NumericSuffix
-): ApiPoint2d<ApiNumber> {
-  return {
-    x: {
-      value: roundOff(position.x),
-      units,
-    },
-    y: {
-      value: roundOff(position.y),
-      units,
-    },
-  }
-}
-
 function buildConstraintLabelPosition(
   position: Vector2,
   units: NumericSuffix
 ): ApiPoint2d<ApiNumber> {
-  return buildApiPoint2d(position, units)
+  return {
+    x: { value: roundOff(position.x), units },
+    y: { value: roundOff(position.y), units },
+  }
 }
 
 function buildSegmentDragAnchors({
@@ -362,7 +349,10 @@ function buildSegmentDragAnchors({
   return [
     {
       segmentId: draggedEntityId,
-      target: buildApiPoint2d(target, units),
+      target: {
+        x: { value: target.x, units },
+        y: { value: target.y, units },
+      },
     },
   ]
 }
@@ -2262,12 +2252,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     position: {
                       x: {
                         type: 'Var',
-                        value: roundOff(x),
+                        value: x,
                         units,
                       },
                       y: {
                         type: 'Var',
-                        value: roundOff(y),
+                        value: y,
                         units,
                       },
                     },

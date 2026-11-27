@@ -9,7 +9,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   getCoincidentCluster,
   isLineSegment,
@@ -175,12 +174,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
                   position: {
                     x: {
                       type: 'Var',
-                      value: roundOff(x),
+                      value: x,
                       units,
                     },
                     y: {
                       type: 'Var',
-                      value: roundOff(y),
+                      value: y,
                       units,
                     },
                   },
