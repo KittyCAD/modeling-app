@@ -16,6 +16,7 @@ import { dataUrlToFile } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
+import { parseZookeeperActivity } from '@src/lib/zookeeper/activityMessages'
 import { ZookeeperAttachment } from '@src/lib/zookeeper/components/ZookeeperAttachment'
 import { ZookeeperAttachmentPreview } from '@src/lib/zookeeper/components/ZookeeperAttachmentPreview'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
@@ -746,6 +747,7 @@ export const ZookeeperConversationInput = (
 
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
+  const shouldFollowActivityRef = useRef(true)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
   const hasMessages = exchangesLength > 0
   const lastExchange = exchangesLength
@@ -754,8 +756,18 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const isEndOfStream =
     hasMessages &&
     !hasBeenInterruptedOnLast(props.conversation?.exchanges ?? [])
+  const lastResponseCount = lastExchange?.responses.length ?? 0
+  const hasStructuredActivity =
+    lastExchange?.responses.some(
+      (response) => parseZookeeperActivity(response) !== undefined
+    ) ?? false
 
-  const previousScrollState = useRef({ length: 0, isEndOfStream: false })
+  const previousScrollState = useRef({
+    length: 0,
+    isEndOfStream: false,
+    lastResponseCount: 0,
+    hasStructuredActivity: false,
+  })
   const historyAnchor = useRef<
     | {
         element?: Element
@@ -769,7 +781,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
 
   useLayoutEffect(() => {
     const previous = previousScrollState.current
-    previousScrollState.current = { length: exchangesLength, isEndOfStream }
+    previousScrollState.current = {
+      length: exchangesLength,
+      isEndOfStream,
+      lastResponseCount,
+      hasStructuredActivity,
+    }
     const scroll = refScroll.current
     if (!scroll || exchangesLength === 0) {
       historyAnchor.current = undefined
@@ -791,11 +808,25 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
       exchangesLength !== previous.length ||
       (isEndOfStream && !previous.isEndOfStream)
     ) {
+      if (exchangesLength !== previous.length) {
+        shouldFollowActivityRef.current = true
+      }
       scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'instant' })
+    } else if (
+      hasStructuredActivity &&
+      !isEndOfStream &&
+      shouldFollowActivityRef.current &&
+      (lastResponseCount !== previous.lastResponseCount ||
+        hasStructuredActivity !== previous.hasStructuredActivity ||
+        isEndOfStream !== previous.isEndOfStream)
+    ) {
+      scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'auto' })
     }
   }, [
     exchangesLength,
     isEndOfStream,
+    lastResponseCount,
+    hasStructuredActivity,
     props.conversation,
     props.isLoadingOlderMessages,
   ])
@@ -853,6 +884,15 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   : 'min-h-0 overflow-auto'
               }
               ref={refScroll}
+              data-testid="zookeeper-conversation-scroll"
+              onScroll={(event) => {
+                const element = event.currentTarget
+                shouldFollowActivityRef.current =
+                  element.scrollHeight -
+                    element.scrollTop -
+                    element.clientHeight <
+                  64
+              }}
             >
               {props.showManualConnect ? (
                 <ConnectionRecovery

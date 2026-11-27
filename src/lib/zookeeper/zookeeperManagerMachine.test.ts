@@ -1,4 +1,5 @@
 import { createProjectForTest } from '@src/lib/projectTestUtils'
+import { ZOOKEEPER_ACTIVITY_PREFIX } from '@src/lib/zookeeper/activityMessages'
 import { parse as uuidParse } from 'uuid'
 import {
   ControllableSetupWebSocket,
@@ -93,12 +94,16 @@ describe('appendReplayMessages', () => {
   const reasoning = {
     reasoning: { type: 'text', content: 'Checking constraints' },
   }
+  const activity = {
+    activity: { kind: 'commentary', text: 'Checking the model.' },
+  }
   const answer = { end_of_stream: { whole_response: 'Bracket created.' } }
   const nextRequest = { type: 'user', content: 'Add a hole' }
   const messages = [
     notice,
     request,
     reasoning,
+    activity,
     { delta: { delta: 'Bracket ' } },
     answer,
     nextRequest,
@@ -130,7 +135,7 @@ describe('appendReplayMessages', () => {
         { responses: [notice], deltasAggregated: '' },
         {
           request,
-          responses: [reasoning, answer],
+          responses: [reasoning, activity, answer],
           deltasAggregated: 'Bracket created.',
         },
         { request: nextRequest, responses: [], deltasAggregated: '' },
@@ -2557,6 +2562,63 @@ describe('zookeeperManagerMachine', () => {
   })
 
   describe('ZookeeperConversationToMarkdown', () => {
+    it('exports native and legacy activity together and redacts code', () => {
+      const activities = [
+        { kind: 'warning', text: 'One attachment was ignored.' },
+        {
+          kind: 'tool',
+          call_id: 'read-file',
+          name: 'read_project_file',
+          status: 'completed',
+          label: 'Read main.kcl',
+        },
+        {
+          kind: 'tool',
+          call_id: 'list-files',
+          name: 'list_user_files',
+          status: 'started',
+        },
+        { kind: 'commentary', text: 'Checked:\n```kcl\nsecret_code = 1\n```' },
+      ]
+      const output = ZookeeperConversationToMarkdown({
+        exchanges: [
+          {
+            deltasAggregated: 'Done.',
+            responses: [
+              {
+                reasoning: {
+                  type: 'markdown',
+                  content:
+                    ZOOKEEPER_ACTIVITY_PREFIX +
+                    JSON.stringify({
+                      kind: 'commentary',
+                      text: 'Checking the project.',
+                    }),
+                },
+              },
+              ...activities.map((activity) => ({ activity })),
+              { reasoning: { type: 'text', content: 'Legacy reasoning.' } },
+              { end_of_stream: { whole_response: 'Done.' } },
+            ],
+          },
+        ],
+      })
+
+      for (const text of [
+        'Checking the project.',
+        'One attachment was ignored.',
+        'Read main.kcl',
+        'list user files',
+        '~~Code redacted~~',
+        'Legacy reasoning.',
+        'Done.',
+      ]) {
+        expect(output).toContain(text)
+      }
+      expect(output).not.toContain(ZOOKEEPER_ACTIVITY_PREFIX)
+      expect(output).not.toContain('secret_code')
+    })
+
     it('has undefined conversation, return empty string', async () => {
       const output = ZookeeperConversationToMarkdown(undefined)
       expect(output.length).toBe(0)
@@ -2687,6 +2749,9 @@ describe('mirrored conversation messages', () => {
   })
   const reasoning = {
     reasoning: { type: 'markdown', content: 'Checking the model.' },
+  }
+  const activity = {
+    activity: { kind: 'commentary', text: 'Reading the project.' },
   }
   const final = { end_of_stream: { whole_response: 'Finished.' } }
   const toolOutput = {
@@ -3140,9 +3205,14 @@ describe('mirrored conversation messages', () => {
       receive(user('Make it brown'))
       expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
       receive(reasoning)
-      const active = actor.getSnapshot().context.conversation?.exchanges.at(-1)
+      const beforeActivity = actor.getSnapshot().context.conversation
+      receive(activity)
+      const afterActivity = actor.getSnapshot().context.conversation
+      expect(afterActivity).not.toBe(beforeActivity)
+      expect(beforeActivity?.exchanges.at(-1)?.responses).toEqual([reasoning])
+      const active = afterActivity?.exchanges.at(-1)
       expect(active?.request).toMatchObject({ content: 'Make it brown' })
-      expect(active?.responses).toEqual([reasoning])
+      expect(active?.responses).toEqual([reasoning, activity])
       receive(toolOutput)
       expect(actor.getSnapshot().context.cloudProjectChange).toEqual({
         callId: 'peer-write',
@@ -3151,7 +3221,7 @@ describe('mirrored conversation messages', () => {
       })
       expect(
         actor.getSnapshot().context.conversation?.exchanges.at(-1)?.responses
-      ).toEqual([reasoning, toolOutput])
+      ).toEqual([reasoning, activity, toolOutput])
       receive({ delta: { delta: 'Finished.' } })
       receive(final)
 
@@ -3165,7 +3235,7 @@ describe('mirrored conversation messages', () => {
       )
       expect(context.conversation?.exchanges[1]).toMatchObject({
         request: user('Make it brown'),
-        responses: [reasoning, toolOutput, final],
+        responses: [reasoning, activity, toolOutput, final],
         deltasAggregated: 'Finished.',
       })
       expect(context.awaitingResponse).toBe(false)
@@ -3180,11 +3250,12 @@ describe('mirrored conversation messages', () => {
   )
 
   it.each(['json', 'msgpack'] as const)(
-    'buffers reflected user messages and reasoning during %s setup',
+    'buffers reflected user messages, reasoning, and activity during %s setup',
     async (format) => {
       const { actor, receive, finishSetup } = await connect(format)
       receive(user('Make it brown'))
       receive(reasoning)
+      receive(activity)
       receive({ delta: { delta: 'Finished.' } })
       receive(final)
       await finishSetup()
@@ -3192,7 +3263,7 @@ describe('mirrored conversation messages', () => {
         [
           {
             request: user('Make it brown'),
-            responses: [reasoning, final],
+            responses: [reasoning, activity, final],
             deltasAggregated: 'Finished.',
           },
         ]

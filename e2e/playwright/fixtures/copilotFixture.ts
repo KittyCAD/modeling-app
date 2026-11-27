@@ -6,7 +6,7 @@ export class CopilotFixture {
 
   conversationInput!: Locator
   submitButton!: Locator
-  placeHolderResponse!: Locator
+  activityCard!: Locator
   thinkingView!: Locator
   cancelButton!: Locator
   clearChatButton!: Locator
@@ -22,9 +22,7 @@ export class CopilotFixture {
     this.submitButton = this.page.getByTestId(
       'ml-ephant-conversation-input-button'
     )
-    this.placeHolderResponse = this.page.getByTestId(
-      'ml-response-chat-bubble-thinking'
-    )
+    this.activityCard = this.page.getByTestId('zookeeper-activity-card')
     this.thinkingView = this.page.getByTestId('ml-response-thinking-view')
     this.cancelButton = this.page.getByTestId(
       'ml-ephant-conversation-cancel-button'
