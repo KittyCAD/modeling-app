@@ -342,7 +342,6 @@ describe('ZookeeperConversationPane', () => {
     expect(props.connectionError).toBe('No internet connection.')
     expect(props.connectionFailed).toBe(true)
     expect(props.accessDeniedCode).toBe('payment_method_failed')
-    expect(props.showManualConnect).toBe(true)
     expect(props.canClearChat).toBe(true)
     expect(props.isClearingChat).toBe(true)
     expect(props.loadingMessage).toBe('Connecting to Zookeeper...')
@@ -371,6 +370,7 @@ describe('ZookeeperConversationPane', () => {
     )
 
     expect(latestConversationProps().needsReconnect).toBe(false)
+    expect(latestConversationProps().disabled).toBe(false)
 
     act(() => {
       fake.manualConnectSignal.value = true
@@ -398,6 +398,13 @@ describe('ZookeeperConversationPane', () => {
         attachments: [],
       },
     ])
+
+    act(() => {
+      fake.manualConnectSignal.value = false
+      fake.setSnapshot({}, ZookeeperManagerStates.Setup)
+    })
+
+    expect(latestConversationProps().disabled).toBe(true)
   })
 
   test('delegates conversation actions to the session controller', () => {

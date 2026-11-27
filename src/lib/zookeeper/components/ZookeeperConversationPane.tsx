@@ -60,6 +60,9 @@ export const ZookeeperConversationPane = (props: {
   const isSettingUp = useSelector(actor, (snapshot) => {
     return snapshot.matches(ZookeeperManagerStates.Setup)
   })
+  const isReady = useSelector(actor, (snapshot) => {
+    return snapshot.matches(ZookeeperManagerStates.Ready)
+  })
   const isAwaitingConnection = useSelector(actor, (snapshot) => {
     return snapshot.matches(S.Await)
   })
@@ -226,7 +229,6 @@ export const ZookeeperConversationPane = (props: {
         }
         connectionFailed={setupFailed}
         accessDeniedCode={accessDeniedCode}
-        showManualConnect={showManualConnect}
         canClearChat={setupFailed && conversationId !== undefined}
         isClearingChat={isClearingChat}
         loadingMessage={
@@ -238,9 +240,9 @@ export const ZookeeperConversationPane = (props: {
         }
         onCancel={() => controller.cancel()}
         disabled={
+          !isReady ||
           needsReconnect ||
           isClearingChat ||
-          interruptedTurnAwaitingResume ||
           isResumingInterruptedTurn
         }
         needsReconnect={needsReconnect}

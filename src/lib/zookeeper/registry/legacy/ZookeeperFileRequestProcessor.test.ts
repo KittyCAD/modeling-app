@@ -182,6 +182,22 @@ describe.each(['local', 'cloud'] as const)('legacy edits (%s)', (storage) => {
     expect(s.onApplied).toHaveBeenCalledOnce()
   })
 
+  it('does not apply a retained tool output again while reconnecting', async () => {
+    const s = setup()
+    const snapshot = s.receive(1)
+    s.processor.handleActorSnapshot({
+      ...snapshot,
+      context: {
+        ...snapshot.context,
+        lastMessageId: undefined,
+        lastMessageType: undefined,
+      },
+    })
+
+    await s.idle()
+    expect(s.applyEdits).toHaveBeenCalledOnce()
+  })
+
   it.each([
     'project_write_file',
     'project_mkdir',
