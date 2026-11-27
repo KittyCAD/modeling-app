@@ -100,7 +100,7 @@ test('writes a project file in a browser worker without Node globals', async () 
   expect(close).toHaveBeenCalledOnce()
 })
 
-test('preserves bytes across partial worker writes and reads', async () => {
+test('preserves bytes across partial worker writes and bounds reads', async () => {
   await fc.assert(
     fc.asyncProperty(
       fc.uint8Array({ maxLength: 1024 }),
@@ -108,6 +108,11 @@ test('preserves bytes across partial worker writes and reads', async () => {
       async (contents, chunk) => {
         let stored = new Uint8Array(contents.byteLength + 5).fill(17)
         const close = vi.fn()
+        const read = vi.fn((bytes: Uint8Array, { at }: { at: number }) => {
+          const count = Math.min(chunk, bytes.byteLength)
+          bytes.set(stored.subarray(at, at + count))
+          return count
+        })
         class FileHandle {
           async createSyncAccessHandle() {
             return {
@@ -125,11 +130,7 @@ test('preserves bytes across partial worker writes and reads', async () => {
                 stored.set(bytes.subarray(0, count), at)
                 return count
               },
-              read: (bytes: Uint8Array, { at }: { at: number }) => {
-                const count = Math.min(chunk, bytes.byteLength)
-                bytes.set(stored.subarray(at, at + count))
-                return count
-              },
+              read,
               flush: () => {},
               close,
             }
@@ -163,15 +164,25 @@ test('preserves bytes across partial worker writes and reads', async () => {
           return response.promise
         }
         const targetPath = '/projects/project/main.kcl'
+        const maxBytes = contents.byteLength
         await expect(
-          send({ id: 1, type: 'write-file', targetPath, data: contents })
-        ).resolves.toEqual({ id: 1, ok: true })
+          send({ id: 1, type: 'read-file', targetPath, maxBytes })
+        ).resolves.toEqual({ id: 1, ok: false, error: 'EFBIG' })
+        expect(read).not.toHaveBeenCalled()
+        await expect(
+          send({ id: 2, type: 'write-file', targetPath, data: contents })
+        ).resolves.toEqual({ id: 2, ok: true })
         expect(Array.from(stored)).toEqual(Array.from(contents))
-        const response = await send({ id: 2, type: 'read-file', targetPath })
+        const response = await send({
+          id: 3,
+          type: 'read-file',
+          targetPath,
+          maxBytes,
+        })
         if (!response.ok || !response.data)
           throw new Error('Expected worker bytes')
         expect(Array.from(response.data)).toEqual(Array.from(contents))
-        expect(close).toHaveBeenCalledTimes(2)
+        expect(close).toHaveBeenCalledTimes(3)
       }
     ),
     { numRuns: 40 }

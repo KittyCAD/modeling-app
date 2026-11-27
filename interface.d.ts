@@ -53,6 +53,7 @@ export interface IElectronAPI {
     options?: { depth?: number }
   ) => void
   readFile: typeof fs.readFile
+  readFileBounded: (path: string, maxBytes: number) => Promise<Uint8Array>
   watchFileOff: (path: string, key: string) => void
   writeFile: (path: string, data: string | Uint8Array) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>

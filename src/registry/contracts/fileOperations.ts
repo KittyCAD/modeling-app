@@ -5,6 +5,7 @@ import type {
   CopyOptions,
   FileContents,
   FileStat,
+  ReadFileOptions,
   StatOptions,
 } from '@src/lib/fileSystem/fileOperations'
 import type { FileOperationsMount } from '@src/lib/fileSystem/mounts'
@@ -29,7 +30,10 @@ export interface FileOperationsRegistryService {
   /** Read a stable snapshot of a directory's immediate membership. */
   readonly readDirectory: (path: string) => Promise<readonly string[]>
   /** Read one complete version of a file coordinated with path mutations. */
-  readonly readFile: (path: string) => Promise<Uint8Array>
+  readonly readFile: (
+    path: string,
+    options?: ReadFileOptions
+  ) => Promise<Uint8Array>
   readonly copy: (
     source: string,
     destination: string,

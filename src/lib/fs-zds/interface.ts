@@ -9,6 +9,13 @@ export interface CopyOptions {
 /** Whether metadata describes a link's target (default) or the link itself. */
 export interface StatOptions {
   readonly followSymlinks?: boolean
+  /** Avoid repairing missing OPFS directory metadata during a reference read. */
+  readonly readOnly?: boolean
+}
+
+export interface ReadFileOptions {
+  /** Reject non-regular files and files larger than this byte count. */
+  readonly maxBytes: number
 }
 
 /** File replacement policy supported by every filesystem backing. */
@@ -68,6 +75,7 @@ export interface IZooDesignStudioFS {
     ((src: string, options: 'utf8') => Promise<string>) &
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     ((src: string, options?: {}) => Promise<Uint8Array>)
+  readFileBounded?: (path: string, maxBytes: number) => Promise<Uint8Array>
   rename: (
     src: string,
     dest: string,

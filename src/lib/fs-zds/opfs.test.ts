@@ -1,17 +1,23 @@
 import path from 'path'
+import { createFileOperationsScheduler } from '@src/lib/fileSystem/scheduler'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const workerRead = vi.hoisted(() =>
-  vi.fn<(path: string) => Promise<Uint8Array<ArrayBuffer>>>()
+  vi.fn<(path: string, maxBytes?: number) => Promise<Uint8Array<ArrayBuffer>>>()
 )
 
 vi.mock('@src/lib/fs-zds/opfsWorker.ts?worker&inline', () => ({
   default: class MockOPFSWorker {
     onmessage: ((event: MessageEvent<unknown>) => void) | null = null
 
-    postMessage(request: { id: number; type: string; targetPath: string }) {
+    postMessage(request: {
+      id: number
+      type: string
+      targetPath: string
+      maxBytes?: number
+    }) {
       if (request.type === 'read-file')
-        void workerRead(request.targetPath).then(
+        void workerRead(request.targetPath, request.maxBytes).then(
           (data) =>
             this.onmessage?.({
               data: { id: request.id, ok: true, data },
@@ -215,7 +221,7 @@ describe('opfs', () => {
     await opfs.impl.detach()
   })
 
-  test('waits for a writable stream to close before reading the same file', async () => {
+  test('waits for a writable stream to close before a bounded read', async () => {
     enableWriteLocks()
     const file = addProjectWithMeta('{"mtimeMs":1}').addFile(
       'main.kcl',
@@ -239,12 +245,13 @@ describe('opfs', () => {
     )
     await started.promise
     workerRead.mockClear()
-    const reading = opfs.impl.readFile(target, 'utf8')
+    const reading = opfs.impl.readFileBounded?.(target, 5)
     await Promise.resolve()
     expect(workerRead).not.toHaveBeenCalled()
     release.resolve(undefined)
     await writing
-    await expect(reading).resolves.toBe('after')
+    await expect(reading).resolves.toEqual(new TextEncoder().encode('after'))
+    expect(workerRead).toHaveBeenCalledExactlyOnceWith(target, 5)
   })
 
   test('propagates worker read failures', async () => {
@@ -468,6 +475,33 @@ describe('opfs', () => {
 
     expect(stat.mtimeMs).toEqual(expect.any(Number))
     expect(JSON.parse(repaired)).toEqual({ mtimeMs: stat.mtimeMs })
+  })
+
+  test('read-only stat does not create directory metadata', async () => {
+    const projects = root.addDirectory('projects')
+    const project = projects.addDirectory('project')
+    project.addDirectory('empty')
+    const opfs = await getOpfs()
+
+    const runtime = createFileOperationsScheduler(opfs.impl)
+    try {
+      const stat = await runtime.operations.stat(
+        path.join(projectPath, 'empty'),
+        {
+          readOnly: true,
+        }
+      )
+
+      expect(stat.kind).toBe('directory')
+      expect(project.children.has('._meta')).toBe(false)
+      expect(
+        (
+          project.children.get('empty') as MockFileSystemDirectoryHandle
+        ).children.has('._meta')
+      ).toBe(false)
+    } finally {
+      await runtime.dispose()
+    }
   })
 
   test('copies files from nested directories', async () => {

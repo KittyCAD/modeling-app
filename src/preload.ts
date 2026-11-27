@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import type { StatOptions } from '@src/lib/fs-zds/interface'
+import { readFileBounded } from '@src/lib/fs-zds/readFileBounded'
 import os from 'node:os'
 import path from 'path'
 import type { DeviceFlowAuthorization } from '@root/interface'
@@ -363,6 +364,7 @@ contextBridge.exposeInMainWorld('electron', {
   access: fs.access,
   copyFile: fs.copyFile,
   readFile,
+  readFileBounded,
   writeFile,
   readdir,
   rename,

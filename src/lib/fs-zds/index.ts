@@ -74,6 +74,7 @@ export const moduleFsViaModuleImport = async (backing: StorageBacking) => {
 
   // Do not destroy the reference, but instead, reassign some of its properties.
   delete _impl.isSameEntry
+  delete _impl.readFileBounded
   Object.assign(_impl, impl)
 
   // ts can't know if this is actually an fs backing even right after the

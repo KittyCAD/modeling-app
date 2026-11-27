@@ -15,6 +15,7 @@ export type GitignoreFs = {
   join: (...strs: string[]) => string
   relative: (...strs: string[]) => string
   readFile: (src: string, options: { encoding: 'utf-8' }) => Promise<string>
+  ignoreReadError?: (error: unknown) => boolean
 }
 
 export type GitignoreFileEntry = {
@@ -24,7 +25,7 @@ export type GitignoreFileEntry = {
 
 /** Adapts coordinated file operations to the narrow gitignore reader API. */
 export function fileOperationsGitignoreFs(
-  fileOperations: FileOperationsRegistryService
+  fileOperations: Pick<FileOperationsRegistryService, 'readFile'>
 ): GitignoreFs {
   return {
     join: fsZds.join,
@@ -132,7 +133,8 @@ export async function readGitignoreStackEntryWithFs(
       directory: directory === '.' ? '' : directory,
       matcher: ignore().add(content),
     }
-  } catch {
+  } catch (error) {
+    if (fs.ignoreReadError?.(error) === false) return Promise.reject(error)
     return null
   }
 }

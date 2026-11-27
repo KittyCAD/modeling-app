@@ -2,17 +2,39 @@ import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
+import { billingService } from '@src/lib/billing/registry/contract'
 import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import type { FileEntry, Project } from '@src/lib/project'
 import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
 } from '@src/lib/zookeeper/registry/controller'
-import { createZookeeperRuntime } from '@src/lib/zookeeper/registry/runtime'
-import type { AuthRegistryService } from '@src/registry/contracts/auth'
-import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
-import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import {
+  createZookeeperRuntime,
+  zookeeperRuntimeRegistryItem,
+} from '@src/lib/zookeeper/registry/runtime'
+import {
+  type AuthRegistryService,
+  authService,
+} from '@src/registry/contracts/auth'
+import {
+  fileOperationsService,
+  projectOperationsService,
+} from '@src/registry/contracts/fileOperations'
+import {
+  type HomeProjectEntryContribution,
+  homeProjectEntriesFacet,
+} from '@src/registry/contracts/homeProjects'
+import {
+  type ProjectSessionService,
+  projectSession,
+} from '@src/registry/contracts/projectSession'
+import {
+  type SettingsRegistryService,
+  settingsService,
+} from '@src/registry/contracts/settings'
 import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
+import { contribute, provide, Registry } from 'plankton'
 import { describe, expect, it, vi } from 'vitest'
 
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
@@ -154,6 +176,51 @@ async function startRuntime(
 }
 
 describe('Zookeeper runtime', () => {
+  it('provides live Home library projects to the active session', async () => {
+    const { services } = createServices()
+    const entries = signal<HomeProjectEntryContribution[]>([])
+    const { createZookeeperSessionController } = createControllerLoader()
+    const registry = new Registry()
+    vi.doMock('@src/lib/zookeeper/registry/controller', () => ({
+      createZookeeperSessionController,
+    }))
+
+    try {
+      await registry.configure([
+        zookeeperRuntimeRegistryItem,
+        contribute(homeProjectEntriesFacet, () => entries.value),
+        provide(authService, services.auth.value),
+        provide(billingService, services.billing.value),
+        provide(fileOperationsService, services.fileOperations.value),
+        provide(projectOperationsService, services.projectOperations.value),
+        provide(projectSession, services.projectSession.value),
+        provide(settingsService, services.settings.value),
+      ])
+      await vi.waitFor(() => {
+        expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+      })
+      const libraryProjects =
+        createZookeeperSessionController.mock.calls[0]?.[0].libraryProjects
+      expect(libraryProjects?.value).toEqual([])
+
+      const localProject = {
+        source: 'local',
+        status: 'local',
+        name: 'Reference',
+        localProjectPath: '/library/reference',
+        readWriteAccess: true,
+      } satisfies HomeProjectEntryContribution
+      entries.value = [localProject]
+
+      expect(libraryProjects?.value).toEqual([
+        expect.objectContaining(localProject),
+      ])
+    } finally {
+      vi.doUnmock('@src/lib/zookeeper/registry/controller')
+      await registry.dispose()
+    }
+  })
+
   it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =

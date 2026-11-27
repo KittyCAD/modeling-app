@@ -30,6 +30,10 @@ import {
   type FileOperationsRegistryService,
   type ProjectOperationsService,
 } from '@src/registry/contracts/fileOperations'
+import {
+  observations as homeProjectsObservations,
+  type HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 import { layoutAreaLibraryFacet } from '@src/registry/contracts/layout'
 import {
   observations as projectSessionObservations,
@@ -58,6 +62,7 @@ type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
   fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
+  libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
   projectOperations: ReadonlySignal<ProjectOperationsService | undefined>
@@ -287,6 +292,7 @@ export function createZookeeperRuntime(
             getEnvironmentNameFromEnv(env())
           ),
           fileOperations,
+          libraryProjects: services.libraryProjects,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
@@ -393,6 +399,7 @@ export const zookeeperRuntimeRegistryItem: Factory = defineFactory({
     auth: authObservations,
     billing: billingObservations,
     fileOperations: fileOperationsObservations,
+    homeProjects: homeProjectsObservations,
     projectSession: projectSessionObservations,
     settings: settingsObservations,
   },
@@ -402,6 +409,7 @@ export const zookeeperRuntimeRegistryItem: Factory = defineFactory({
     auth: authInputs,
     billing: billingInputs,
     fileOperations: fileOperationsInputs,
+    homeProjects: homeProjectsInputs,
     projectSession: projectSessionInputs,
     settings: settingsInputs,
   }) => {
@@ -412,6 +420,7 @@ export const zookeeperRuntimeRegistryItem: Factory = defineFactory({
       fileOperations: computed(
         () => fileOperationsInputs.fileOperationsService.current.value
       ),
+      libraryProjects: homeProjectsInputs.homeProjectEntriesFacet,
       projectSession: computed(
         () => projectSessionInputs.projectSession.current.value
       ),

@@ -9,6 +9,7 @@ import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
+import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/legacy/ZookeeperEditPatchHistory'
@@ -30,7 +31,7 @@ import { S } from '@src/machines/utils'
 import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import type { CloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
 import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
@@ -41,6 +42,7 @@ export interface ZookeeperSessionControllerDependencies {
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
+  libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
@@ -145,7 +147,14 @@ class SessionController implements ZookeeperSessionController {
     this.apiToken = deps.apiToken
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
-    this.actor = createZookeeperManagerActor(deps.apiToken)
+    const clientCommands = deps.libraryProjects
+      ? createProjectReferenceCommands({
+          entries: deps.libraryProjects,
+          fileOperations: deps.fileOperations,
+          getApiToken: () => this.apiToken,
+        })
+      : undefined
+    this.actor = createZookeeperManagerActor(deps.apiToken, clientCommands)
     this.legacyHistory = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations
