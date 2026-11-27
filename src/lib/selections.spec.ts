@@ -3584,7 +3584,8 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test.each(['segments', 'point'])('selects region via %s', async (mode) => {
+  const regionModes = ['segments', 'point', 'foreign segments']
+  test.each(regionModes)('selects region via %s', async (mode) => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse('@settings(defaultLengthUnit = in)', instance)
     const pathToNode = [['body', '']] as any
@@ -3619,10 +3620,20 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
       commonSurfaceIds: [],
       codeRef,
     } satisfies Extract<Artifact, { type: 'segment' }>
+    const secondSketch = { ...sketchBlock, id: 'sketch-2', sketchId: 2 }
+    const secondPath = {
+      ...sketchPath,
+      id: 'path-2',
+      sketchBlockId: secondSketch.id,
+    }
+    const pickedPath = mode === 'foreign segments' ? secondPath : sketchPath
     const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
       [sketchBlock.id, sketchBlock],
       [sketchPath.id, sketchPath],
       [segment.id, segment],
+      ['segment-2', { ...segment, id: 'segment-2' }],
+      [secondSketch.id, secondSketch],
+      [secondPath.id, secondPath],
     ])
     const regionInfo = {
       segment: segment.id,
@@ -3634,7 +3645,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
         if (
-          mode === 'segments' &&
+          mode !== 'point' &&
           event.cmd.type === 'region_get_resolvable_intersection_info'
         ) {
           return {
@@ -3669,7 +3680,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
               data: {
                 modeling_response: {
                   type: 'entity_get_parent_id',
-                  data: { entity_id: sketchPath.id },
+                  data: { entity_id: pickedPath.id },
                 },
               },
             },
@@ -3706,7 +3717,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
         selection: {
           type: 'engineRegion',
           id: 'region-1',
-          sketchId: 'sketch-1',
+          sketchId: pickedPath.sketchBlockId,
           ...(mode === 'segments'
             ? { resolvableIntersectionInfo: regionInfo }
             : { point: { x: 1, y: -2 } }),

@@ -324,12 +324,12 @@ function getSketchIdForRegionInfo(
 async function getSketchIdForEngineRegionEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: ConnectionManager,
+  regionParentId?: ArtifactId
 ): Promise<ArtifactId | null> {
-  const parentEntityId = await getParentEntityIdForEntity(
-    regionEntityId,
-    engineCommandManager
-  )
+  const parentEntityId =
+    regionParentId ??
+    (await getParentEntityIdForEntity(regionEntityId, engineCommandManager))
   if (!parentEntityId) return null
 
   const path = artifactGraph.get(parentEntityId)
@@ -380,7 +380,8 @@ export async function getEngineRegionSelectionFromPoint(
 async function getEngineRegionSelectionFromSegments(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: ConnectionManager,
+  regionParentId?: ArtifactId
 ): Promise<EngineRegionSelection | null> {
   const regionInfo = await getResolvableIntersectionInfoForRegion(
     regionEntityId,
@@ -390,6 +391,14 @@ async function getEngineRegionSelectionFromSegments(
 
   const sketchId = getSketchIdForRegionInfo(regionInfo, artifactGraph)
   if (!sketchId) return null
+
+  const pickedSketchId = await getSketchIdForEngineRegionEntity(
+    regionEntityId,
+    artifactGraph,
+    engineCommandManager,
+    regionParentId
+  )
+  if (sketchId !== pickedSketchId) return null
 
   return {
     type: 'engineRegion',
@@ -1968,7 +1977,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     const regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
       artifactGraph,
-      engineCommandManager
+      engineCommandManager,
+      engineTopologyFallbackEarly?.parentId
     )
     if (regionSelection) {
       return {
