@@ -3,6 +3,7 @@ name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
 version = "0.2.198"
 edition = "2024"
+default-run = "kcl-lib-bin"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
@@ -23,6 +24,12 @@ bench = false
 [[bin]]
 name = "kcl-lib-bin"
 path = "src/main.rs"
+bench = false
+
+[[bin]]
+name = "kcl-parse"
+path = "src/bin/kcl-parse.rs"
+required-features = ["cli"]
 bench = false
 
 [features]
@@ -185,3 +192,7 @@ required-features = ["dhat-heap"]
 name = "executor"
 path = "e2e/executor/main.rs"
 required-features = ["engine"]
+
+[[test]]
+name = "parse_cli"
+required-features = ["cli"]
