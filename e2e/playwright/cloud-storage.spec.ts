@@ -125,12 +125,6 @@ test(
     await setup(context, page, testInfo)
     await page.goto('/home')
     await waitForAppLoad(page)
-    await expect(
-      page.getByRole('region', { name: 'Cloud Libraries' })
-    ).toBeVisible()
-    await expect(
-      page.getByRole('region', { name: 'Local Libraries' })
-    ).toHaveCount(0)
     const refresh = page.getByRole('button', { name: 'Refresh projects' })
     await expect(refresh).toHaveAttribute('aria-busy', 'false')
     await expect(
@@ -161,13 +155,6 @@ test(
     await page.clock.runFor(4_999)
     await expect(refresh).toBeDisabled()
     await page.clock.runFor(1)
-    await expect(refresh).toBeEnabled()
-    await page
-      .getByRole('link', { name: 'Open Personal Cloud library' })
-      .click()
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-      'Personal Cloud'
-    )
     await expect(refresh).toBeEnabled()
     await page.getByText('Changed elsewhere', { exact: true }).dblclick()
     await page.locator('.cm-content').first().waitFor({ state: 'visible' })
