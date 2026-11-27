@@ -348,7 +348,11 @@ const Home = () => {
         libraryType?.describeLibrary?.(library) ?? library.presentation,
     }
   })
-  const overviewLibraries = projectLibraries.filter(
+  const projectLibraryRealizations = registry.optional(
+    projectLibraryRealizationsService
+  )
+  const homeProjectActions = registry.required(homeProjectActionsService)
+  const visibleProjectLibraries = projectLibraries.filter(
     ({ type, hiddenByDefault }) =>
       !hiddenByDefault &&
       (type === DIRECTORY_PROJECT_LIBRARY_TYPE ||
@@ -375,23 +379,20 @@ const Home = () => {
   const settledLibraryIds = registry.observe(
     homeProjectSettledLibraryIdsFacet
   ).value
-  const librariesOnPage = selectedProjectLibrary
+  const visibleLibraries = selectedProjectLibrary
     ? [selectedProjectLibrary]
-    : overviewLibraries
-  const projectsInitiallyLoaded = librariesOnPage.every((library) =>
+    : visibleProjectLibraries
+  const projectsInitiallyLoaded = visibleLibraries.every((library) =>
     settledLibraryIds.includes(library.id)
   )
   const projectsLoaded =
     app.projectOperations.pending.value === 0 &&
     projectsInitiallyLoaded &&
-    !librariesOnPage.some(({ id }) => loadingLibraryIds.includes(id))
-  const projectLibraryRealizations = registry.optional(
-    projectLibraryRealizationsService
-  )
+    !visibleLibraries.some(({ id }) => loadingLibraryIds.includes(id))
   const refreshProjectList = () => {
     if (!projectsLoaded) return
     void Promise.all(
-      librariesOnPage.map((library) => {
+      visibleLibraries.map((library) => {
         const operation = getProjectLibraryOperation(
           projectLibraryTypes.get(library.type),
           library,
@@ -419,7 +420,7 @@ const Home = () => {
       ? []
       : homeProjectEntries.filter((project) =>
           project.libraryIds?.some((id) =>
-            librariesOnPage.some((library) => library.id === id)
+            visibleLibraries.some((library) => library.id === id)
           )
         )
   const { searchResults, query, setQuery } = useProjectSearch(
@@ -439,7 +440,6 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-  const homeProjectActions = registry.required(homeProjectActionsService)
   const duplicateProjectToLibrary = useCallback(
     (project: HomeProjectEntry, libraryId?: string) => {
       if (!homeProjectActions.canDuplicateToLibrary(project)) {
@@ -625,38 +625,9 @@ const Home = () => {
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
-        <HomeHeader
-          data-testid="home-header"
-          onRefresh={refreshProjectList}
-          isRefreshing={!projectsLoaded}
-          title={
-            selectedProjectLibrary
-              ? selectedProjectLibrary.title
-              : libraryId
-                ? 'Library not found'
-                : 'Project Libraries'
-          }
-          library={selectedProjectLibrary}
-          isOverview={!libraryId}
-          showLibraryBackLink={Boolean(selectedProjectLibrary)}
-          setQuery={setQuery}
-          sort={sort}
-          setSearchParams={setSearchParams}
-          readWriteProjectDir={readWriteProjectDir}
-          projectSearchKeybinding={projectSearchKeybinding}
-          libraryDetails={
-            selectedProjectLibrary && LibraryDetails ? (
-              <LibraryDetails
-                library={selectedProjectLibrary}
-                registry={registry}
-              />
-            ) : undefined
-          }
-          className="col-start-2 -col-end-1"
-        />
         <aside
           data-testid="home-sidebar"
-          className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
+          className="grid sm:grid-cols-2 lg:row-span-2 lg:mb-12 lg:flex flex-col justify-between"
         >
           <ul className="flex flex-col">
             {needsToOnboard(onboardingStatus) && (
@@ -781,7 +752,36 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-        <div className="home-project-list col-start-2 -col-end-1 min-h-0">
+        <HomeHeader
+          data-testid="home-header"
+          onRefresh={refreshProjectList}
+          isRefreshing={!projectsLoaded}
+          title={
+            selectedProjectLibrary
+              ? selectedProjectLibrary.title
+              : libraryId
+                ? 'Library not found'
+                : 'Project Libraries'
+          }
+          library={selectedProjectLibrary}
+          isOverview={!libraryId}
+          showLibraryBackLink={Boolean(selectedProjectLibrary)}
+          setQuery={setQuery}
+          sort={sort}
+          setSearchParams={setSearchParams}
+          readWriteProjectDir={readWriteProjectDir}
+          projectSearchKeybinding={projectSearchKeybinding}
+          libraryDetails={
+            selectedProjectLibrary && LibraryDetails ? (
+              <LibraryDetails
+                library={selectedProjectLibrary}
+                registry={registry}
+              />
+            ) : undefined
+          }
+          className="lg:col-start-2 lg:-col-end-1"
+        />
+        <div className="home-project-list min-h-0 lg:col-start-2 lg:-col-end-1">
           {libraryId ? (
             <ProjectGrid
               projectShellEnabled={projectShellEnabled}
@@ -801,7 +801,7 @@ const Home = () => {
           ) : (
             <ProjectLibraryOverview
               projectShellEnabled={projectShellEnabled}
-              libraries={overviewLibraries}
+              libraries={visibleLibraries}
               searchResults={searchResults ?? []}
               projects={scopedHomeProjectEntries}
               projectsLoaded={projectsInitiallyLoaded}

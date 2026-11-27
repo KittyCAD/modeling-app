@@ -392,8 +392,7 @@ code,
   }
 
   .home-layout {
-    @apply grid lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-16;
-    grid-template-rows: auto 1fr;
+    @apply grid grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)] gap-4 lg:grid-cols-3 lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-x-16 xl:grid-cols-4;
   }
 
   .home-project-list {

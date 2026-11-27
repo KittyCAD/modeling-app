@@ -1,6 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
+import Tooltip from '@src/components/Tooltip'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import {
@@ -101,26 +102,6 @@ export function HomeHeader({
             isOverview ? 'w-full sm:justify-end' : ''
           }`}
         >
-          {onRefresh && (
-            <ActionButton
-              Element="button"
-              onClick={() => {
-                setRefreshCoolingDown(true)
-                onRefresh()
-              }}
-              disabled={isRefreshing || refreshCoolingDown}
-              aria-label="Refresh projects"
-              aria-busy={isRefreshing}
-              className="text-xs border-primary/10"
-              iconStart={{
-                icon: 'arrowRotateRight',
-                bgClassName: 'bg-transparent',
-                iconClassName: isRefreshing ? 'animate-spin' : '',
-              }}
-            >
-              Refresh
-            </ActionButton>
-          )}
           <ProjectSearchBar
             setQuery={setQuery}
             keybinding={projectSearchKeybinding}
@@ -167,6 +148,28 @@ export function HomeHeader({
             >
               Last Modified
             </ActionButton>
+            {onRefresh && (
+              <ActionButton
+                Element="button"
+                type="button"
+                tabIndex={0}
+                onClick={() => {
+                  setRefreshCoolingDown(true)
+                  onRefresh()
+                }}
+                disabled={isRefreshing || refreshCoolingDown}
+                aria-label="Refresh projects"
+                aria-busy={isRefreshing}
+                className="ml-auto w-6 shrink-0 justify-center border-primary/10 !p-0"
+                iconStart={{
+                  icon: 'arrowRotateRight',
+                  bgClassName: 'bg-transparent',
+                  iconClassName: isRefreshing ? 'animate-spin' : '',
+                }}
+              >
+                <Tooltip position="bottom-right">Refresh projects</Tooltip>
+              </ActionButton>
+            )}
           </div>
         </div>
       </div>
