@@ -1,4 +1,8 @@
 import type { Locator, Page } from '@playwright/test'
+import type {
+  LocalRenderer,
+  ProjectedEntity,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import {
@@ -12,12 +16,15 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 
+type EntityQueryKind = ProjectedEntity['kind'] | 'face'
+
 type MouseParams = {
   pixelDiff?: number
   shouldDbClick?: boolean
   shouldRightClick?: boolean
   delay?: number
 }
+type ProjectionOptions = Parameters<LocalRenderer['getProjectedEntities']>[0]
 type MouseDragToParams = MouseParams & {
   fromPoint: { x: number; y: number }
 }
@@ -137,23 +144,13 @@ export class SceneFixture {
     this.appHeader = this.page.getByTestId('app-header')
   }
   /** Read current CSS viewport coordinates; refresh after camera or model changes. */
-  getProjectedEntities = async () =>
-    this.page.evaluate(async () => {
+  getProjectedEntities = async (options?: ProjectionOptions) =>
+    this.page.evaluate(async (options) => {
       const view = window.app.singletons.kclManager.sceneInfra.localRenderer
       if (!view)
         throw new Error('Projected entities require the local renderer')
-      return view.getProjectedEntities()
-    })
-
-  findEdge = (
-    index: number,
-    options?: { timeout?: number; visible?: boolean }
-  ) => this.findEntity('edge', index, options)
-
-  findFace = (
-    index: number,
-    options?: { timeout?: number; visible?: boolean }
-  ) => this.findEntity('face', index, options)
+      return view.getProjectedEntities(options)
+    }, options)
 
   /**
    * Both modes share the same mouse actions; only the selection point differs.
@@ -163,43 +160,60 @@ export class SceneFixture {
   makeSelectionHelpers = async ({
     kind,
     index,
+    id,
     stream,
     timeout,
     visible,
   }: {
-    kind: 'edge' | 'face'
-    index: number
+    kind: EntityQueryKind
+    index?: number
+    id?: string
     stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
     timeout?: number
     visible?: boolean
-  }) =>
-    (await this.usesLocalRenderer())
-      ? this.findEntity(kind, index, { timeout, visible })
-      : this.makeMouseHelpers(stream.x, stream.y, {
-          format: stream.format,
-          steps: stream.steps,
-        })
+  }) => {
+    if (await this.usesLocalRenderer()) {
+      const target = id ?? index
+      if (target === undefined) {
+        throw new Error('A local entity ID or index is required')
+      }
+      return this.findEntity(kind, target, { timeout, visible })
+    }
+    return this.makeMouseHelpers(stream.x, stream.y, {
+      format: stream.format,
+      steps: stream.steps,
+    })
+  }
 
   private usesLocalRenderer = async () =>
     this.expectedLocalRenderer ??
     this.page.evaluate(() => window.engineCommandManager.geometryOnly)
 
   /** Index is zero-based within entities filtered by kind and visibility. */
-  private findEntity = async (
-    kind: 'edge' | 'face',
-    index: number,
+  findEntity = async (
+    kind: EntityQueryKind,
+    indexOrId: number | string,
     {
       timeout = 30_000,
       visible = true,
     }: { timeout?: number; visible?: boolean } = {}
   ) => {
-    if (!Number.isInteger(index) || index < 0) {
+    if (
+      typeof indexOrId === 'number' &&
+      (!Number.isInteger(indexOrId) || indexOrId < 0)
+    ) {
       throw new Error('Entity index must be a non-negative integer')
     }
-    const lookup = async () =>
-      (await this.getProjectedEntities()).filter(
-        (entity) => entity.kind === kind && entity.visible === visible
-      )[index]
+    const lookup = async () => {
+      const entities = await this.getProjectedEntities({
+        kind,
+        visible,
+        ...(typeof indexOrId === 'number'
+          ? { limit: indexOrId + 1 }
+          : { id: indexOrId, limit: 1 }),
+      })
+      return entities[typeof indexOrId === 'number' ? indexOrId : 0]
+    }
     // Pane resizing and camera updates can settle after the UI action completes.
     let entity: Awaited<ReturnType<typeof lookup>> | undefined
     await expect
@@ -219,7 +233,7 @@ export class SceneFixture {
       .toBe(true)
     if (!entity) {
       throw new Error(
-        `Missing projected ${kind} at index ${index} (visible: ${visible})`
+        `Missing projected ${kind} at ${typeof indexOrId === 'number' ? `index ${indexOrId}` : `ID ${indexOrId}`} (visible: ${visible})`
       )
     }
     const bounds = await this.streamWrapper.boundingBox()
@@ -707,6 +721,28 @@ export class SceneFixture {
           this.page.evaluate(() => window.engineCommandManager.geometryOnly)
         )
         .toBe(this.expectedLocalRenderer)
+    }
+  }
+
+  /** Wait for a non-empty model to finish execution and initial camera fitting. */
+  waitForModelReady = async () => {
+    await this.settled()
+    await this.page.waitForFunction(
+      () => {
+        const editor = window.app.project?.executingEditor.value
+        return (
+          editor &&
+          !editor.isExecutingSignal.value &&
+          editor.artifactGraph.size > 0
+        )
+      },
+      undefined,
+      { timeout: 30_000 }
+    )
+    if (await this.usesLocalRenderer()) {
+      await expect(this.page.getByTestId('local-renderer-loading')).toBeHidden({
+        timeout: 30_000,
+      })
     }
   }
 

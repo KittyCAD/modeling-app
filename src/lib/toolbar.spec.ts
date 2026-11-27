@@ -19,8 +19,10 @@ import {
   resolveRecentToolbarItems,
   type ToolbarDropdown,
   type ToolbarItem,
+  type ToolbarItemCallbackProps,
 } from '@src/lib/toolbar'
 import type { Command } from '@src/lib/commandTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -313,6 +315,29 @@ describe('toolbar state helpers', () => {
 
     expect(titles.length).toBeGreaterThan(0)
     expect(titles, 'GDT dropdown names are not sorted').toEqual(sortedTitles)
+  })
+
+  test('disables legacy sketch editing and ignores its toolbar action', () => {
+    const props: ToolbarItemCallbackProps = {
+      modelingState: {
+        context: {
+          selectionRanges: { graphSelections: [], otherSelections: [] },
+          kclManager: { artifactGraph: new Map() },
+        },
+      } as unknown as StateFrom<typeof modelingMachine>,
+      modelingSend: vi.fn(),
+      sketchPathId: 'legacy-sketch',
+      editorHasFocus: true,
+      isActive: false,
+      keepSelection: false,
+    }
+    const sketchItem = findModelingToolbarItem('sketch')
+
+    expect(
+      sketchItem.disabled?.(props.modelingState, {} as ModuleType, props)
+    ).toBe(true)
+    sketchItem.onClick(props)
+    expect(props.modelingSend).not.toHaveBeenCalled()
   })
 
   test('starts sketch solve on an already-selected plane', () => {

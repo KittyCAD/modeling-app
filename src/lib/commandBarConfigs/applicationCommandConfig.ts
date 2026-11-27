@@ -5,12 +5,18 @@ import env from '@src/env'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
+  EXPORT_PROJECT_ARCHIVE_COMMAND,
+  EXPORT_PROJECT_ARCHIVE_ICON,
+  EXPORT_PROJECT_ARCHIVE_LABEL,
+} from '@src/lib/constants'
+import {
+  isPathNotFoundError,
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -21,6 +27,7 @@ import {
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import { getStringAfterLastSeparator, joinOSPaths } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
+import { getUniqueProjectNameFromNames } from '@src/lib/projectName'
 import { reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -34,31 +41,68 @@ import {
 import { routerService } from '@src/registry/contracts/router'
 import toast from 'react-hot-toast'
 
+// A missing library folder counts as empty; creating the project creates it.
+async function readLibraryEntryNames(app: App, libraryPath: string) {
+  try {
+    return await app.fileOperations.readDirectory(libraryPath)
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      return []
+    }
+    return Promise.reject(error)
+  }
+}
+
+// The cached project list can miss projects created elsewhere, so the name is
+// picked from the library's folder on disk. If another window takes the name
+// before the folder is created, that name counts as taken and the next is tried.
+async function createNewProjectDirectory(
+  app: App,
+  libraryPath: string,
+  requestedName: string
+) {
+  const takenNames = [...(await readLibraryEntryNames(app, libraryPath))]
+  while (true) {
+    const name = getUniqueProjectNameFromNames(requestedName, takenNames)
+    const path = fsZds.join(libraryPath, name)
+    try {
+      await app.fileOperations.createDirectory(path)
+      return path
+    } catch (error) {
+      if (!(error instanceof FileAlreadyExists)) {
+        return Promise.reject(error)
+      }
+      takenNames.push(name)
+    }
+  }
+}
+
 async function onSubmitKCLSampleCreation({
   sample,
-  uniqueNameIfNeeded,
+  projectName,
+  libraryPath,
   app,
   isProjectNew,
 }: {
   sample: string
-  uniqueNameIfNeeded: string
+  projectName: string
+  libraryPath: string
   app: App
   isProjectNew: boolean
 }) {
   const openedProject = app.project
   const existing = app.projectOperations.projects.value.find(
-    (project) => project.name === uniqueNameIfNeeded
+    (project) => project.name === projectName
   )
-  const projectRoot =
-    openedProject?.name === uniqueNameIfNeeded
+  const existingProjectRoot =
+    openedProject?.name === projectName
       ? openedProject.path
-      : (existing?.path ??
-        fsZds.join(
-          app.projectLibraries.projectDirectoryPath,
-          uniqueNameIfNeeded
-        ))
+      : (existing?.path ?? fsZds.join(libraryPath, projectName))
   const { requestedProjectName: sampleName, initialProject } =
     await downloadKclSample(sample, { assetUrlPrefix: isDesktop() ? '.' : '' })
+  const projectRoot = isProjectNew
+    ? await createNewProjectDirectory(app, libraryPath, projectName)
+    : existingProjectRoot
   // Every sample gets its own folder in an existing project, including samples
   // containing only main.kcl. Allocate against storage so repeated imports and
   // collisions with either files or folders cannot overwrite existing contents.
@@ -112,12 +156,10 @@ export function createApplicationCommands({
     async onSubmit(data) {
       if (data) {
         const error = "The command couldn't be submitted, check the arguments."
-        const folders = app.projectOperations.projects.value
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
-        const uniqueNameIfNeeded = isProjectNew
-          ? getUniqueProjectName(requestedProjectName, [...folders])
-          : requestedProjectName
+        // Read before any await: switching projects meanwhile can change it.
+        const libraryPath = app.projectLibraries.projectDirectoryPath
 
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
@@ -126,7 +168,8 @@ export function createApplicationCommands({
           } else {
             void onSubmitKCLSampleCreation({
               sample: data.sample,
-              uniqueNameIfNeeded,
+              projectName: requestedProjectName,
+              libraryPath,
               app,
               isProjectNew,
             }).catch(reportError)
@@ -146,15 +189,18 @@ export function createApplicationCommands({
             selectedFile instanceof File
               ? selectedFile.name
               : getStringAfterLastSeparator(selectedFile)
-          const root = joinOSPaths(
-            app.projectLibraries.projectDirectoryPath,
-            uniqueNameIfNeeded
-          )
           try {
             const content =
               selectedFile instanceof File
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await app.fileOperations.readFile(selectedFile)
+            const root = isProjectNew
+              ? await createNewProjectDirectory(
+                  app,
+                  libraryPath,
+                  requestedProjectName
+                )
+              : joinOSPaths(libraryPath, requestedProjectName)
             const paths = await app.projectOperations.writeFiles(root, [
               { path: fileNameWithExtension, contents: content },
             ])
@@ -324,7 +370,7 @@ export function createApplicationCommands({
             }
 
             void app.registry
-              .get(routerService)
+              .required(routerService)
               .navigate(getFileRoute(project.default_file))
           })
           .catch((error: unknown) => {
@@ -569,23 +615,19 @@ export function createApplicationCommands({
   }
 
   const exportProjectZipCommand: Command = {
+    ...EXPORT_PROJECT_ARCHIVE_COMMAND,
     scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    name: 'export-project-zip',
-    displayName: 'Download project files',
-    description: 'Download every file in the current project as a ZIP archive.',
+    displayName: EXPORT_PROJECT_ARCHIVE_LABEL,
+    description: 'Save the entire project as a ZIP archive.',
     needsReview: false,
-    icon: 'download',
-    groupId: 'application',
-    onSubmit: async () => {
-      const project = app.project?.projectIORefSignal.value
-      const executingEditor = app.project?.executingEditor.value
-      const wasmInstance = await app.wasmPromise
-
-      await exportProjectZip({
+    icon: EXPORT_PROJECT_ARCHIVE_ICON,
+    onSubmit: () => {
+      const project = app.project
+      return exportProjectZip({
         fileOperations: app.fileOperations,
-        project,
-        currentFilePath: app.project?.executingPath,
-        currentFileContents: executingEditor?.code,
+        project: project?.projectIORefSignal.value,
+        currentFilePath: project?.executingPath,
+        currentFileContents: project?.executingEditor.value?.code,
         wasmInstance,
       })
     },
@@ -593,7 +635,7 @@ export function createApplicationCommands({
 
   return [
     addKCLFileToProject,
-    ...(!isDesktop() ? [exportProjectZipCommand] : []),
+    exportProjectZipCommand,
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,

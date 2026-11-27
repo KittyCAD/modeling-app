@@ -45,7 +45,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   showCloudSyncUi?: boolean
   showDetails?: boolean
   showSourceStatusBadges?: boolean
-  onCloneToLibrary?: (project: HomeProjectEntry) => void
+  onDuplicateToLibrary?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -158,7 +158,7 @@ function AppProjectCard({
   showCloudSyncUi = true,
   showDetails = true,
   showSourceStatusBadges = true,
-  onCloneToLibrary,
+  onDuplicateToLibrary,
   ...props
 }: AppProjectCardProps) {
   useSignals()
@@ -295,7 +295,6 @@ function AppProjectCard({
   }, [project.id, projectDisplayName])
 
   const projectName = getHomeProjectDisplayName(displayedProject)
-  const canDuplicate = projectActions.canDuplicate(project)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project)
@@ -310,8 +309,8 @@ function AppProjectCard({
   const projectCopyPaths = project.localProjectPath
     ? [project.localProjectPath, ...(project.duplicateProjectIdPaths ?? [])]
     : []
-  const canCloneToLibrary = Boolean(
-    onCloneToLibrary && projectActions.canCloneToLibrary(project)
+  const canDuplicateToLibrary = Boolean(
+    onDuplicateToLibrary && projectActions.canDuplicateToLibrary(project)
   )
   const deleteProjectDisplayName = projectName || 'this file'
   const deleteWarningMessage = getHomeProjectDeleteWarningMessage(
@@ -569,11 +568,9 @@ function AppProjectCard({
             <ContextMenuItem
               key="duplicate"
               icon="clone"
-              disabled={!canDuplicate || isBusy}
+              disabled={!canDuplicateToLibrary || isBusy}
               data-testid="project-card-context-duplicate"
-              onClick={() => {
-                void projectActions.duplicate(project).catch(trap)
-              }}
+              onClick={() => onDuplicateToLibrary?.(project)}
             >
               Duplicate project
             </ContextMenuItem>,
@@ -585,15 +582,6 @@ function AppProjectCard({
               onClick={() => setIsEditing(true)}
             >
               Rename project
-            </ContextMenuItem>,
-            <ContextMenuItem
-              key="clone-to-library"
-              icon="folder"
-              disabled={!canCloneToLibrary || isBusy}
-              data-testid="project-card-context-clone-to-library"
-              onClick={() => onCloneToLibrary?.(project)}
-            >
-              Clone to another library
             </ContextMenuItem>,
             ...(hasDuplicateRealizations
               ? [
@@ -661,11 +649,19 @@ function AppProjectCard({
         if (!canOpen || isBusy) return
         setIsOpening(true)
         void (async () => {
-          if (projectShellEnabled && e.shiftKey && project.localProjectPath) {
-            await navigate(
-              `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
-            )
-            return
+          if (projectShellEnabled && e.shiftKey) {
+            if (project.localProjectPath) {
+              await navigate(
+                `${PATHS.LOCAL}/${encodeURIComponent(project.localProjectPath)}`
+              )
+              return
+            }
+            if (project.remoteProjectId) {
+              await navigate(
+                `${PATHS.PROJECT}/${encodeURIComponent(project.remoteProjectId)}`
+              )
+              return
+            }
           }
           const result = await projectActions.open(project)
           if (result?.defaultFile) {
@@ -686,8 +682,10 @@ function AppProjectCard({
           to={openHref}
           aria-disabled={!canOpen || isBusy}
           title={
-            projectShellEnabled && canOpen && project.localProjectPath
-              ? 'Shift-click to open without an editor'
+            projectShellEnabled &&
+            canOpen &&
+            (project.localProjectPath || project.remoteProjectId)
+              ? 'Shift-click to open in the new project shell'
               : undefined
           }
         >

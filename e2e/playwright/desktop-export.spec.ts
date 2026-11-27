@@ -108,12 +108,11 @@ test(
       await u.openFilePanel()
 
       // Click on the other file
-      await toolbar.openFile('other.kcl')
+      await scene.waitForExecutionDoneAfter(() => toolbar.openFile('other.kcl'))
 
       // Close the file pane
       await u.closeFilePanel()
       await scene.settled()
-      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -251,9 +250,7 @@ extrude001 = extrude(profile001, length = 5)`
     await expect(engineErrorToastMessage).not.toBeVisible()
 
     const successToastMessage = page.getByText('DXF export completed [TEST].')
-    await page.waitForTimeout(1_000)
-    const count = await successToastMessage.count()
-    expect(count).toBeGreaterThanOrEqual(1)
+    await expect(successToastMessage.first()).toBeVisible()
 
     // Check for the exported DXF file
     const exportFileName = 'sketch001.dxf'
@@ -348,9 +345,7 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     await dxfExportOption.click()
 
     const successToastMessage = page.getByText('DXF export completed [TEST].')
-    await page.waitForTimeout(1_000)
-    const count = await successToastMessage.count()
-    expect(count).toBeGreaterThanOrEqual(1)
+    await expect(successToastMessage.first()).toBeVisible()
 
     // Check for the exported DXF file
     const exportFileName = 'sketch002.dxf'

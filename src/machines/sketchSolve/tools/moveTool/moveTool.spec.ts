@@ -9,7 +9,10 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { GridSnapOptions } from '@src/clientSideScene/gridUtils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type {
+  OnMouseEnterLeaveArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { emptyOperationsByModule } from '@src/lang/wasm'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -410,6 +413,9 @@ function setUpMoveToolCallbacks({
   }
 
   return {
+    onMouseLeave: callbacks.onMouseLeave as (
+      args: OnMouseEnterLeaveArgs
+    ) => void,
     onMouseDownSelection: callbacks.onMouseDownSelection as () => boolean,
     onClick: callbacks.onClick as (args: {
       mouseEvent: MouseEvent
@@ -5237,6 +5243,69 @@ describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {
         constraintHoverPopups: [{ segmentId: 3, position: [25, 0] }],
       },
     })
+  })
+
+  it('keeps the badge reachable after leaving the raycast source inside the popup corridor', async () => {
+    const start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const end = createPointApiObject({ id: 2, x: 40, y: 0 })
+    const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const constraint = createConstraintApiObject({ id: 20, type: 'Horizontal' })
+    const popup = { segmentId: 3, position: [20, 0] }
+    const badge = new Group()
+    badge.userData.constraintHoverPopup = popup
+    badge.userData.hitObjects = [
+      { type: 'screenRect', center: [45, 20, 0], sizePx: [12, 12] },
+    ]
+    const constraintGroup = new Group()
+    constraintGroup.name = '20'
+    constraintGroup.add(badge)
+
+    const { onMove, onMouseLeave, onClick, send, sceneInfra } =
+      setUpMoveToolCallbacks({
+        apiObjects: [start, end, line, constraint],
+        showNonVisualConstraints: false,
+        getSceneObjectByName: (name) =>
+          name === '20' ? constraintGroup : null,
+      })
+    sceneInfra.scene.add(constraintGroup)
+    const moveTo = (x: number, y: number) =>
+      onMove({
+        intersectionPoint: {
+          twoD: new Vector2(x, y),
+          threeD: new Vector3(x, y, 0),
+        },
+      })
+
+    moveTo(20, 0)
+    moveTo(32, 12)
+    // SceneInfra dispatches source-object leave after onMove for the same pointer.
+    onMouseLeave({
+      selected: new Group(),
+      mouseEvent: new MouseEvent('mousemove'),
+      isAreaSelectActive: false,
+    })
+    expect(send.mock.lastCall?.[0].data.constraintHoverPopups).toEqual([popup])
+
+    moveTo(45, 20)
+    await onClick({
+      intersectionPoint: {
+        twoD: new Vector2(45, 20),
+        threeD: new Vector3(45, 20, 0),
+      },
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+    expect(send).toHaveBeenCalledWith({
+      type: 'update selected ids',
+      data: {
+        selectedIds: [20],
+        duringAreaSelectIds: [],
+        replaceExistingSelection: true,
+      },
+    })
+
+    moveTo(200, 200)
+    expect(send.mock.lastCall?.[0].data.constraintHoverPopups).toEqual([])
   })
 
   it('keeps the preview while on its source and dismisses immediately after leaving', () => {

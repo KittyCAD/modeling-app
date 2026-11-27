@@ -101,7 +101,7 @@ test(
 
 test(
   'finishes importing dropped files before enabling the explorer again',
-  { tag: ['@web', '@desktop', '@localRenderer'] },
+  { tag: ['@web', '@browsers', '@desktop', '@localRenderer'] },
   async ({ page, folderSetupFn, fs, homePage, toolbar }) => {
     const projectName = 'external-file-drop'
     const contents = 'Contents imported from a dropped file.'
@@ -206,7 +206,7 @@ test.describe(
 
 test.describe(
   'when file tree creation navigates within the same project',
-  { tag: ['@web', '@localRenderer'] },
+  { tag: ['@web', '@browsers', '@localRenderer'] },
   () => {
     test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
       page,
@@ -1046,7 +1046,6 @@ test.describe(
       })
 
       await test.step('Rename the folder', async () => {
-        await page.waitForTimeout(1000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
@@ -1208,15 +1207,12 @@ test.describe(
 
       await test.step('Delete folderToDelete', async () => {
         await folderToDelete.click({ button: 'right' })
-        await page.waitForTimeout(1000)
 
         await expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await page.waitForTimeout(1000)
 
         await expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
-        await page.waitForTimeout(1000)
       })
 
       await test.step('Check deletion and no navigation', async () => {
@@ -1264,11 +1260,9 @@ test.describe(
         await folderToDelete.click({ button: 'right' })
         await expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await page.waitForTimeout(1000)
 
         await expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
-        await page.waitForTimeout(1000)
       })
 
       await test.step('Check deletion and navigation to main.kcl', async () => {

@@ -955,7 +955,7 @@ export const doExport = async (
 
     const exportMenuButton = page
       .getByTestId('project-sidebar-menu')
-      .getByRole('button', { name: 'Export' })
+      .getByText('Export 3D model', { exact: true })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
   } else if (exportFrom === 'sidebarButton') {
@@ -971,11 +971,11 @@ export const doExport = async (
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const exportCommand = page.getByRole('option', {
-      name: 'floppy disk arrow Export',
+    const exportCommand = cmdBar.cmdOptions.getByText('Export 3D model', {
+      exact: true,
     })
-    await expect(exportCommand.first()).toBeVisible()
-    await exportCommand.first().click()
+    await expect(exportCommand).toBeVisible()
+    await exportCommand.click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
@@ -1149,25 +1149,37 @@ export async function setup(
     }) => {
       // Init scripts also run on opaque startup documents, which cannot use
       // web storage. Electron's file documents still need initialization.
-      if (window.origin === 'null' && location.protocol !== 'file:') {
+      // Firefox throws SecurityError ("The operation is insecure") for storage
+      // access on about:blank / mid-navigation even when origin checks pass.
+      if (
+        location.protocol === 'about:' ||
+        (window.origin === 'null' && location.protocol !== 'file:')
+      ) {
         return
       }
-      const testScope = sessionStorage.getItem(PLAYWRIGHT_TEST_SCOPE_KEY)
-      const initializedScope = sessionStorage.getItem(
-        PLAYWRIGHT_STORAGE_SCOPE_KEY
-      )
-      if (testScope === null || initializedScope !== testScope) {
-        localStorage.clear()
-        if (testScope !== null) {
-          sessionStorage.setItem(PLAYWRIGHT_STORAGE_SCOPE_KEY, testScope)
+      try {
+        const testScope = sessionStorage.getItem(PLAYWRIGHT_TEST_SCOPE_KEY)
+        const initializedScope = sessionStorage.getItem(
+          PLAYWRIGHT_STORAGE_SCOPE_KEY
+        )
+        if (testScope === null || initializedScope !== testScope) {
+          localStorage.clear()
+          if (testScope !== null) {
+            sessionStorage.setItem(PLAYWRIGHT_STORAGE_SCOPE_KEY, testScope)
+          }
+        }
+        localStorage.setItem(TOKEN_PERSIST_KEY, token)
+        localStorage.setItem(settingsKey, settings)
+        localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
+        window.addEventListener('beforeunload', () => {
+          localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+        })
+      } catch (error) {
+        // Firefox may throw across compartments where instanceof DOMException fails.
+        if ((error as { name?: string } | null)?.name !== 'SecurityError') {
+          throw error
         }
       }
-      localStorage.setItem(TOKEN_PERSIST_KEY, token)
-      localStorage.setItem(settingsKey, settings)
-      localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      window.addEventListener('beforeunload', () => {
-        localStorage.removeItem(IS_PLAYWRIGHT_KEY)
-      })
     },
     {
       token,

@@ -93,7 +93,9 @@ extrude001 = extrude(sketch001, length = 50)
 
       await test.step('Check arrow down works', async () => {
         await cmdBar.cmdBarOpenBtn.click()
-        await cmdBar.selectOption({ name: 'floppy disk arrow Export' }).click()
+        await cmdBar.cmdOptions
+          .getByText('Export 3D model', { exact: true })
+          .click()
 
         // press arrow down key twice
         await page.keyboard.press('ArrowDown')
@@ -427,17 +429,16 @@ extrude002 = extrude(profile002, length = 150)`
       // Click the code editor
       await page.locator('.cm-content').click()
 
-      await page.waitForTimeout(2000)
-
       // Expect the toast to be gone
-      await expect(engineErrorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible({ timeout: 7_000 })
 
       // Now add in code that works.
-      await page.locator('.cm-content').fill(bracket)
-      await page.keyboard.press('End')
-      await page.keyboard.press('Enter')
+      await scene.waitForExecutionDoneAfter(async () => {
+        await page.locator('.cm-content').fill(bracket)
+        await page.keyboard.press('End')
+        await page.keyboard.press('Enter')
+      })
       await scene.settled()
-      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Click the export button
       await expect(exportButton).toBeEnabled()

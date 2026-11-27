@@ -1,14 +1,29 @@
 import { posix } from '@chainner/node-path'
 import JSZip from 'jszip'
+import type { ProjectArchiveFile } from '@src/lib/cloudProjects/runtime/types'
 
 export interface ProjectArchiveLimits {
   readonly maxBytes: number
   readonly maxEntries: number
 }
 
+// Product limit agreed in modeling-app#15208. Bound file contents and downloaded
+// ZIP bytes because cloud projects are loaded into memory.
 export const PROJECT_ARCHIVE_LIMITS: ProjectArchiveLimits = {
-  maxBytes: 256 * 1024 * 1024,
+  maxBytes: 1024 * 1024 * 1024,
   maxEntries: 10_000,
+}
+
+export function validateProjectUpload(files: readonly ProjectArchiveFile[]) {
+  if (files.length > PROJECT_ARCHIVE_LIMITS.maxEntries)
+    return new Error('Project upload exceeds the file count limit.')
+  let bytes = 0
+  for (const file of files) {
+    bytes += file.data.byteLength
+    if (bytes > PROJECT_ARCHIVE_LIMITS.maxBytes)
+      return new Error('Project upload exceeds the size limit.')
+  }
+  return undefined
 }
 
 function safeArchivePath(path: string) {

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties extrude_nested_pattern.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 5.000000000000002,
+      "y": 0.0,
+      "z": 2.5
+    },
+    "dimensions": {
+      "x": 14.8,
+      "y": 4.8,
+      "z": 5.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 175.65072108083336
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.12523552092811677
+  }
+}

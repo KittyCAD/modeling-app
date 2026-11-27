@@ -1,5 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
 
@@ -13,14 +19,17 @@ vi.mock('@kittycad/ui-components', () => ({
   ),
   Draggable: ({
     children,
+    Handle,
     style,
     'data-testid': testId,
   }: {
     children: React.ReactNode
+    Handle: React.ReactNode
     style?: React.CSSProperties
     'data-testid'?: string
   }) => (
     <div style={style} data-testid={testId}>
+      {Handle}
       {children}
     </div>
   ),
@@ -30,6 +39,7 @@ import { measurementToolService } from '../measurementToolService'
 import {
   PhysicalAnalysisDraggablePanel,
   PhysicalAnalysisTool,
+  PhysicalAnalysisStatusBarItem,
 } from './PhysicalAnalysisTool'
 import { physicalAnalysisService } from './physicalAnalysisService'
 
@@ -222,7 +232,7 @@ describe('physical analysis tool', () => {
 
   it('clears stale values and shows analyzing when a unit changes', async () => {
     const first = setupDeferredModelingContext('mm')
-    render(<PhysicalAnalysisTool />)
+    const { rerender } = render(<PhysicalAnalysisTool />)
 
     expect(screen.getByText('Analyzing...')).toBeInTheDocument()
     first.release()
@@ -233,6 +243,7 @@ describe('physical analysis tool', () => {
 
     // Swap the volume unit; the old numbers no longer match the controls.
     const second = setupDeferredModelingContext('mm')
+    rerender(<PhysicalAnalysisTool />)
     fireEvent.change(screen.getByTestId('physical-analysis-volume-unit'), {
       target: { value: 'l' },
     })
@@ -285,4 +296,31 @@ describe('physical analysis tool', () => {
       { left: '344px' }
     )
   })
+
+  it.each(['mounted', 'replaced'])(
+    'opens Physical analysis in the stream %s after the status control rendered',
+    async (lifecycle) => {
+      setupModelingContext('mm')
+      physicalAnalysisService.close()
+      const original = document.createElement('div')
+      original.id = 'stream'
+      if (lifecycle === 'replaced') document.body.append(original)
+      onTestFinished(() => original.remove())
+      render(<PhysicalAnalysisStatusBarItem />)
+
+      original.remove()
+      const stream = document.createElement('div')
+      stream.id = 'stream'
+      document.body.append(stream)
+      onTestFinished(() => stream.remove())
+      fireEvent.click(screen.getByRole('button', { name: 'Physical analysis' }))
+
+      const close = await within(stream).findByRole('button', { name: /Close/ })
+      expect(await within(stream).findByText('1,000')).toBeVisible()
+      fireEvent.click(close)
+      expect(
+        within(stream).queryByRole('button', { name: /Close/ })
+      ).not.toBeInTheDocument()
+    }
+  )
 })

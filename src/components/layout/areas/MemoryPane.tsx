@@ -1,57 +1,25 @@
-import ReactJsonView from '@microlink/react-json-view'
-import toast from 'react-hot-toast'
-
-import type { ExtrudeSurfaceView } from '@rust/kcl-lib/bindings/ExtrudeSurfaceView'
-import type { PathView } from '@rust/kcl-lib/bindings/PathView'
-
-import { ActionButton } from '@src/components/ActionButton'
+import { useSignals } from '@preact/signals-react/runtime'
 import Loading from '@src/components/Loading'
-import Tooltip from '@src/components/Tooltip'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-import type { VariableMap } from '@src/lang/wasm'
-import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
+import {
+  CopyVariablesButton,
+  VariablesTree,
+} from '@src/lib/kcl/variables/VariablesTree'
+import type { VariableMap } from '@src/lang/wasm'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { Reason, trap } from '@src/lib/trap'
+import type { ResolvedTheme } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { Suspense, use } from 'react'
 
-export const MemoryPaneMenu = () => {
+export function MemoryPane(props: AreaTypeComponentProps) {
+  useSignals()
   const { kclManager } = useSingletons()
   const variables = kclManager.variablesSignal.value
-
-  function copyProgramMemoryToClipboard() {
-    if (globalThis && 'navigator' in globalThis) {
-      navigator.clipboard
-        .writeText(JSON.stringify(variables))
-        .then(() => toast.success('Program memory copied to clipboard.'))
-        .catch((_e) =>
-          trap(new Error('Failed to copy program memory to clipboard'))
-        )
-    }
-  }
-
-  return (
-    <>
-      <ActionButton
-        Element="button"
-        iconStart={{
-          icon: 'clipboardPlus',
-          iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
-        }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-        onClick={copyProgramMemoryToClipboard}
-      >
-        <Tooltip position="bottom-right">Copy to clipboard</Tooltip>
-      </ActionButton>
-    </>
-  )
-}
-
-export function MemoryPane(props: AreaTypeComponentProps) {
+  const theme = useResolvedTheme()
+  const { state } = useModelingContext()
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -62,92 +30,29 @@ export function MemoryPane(props: AreaTypeComponentProps) {
         id={props.layout.id}
         icon="make-variable"
         title={props.layout.label}
-        Menu={MemoryPaneMenu}
+        Menu={<CopyVariablesButton variables={variables} />}
         onClose={props.onClose}
       />
       <Suspense fallback={<Loading>Loading...</Loading>}>
-        <MemoryPaneContents />
+        <LegacyVariablesTree
+          variables={variables}
+          wasm={kclManager.wasmInstancePromise}
+          theme={theme}
+          inSketch={state.matches('Sketch')}
+        />
       </Suspense>
     </LayoutPanel>
   )
 }
 
-export const MemoryPaneContents = () => {
-  const { kclManager } = useSingletons()
-  const theme = useResolvedTheme()
-  const variables = kclManager.variablesSignal.value
-  const { state } = useModelingContext()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
-  const ProcessedMemory = processMemory(variables, wasmInstance)
-
-  return (
-    <div className="h-full relative">
-      <div className="absolute inset-0 p-2 flex flex-col items-start">
-        <div className="overflow-auto h-full w-full pb-12">
-          <ReactJsonView
-            src={ProcessedMemory}
-            collapsed={1}
-            collapseStringsAfterLength={60}
-            enableClipboard={false}
-            displayDataTypes={false}
-            displayObjectSize={true}
-            indentWidth={2}
-            quotesOnKeys={false}
-            sortKeys={true}
-            name={false}
-            theme={theme === 'light' ? 'rjv-default' : 'monokai'}
-          />
-        </div>
-      </div>
-      {state.matches('Sketch') && (
-        <div
-          className="absolute inset-0 dark:bg-chalkboard-90/80 bg-chalkboard-10/80 cursor-not-allowed"
-          title="Variables won't update in sketch mode"
-        ></div>
-      )}
-    </div>
-  )
-}
-
-export const processMemory = (
-  variables: VariableMap,
-  wasmInstance: ModuleType
-) => {
-  const processedMemory: Record<
-    string,
-    string | number | boolean | object | null | undefined
-  > = {}
-  for (const [key, val] of Object.entries(variables)) {
-    if (val === undefined) continue
-    const sk = sketchFromKclValueOptional(val, key)
-    if (val.type === 'Solid') {
-      processedMemory[key] = val.value.value.map(
-        ({ ...rest }: ExtrudeSurfaceView) => {
-          return rest
-        }
-      )
-    } else if (!(sk instanceof Reason)) {
-      processedMemory[key] = sk.paths.map(
-        ({ __geoMeta, ...rest }: PathView) => {
-          return rest
-        }
-      )
-    } else if (val.type === 'Function') {
-      processedMemory[key] = '__function__'
-    } else if (val.type === 'Number') {
-      processedMemory[key] = humanDisplayNumber(val.value, val.ty, wasmInstance)
-    } else if (val.type === 'SketchVar') {
-      const sketchVar = val.value
-      processedMemory[key] =
-        `var ${humanDisplayNumber(sketchVar.initialValue, sketchVar.ty, wasmInstance)}`
-    } else if (val.type === 'Enum') {
-      // Enums are shown by nominal identity, the same way they are written.
-      processedMemory[key] = `${val.enum_name}::${val.variant}`
-    } else if ('value' in val) {
-      processedMemory[key] = val.value
-    } else {
-      processedMemory[key] = undefined
-    }
-  }
-  return processedMemory
+function LegacyVariablesTree({
+  wasm,
+  ...props
+}: {
+  variables: VariableMap
+  wasm: Promise<ModuleType>
+  theme: ResolvedTheme
+  inSketch: boolean
+}) {
+  return <VariablesTree {...props} wasm={use(wasm)} />
 }

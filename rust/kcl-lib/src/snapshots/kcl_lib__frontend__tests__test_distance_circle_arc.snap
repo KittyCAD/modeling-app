@@ -3,29 +3,7 @@ source: kcl-lib/src/frontend.rs
 expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  circle1 = circle(
-    start = [
-      var 4.3809400326851655,
-      var -0.0002710111155890299
-    ],
-    center = [
-      var -0.30925081270158605,
-      var -0.08791139839239542
-    ],
-  )
-  arc1 = arc(
-    start = [
-      var 15.217727778740407,
-      var -0.0008035692880398714
-    ],
-    end = [
-      var 10.027793886410244,
-      var 4.284189492693506
-    ],
-    center = [
-      var 11.310403032132179,
-      var 0.5521804166732991
-    ],
-  )
+  circle1 = circle(start = [var 4.38, var 0], center = [var -0.31, var -0.09])
+  arc1 = arc(start = [var 15.22, var 0], end = [var 10.03, var 4.28], center = [var 11.31, var 0.55])
   distance([circle1, arc1]) == 3mm
 }

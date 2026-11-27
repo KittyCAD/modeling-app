@@ -142,7 +142,7 @@ A contribution of CodeMirror behavior to each matching Code surface, such as syn
 
 A contributed component that displays an editor's buffer. An editor can offer several matching modes; each view instance retains its own selected mode. Switching modes preserves the editor's identity, contents, and history. The Code mode supplies the CodeMirror editing interface.
 
-**Also called:** editor view, in the contribution API; contributed surface, in implementation comments. Qualify these names because view also refers to CodeMirror's `EditorView`.
+**Also called:** editor presentation mode; editor view, in the contribution API; contributed surface, in implementation comments. Qualify these names because view also refers to CodeMirror's `EditorView`.
 
 **Related:** [Editor](#editor) supplies the buffer; [Editors pane](#editors-pane) presents the mode chooser; [Code Editor](#code-editor) describes the familiar editing Area; [Workbench](#workbench) describes a broader Workspace configuration.
 
@@ -163,6 +163,18 @@ A contribution that acquires document behavior for matching editors. Capabilitie
 **Related:** [Editor](#editor) receives the behavior; [Editor language classification](#editor-language-classification) helps determine applicability; [Editor mode](#editor-mode) determines the component displaying the buffer.
 
 **Search anchors:** `EditorCapability`, `editorCapabilityValueSpec` in the [editors contract](lib/editors/registry/contract.ts); `EditorMatcher` and `matchesEditor` in [matching.ts](lib/editors/matching.ts).
+
+## Result freshness
+
+Whether a retained editor computation result corresponds to the editor's current source, contents, and declared dependencies. A stale result can remain available while another computation runs or automatic execution is disabled.
+
+**Related:** [Editor](#editor) supplies the working document; an [Automatic execution policy](#automatic-execution-policy) decides when input changes request another computation.
+
+## Automatic execution policy
+
+A policy that requests editor computations when their inputs change, independently of the executor that owns the work and results. Automatically Render is KCL's user-facing control for this policy.
+
+**Related:** [Result freshness](#result-freshness) describes whether a retained result matches current inputs, independently of whether another computation is requested.
 
 ## Editor language classification
 
@@ -191,3 +203,26 @@ A contributed status component displayed beside an editor's tab label. The compo
 **Related:** [Editors pane](#editors-pane) renders indicators; [Editor](#editor) supplies their context. An indicator reports information independently of the control used to select an [Editor mode](#editor-mode).
 
 **Search anchors:** `EditorTabIndicator`, `editorTabIndicatorValueSpec` in the [editors contract](lib/editors/registry/contract.ts).
+
+## Modeling interaction state
+
+The current activity within a Modeling presentation, such as inspecting a model or editing a sketch. It determines which modeling tools and interactions are available without selecting a different editor presentation mode.
+
+**Related:** [Editor mode](#editor-mode) chooses a presentation of the document; a [Sketch editing session](#sketch-editing-session) is a sustained modeling interaction.
+
+## Sketch editing session
+
+A period of editing one selected sketch, including its sketch plane, geometry, constraints, and active sketch tools. Entering or leaving sketch editing changes the modeling interaction state while retaining the same document.
+
+
+## View selection
+
+Geometry selected in one Modeling view, independently of other views of the same document. It refers to that view's displayed execution.
+
+## Dialog picking session
+
+Temporary ownership of geometry picking by an open command dialog. Picks populate the active selection argument while the underlying view selection stays unchanged; cancelling ends the session.
+
+## Model target
+
+The particular model view and completed execution bound to a command. A new execution invalidates that target and requires binding and picking again.

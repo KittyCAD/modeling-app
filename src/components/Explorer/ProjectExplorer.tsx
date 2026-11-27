@@ -1,4 +1,3 @@
-import { newKclFile } from '@src/lang/project'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
@@ -20,9 +19,12 @@ import {
 } from '@src/components/Explorer/utils'
 import { fsFileDeletion, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { newKclFile } from '@src/lang/project'
+import type { App } from '@src/lib/app'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
@@ -32,34 +34,36 @@ import {
   fileNameHasExtension,
   getParentAbsolutePath,
   joinOSPaths,
+  PATHS,
   parentPathRelativeToApplicationDirectory,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { isErr, trap, reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection, trap } from '@src/lib/trap'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
-
 import {
   keymapService,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import {
   type ProjectExplorerRowContextMenuItemContext,
-  projectExplorerRowContextMenuItemsValueSpec,
+  projectExplorerRowContextMenuItemsFacet,
 } from '@src/registry/contracts/projectExplorer'
+import { routerService } from '@src/registry/contracts/router'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import type { FocusEvent as ReactFocusEvent } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
-  rows: { [key: string]: boolean },
+  rows: {
+    [key: string]: boolean
+  },
   entry: FileExplorerEntry
 ): boolean => {
   return rows[entry.key]
 }
-
 const handleExternalDragEvent = (e: React.DragEvent): boolean => {
   if (!isExternalFileDrag(e)) {
     return false
@@ -68,7 +72,6 @@ const handleExternalDragEvent = (e: React.DragEvent): boolean => {
   e.stopPropagation()
   return true
 }
-
 const getDropTargetPath = (
   target: FileExplorerEntry | null,
   projectPath: string
@@ -84,7 +87,6 @@ const getDropTargetPath = (
   // If dropping on a file, use its parent directory
   return getParentAbsolutePath(target.path)
 }
-
 const rowPathMatchesTreeParent = (
   row: FileExplorerEntry,
   project: Project
@@ -93,7 +95,6 @@ const rowPathMatchesTreeParent = (
   const expectedParentPath = joinOSPaths(project.path, ...relativeParentParts)
   return getParentAbsolutePath(row.path) === expectedParentPath
 }
-
 const readAllDirectoryEntriesRecursively = async (
   dirEntry: FileSystemDirectoryEntry
 ): Promise<FileSystemEntry[]> => {
@@ -110,21 +111,28 @@ const readAllDirectoryEntriesRecursively = async (
   }
   return entries
 }
-
 const collectDroppedFiles = async (
   entry: FileSystemEntry,
   basePath: string
 ): Promise<{
-  supported: { file: File; relativePath: string }[]
+  supported: {
+    file: File
+    relativePath: string
+  }[]
 }> => {
-  const supported: { file: File; relativePath: string }[] = []
-
+  const supported: {
+    file: File
+    relativePath: string
+  }[] = []
   if (entry.isFile) {
     const fileEntry = entry as FileSystemFileEntry
     const file = await new Promise<File>((resolve, reject) =>
       fileEntry.file(resolve, reject)
     )
-    supported.push({ file, relativePath: basePath })
+    supported.push({
+      file,
+      relativePath: basePath,
+    })
   } else if (entry.isDirectory) {
     const entries = await readAllDirectoryEntriesRecursively(
       entry as FileSystemDirectoryEntry
@@ -132,14 +140,29 @@ const collectDroppedFiles = async (
     const newBasePath = basePath
       ? joinOSPaths(basePath, entry.name)
       : entry.name
-
     for (const childEntry of entries) {
       const result = await collectDroppedFiles(childEntry, newBasePath)
       supported.push(...result.supported)
     }
   }
+  return {
+    supported,
+  }
+}
 
-  return { supported }
+// Go Home if the open project's folder is gone. Not every project has a
+// watcher that would notice, e.g. browser-local projects on web.
+async function refreshOpenProject(app: App) {
+  const project = app.project
+  try {
+    await app.projectSession.refreshProject()
+  } catch (error) {
+    if (project && app.project === project && isPathNotFoundError(error)) {
+      await app.registry.required(routerService).navigate(PATHS.HOME)
+    } else {
+      return Promise.reject(error)
+    }
+  }
 }
 
 /**
@@ -181,12 +204,19 @@ export const ProjectExplorer = ({
   const app = useApp()
   const { commands, fileOperations, registry } = app
   const keymap = registry.optional(keymapService)
-  const rowContextMenuItems = registry.signal(
-    projectExplorerRowContextMenuItemsValueSpec
+  const rowContextMenuItems = registry.observe(
+    projectExplorerRowContextMenuItemsFacet
   ).value
   const rowContextMenuContext = useMemo<
     Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
-  >(() => ({ project, file, readOnly }), [project, file, readOnly])
+  >(
+    () => ({
+      project,
+      file,
+      readOnly,
+    }),
+    [project, file, readOnly]
+  )
   const { kclManager } = useSingletons()
   const [lastRecursiveMoveTarget, setLastRecursiveMoveTarget] =
     useState<string>()
@@ -202,7 +232,9 @@ export const ProjectExplorer = ({
     file?.path || project.default_file,
     applicationProjectDirectory
   )
-  const defaultOpenedRows: { [key: string]: boolean } = {}
+  const defaultOpenedRows: {
+    [key: string]: boolean
+  } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)
   while (pathIterator.length > 0) {
     const key = desktopSafePathJoin(pathIterator)
@@ -212,9 +244,9 @@ export const ProjectExplorer = ({
 
   // cache the state of opened rows to allow nested rows to be opened if a parent one is closed
   // when the parent opens the children will already be opened
-  const [openedRows, setOpenedRows] = useState<{ [key: string]: boolean }>(
-    defaultOpenedRows
-  )
+  const [openedRows, setOpenedRows] = useState<{
+    [key: string]: boolean
+  }>(defaultOpenedRows)
   const [selectedRow, setSelectedRow] = useState<FileExplorerEntry | null>(null)
   // -1 is the parent container, -2 is nothing is selected
   const [activeIndex, setActiveIndex] = useState<number>(NOTHING_IS_SELECTED)
@@ -234,7 +266,6 @@ export const ProjectExplorer = ({
   const [dragOverTarget, setDragOverTarget] =
     useState<FileExplorerEntry | null>(null)
   const externalDragCounter = useRef<number>(0)
-
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
   const openedRowsRef = useRef(openedRows)
@@ -259,21 +290,18 @@ export const ProjectExplorer = ({
   const lastRevealedRecursiveMoveTargetRef = useRef<string | undefined>(
     undefined
   )
-
   onRowEnterRef.current = onRowEnter
   const isFileTreeInteractionDisabled = isFileTreeMutationPending
   isFileTreeInteractionDisabledRef.current = isFileTreeInteractionDisabled
-
   const setFileTreeMutationPending = useCallback((isPending: boolean) => {
     isFileTreeInteractionDisabledRef.current = isPending
     setIsFileTreeMutationPending(isPending)
   }, [])
-
   async function runFileTreeMutation(run: () => Promise<unknown>) {
     setFileTreeMutationPending(true)
     try {
       await run()
-      await app.projectLibraries.refreshProjects()
+      await refreshOpenProject(app)
     } catch (error) {
       trap(error)
     } finally {
@@ -286,19 +314,22 @@ export const ProjectExplorer = ({
     entry: FileExplorerEntry | null
     isFile: boolean
   } | null>(null)
-
   const startCreatingEntry = useCallback(
     (entry: FileExplorerEntry | null, isFile: boolean) => {
-      setFakeRow({ entry, isFile })
+      setFakeRow({
+        entry,
+        isFile,
+      })
       if (entry && entry.children !== null) {
-        const newOpenedRows = { ...openedRowsRef.current }
+        const newOpenedRows = {
+          ...openedRowsRef.current,
+        }
         newOpenedRows[entry.key] = true
         setOpenedRows(newOpenedRows)
       }
     },
     []
   )
-
   const lastCreateFileRequest = useRef(0)
   const lastCreateFolderRequest = useRef(0)
 
@@ -319,7 +350,6 @@ export const ProjectExplorer = ({
     isFileTreeInteractionDisabled,
     startCreatingEntry,
   ])
-
   useEffect(() => {
     if (
       createFolderPressed <= lastCreateFolderRequest.current ||
@@ -336,33 +366,26 @@ export const ProjectExplorer = ({
     isFileTreeInteractionDisabled,
     startCreatingEntry,
   ])
-
   useEffect(() => {
     if (refreshExplorerPressed <= 0) {
       return
     }
-    // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
-    // It is correct but can be slow if there are many projects
-    app.projectLibraries.refreshProjects().catch(reportRejection)
+    refreshOpenProject(app).catch(reportRejection)
   }, [refreshExplorerPressed, app])
-
   useEffect(() => {
     if (collapsePressed <= 0) {
       return
     }
     setOpenedRows({})
   }, [collapsePressed])
-
   const setSelectedRowWrapper = useCallback((row: FileExplorerEntry | null) => {
     setSelectedRow(row)
     selectedRowRef.current = row
   }, [])
-
   const setActiveIndexWrapper = useCallback((index: number) => {
     setActiveIndex(index)
     activeIndexRef.current = index
   }, [])
-
   const setOpenedRowsWrapper = useCallback(
     (rows: { [key: string]: boolean }) => {
       setOpenedRows(rows)
@@ -370,7 +393,6 @@ export const ProjectExplorer = ({
     },
     []
   )
-
   const focusProjectExplorer = useCallback(() => {
     keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
     fileExplorerContainer.current?.focus()
@@ -383,7 +405,9 @@ export const ProjectExplorer = ({
   const onRowClickCallback = useCallback(
     (file: FileExplorerEntry, domIndex: number) => {
       focusProjectExplorer()
-      const newOpenedRows = { ...openedRowsRef.current }
+      const newOpenedRows = {
+        ...openedRowsRef.current,
+      }
       const key = file.key
       const value = openedRowsRef.current[key]
       newOpenedRows[key] = !value
@@ -398,7 +422,6 @@ export const ProjectExplorer = ({
       setSelectedRowWrapper,
     ]
   )
-
   const handleArrowLeftCommand = useCallback(() => {
     if (
       isFileTreeInteractionDisabledRef.current ||
@@ -406,7 +429,6 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     const isEntryOpened =
       focusedEntry &&
@@ -414,8 +436,9 @@ export const ProjectExplorer = ({
     if (!(focusedEntry && isEntryOpened)) {
       return
     }
-
-    const newOpenedRows = { ...openedRowsRef.current }
+    const newOpenedRows = {
+      ...openedRowsRef.current,
+    }
     const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
@@ -434,7 +457,6 @@ export const ProjectExplorer = ({
       )
     }
   }, [onRowClickCallback, setOpenedRowsWrapper])
-
   const handleArrowRightCommand = useCallback(() => {
     if (
       isFileTreeInteractionDisabledRef.current ||
@@ -442,7 +464,6 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     const isEntryOpened =
       focusedEntry &&
@@ -450,19 +471,18 @@ export const ProjectExplorer = ({
     if (!(focusedEntry && !isEntryOpened)) {
       return
     }
-
-    const newOpenedRows = { ...openedRowsRef.current }
+    const newOpenedRows = {
+      ...openedRowsRef.current,
+    }
     const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRowsWrapper(newOpenedRows)
   }, [setOpenedRowsWrapper])
-
   const handleArrowUpCommand = useCallback(() => {
     if (isFileTreeInteractionDisabledRef.current) {
       return
     }
-
     setActiveIndex((previous) => {
       const next =
         previous === NOTHING_IS_SELECTED
@@ -472,17 +492,14 @@ export const ProjectExplorer = ({
       return next
     })
   }, [])
-
   const handleArrowDownCommand = useCallback(() => {
     if (isFileTreeInteractionDisabledRef.current) {
       return
     }
-
     const lastRowIndex = rowsToRenderRef.current.length - 1
     if (lastRowIndex < STARTING_INDEX_TO_SELECT) {
       return
     }
-
     setActiveIndex((previous) => {
       const next =
         previous === NOTHING_IS_SELECTED
@@ -492,7 +509,6 @@ export const ProjectExplorer = ({
       return next
     })
   }, [])
-
   const handleEnterCommand = useCallback(() => {
     if (
       isFileTreeInteractionDisabledRef.current ||
@@ -500,21 +516,20 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     if (!focusedEntry) {
       return
     }
-
     setSelectedRowWrapper(focusedEntry)
-    const newOpenedRows = { ...openedRowsRef.current }
+    const newOpenedRows = {
+      ...openedRowsRef.current,
+    }
     const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRowsWrapper(newOpenedRows)
     onRowEnterRef.current(focusedEntry, activeIndexRef.current)
   }, [setOpenedRowsWrapper, setSelectedRowWrapper])
-
   const handleRenameCommand = useCallback(() => {
     if (
       readOnly ||
@@ -523,16 +538,13 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     if (!focusedEntry || focusedEntry.isFake) {
       return
     }
-
     setContextMenuRow(focusedEntry)
     setIsRenaming(true)
   }, [readOnly])
-
   const handleDeleteCommand = useCallback(() => {
     if (
       readOnly ||
@@ -541,16 +553,13 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     if (!focusedEntry || focusedEntry.isFake) {
       return
     }
-
     setContextMenuRow(focusedEntry)
     setIsDeleting(true)
   }, [readOnly])
-
   const handleCopyCommand = useCallback(() => {
     if (
       isFileTreeInteractionDisabledRef.current ||
@@ -558,15 +567,12 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     if (!focusedEntry || focusedEntry.isFake) {
       return
     }
-
     focusedEntry.onCopy()
   }, [])
-
   const handlePasteCommand = useCallback(() => {
     if (
       readOnly ||
@@ -575,15 +581,12 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-
     const focusedEntry = rowsToRenderRef.current[activeIndexRef.current]
     if (!focusedEntry || focusedEntry.isFake) {
       return
     }
-
     focusedEntry.onPaste()
   }, [readOnly])
-
   projectExplorerCommandHandlersRef.current.arrowLeft = handleArrowLeftCommand
   projectExplorerCommandHandlersRef.current.arrowRight = handleArrowRightCommand
   projectExplorerCommandHandlersRef.current.arrowUp = handleArrowUpCommand
@@ -593,7 +596,6 @@ export const ProjectExplorer = ({
   projectExplorerCommandHandlersRef.current.delete = handleDeleteCommand
   projectExplorerCommandHandlersRef.current.copy = handleCopyCommand
   projectExplorerCommandHandlersRef.current.paste = handlePasteCommand
-
   const projectExplorerCommands = useMemo<Command[]>(
     () => [
       {
@@ -621,7 +623,7 @@ export const ProjectExplorer = ({
         scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-up',
         groupId: 'project-explorer',
-        displayName: 'Clone project explorer selection up',
+        displayName: 'Select previous project explorer row',
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.arrowUp(),
@@ -631,7 +633,7 @@ export const ProjectExplorer = ({
         scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-down',
         groupId: 'project-explorer',
-        displayName: 'Clone project explorer selection down',
+        displayName: 'Select next project explorer row',
         needsReview: false,
         hideFromSearch: true,
         onSubmit: () => projectExplorerCommandHandlersRef.current.arrowDown(),
@@ -689,28 +691,28 @@ export const ProjectExplorer = ({
     ],
     []
   )
-
   useEffect(() => {
     commands.send({
       type: 'Add commands',
-      data: { commands: projectExplorerCommands },
+      data: {
+        commands: projectExplorerCommands,
+      },
     })
-
     return () => {
       commands.send({
         type: 'Remove commands',
-        data: { commands: projectExplorerCommands },
+        data: {
+          commands: projectExplorerCommands,
+        },
       })
     }
   }, [commands, projectExplorerCommands])
-
   useEffect(() => {
     return () => {
       keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
   }, [keymap])
-
   async function handleExternalFileDrop(
     dataTransfer: DataTransfer,
     target: FileExplorerEntry | null
@@ -718,20 +720,20 @@ export const ProjectExplorer = ({
     if (readOnly || isFileTreeInteractionDisabledRef.current) {
       return
     }
-
-    const supportedFiles: { file: File; relativePath: string }[] = []
+    const supportedFiles: {
+      file: File
+      relativePath: string
+    }[] = []
     // Collect all entries/files synchronously first
     // DataTransferItemList becomes invalid after async operations
     const entries: FileSystemEntry[] = []
     const fallbackFiles: File[] = []
     const failedEntryNames: string[] = []
-
     const items = Array.from(dataTransfer.items)
     for (const item of items) {
       if (item.kind !== 'file') {
         continue
       }
-
       const entry = item.webkitGetAsEntry?.()
       if (entry) {
         entries.push(entry)
@@ -766,7 +768,10 @@ export const ProjectExplorer = ({
 
     // Process fallback files (browsers without webkitGetAsEntry support)
     for (const file of fallbackFiles) {
-      supportedFiles.push({ file, relativePath: '' })
+      supportedFiles.push({
+        file,
+        relativePath: '',
+      })
     }
 
     // Copy supported files to the target directory
@@ -779,12 +784,10 @@ export const ProjectExplorer = ({
             const destinationDirPath = relativePath
               ? joinOSPaths(targetPath, relativePath)
               : targetPath
-
             if (relativePath && !createdDirs.has(destinationDirPath)) {
               await ensureDirectory(fileOperations, destinationDirPath)
               createdDirs.add(destinationDirPath)
             }
-
             const { path: destinationPath } = await getNextFileName({
               fileOperations,
               entryName: file.name,
@@ -792,7 +795,6 @@ export const ProjectExplorer = ({
               wasmInstance,
               preserveUnknownExtension: true,
             })
-
             const arrayBuffer = await file.arrayBuffer()
             await fileOperations.writeFile(
               destinationPath,
@@ -806,25 +808,24 @@ export const ProjectExplorer = ({
 
         // Open the target folder so the user can see the imported files
         if (target?.children) {
-          const newOpenedRows = { ...openedRowsRef.current }
+          const newOpenedRows = {
+            ...openedRowsRef.current,
+          }
           newOpenedRows[target.key] = true
           setOpenedRows(newOpenedRows)
         }
-
         toast.success(
           `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`
         )
       })
     }
   }
-
   const handleDragOverTarget = useCallback(
     (entry: FileExplorerEntry | null) => {
       setDragOverTarget(entry)
     },
     []
   )
-
   useEffect(() => {
     /**
      * You are loading a new project, clear the internal state!
@@ -846,12 +847,10 @@ export const ProjectExplorer = ({
     // gotcha: sync state
     openedRowsRef.current = openedRows
     activeIndexRef.current = activeIndex
-
     const runtimeErrors = kclErrorsByFilename(errors)
 
     // Wrap the FileEntry in a FileExplorerEntry to keep track for more metadata
     let flattenedData: FileExplorerEntry[] = []
-
     if (project && project.children) {
       // moves all folders up and files down, files are sorted within folders
       // gotcha: this only sorts the current level, not recursive for all children!
@@ -860,8 +859,9 @@ export const ProjectExplorer = ({
       flattenedData = flattenProject(sortedData, project.name)
       // insert fake row if one is present
     }
-
-    const openedRowsForRender = { ...openedRows }
+    const openedRowsForRender = {
+      ...openedRows,
+    }
     if (!file?.path) {
       lastSyncedFilePathRef.current = undefined
     }
@@ -908,7 +908,6 @@ export const ProjectExplorer = ({
       }
       lastRevealedRecursiveMoveTargetRef.current = lastRecursiveMoveTarget
     }
-
     const copyEntryToTarget = (src: FileEntry, target: FileEntry) => {
       const absoluteParentPath = getParentAbsolutePath(target.path)
       const parentIndex = flattenedData.findIndex((entry) => {
@@ -924,13 +923,14 @@ export const ProjectExplorer = ({
       )
       if (result && result.src && result.target) {
         void runFileTreeMutation(() =>
-          fileOperations.copy(result.src, result.target, { overwrite: false })
+          fileOperations.copy(result.src, result.target, {
+            overwrite: false,
+          })
         )
       } else {
         toast.error('Failed to copy and paste the result is null.')
       }
     }
-
     const requestedRows: FileExplorerRow[] =
       flattenedData.map((child) => {
         const isFile = child.children === null
@@ -947,13 +947,11 @@ export const ProjectExplorer = ({
           isAnyParentClosed = isAnyParentClosed || !isOpened
           pathIterator.pop()
         }
-
         const isOpen = openedRowsForRender[child.key]
         const render =
           (openedRowsForRender[child.parentPath] ||
             project.name === child.parentPath) &&
           !isAnyParentClosed
-
         let icon: CustomIconName = 'file'
         if (isKCLFile) {
           icon = 'kcl'
@@ -962,7 +960,6 @@ export const ProjectExplorer = ({
         } else if (!isFile && isOpen) {
           icon = 'folderOpen'
         }
-
         const errorsAsKeyValue = Array.from(runtimeErrors, ([key, value]) => ({
           key,
           value,
@@ -974,7 +971,6 @@ export const ProjectExplorer = ({
         )
         const hasRuntimeError =
           runtimeErrors.has(child.path) || anyParentFolderHasError
-
         const row: FileExplorerRow = {
           // copy over all the other data that was built up to the DOM render row
           ...child,
@@ -993,7 +989,9 @@ export const ProjectExplorer = ({
               }
             : undefined,
           onOpen: () => {
-            const newOpenedRows = { ...openedRowsRef.current }
+            const newOpenedRows = {
+              ...openedRowsRef.current,
+            }
             const key = child.key
             newOpenedRows[key] = true
             setOpenedRows(newOpenedRows)
@@ -1020,11 +1018,9 @@ export const ProjectExplorer = ({
             if (readOnly || isFileTreeInteractionDisabledRef.current) {
               return
             }
-
             const shouldWeNavigate =
               isPathWithinFileExplorerEntry(file?.path, child.path) &&
               canNavigate
-
             const current = app.project
             void runFileTreeMutation(async () => {
               if (!current) return
@@ -1109,7 +1105,9 @@ export const ProjectExplorer = ({
                   )
                     await app.projectSession.openFile(
                       fsZds.join(target, fsZds.relative(src, activePath)),
-                      { projectPath: project.path }
+                      {
+                        projectPath: project.path,
+                      }
                     )
                   toast.success('Moved successfully')
                 })
@@ -1129,18 +1127,15 @@ export const ProjectExplorer = ({
             if (readOnly) {
               return
             }
-
             setIsRenaming(true)
           },
           onRenameEnd: (event: MaybePressOrBlur) => {
             // TODO: Implement renameFolder and renameFile to navigate
             setIsRenaming(false)
             setFakeRow(null)
-
             if (!event) {
               return
             }
-
             const requestedName = String(
               (event?.target &&
                 'value' in event.target &&
@@ -1182,14 +1177,15 @@ export const ProjectExplorer = ({
                     newPath !== undefined &&
                     isPathWithinFileExplorerEntry(file?.path, oldPath) &&
                     canNavigate
-
                   if (shouldWeNavigate && file && file.path) {
                     void runFileTreeMutation(async () => {
                       await app.projectSession.rename(oldPath, newPath)
                       if (app.project?.path === project.path)
                         await app.projectSession.openFile(
                           file.path.replace(oldPath, newPath),
-                          { projectPath: project.path }
+                          {
+                            projectPath: project.path,
+                          }
                         )
                     })
                   } else {
@@ -1201,7 +1197,9 @@ export const ProjectExplorer = ({
                   // TODO: Gotcha... Set new string open even if it fails?
                   if (openedRowsRef.current[child.key]) {
                     // If the file tree had the folder opened make the new one open.
-                    const newOpenedRows = { ...openedRowsRef.current }
+                    const newOpenedRows = {
+                      ...openedRowsRef.current,
+                    }
                     const key = constructPath({
                       parentPath: child.parentPath,
                       name: requestedName,
@@ -1221,7 +1219,6 @@ export const ProjectExplorer = ({
                 getParentAbsolutePath(row.path),
                 fileName
               )
-
               const contents = fileName.endsWith(FILE_EXT)
                 ? newKclFile(
                     undefined,
@@ -1234,7 +1231,6 @@ export const ProjectExplorer = ({
                 trap(contents)
                 return
               }
-
               if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
                 // Create the KCL file and navigate to (open) it in the editor.
                 void kclManager
@@ -1272,7 +1268,6 @@ export const ProjectExplorer = ({
                 requestedName.startsWith('.')
                   ? requestedName
                   : requestedName + FILE_EXT
-
               const requestedAbsoluteFilePathWithExtension = joinOSPaths(
                 getParentAbsolutePath(row.path),
                 name
@@ -1298,7 +1293,6 @@ export const ProjectExplorer = ({
         }
         return row
       }) || []
-
     const requestedRowsToRender = requestedRows.filter((row) => {
       let showPlaceHolder = false
       if (fakeRow?.isFile) {
@@ -1348,13 +1342,11 @@ export const ProjectExplorer = ({
       row.isFake = showPlaceHolder
       return row.render && skipPlaceHolder
     })
-
     const currentFileRowIndex = requestedRowsToRender.findIndex(
       (row) => row.path === file?.path
     )
     const shouldSyncCurrentFileSelection =
       currentFileRowIndex >= 0 && !!shouldRevealCurrentFile
-
     if (shouldSyncCurrentFileSelection) {
       setSelectedRowWrapper(requestedRowsToRender[currentFileRowIndex])
       setActiveIndexWrapper(currentFileRowIndex)
@@ -1368,7 +1360,6 @@ export const ProjectExplorer = ({
     previousProject.current = project
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project, openedRows, fakeRow, activeIndex, errors, file?.path])
-
   useEffect(() => {
     if (isRenaming) {
       const fileExplorerContainerElement = fileExplorerContainer.current
@@ -1381,7 +1372,6 @@ export const ProjectExplorer = ({
         }
       }
     }
-
     keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
   }, [isRenaming, keymap])
 
@@ -1389,7 +1379,6 @@ export const ProjectExplorer = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const path = event.composedPath ? event.composedPath() : []
-
       if (
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
@@ -1399,7 +1388,6 @@ export const ProjectExplorer = ({
         setActiveIndexWrapper(NOTHING_IS_SELECTED)
       }
     }
-
     document.addEventListener('click', handleClickOutside)
     return () => {
       document.removeEventListener('click', handleClickOutside)
@@ -1420,9 +1408,7 @@ export const ProjectExplorer = ({
     )
     return parentEntry || null
   }, [isExternalDragOver, dragOverTarget, rowsToRender])
-
   const highlightedEntry = getHighlightedEntry()
-
   const handleExplorerFocus = useCallback(
     (event: ReactFocusEvent<HTMLDivElement>) => {
       keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
@@ -1435,7 +1421,6 @@ export const ProjectExplorer = ({
     },
     [keymap, setActiveIndexWrapper]
   )
-
   const handleExplorerBlur = useCallback(
     (event: ReactFocusEvent<HTMLDivElement>) => {
       const nextTarget = event.relatedTarget
@@ -1445,27 +1430,19 @@ export const ProjectExplorer = ({
       ) {
         return
       }
-
       keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
     },
     [keymap, setActiveIndexWrapper]
   )
-
   return (
     <div
       className="h-full relative overflow-y-auto overflow-x-hidden"
       ref={projectExplorerRef}
     >
       <div
-        className={`overflow-auto absolute pb-12 inset-0 ${
-          activeIndex === -1 ? 'border-sky-500' : ''
-        } ${
-          isExternalDragOver && !highlightedEntry
-            ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/5'
-            : ''
-        }`}
+        className={`overflow-auto absolute pb-12 inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''} ${isExternalDragOver && !highlightedEntry ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/5' : ''}`}
         data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"

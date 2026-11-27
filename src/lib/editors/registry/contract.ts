@@ -1,24 +1,22 @@
+import { inputs, observe, observeService } from '@src/registry/inputs'
+import type {
+  EditorState,
+  Extension,
+  Transaction,
+  TransactionSpec,
+} from '@codemirror/state'
+import type { EditorView } from '@codemirror/view'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   EditorMatcher,
   EditorSourceContext,
 } from '@src/lib/editors/matching'
-import type {
-  EditorState,
-  Transaction,
-  TransactionSpec,
-  Extension,
-} from '@codemirror/state'
-import type { EditorView } from '@codemirror/view'
-import {
-  defineContract,
-  defineService,
-  appendValueSpec,
-} from '@kittycad/registry'
-import type { ReadonlySignal } from '@preact/signals-core'
+import { contract, Facet, service } from 'plankton'
 import type { ComponentType } from 'react'
 
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
+  readonly readOnly: ReadonlySignal<boolean>
   readonly id: symbol
   /** Undefined for a new buffer; otherwise a local path or cloud ID plus relative path. */
   readonly src: ReadonlySignal<string | undefined>
@@ -101,9 +99,17 @@ export interface EditorViewContribution extends EditorViewMetadata {
 
 /** Binding is deferred during CodeMirror updates; failed providers carry no renderable component. */
 export type EditorViewBinding =
-  | { type: 'unbound' }
-  | { type: 'ready'; Component: ComponentType<EditorSurfaceProps> }
-  | { type: 'error'; error: Error }
+  | {
+      type: 'unbound'
+    }
+  | {
+      type: 'ready'
+      Component: ComponentType<EditorSurfaceProps>
+    }
+  | {
+      type: 'error'
+      error: Error
+    }
 
 /** An explicit choice wins while it matches; otherwise the highest-priority view is used. */
 export interface EditorViewState {
@@ -127,11 +133,21 @@ export interface CodeEditorExtension {
   extensions: Extension | ((host: CodeEditorHost) => Extension | Error)
 }
 
-/** Informational decorations contributed alongside a buffer's tab label. */
+/** A backing or extension can prohibit document edits across every presentation. */
+export interface EditorReadOnlyPolicy {
+  id: string
+  matches: EditorMatcher
+  readOnly: ReadonlySignal<boolean>
+}
+
+/** Decorations for one tab; document-wide indicators can use just `editor`. */
 export interface EditorTabIndicator {
   id: string
   order?: number
-  component: ComponentType<{ editor: Editor }>
+  component: ComponentType<{
+    editor: Editor
+    instance: EditorViewInstance
+  }>
 }
 
 /** Owns open editors independently of executors and mounted editor panes. */
@@ -154,29 +170,48 @@ export interface EditorsService {
   setView: (id: symbol, viewId: string) => Error | undefined
   closeEditor: (id: symbol) => Error | undefined
 }
-
-export const editorsContract = defineContract({
-  editorLanguagesValueSpec:
-    appendValueSpec<EditorLanguage>('editors.languages'),
-  editorViewsValueSpec:
-    appendValueSpec<EditorViewContribution>('editors.views'),
-  editorTabIndicatorsValueSpec: appendValueSpec<EditorTabIndicator>(
-    'editors.tabIndicators'
+export const editorsContract = contract({
+  editorReadOnlyPoliciesFacet: new Facet<
+    EditorReadOnlyPolicy,
+    readonly EditorReadOnlyPolicy[]
+  >('editors.readOnlyPolicies', (values) => values),
+  editorLanguagesFacet: new Facet<EditorLanguage, readonly EditorLanguage[]>(
+    'editors.languages',
+    (inputs) => inputs
   ),
-  editorsService: defineService<EditorsService>('editors.service'),
-  codeEditorsExtensionValueSpec: appendValueSpec<CodeEditorExtension>(
-    'editors.codeExtensions'
-  ),
-  editorCapabilityValueSpec: appendValueSpec<EditorCapability>(
-    'editors.capabilities'
-  ),
+  editorViewsFacet: new Facet<
+    EditorViewContribution,
+    readonly EditorViewContribution[]
+  >('editors.views', (inputs) => inputs),
+  editorTabIndicatorsFacet: new Facet<
+    EditorTabIndicator,
+    readonly EditorTabIndicator[]
+  >('editors.tabIndicators', (inputs) => inputs),
+  editorsService: service<EditorsService>('editors.service'),
+  codeEditorsExtensionFacet: new Facet<
+    CodeEditorExtension,
+    readonly CodeEditorExtension[]
+  >('editors.codeExtensions', (inputs) => inputs),
+  editorCapabilityFacet: new Facet<
+    EditorCapability,
+    readonly EditorCapability[]
+  >('editors.capabilities', (inputs) => inputs),
 })
-
 export const {
   editorsService,
-  editorLanguagesValueSpec,
-  editorCapabilityValueSpec,
-  editorTabIndicatorsValueSpec,
-  editorViewsValueSpec,
-  codeEditorsExtensionValueSpec,
+  editorLanguagesFacet,
+  editorReadOnlyPoliciesFacet,
+  editorCapabilityFacet,
+  editorTabIndicatorsFacet,
+  editorViewsFacet,
+  codeEditorsExtensionFacet,
 } = editorsContract
+
+export const observations = inputs({
+  editorsService: observeService(editorsService),
+  editorReadOnlyPoliciesFacet: observe(editorReadOnlyPoliciesFacet),
+  editorCapabilityFacet: observe(editorCapabilityFacet),
+  editorViewsFacet: observe(editorViewsFacet),
+  codeEditorsExtensionFacet: observe(codeEditorsExtensionFacet),
+  editorLanguagesFacet: observe(editorLanguagesFacet),
+})

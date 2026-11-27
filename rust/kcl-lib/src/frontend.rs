@@ -69,7 +69,6 @@ use crate::execution::annotations::WarningLevel;
 use crate::execution::cache::SketchModeState;
 use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
-use crate::fmt::format_number_literal_full_precision;
 use crate::front::CoincidentExt;
 use crate::front::DistanceExt;
 use crate::front::Error;
@@ -2120,6 +2119,7 @@ impl FrontendState {
             }],
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2257,6 +2257,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2399,6 +2400,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2528,6 +2530,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Look up existing sketch.
@@ -2653,6 +2656,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| {
@@ -3809,6 +3813,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
@@ -3950,6 +3955,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
@@ -4235,6 +4241,7 @@ impl FrontendState {
             arguments,
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
         let constraint_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: call_ast,
@@ -4519,6 +4526,7 @@ impl FrontendState {
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         let (sketch_block_ref, _) = self.mutate_ast(
@@ -4610,6 +4618,7 @@ impl FrontendState {
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         })));
 
         // Add the constraint to the AST of the sketch block.
@@ -5676,6 +5685,7 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
         }],
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -5696,6 +5706,7 @@ fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
         }],
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -5999,7 +6010,7 @@ impl Visitor for AstMutateContext {
 
     fn finish(&mut self, node: NodeMut<'_>) {
         match &node {
-            NodeMut::Program(_) | NodeMut::SketchBlock(_) => {
+            NodeMut::Program(_) | NodeMut::SketchBlock(_) | NodeMut::Block(_) => {
                 self.defined_names_stack.pop();
             }
             _ => {}
@@ -6071,6 +6082,8 @@ fn filter_and_process(
             ctx.defined_names_stack.push(find_defined_names(*program));
         } else if let NodeMut::SketchBlock(block) = &node {
             ctx.defined_names_stack.push(find_defined_names(&block.body));
+        } else if let NodeMut::Block(block) = &node {
+            ctx.defined_names_stack.push(find_defined_names(*block));
         }
     }
 
@@ -7020,7 +7033,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     Ok(ast::NumericLiteral {
         value: number.value,
         suffix: number.units,
-        raw: format_number_literal_full_precision(number.value, number.units)?,
+        raw: format_number_literal(number.value, number.units, None)?,
         digest: None,
     })
 }
@@ -7096,6 +7109,7 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7107,6 +7121,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7118,6 +7133,7 @@ pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7185,6 +7201,7 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
             arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
+            block: None,
         },
     ))))
 }
@@ -7204,6 +7221,7 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7221,6 +7239,7 @@ pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Exp
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7238,6 +7257,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
         arguments: Default::default(),
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7259,6 +7279,7 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
         arguments,
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7275,6 +7296,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
         arguments,
         digest: None,
         non_code_meta: Default::default(),
+        block: None,
     })))
 }
 
@@ -7311,6 +7333,60 @@ mod tests {
     use crate::engine::PlaneName;
     use crate::engine::engine_manager::EngineManager;
     use crate::execution::cache::SketchModeState;
+
+    // Simulation test inputs cannot set the editor's edit marker. Selecting a
+    // sketch must leave the program's JSON and source unchanged. A JSON round
+    // trip must clear the marker.
+    #[test]
+    fn sketch_edit_marker_is_transient_across_serialization() {
+        let source = r#"@settings(kclVersion = "3.0")
+first = sketch(on = XY) {}
+// Keep this comment while selecting the second sketch.
+second = sketch(on = XZ) {
+  edge = line(start = [var 0mm, 0mm], end = [var 5mm, 0mm])
+}
+"#;
+        let mut program = Program::parse_no_errs(source).unwrap();
+        let start = source.find("sketch(on = XZ)").unwrap();
+        let range = SourceRange::new(start, source.trim_end().len(), crate::ModuleId::default());
+        let node_path = ast::NodePath::from_body(&program.ast.body, 0, range, Default::default()).unwrap();
+        let serialized_before = serde_json::to_value(&program).unwrap();
+        let formatted_before = program.recast_with_options(&Default::default());
+        only_sketch_block(
+            &mut program.ast,
+            &AstNodeRef {
+                range,
+                node_path: Some(node_path),
+            },
+            ChangeKind::None,
+        )
+        .unwrap();
+
+        let marked = std::cell::Cell::new(0);
+        crate::walk::walk(&program.ast, |node| {
+            if let crate::walk::Node::SketchBlock(sketch) = node
+                && sketch.is_being_edited
+            {
+                marked.set(marked.get() + 1);
+                assert_eq!(SourceRange::from(sketch), range);
+            }
+            Ok::<_, anyhow::Error>(true)
+        })
+        .unwrap();
+        assert_eq!(marked.get(), 1);
+        assert_eq!(serde_json::to_value(&program).unwrap(), serialized_before);
+        assert_eq!(program.recast_with_options(&Default::default()), formatted_before);
+
+        let restored: Program = serde_json::from_value(serialized_before).unwrap();
+        crate::walk::walk(&restored.ast, |node| {
+            if let crate::walk::Node::SketchBlock(sketch) = node {
+                assert!(!sketch.is_being_edited);
+            }
+            Ok::<_, anyhow::Error>(true)
+        })
+        .unwrap();
+        assert_eq!(restored.recast_with_options(&Default::default()), formatted_before);
+    }
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
@@ -7578,145 +7654,6 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         frontend.program = program.clone();
         let outcome = mock_ctx.run_mock(program, &MockConfig::default()).await.unwrap();
         frontend.update_state_after_exec(outcome, true);
-    }
-
-    #[tokio::test]
-    async fn test_grid_precision_survives_create_and_reload() {
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-        let constructors: [fn(Number) -> Expr; 2] = [Expr::Var, Expr::Number];
-        for make_expr in constructors {
-            let point = |x, y| Point2d {
-                x: make_expr(Number {
-                    value: x,
-                    units: NumericSuffix::Mm,
-                }),
-                y: make_expr(Number {
-                    value: y,
-                    units: NumericSuffix::Mm,
-                }),
-            };
-            for step in [0.125, 2.3333 / 17.0, 0.0000125, 1e-12] {
-                let mut frontend = FrontendState::new();
-                let program = Program::parse("@settings(kclVersion = 3.0)\ns = sketch(on = XY) {}\n")
-                    .unwrap()
-                    .0
-                    .unwrap();
-                seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
-                let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
-                let (source, _) = frontend
-                    .add_segment(
-                        &mock_ctx,
-                        Version(0),
-                        sketch_id,
-                        SegmentCtor::Line(LineCtor {
-                            start: point(step, -step),
-                            end: point(1.0 + step, 2.0 + step),
-                            construction: None,
-                        }),
-                        None,
-                    )
-                    .await
-                    .unwrap();
-                let (point_id, other_id) = frontend
-                    .scene_graph
-                    .objects
-                    .iter()
-                    .find_map(|object| {
-                        if let ObjectKind::Segment {
-                            segment: Segment::Line(line),
-                        } = &object.kind
-                        {
-                            Some((line.start, line.end))
-                        } else {
-                            None
-                        }
-                    })
-                    .unwrap();
-                let position = point_position(&frontend.scene_graph, point_id);
-                assert_eq!(position.x.value, step);
-                assert_eq!(position.y.value, -step);
-
-                let saved = Program::parse(&source.text).unwrap().0.unwrap();
-                seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
-                let position = point_position(&frontend.scene_graph, point_id);
-                assert_eq!(position.x.value, step);
-                assert_eq!(position.y.value, -step);
-                let untouched = point_position(&frontend.scene_graph, other_id);
-                assert_eq!(untouched.x.value, 1.0 + step);
-                assert_eq!(untouched.y.value, 2.0 + step);
-            }
-        }
-        mock_ctx.close().await;
-    }
-
-    #[tokio::test]
-    async fn test_fixed_preserves_fractional_coordinates_after_reload() {
-        let ctx = ExecutorContext::new_mock(None).await;
-        let mut frontend = FrontendState::new();
-        let program = Program::parse(
-            "@settings(kclVersion = 3.0)\ns = sketch(on = XY) { p = point(at = [var 0.125mm, var -0.375mm]) }",
-        )
-        .unwrap()
-        .0
-        .unwrap();
-        seed_frontend_with_mock(&mut frontend, &ctx, &program).await;
-        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
-        let point_id = frontend
-            .scene_graph
-            .objects
-            .iter()
-            .find_map(|object| {
-                matches!(
-                    &object.kind,
-                    ObjectKind::Segment {
-                        segment: Segment::Point(_)
-                    }
-                )
-                .then_some(object.id)
-            })
-            .unwrap();
-        let position = point_number_mm(0.125, -0.375);
-        let (source, _) = frontend
-            .add_constraint(
-                &ctx,
-                Version(0),
-                sketch_id,
-                Constraint::Fixed(Fixed {
-                    points: vec![FixedPoint {
-                        point: point_id,
-                        position: position.clone(),
-                    }],
-                }),
-            )
-            .await
-            .unwrap();
-        let saved = Program::parse(&source.text).unwrap().0.unwrap();
-        seed_frontend_with_mock(&mut frontend, &ctx, &saved).await;
-        assert_eq!(point_position(&frontend.scene_graph, point_id), position);
-        ctx.close().await;
-    }
-
-    #[test]
-    fn test_commit_var_solution_preserves_fractional_coordinates() {
-        let program =
-            Program::parse("@settings(kclVersion = 3.0)\ns = sketch(on = XY) { p = point(at = [var 1mm, var 0mm]) }")
-                .unwrap()
-                .0
-                .unwrap();
-        let (range, path) = collect_sketch_var_literals_with_value(&program, 1.0).pop().unwrap();
-        let mut frontend = FrontendState::new();
-        frontend.program = program;
-        let outcome = empty_exec_outcome_with_var_solutions(vec![(
-            range,
-            Some(path),
-            Number {
-                value: 0.125,
-                units: NumericSuffix::Mm,
-            },
-        )]);
-        let source = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
-        let saved = Program::parse(&source.text).unwrap().0.unwrap();
-        assert_eq!(collect_sketch_var_literals_with_value(&saved, 0.125).len(), 1);
     }
 
     #[test]
@@ -9404,6 +9341,154 @@ sketch(on = XY) {
         assert_eq!(mock_source.text, preview_source.text);
 
         mock_ctx.close().await;
+    }
+
+    // Simulation tests cannot preview edits, commit them, or restore
+    // checkpoints. Use the same mock execution as the editor for these
+    // operations. The simulation fixtures test KCL execution with the modeling
+    // engine.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_preview_commit_restore_preserves_tangent_arc() {
+        let source = r#"@settings(kclVersion = "3.0", experimentalFeatures = allow)
+
+first = sketch(on = XY) {
+  // Keep this tangent pair through preview, commit, and undo.
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  arc1 = arc(start = [var 10mm, var 0mm], end = [var 15mm, var 5mm], center = [var 10mm, var 5mm])
+  fixed([line1.start, [0mm, 0mm]])
+  horizontal(line1)
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+}
+second = sketch(on = XZ) {
+  marker = point(at = [var 3mm, var 4mm])
+}
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_mock(None).await;
+        seed_frontend_with_mock(&mut frontend, &ctx, &program).await;
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        let line = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Line(line),
+                } => Some(line.clone()),
+                _ => None,
+            })
+            .unwrap();
+        let arc = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Arc(arc),
+                } => Some(arc.clone()),
+                _ => None,
+            })
+            .unwrap();
+
+        let assert_tangent = |graph: &SceneGraph| {
+            let start = point_position(graph, line.start);
+            let end = point_position(graph, line.end);
+            let arc_start = point_position(graph, arc.start);
+            let center = point_position(graph, arc.center);
+            assert_point_position_close(end.clone(), arc_start.clone());
+            let direction = [end.x.value - start.x.value, end.y.value - start.y.value];
+            let radius = [arc_start.x.value - center.x.value, arc_start.y.value - center.y.value];
+            let line_length = libm::hypot(direction[0], direction[1]);
+            let arc_radius = libm::hypot(radius[0], radius[1]);
+            assert!(line_length > 0.0 && arc_radius > 0.0);
+            // Use the distance residual from ezpz's LineTangentToCircle. An angle
+            // check at the shared endpoint magnifies small solver residuals near
+            // tangency. Coordinates are in mm. Match assert_point_position_close's
+            // 1e-6 mm tolerance.
+            let center_distance = (direction[0] * (center.y.value - start.y.value)
+                - direction[1] * (center.x.value - start.x.value))
+                .abs()
+                / line_length;
+            assert!(
+                (center_distance - arc_radius).abs() < 1e-6,
+                "tangency was lost: center distance {center_distance}, radius {arc_radius}"
+            );
+        };
+        let version = Version(0);
+        let entered = frontend
+            .edit_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_tangent(&entered.new_graph);
+        let original_source = source_from_ast(&frontend.program.ast);
+        let original_graph = frontend.scene_graph.clone();
+        let checkpoint = frontend
+            .create_sketch_checkpoint(&ctx.cache, entered.exec_outcome)
+            .await
+            .unwrap();
+
+        // The drag anchors only the arc endpoint. The solver must adjust the other
+        // sketch variables while keeping the line and arc coincident and tangent.
+        let drag = ExistingSegmentCtor {
+            id: arc.end,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: point_expr_mm(20.0, 10.0),
+            }),
+        };
+        let (preview_source, preview) = frontend
+            .edit_segments_with_options(
+                &ctx,
+                version,
+                sketch_id,
+                vec![drag.clone()],
+                EditSegmentsOptions {
+                    anchor_segment_ids: Some(vec![arc.end]),
+                    drag_anchors: Vec::new(),
+                    constraint_label_edits: Vec::new(),
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert!(!preview.exec_outcome.var_solutions.is_empty());
+        assert_ne!(preview_source.text, original_source);
+        assert_tangent(&preview.new_graph);
+        assert_point_position_close(point_position(&preview.new_graph, arc.end), point_number_mm(20.0, 10.0));
+        let sibling_source = "second = sketch(on = XZ) {\n  marker = point(at = [var 3mm, var 4mm])\n}";
+        assert!(preview_source.text.contains(sibling_source));
+        assert!(
+            preview_source
+                .text
+                .contains("// Keep this tangent pair through preview, commit, and undo.")
+        );
+
+        // Commit the drag through edit_segments. execute_mock leaves the preview
+        // source unchanged and does not write solved initial guesses.
+        let (committed, committed_delta) = frontend
+            .edit_segments(&ctx, version, sketch_id, vec![drag])
+            .await
+            .unwrap();
+        assert_ne!(committed.text, preview_source.text);
+        assert_tangent(&committed_delta.new_graph);
+        assert!(committed.text.contains(sibling_source));
+        let (repeated, repeated_delta) = frontend.execute_mock(&ctx, version, sketch_id).await.unwrap();
+        assert_eq!(repeated.text, committed.text);
+        assert_tangent(&repeated_delta.new_graph);
+
+        // Restore the execution cache along with the checkpoint. The next solve
+        // must agree with the restored source and scene graph.
+        let restored = frontend
+            .restore_sketch_checkpoint(&ctx.cache, checkpoint)
+            .await
+            .unwrap();
+        assert_eq!(restored.source_delta.text, original_source);
+        assert_eq!(frontend.scene_graph, original_graph);
+        let (after_restore, restored_delta) = frontend.execute_mock(&ctx, version, sketch_id).await.unwrap();
+        assert_eq!(after_restore.text, original_source);
+        assert_tangent(&restored_delta.new_graph);
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -11394,8 +11479,8 @@ sketch(on = XY) {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
-  angle([line1, line2]) == 90deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2]) == 60deg
 }
 ";
 
@@ -11438,8 +11523,8 @@ sketch(on = XY) {
             "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
-  angle([line1, line2], labelPosition = [10mm, 11mm]) == 90deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
 }
 "
         );
@@ -11461,8 +11546,8 @@ sketch(on = XY) {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
-  90deg == angleDimension(lines = [line1, line2], sector = 1)
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1)
 }
 ";
 
@@ -11505,8 +11590,8 @@ sketch(on = XY) {
             "\
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
-  90deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
 }
 "
         );
@@ -16235,6 +16320,53 @@ fn build(thing2) {
             panic!("expected a generated name");
         };
         assert_eq!(name, "thing2", "locals are avoided, but parameters are not");
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_trailing_block_uses_local_scope() {
+        let code = "draw(1)\nthing1 = 1\n10 + 20\n30 + 40";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let items: Vec<_> = ast.body.drain(1..3).collect();
+        let [inside, outside] = [&items[1], &ast.body[1]].map(|item| {
+            let ast::BodyItem::ExpressionStatement(stmt) = item else {
+                panic!("expected an expression statement");
+            };
+            SourceRef::new(SourceRange::from(&stmt.expression), None)
+        });
+        let ast::BodyItem::ExpressionStatement(stmt) = &mut ast.body[0] else {
+            panic!("expected a call statement");
+        };
+        let ast::Expr::CallExpressionKw(call) = &mut stmt.expression else {
+            panic!("expected a call");
+        };
+        // Attach the parsed statements until the parser supports trailing blocks.
+        let end = code.find("\n30").unwrap();
+        call.block = Some(ast::BoxNode::new(ast::Node::new(
+            ast::Block {
+                items,
+                ..Default::default()
+            },
+            code.find("thing1").unwrap(),
+            end,
+            crate::ModuleId::default(),
+        )));
+        call.end = end;
+        stmt.end = end;
+
+        for (target, expected) in [(inside, "thing2"), (outside, "thing1")] {
+            let (_, result) = mutate_ast_node_by_source_ref(
+                &mut ast,
+                &target,
+                AstMutateCommand::AddVariableDeclaration {
+                    prefix: "thing".to_owned(),
+                },
+            )
+            .unwrap();
+            let AstMutateCommandReturn::Name(name) = result else {
+                panic!("expected a generated name");
+            };
+            assert_eq!(name, expected);
+        }
     }
 
     #[test]

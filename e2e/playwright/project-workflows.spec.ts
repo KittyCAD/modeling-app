@@ -26,7 +26,6 @@ import {
 } from '@e2e/playwright/lib/appTestUtils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-// Browser-local storage is OPFS; desktop-local storage uses Electron's filesystem.
 const test = process.env.TARGET === 'web' ? browserTest : appTest
 
 const blankCode = '@settings(kclVersion = 3.0)\n'
@@ -53,7 +52,7 @@ async function flushEditorAndThumbnailSaves(page: Page) {
   await page.clock.resume()
   await expect(
     page
-      .locator('#statusbar')
+      .getByTestId('app-header')
       .getByRole('status')
       .filter({ hasText: 'Saving...' })
   ).not.toBeAttached()
@@ -144,9 +143,18 @@ for (const cached of [false, true]) {
       else await page.reload({ waitUntil: 'domcontentloaded' })
       await waitForAppLoad(page)
       await expect.poll(() => started).toBe(true)
-      await expect(
-        page.getByRole('status', { name: 'Loading projects', exact: true })
-      ).toBeVisible()
+      const loading = page.getByRole('status', {
+        name: 'Loading projects',
+        exact: true,
+      })
+      if (cached) {
+        await expect(loading).toHaveCount(0)
+        await expect(
+          storage.home.projectCard.filter({ hasText: 'Slow listing' })
+        ).toBeVisible()
+      } else {
+        await expect(loading).toBeVisible()
+      }
       // This exercises the runner's readiness budget, which browser time cannot advance.
       await Promise.all([
         storage.home.projectsLoaded().then(() => expect(released).toBe(true)),
@@ -172,44 +180,73 @@ test('keeps the modeling viewport stable when the save status changes @web', asy
   page,
   context,
 }, testInfo) => {
-  const storage = await prepareStorage('local', page, context, testInfo, {
+  const storage = await prepareStorage('cloud', page, context, testInfo, {
     modeling: true,
   })
-  await storage.seedAndOpen('Stable save status', solidCode)
+  const root = await storage.seedAndOpen('Stable save status', solidCode)
   await new SceneFixture(page).settled()
   await page.evaluate(() => window.app.singletons.kclManager.flushWriteToFile())
   const stream = page.getByTestId('stream')
   const header = page.getByTestId('app-header')
-  const statusBar = page.locator('#statusbar')
   const originalHeader = await header.boundingBox()
   const originalStream = await stream.boundingBox()
   const video = await page.locator('#video-stream').elementHandle()
-  for (const state of ['saving', 'failed', 'saved'] as const) {
-    await page.evaluate((state) => {
-      window.app.singletons.kclManager.saveState.value = state
-    }, state)
-    if (state === 'saving')
-      await expect(
-        statusBar.getByRole('status').filter({ hasText: 'Saving...' })
-      ).toBeVisible()
-    if (state === 'failed')
-      await expect(
-        statusBar.getByRole('button', { name: 'Save failed. Retry' })
-      ).toBeVisible()
-    if (state === 'saved')
-      await expect(statusBar.getByRole('status')).not.toBeAttached()
-    expect(await header.boundingBox(), state).toEqual(originalHeader)
-    expect(await stream.boundingBox(), state).toEqual(originalStream)
-    expect(
-      await video?.evaluate(
-        (node) => node === document.getElementById('video-stream')
-      ),
-      state
-    ).toBe(true)
+  const editedCode = `${solidCode}// save status layout\n`
+  const failedSaveResponse = Promise.withResolvers<undefined>()
+  let editedUploadStarted = false
+  let rejectEditedUpload = true
+  await context.route('**/user/projects/**', async (route) => {
+    if (route.request().method() === 'PUT' && rejectEditedUpload) {
+      const upload = await uploadedProject(route)
+      if (upload.files['main.kcl'] === editedCode) {
+        editedUploadStarted = true
+        await failedSaveResponse.promise
+        return route.fulfill({
+          status: 503,
+          json: { message: 'Storage unavailable' },
+        })
+      }
+    }
+    await route.fallback()
+  })
+  const retry = header.getByRole('button', { name: 'Save failed. Retry' })
+  try {
+    await editThroughUI(page, editedCode)
+    await expect.poll(() => editedUploadStarted).toBe(true)
+    await installPausedClock(page)
+    await page.clock.runFor(7_000)
+    for (const state of ['saving', 'failed', 'saved'] as const) {
+      if (state === 'saving')
+        await expect(
+          header.getByRole('status').filter({ hasText: 'Saving...' })
+        ).toBeVisible()
+      if (state === 'failed') {
+        failedSaveResponse.resolve(undefined)
+        await page.clock.resume()
+        await expect(retry).toBeVisible()
+      }
+      if (state === 'saved') {
+        rejectEditedUpload = false
+        await retry.click()
+        await expect.poll(() => storage.read(root)).toBe(editedCode)
+        await expect(header.getByRole('status')).not.toBeAttached()
+      }
+      expect(await header.boundingBox(), state).toEqual(originalHeader)
+      expect(await stream.boundingBox(), state).toEqual(originalStream)
+      expect(
+        await video?.evaluate(
+          (node) => node === document.getElementById('video-stream')
+        ),
+        state
+      ).toBe(true)
+    }
+  } finally {
+    failedSaveResponse.resolve(undefined)
+    await page.clock.resume()
   }
 })
 
-test('polls cloud project membership, pauses offline and stops outside the projects view @web', async ({
+test('refreshes cloud project membership only on request or entry @web', async ({
   page,
   context,
 }, testInfo) => {
@@ -228,14 +265,22 @@ test('polls cloud project membership, pauses offline and stops outside the proje
   })
   try {
     await storage.seed('Added on another device', blankCode)
-    await page.clock.runFor(2_000)
+    await page.clock.runFor(60_000)
+    await expect(card('Added on another device')).not.toBeAttached()
+    expect(requests).toBe(0)
+    const refresh = page.getByRole('button', { name: 'Refresh projects' })
+    await refresh.click()
     await expect(card('Added on another device')).toBeVisible()
     const remote = storage.remote.projects.findIndex(
       (project) => project.title === 'Original cloud project'
     )
     storage.remote.projects.splice(remote, 1)
-    await page.clock.runFor(2_000)
+    await page.clock.runFor(5_000)
+    await expect(card('Original cloud project')).toBeVisible()
+    await expect(refresh).toBeEnabled()
+    await refresh.click()
     await expect(card('Original cloud project')).not.toBeAttached()
+    await page.clock.runFor(5_000)
     await context.setOffline(true)
     await page.waitForFunction(() => !navigator.onLine)
     await expect(
@@ -246,14 +291,18 @@ test('polls cloud project membership, pauses offline and stops outside the proje
     expect(requests).toBe(beforeOffline)
     await context.setOffline(false)
     await page.clock.runFor(0)
-    await expect.poll(() => requests).toBeGreaterThan(beforeOffline)
+    expect(requests).toBe(beforeOffline)
     await page.clock.resume()
     await storage.home.openProject('Added on another device')
     await expectEditor(page, blankCode)
     const afterLeaving = requests
+    await storage.seed('Added while modeling', blankCode)
     await pauseAppClock(page)
     await page.clock.runFor(7_000)
     expect(requests).toBe(afterLeaving)
+    await page.clock.resume()
+    await storage.goHome()
+    await expect(card('Added while modeling')).toBeVisible()
   } finally {
     await context.setOffline(false)
     await page.clock.resume()
@@ -347,63 +396,6 @@ test(
   }
 )
 
-for (const workerWrites of [false, true]) {
-  test(
-    `${workerWrites ? 'saves' : 'reads'} browser-local files through a worker while offline`,
-    { tag: '@web' },
-    async ({ page, context }, testInfo) => {
-      test.skip(process.env.TARGET !== 'web', 'OPFS is browser storage')
-      await context.addInitScript((workerWrites) => {
-        if (workerWrites && typeof FileSystemFileHandle !== 'undefined')
-          Object.defineProperty(
-            FileSystemFileHandle.prototype,
-            'createWritable',
-            {
-              configurable: true,
-              value: undefined,
-            }
-          )
-        // Model WebKit's offline OPFS blobs while keeping the real filesystem and worker.
-        for (const method of ['text', 'arrayBuffer'] as const) {
-          const read: () => Promise<string | ArrayBuffer> =
-            File.prototype[method]
-          Object.defineProperty(File.prototype, method, {
-            configurable: true,
-            value: function (this: File) {
-              if (!navigator.onLine)
-                return Promise.reject(
-                  new DOMException('Offline blob', 'NotReadableError')
-                )
-              return read.call(this)
-            },
-          })
-        }
-      }, workerWrites)
-      const storage = await prepareStorage('local', page, context, testInfo)
-      const root = await storage.seed('Offline worker', blankCode)
-      await storage.refresh()
-      await storage.home.openProject('Offline worker')
-      await expectEditor(page, blankCode)
-      await expect(page.getByTestId('gizmo')).toBeVisible()
-      await page.waitForLoadState('networkidle')
-      const code = `${blankCode}// saved by the offline worker\n`
-      await installPausedClock(page)
-      try {
-        await context.setOffline(true)
-        await page.waitForFunction(() => !navigator.onLine)
-        await page.clock.runFor(7_000)
-        await page.clock.resume()
-        await editThroughUI(page, code)
-        await expect.poll(() => storage.read(root)).toBe(code)
-      } finally {
-        await context.setOffline(false)
-      }
-      await storage.refresh()
-      await expectEditor(page, code)
-    }
-  )
-}
-
 test('keeps newer cloud edits when a rejected upload already matches the cloud', async ({
   page,
   context,
@@ -452,16 +444,21 @@ test('keeps newer cloud edits when a rejected upload already matches the cloud',
 
 // Both implementations execute the same actions and UI assertions. Naming policy
 // and persistence inspection are the explicit implementation-specific boundaries.
-for (const kind of ['local', 'cloud'] as const) {
+const storageKinds =
+  process.env.TARGET === 'web'
+    ? (['cloud'] as const)
+    : (['local', 'cloud'] as const)
+
+for (const kind of storageKinds) {
   test.describe(
     `${kind} project workflow contract`,
-    { tag: ['@web', '@desktop'] },
+    { tag: kind === 'local' ? '@desktop' : ['@web', '@desktop'] },
     () => {
       test('refreshes the project list and keeps existing cards', async ({
         page,
         context,
       }, testInfo) => {
-        if (kind === 'cloud') await page.clock.install()
+        await page.clock.install()
         const storage = await prepareStorage(kind, page, context, testInfo)
         await storage.seed('Original project', blankCode)
         await storage.refresh()
@@ -472,7 +469,7 @@ for (const kind of ['local', 'cloud'] as const) {
         let started = false
         const listRoute = /\/user\/projects(?:\?.*)?$/
         const button = page.getByRole('button', { name: 'Refresh projects' })
-        if (kind === 'cloud') await pauseAppClock(page)
+        await pauseAppClock(page)
         await expect(button).toBeEnabled()
         if (kind === 'cloud') {
           await context.route(listRoute, async (route) => {
@@ -495,14 +492,17 @@ for (const kind of ['local', 'cloud'] as const) {
             await page.clock.resume()
           }
           await expect(card('Added project')).toBeVisible()
+          if (kind === 'local') {
+            await expect(button).toHaveAttribute('aria-busy', 'false')
+            await expect(button).toBeDisabled()
+            await page.clock.runFor(5_000)
+          }
           await expect(button).toBeEnabled()
           await expect(card('Original project')).toBeVisible()
         } finally {
           gate.resolve(undefined)
-          if (kind === 'cloud') {
-            await context.unroute(listRoute)
-            await page.clock.resume()
-          }
+          if (kind === 'cloud') await context.unroute(listRoute)
+          await page.clock.resume()
         }
       })
 
@@ -743,7 +743,7 @@ for (const kind of ['local', 'cloud'] as const) {
             if (route.request().method() !== 'PUT') return route.fallback()
             const data = await uploadedProject(route)
             if (data.files['main.kcl'])
-              uploadedContents.push(data.files['main.kcl'])
+              uploadedContents.push(data.files['main.kcl'].toString())
             if (!uploadStarted) {
               uploadStarted = true
               await upload.promise
@@ -952,7 +952,7 @@ for (const kind of ['local', 'cloud'] as const) {
         await page.clock.runFor(7_000)
         await expect(
           page
-            .locator('#statusbar')
+            .getByTestId('app-header')
             .getByRole('status')
             .filter({ hasText: 'Saving...' })
         ).not.toBeAttached()
@@ -1677,7 +1677,7 @@ for (const kind of ['local', 'cloud'] as const) {
           gate.resolve(undefined)
           await localFailure.evaluate((f) => f.release())
           await page.clock.resume()
-          const retry = page.locator('#statusbar').getByRole('button', {
+          const retry = page.getByTestId('app-header').getByRole('button', {
             name: 'Save failed. Retry',
           })
           await expect(retry).toBeVisible()

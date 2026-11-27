@@ -4,7 +4,6 @@ import type { ProjectStorage } from '@src/lib/projectSession/storage'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-import type { ProjectLibrariesService } from '@src/registry/contracts/projectLibraries'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { RouterRegistryService } from '@src/registry/contracts/router'
 
@@ -14,7 +13,6 @@ export function watchProjectStorage({
   storage,
   isCurrent,
   fileOperations,
-  projectLibraries,
   session,
   router,
 }: {
@@ -22,7 +20,6 @@ export function watchProjectStorage({
   storage: Pick<ProjectStorage, 'watch' | 'externalChanges'>
   isCurrent: () => boolean
   fileOperations: Pick<FileOperationsRegistryService, 'pending'>
-  projectLibraries: Pick<ProjectLibrariesService, 'refreshProjects'>
   session: Pick<ProjectSessionService, 'refreshProject'>
   router: Pick<RouterRegistryService, 'navigate'>
 }) {
@@ -34,10 +31,8 @@ export function watchProjectStorage({
       if (storage.externalChanges === 'files') {
         if (await fileOperations.pending()) return
         if (!ownsOpening()) return
-        await projectLibraries.refreshProjects()
-      } else {
-        await session.refreshProject()
       }
+      await session.refreshProject()
     } catch (error) {
       if (ownsOpening() && isPathNotFoundError(error))
         await router.navigate(PATHS.HOME)

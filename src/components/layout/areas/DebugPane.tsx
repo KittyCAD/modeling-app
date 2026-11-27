@@ -3,6 +3,7 @@ import { AstExplorer } from '@src/components/AstExplorer'
 import { DebugArtifactGraph } from '@src/components/DebugArtifactGraph'
 import { DebugSelections } from '@src/components/DebugSelections'
 import { EngineCommands } from '@src/components/EngineCommands'
+import { LocalPickingDebug } from '@src/components/LocalPickingDebug'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 
@@ -35,6 +36,7 @@ export const DebugPaneContent = () => {
         <div className="flex flex-col">
           <EngineCommands />
           <CamDebugSettings />
+          <LocalPickingDebug />
           <AstExplorer />
           <DebugArtifactGraph />
           <DebugSelections />

@@ -219,13 +219,9 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::CallExpressionKw(node) => {
-            // TODO: Should we visit the callee Name and the argument label
-            // Identifiers?
-            for (_, arg) in &mut node.iter_arguments_mut() {
-                ret = dfs_mut_expr(arg, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
+            ret = dfs_mut_call_children(node, visitor, ret);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::Expr::PipeExpression(node) => {
@@ -353,13 +349,9 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::CallExpressionKw(node) => {
-            // TODO: Should we visit the callee Name and the argument label
-            // Identifiers?
-            for (_, arg) in &mut node.iter_arguments_mut() {
-                ret = dfs_mut_expr(arg, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
+            ret = dfs_mut_call_children(node, visitor, ret);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BinaryPart::UnaryExpression(node) => {
@@ -416,6 +408,32 @@ fn dfs_mut_binary_part<V: Visitor>(
         }
     }
     visitor.finish(NodeMut::from(&mut *binary_part));
+    ret
+}
+
+fn dfs_mut_call_children<V: Visitor>(
+    call: &mut ast::CallExpressionKw,
+    visitor: &mut V,
+    mut ret: TraversalReturn<V::Break, V::Continue>,
+) -> TraversalReturn<V::Break, V::Continue> {
+    // TODO: Should we visit the callee Name and the argument label Identifiers?
+    for (_, arg) in call.iter_arguments_mut() {
+        ret = dfs_mut_expr(arg, visitor);
+        if ret.is_break() {
+            return ret;
+        }
+    }
+    if let Some(block) = call.block.as_deref_mut() {
+        ret = visitor.visit(NodeMut::from(&mut *block));
+        if ret.is_break() {
+            return ret;
+        }
+        let inner = &mut block.inner;
+        ret = dfs_mut_body(&mut inner.items, &mut inner.non_code_meta, visitor, ret);
+        if !ret.is_break() {
+            visitor.finish(NodeMut::from(block));
+        }
+    }
     ret
 }
 

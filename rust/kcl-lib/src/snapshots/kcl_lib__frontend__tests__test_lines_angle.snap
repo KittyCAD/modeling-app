@@ -3,25 +3,7 @@ source: kcl-lib/src/frontend.rs
 expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  line1 = line(
-    start = [
-      var 0.8235211624543554,
-      var 2.320759509799522
-    ],
-    end = [
-      var 3.176478921454837,
-      var 3.679240490200478
-    ],
-  )
-  line2 = line(
-    start = [
-      var 5.32075965586073,
-      var 5.823521053315239
-    ],
-    end = [
-      var 6.67924034413927,
-      var 8.176478946684762
-    ],
-  )
+  line1 = line(start = [var 0.82, var 2.32], end = [var 3.18, var 3.68])
+  line2 = line(start = [var 5.32, var 5.82], end = [var 6.68, var 8.18])
   angle([line1, line2]) == 30deg
 }

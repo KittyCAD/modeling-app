@@ -34,9 +34,7 @@ export async function saveViewportScreenshot(
 
   const toastId = toast.loading('Saving screenshot...')
   try {
-    const contents = Array.from(
-      new Uint8Array(await screenshotFile.arrayBuffer())
-    )
+    const contents = new Uint8Array(await screenshotFile.arrayBuffer())
     await exportSave({
       fileOperations,
       files: [{ name: VIEWPORT_SCREENSHOT_FILE_NAME, contents }],

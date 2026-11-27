@@ -29,6 +29,7 @@ use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
+use crate::std::args::coerce_geometry_array;
 use crate::std::edge;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
@@ -267,19 +268,27 @@ async fn inner_delete_face(
 
 /// Create a new surface that blends between two edges of separate surface bodies
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let edges: Vec<KclValue> = args.get_unlabeled_kw_arg(
+    // A value piped into `blend()` skips signature coercion. Check its outer
+    // length here so both call forms reject `[[edge1, edge2]]`.
+    let edges = args.get_unlabeled_kw_arg(
         "edges",
-        &RuntimeType::Array(
+        &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::Known(2)),
+        exec_state,
+    )?;
+    let edges = coerce_geometry_array(
+        edges,
+        RuntimeType::Array(
             Box::new(RuntimeType::Union(vec![
                 RuntimeType::Primitive(PrimitiveType::BoundedEdge),
                 RuntimeType::tagged_edge(),
-                RuntimeType::Primitive(PrimitiveType::Any),
+                edge::edge_specifier_type(),
             ])),
             ArrayLen::Known(2),
         ),
+        args.unlabeled_kw_arg_unconverted()
+            .map_or(args.source_range, |arg| arg.source_range),
         exec_state,
     )?;
-
     let mut bounded_edges = Vec::with_capacity(edges.len());
     for edge in edges {
         bounded_edges.push(resolve_blend_edge(edge, exec_state, &args).await?);
@@ -468,7 +477,69 @@ async fn inner_join(
 
 #[cfg(test)]
 mod tests {
+    use crate::errors::KclError;
     use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn blend_flattens_nested_edges() {
+        const TEMPLATE: &str = r#"
+@settings(kclVersion = 3.0)
+
+profiles = sketch(on = XY) {
+  circleA = circle(center = [var 0mm, var 0mm], start = [var 2mm, var 0mm])
+  circleB = circle(center = [var 8mm, var 0mm], start = [var 10mm, var 0mm])
+}
+sectionA = region(segments = [profiles.circleA])
+sectionB = region(segments = [profiles.circleB])
+surfaceA = extrude(sectionA, length = 3mm, bodyType = SURFACE)
+surfaceB = extrude(sectionB, length = 3mm, bodyType = SURFACE)
+
+edgeA = { sideFaces = [sectionA.tags.circleA], index = 0 }
+edgeB = { sideFaces = [sectionB.tags.circleB], index = 0 }
+__BLEND_CALL__
+"#;
+        let flat = TEMPLATE.replace("__BLEND_CALL__", "blend([edgeA, edgeB])");
+        let nested = TEMPLATE.replace("__BLEND_CALL__", "blend([[edgeA, edgeB], []])");
+        let flat_result = parse_execute(&flat).await.unwrap();
+        let nested_result = parse_execute(&nested).await.unwrap();
+        let blend_command = |result: &crate::execution::ExecTestResults| {
+            result.root_module_artifact_commands().iter().find_map(|cmd| {
+                if let super::ModelingCmd::SurfaceBlend(blend) = &cmd.command {
+                    Some(blend.clone())
+                } else {
+                    None
+                }
+            })
+        };
+
+        assert_eq!(
+            blend_command(&nested_result).unwrap(),
+            blend_command(&flat_result).unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn blend_checks_edge_count_after_flattening() {
+        let edge = "{ sideFaces = [] }";
+        for edges in [
+            "[[], []]".to_owned(),
+            format!("[[], [{edge}]]"),
+            format!("[[], [{edge}, {edge}, {edge}]]"),
+        ] {
+            let err = parse_execute(&format!("blend({edges})")).await.unwrap_err();
+            assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
+            assert!(err.message().contains("an array of 2"), "{err:?}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn blend_rejects_a_single_outer_group() {
+        for call in ["blend([[1, 2]])", "[[1, 2]] |> blend()"] {
+            let err = parse_execute(call).await.unwrap_err();
+            assert!(err.message().contains("an array of 2"), "{err:?}");
+        }
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_body_type_queries_use_locally_known_type() {

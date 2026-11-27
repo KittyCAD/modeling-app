@@ -7,6 +7,7 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { validateGdtText } from '@src/lib/gdtTextValidation'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
@@ -30,6 +31,8 @@ import type {
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXPORT_MODEL_ICON,
+  EXPORT_MODEL_LABEL,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
@@ -466,9 +469,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
+    displayName: EXPORT_MODEL_LABEL,
     forceCommandBar: true,
     description: 'Export the current model.',
-    icon: 'floppyDiskArrow',
+    icon: EXPORT_MODEL_ICON,
     needsReview: true,
     args: {
       type: {
@@ -481,6 +485,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },
           { name: 'PLY', isCurrent: false, value: 'ply' },
+          { name: '3DM', isCurrent: false, value: 'rhino' },
         ],
       },
       storage: {
@@ -541,6 +546,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             case 'step':
             case 'obj':
             case 'fbx':
+            case 'rhino':
             default:
               return []
           }
@@ -2071,6 +2077,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           name: {
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.name,
+              }),
             defaultValue: (_, modelingContext) =>
               modelingContext
                 ? getNextAvailableDatumName(modelingContext.kclManager.ast)
@@ -2156,7 +2166,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             required: true,
             hidden: isEditingNodeSelection,
           },
-          tolerance: gdtToleranceProps,
+          tolerance: {
+            ...gdtToleranceProps,
+            required: false,
+            defaultValue: undefined,
+          },
           ...gdtFrameArgOverrides,
         },
       }
@@ -2347,6 +2361,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           annotation: {
             inputType: 'text',
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.annotation,
+              }),
             defaultValue: 'BREAK ALL SHARP EDGES',
           },
           ...gdtFrameDisplayArgOverrides,
@@ -2367,6 +2385,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           note: {
             inputType: 'text',
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.note,
+              }),
             defaultValue: 'Note:',
           },
           framePosition: gdtFrameDisplayArgOverrides.framePosition,

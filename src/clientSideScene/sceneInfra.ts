@@ -100,6 +100,7 @@ export interface OnAreaSelectCallbackArgs {
 type Voidish = void | Promise<void>
 
 export class SceneInfra {
+  private disposed = false
   readonly scene: Scene
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
@@ -115,6 +116,7 @@ export class SceneInfra {
   lastMouseState: MouseState = { type: 'idle' }
 
   public readonly baseUnitChange = new LegacySignal()
+  public readonly themeChange = new LegacySignal()
 
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
@@ -193,7 +195,9 @@ export class SceneInfra {
   }
 
   set theme(theme: Themes) {
+    if (this._theme === theme) return
     this._theme = theme
+    this.themeChange.dispatch()
   }
 
   get theme() {
@@ -363,7 +367,8 @@ export class SceneInfra {
       this.renderer.domElement,
       engineCommandManager,
       getSettings,
-      () => this.localRenderer
+      () => this.localRenderer,
+      () => this.renderer.domElement
     )
     this.camControls.cameraChange.add(this.onCameraChange)
     this.camControls.camera.layers.enable(SKETCH_LAYER)
@@ -471,13 +476,19 @@ export class SceneInfra {
     }
   }
 
-  // Note this was never getting called, SceneInfra is created once and never disposed.
-  // dispose = () => {
-  //   // Dispose of scene resources, renderer, and controls
-  //   this.renderer.forceContextLoss()
-  //   this.renderer.dispose()
-  //   // Dispose of any other resources like geometries, materials, textures
-  // }
+  /** The owner releases its presentation only after model renderers have detached. */
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.stop()
+    this.camControls.cameraChange.remove(this.onCameraChange)
+    this.camControls.dispose()
+    this.renderer.dispose()
+    this.renderer.forceContextLoss()
+    this.renderer.domElement.remove()
+    this.labelRenderer.domElement.remove()
+    this.scene.clear()
+  }
 
   getClientSceneScaleFactor(target?: Mesh | Group | null) {
     const orthoFactor = orthoScale(this.camControls.camera)

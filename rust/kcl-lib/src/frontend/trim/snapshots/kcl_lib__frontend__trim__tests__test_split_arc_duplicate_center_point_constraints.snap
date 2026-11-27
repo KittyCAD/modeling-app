@@ -3,64 +3,12 @@ source: kcl-lib/src/frontend/trim/tests.rs
 expression: result_normalized
 ---
 sketch(on = YZ) {
-  arcToSplit = arc(
-    start = [
-      var 11.066650653338794mm,
-      var 1.0633162390135287mm
-    ],
-    end = [
-      var 3.537839842550127mm,
-      var 5.269639353860194mm
-    ],
-    center = [
-      var 0.6664304719102654mm,
-      var -8.71082992439535mm
-    ],
-  )
-  line1 = line(
-    start = [
-      var -6.001037153865538mm,
-      var 7.999935177825212mm
-    ],
-    end = [
-      var -5.50100214691157mm,
-      var -0.00006263423996970121mm
-    ],
-  )
-  line2 = line(
-    start = [
-      var 3.9992819553174224mm,
-      var 8.50010257746563mm
-    ],
-    end = [
-      var 2.99939372552144mm,
-      var 1.50008661037924mm
-    ],
-  )
-  lineCoincidentWithArcCen = line(
-    start = [
-      var 0.6664304719102713mm,
-      var -8.710829924395384mm
-    ],
-    end = [var 11.5mm, var -7.5mm],
-  )
-  line4 = line(
-    start = [
-      var 11.066650653338774mm,
-      var 1.0633162390135111mm
-    ],
-    end = [
-      var 13.267117603040354mm,
-      var 6.8205152794025175mm
-    ],
-  )
-  line5 = line(
-    start = [
-      var 7.639936510497992mm,
-      var 3.741829491979677mm
-    ],
-    end = [var 10mm, var 8mm],
-  )
+  arcToSplit = arc(start = [var 11.07mm, var 1.06mm], end = [var 3.54mm, var 5.27mm], center = [var 0.67mm, var -8.71mm])
+  line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
+  line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
+  lineCoincidentWithArcCen = line(start = [var 0.67mm, var -8.71mm], end = [var 11.5mm, var -7.5mm])
+  line4 = line(start = [var 11.07mm, var 1.06mm], end = [var 13.27mm, var 6.82mm])
+  line5 = line(start = [var 7.64mm, var 3.74mm], end = [var 10mm, var 8mm])
   coincident([line5.start, arcToSplit])
   coincident([line4.start, arcToSplit.start])
   coincident([
@@ -68,31 +16,9 @@ sketch(on = YZ) {
     arcToSplit.center
   ])
   distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = line(
-    start = [
-      var -0.9229294382877006mm,
-      var -6.920263709456208mm
-    ],
-    end = [
-      var 2.886489853180418mm,
-      var -11.21193952655762mm
-    ],
-  )
+  line3 = line(start = [var -0.92mm, var -6.92mm], end = [var 2.89mm, var -11.21mm])
   coincident([arcToSplit.center, line3])
-  arc1 = arc(
-    start = [
-      var -5.755758598709253mm,
-      var 4.075754115982303mm
-    ],
-    end = [
-      var -10.371279059061486mm,
-      var 0.39467458036338887mm
-    ],
-    center = [
-      var 0.6664304719102966mm,
-      var -8.710829924395375mm
-    ],
-  )
+  arc1 = arc(start = [var -5.75mm, var 4.08mm], end = [var -10.37mm, var 0.39mm], center = [var 0.67mm, var -8.71mm])
   coincident([arcToSplit.end, line2])
   coincident([arc1.start, line1])
   coincident([

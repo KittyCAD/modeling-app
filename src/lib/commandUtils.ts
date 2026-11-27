@@ -29,7 +29,7 @@ export function isModelingDialogCommand(command: Command | undefined): boolean {
   return command?.groupId === 'modeling' && command.useModelingDialog === true
 }
 
-export const commandKey = (command: Command) =>
+export const commandKey = (command: Pick<Command, 'id' | 'groupId' | 'name'>) =>
   command.id ?? `${command.groupId}:${String(command.name)}`
 
 /**

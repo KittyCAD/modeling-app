@@ -135,7 +135,7 @@ function createProjectActions({
     canOpen,
     canRename: () => true,
     canDelete: () => true,
-    canCloneToLibrary: () => true,
+    canDuplicateToLibrary: () => true,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
     canSeparateProjectCopies: (project) =>
@@ -148,8 +148,8 @@ function createProjectActions({
     duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: deleteProject,
-    getCloneToLibraryTargets: vi.fn(() => []),
-    cloneToLibrary: vi.fn().mockResolvedValue(undefined),
+    getDuplicateToLibraryTargets: vi.fn(() => []),
+    duplicateToLibrary: vi.fn().mockResolvedValue(undefined),
     deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
     separateProjectCopies: vi.fn().mockResolvedValue(undefined),
   })
@@ -158,7 +158,7 @@ function createProjectActions({
     'duplicate',
     'rename',
     'delete',
-    'cloneToLibrary',
+    'duplicateToLibrary',
     'deleteDuplicateRealizations',
     'separateProjectCopies',
   ] as const)
@@ -445,7 +445,7 @@ describe('ProjectCard', () => {
         fileOperations,
         projectStatuses: new Map<string, ProjectStatus>(),
         showCloudSyncUi: true,
-        onCloneToLibrary: vi.fn(),
+        onDuplicateToLibrary: vi.fn(),
       }
       const { unmount } = render(
         <BrowserRouter>
@@ -571,39 +571,6 @@ describe('ProjectCard', () => {
       'src',
       'https://example.test/updated.png'
     )
-  })
-
-  test('duplicates a local project from its card action', async () => {
-    const { projectActions } = renderProjectCard()
-
-    fireEvent.contextMenu(screen.getByTestId('project-link'))
-    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
-
-    await waitFor(() =>
-      expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)
-    )
-  })
-
-  test('shows duplicate failures to the user', async () => {
-    const error = new Error('Unable to duplicate project')
-    const duplicate = vi.fn().mockRejectedValue(error)
-    const projectActions = {
-      ...createProjectActions(),
-      duplicate,
-    }
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const toastError = vi.spyOn(toast, 'error').mockImplementation(() => '')
-    renderProjectCard({ projectActions })
-
-    fireEvent.contextMenu(screen.getByTestId('project-link'))
-    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
-
-    await waitFor(() => expect(toastError).toHaveBeenCalled())
-    expect(toastError.mock.calls[0]?.[0]).toContain(
-      'Unable to duplicate project'
-    )
-    consoleError.mockRestore()
-    toastError.mockRestore()
   })
 
   test('eagerly shows cloud project renames while sync continues', async () => {
@@ -953,23 +920,28 @@ describe('ProjectCard', () => {
     ).not.toBeInTheDocument()
   })
 
-  test('opens clone to library from the card context menu', () => {
-    const onCloneToLibrary = vi.fn()
+  test('offers one Duplicate action that opens the destination picker', () => {
+    const onDuplicateToLibrary = vi.fn()
+    const projectActions = createProjectActions()
     render(
       <BrowserRouter>
         <AppProjectCard
           project={cloudProject}
-          projectActions={createProjectActions()}
+          projectActions={projectActions}
           fileOperations={fileOperations}
-          onCloneToLibrary={onCloneToLibrary}
+          onDuplicateToLibrary={onDuplicateToLibrary}
         />
       </BrowserRouter>
     )
 
     fireEvent.contextMenu(screen.getByTestId('project-link'))
-    fireEvent.click(screen.getByTestId('project-card-context-clone-to-library'))
+    expect(
+      screen.getAllByRole('button', { name: /Duplicate project/ })
+    ).toHaveLength(1)
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
 
-    expect(onCloneToLibrary).toHaveBeenCalledWith(cloudProject)
+    expect(onDuplicateToLibrary).toHaveBeenCalledWith(cloudProject)
+    expect(projectActions.duplicate).not.toHaveBeenCalled()
   })
 
   test('clarifies that deleting a cloud-backed non-cloud library project keeps the cloud version', () => {
@@ -1088,24 +1060,26 @@ describe('ProjectCard', () => {
     }
   )
 
-  test('shows clone progress when the action starts outside the card', async () => {
+  test('shows duplication progress when the action starts outside the card', async () => {
     const gate = Promise.withResolvers<undefined>()
     const actions = createProjectActions()
     // Drive the same action service used by the command palette.
     const service = withHomeProjectActionStatus({
       ...actions,
-      cloneToLibrary: () => gate.promise,
+      duplicateToLibrary: () => gate.promise,
     })
     renderProjectCard({ projectActions: service })
     let pending:
-      | ReturnType<HomeProjectActionsService['cloneToLibrary']>
+      | ReturnType<HomeProjectActionsService['duplicateToLibrary']>
       | undefined
     try {
       act(() => {
-        pending = service.cloneToLibrary(cloudProject, 'another-library')
+        pending = service.duplicateToLibrary(cloudProject, 'another-library')
       })
       expect(
-        screen.getByRole('status', { name: 'Cloning project Old cloud title' })
+        screen.getByRole('status', {
+          name: 'Duplicating project Old cloud title',
+        })
       ).toBeVisible()
       expect(screen.getByRole('listitem')).toHaveAttribute('aria-busy', 'true')
       await act(async () => {
@@ -1270,7 +1244,7 @@ describe('ProjectCard', () => {
       enabled: true,
       shiftKey: true,
       local: false,
-      standalone: false,
+      standalone: true,
     },
   ])(
     '$name uses the expected project route',
@@ -1286,10 +1260,10 @@ describe('ProjectCard', () => {
       } satisfies HomeProjectEntry
       const { projectActions } = renderProjectCard({ project })
       const link = screen.getByTestId('project-link')
-      if (enabled && local) {
+      if (enabled) {
         expect(link).toHaveAttribute(
           'title',
-          'Shift-click to open without an editor'
+          'Shift-click to open in the new project shell'
         )
       } else {
         expect(link).not.toHaveAttribute('title')
@@ -1298,7 +1272,9 @@ describe('ProjectCard', () => {
       await waitFor(() =>
         expect(window.location.pathname).toBe(
           standalone
-            ? `${PATHS.LOCAL}/${encodeURIComponent('/projects/Bracket demo')}`
+            ? local
+              ? `${PATHS.LOCAL}/${encodeURIComponent('/projects/Bracket demo')}`
+              : `${PATHS.PROJECT}/${encodeURIComponent(cloudProject.remoteProjectId)}`
             : `${PATHS.FILE}/${encodeURIComponent(cloudProject.defaultFile)}`
         )
       )

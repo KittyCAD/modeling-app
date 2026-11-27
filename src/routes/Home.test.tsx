@@ -7,9 +7,9 @@ import {
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import { ProjectLibraryPreviewRow } from '@src/routes/HomeProjectCards'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const cloudLibrary = {
   id: 'cloud-personal',
@@ -25,15 +25,15 @@ const projectActions = {
   canDuplicate: vi.fn(() => false),
   canRename: vi.fn(() => false),
   canDelete: vi.fn(() => false),
-  canCloneToLibrary: vi.fn(() => false),
+  canDuplicateToLibrary: vi.fn(() => false),
   canReviewDuplicateRealizations: vi.fn(() => false),
   canSeparateProjectCopies: vi.fn(() => false),
   open: vi.fn(async () => undefined),
   duplicate: vi.fn(async () => undefined),
   rename: vi.fn(async () => undefined),
   delete: vi.fn(async () => undefined),
-  getCloneToLibraryTargets: vi.fn(() => []),
-  cloneToLibrary: vi.fn(async () => undefined),
+  getDuplicateToLibraryTargets: vi.fn(() => []),
+  duplicateToLibrary: vi.fn(async () => undefined),
   deleteDuplicateRealizations: vi.fn(async () => undefined),
   separateProjectCopies: vi.fn(async () => undefined),
 } satisfies HomeProjectActionsService
@@ -83,13 +83,48 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
           readFile: vi.fn(),
         }}
         showCloudSyncUi={true}
-        onCloneToLibrary={vi.fn()}
+        onDuplicateToLibrary={vi.fn()}
       />
     </MemoryRouter>
   )
 }
 
 describe('HomeHeader', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('allows another refresh after five seconds without showing it as busy during cooldown', async () => {
+    vi.useFakeTimers()
+    const onRefresh = vi.fn()
+    renderHomeHeader({
+      showFreeCloudProjectTrainingDisclosure: false,
+      onRefresh,
+    })
+    const button = screen.getByRole('button', { name: 'Refresh projects' })
+    fireEvent.click(button)
+    expect(button).toBeDisabled()
+    expect(button).toHaveAttribute('aria-busy', 'false')
+    await act(() => vi.advanceTimersByTime(4_999))
+    fireEvent.click(button)
+    expect(onRefresh).toHaveBeenCalledOnce()
+    await act(() => vi.advanceTimersByTime(1))
+    expect(button).toBeEnabled()
+    fireEvent.click(button)
+    expect(onRefresh).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps refresh disabled after the cooldown while a request is still running', async () => {
+    vi.useFakeTimers()
+    renderHomeHeader({
+      showFreeCloudProjectTrainingDisclosure: false,
+      onRefresh: vi.fn(),
+      isRefreshing: true,
+    })
+    await act(() => vi.advanceTimersByTime(5_000))
+    expect(
+      screen.getByRole('button', { name: 'Refresh projects' })
+    ).toBeDisabled()
+  })
+
   it.each([false, true])(
     'shows the refresh button with loading=%s',
     (isRefreshing) => {
@@ -135,7 +170,7 @@ describe('HomeHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('shows details copy with the linked library path', () => {
+  it('shows cloud library details without the technical source', () => {
     renderHomeHeader({
       showFreeCloudProjectTrainingDisclosure: false,
     })
@@ -148,10 +183,10 @@ describe('HomeHeader', () => {
         /Storage type and model-training controls depend on your plan/
       )
     ).toBeInTheDocument()
-    expect(screen.getByText(/Technical source:/)).toBeInTheDocument()
+    expect(screen.queryByText(/Technical source:/)).not.toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'zoo://personal' })
-    ).toHaveAttribute('href', '/home/settings?tab=user#libraries')
+      screen.queryByRole('link', { name: 'zoo://personal' })
+    ).not.toBeInTheDocument()
   })
 
   it('shows the selected library type icon and caret back link', () => {
