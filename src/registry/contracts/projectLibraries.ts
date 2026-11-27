@@ -212,18 +212,6 @@ export interface ProjectLibraryTypeOperations {
   cloneProjectFrom?: ProjectLibraryCloneProjectFromOperation
   cloneProjectTo?: ProjectLibraryCloneProjectToOperation
 }
-export interface ProjectLibrarySettingsDetailsProps {
-  library: ProjectLibrarySetting
-  index: number
-  updateLibrary: (library: ProjectLibrarySetting) => void
-  commitLibrary: (library?: ProjectLibrarySetting) => void
-  readOnly?: boolean
-  chooseDirectory?: (input: {
-    defaultPath?: string
-    title?: string
-  }) => Promise<string | undefined>
-}
-
 export interface ProjectLibraryHomeDetailProps {
   library: ProjectLibrary
   registry: Registry
@@ -246,12 +234,6 @@ export interface ProjectLibraryTypeContribution {
   libraries?: readonly ProjectLibrary[]
   icon?: string
   order?: number
-  /** Initial value used when settings are seeded or migrated for this type. */
-  defaultSetting?: ProjectLibrarySetting
-  /** Template used when a user manually adds a new library of this type. */
-  newLibrarySetting?: ProjectLibrarySetting
-  /** Optional detail cell rendered in the project libraries settings row. */
-  settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
   /** Supplies presentation for configured and discovered libraries on Home. */
   describeLibrary?: (library: ProjectLibrary) => ProjectLibraryPresentation
   /** Optional inline content for the library detail description on Home. */

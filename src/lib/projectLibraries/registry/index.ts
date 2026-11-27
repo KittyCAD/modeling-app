@@ -10,10 +10,8 @@ import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
-  DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultProjectLibrarySettings,
-  NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
@@ -30,7 +28,6 @@ import {
   readProjectLibraryRealizationsInvalidation,
 } from '@src/lib/projectLibraries/registry/invalidation'
 import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
-import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -756,17 +753,6 @@ const directoryProjectLibraryType: Factory = defineFactory({
       title: 'Directory',
       icon: 'folder',
       order: 0,
-      defaultSetting: {
-        title: DEFAULT_PROJECT_LIBRARY_TITLE,
-        path: 'projects',
-        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-      },
-      newLibrarySetting: {
-        title: NEW_PROJECT_LIBRARY_TITLE,
-        path: 'projects',
-        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-      },
-      settingsDetails: DirectoryProjectLibrarySettingsDetails,
       /**
        * Directory libraries return concrete folders on disk. Any cloud
        * project ID found in project metadata is carried as an observation,

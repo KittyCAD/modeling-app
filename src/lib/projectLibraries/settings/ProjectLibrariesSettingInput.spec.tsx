@@ -1,8 +1,5 @@
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
-import {
-  DirectoryProjectLibrarySettingsDetails,
-  ProjectLibrariesSettingInput,
-} from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+import { ProjectLibrariesSettingInput } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
@@ -20,46 +17,13 @@ const defaultLibraries: ProjectLibrarySetting[] = [
   },
 ]
 
-const directoryType = {
-  title: 'Directory',
-  icon: 'folder',
-  type: 'directory',
-  defaultSetting: {
-    title: 'Default Projects Directory',
-    path: 'projects',
-    type: 'directory',
-  },
-  newLibrarySetting: {
-    title: 'Project Library',
-    path: 'projects',
-    type: 'directory',
-  },
-  settingsDetails: DirectoryProjectLibrarySettingsDetails,
-}
-
 describe('ProjectLibrariesSettingInput', () => {
-  test('does not invent a directory library type when none are registered', () => {
-    const updateValue = vi.fn()
-
-    render(
-      <ProjectLibrariesSettingInput value={[]} updateValue={updateValue} />
-    )
-
-    const addButton = screen.getByTestId('project-library-add')
-    expect(addButton).toBeDisabled()
-
-    fireEvent.click(addButton)
-
-    expect(updateValue).not.toHaveBeenCalled()
-  })
-
   test('does not update project libraries when blurring unchanged fields', () => {
     const updateValue = vi.fn()
     render(
       <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        directoryType={directoryType}
       />
     )
 
@@ -69,30 +33,12 @@ describe('ProjectLibrariesSettingInput', () => {
     expect(updateValue).not.toHaveBeenCalled()
   })
 
-  test('does not render implicit details for library types without a settings details contribution', () => {
-    const updateValue = vi.fn()
-    render(
-      <ProjectLibrariesSettingInput
-        value={defaultLibraries}
-        updateValue={updateValue}
-        directoryType={{
-          type: 'directory',
-          title: 'Directory',
-          defaultSetting: defaultLibraries[0],
-        }}
-      />
-    )
-
-    expect(screen.queryByTestId('project-directory-input')).toBeNull()
-  })
-
   test('does not update project libraries when normalization matches the current value', () => {
     const updateValue = vi.fn()
     render(
       <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        directoryType={directoryType}
       />
     )
 
@@ -120,7 +66,6 @@ describe('ProjectLibrariesSettingInput', () => {
       <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        directoryType={directoryType}
       />
     )
 
@@ -171,45 +116,21 @@ describe('ProjectLibrariesSettingInput', () => {
     ])
   })
 
-  test('hides library management controls when management is disabled', () => {
+  test('allows removal when folder editing, adding, and reordering are unavailable', () => {
     const updateValue = vi.fn()
     render(
       <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
-        directoryType={directoryType}
-        canAddLibraries={false}
-        canReorderLibraries={false}
-        canEditLibraryDetails={false}
-        canRemoveLibrary={() => false}
+        canManageLibraries={false}
       />
     )
 
     expect(screen.queryByTestId('project-library-add')).toBeNull()
-    expect(screen.queryByTestId('project-library-remove')).toBeNull()
     expect(screen.queryByTestId('project-library-drag-handle')).toBeNull()
-    expect(screen.getByTestId('project-library-type')).toHaveAttribute(
-      'aria-label',
-      'Library type: Directory'
-    )
     expect(screen.getByTestId('project-directory-input')).toHaveTextContent(
       '/projects'
     )
-  })
-
-  test('allows directory library removal while edits and reordering are disabled', () => {
-    const updateValue = vi.fn()
-    render(
-      <ProjectLibrariesSettingInput
-        value={defaultLibraries}
-        updateValue={updateValue}
-        directoryType={directoryType}
-        canAddLibraries={false}
-        canReorderLibraries={false}
-        canEditLibraryDetails={false}
-      />
-    )
-
     fireEvent.click(screen.getByTestId('project-library-remove'))
 
     expect(updateValue).toHaveBeenLastCalledWith([])
@@ -239,7 +160,6 @@ describe('ProjectLibrariesSettingInput', () => {
           },
         ]}
         updateValue={updateValue}
-        directoryType={directoryType}
       />
     )
 

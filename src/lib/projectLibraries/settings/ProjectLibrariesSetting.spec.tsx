@@ -1,19 +1,12 @@
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import { ProjectLibrariesSetting } from '@src/lib/projectLibraries/settings/ProjectLibrariesSetting'
-import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { contribute, Registry } from 'plankton'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, expect, it, vi } from 'vitest'
+import { expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/isDesktop', () => ({ isDesktop: () => true }))
 
-let registry: Registry | undefined
-afterEach(async () => {
-  await registry?.dispose()
-})
-
-it('only edits directory libraries and preserves other saved libraries', async () => {
+it('only edits directory libraries and preserves other saved libraries', () => {
   const local: ProjectLibrarySetting = {
     title: 'Local projects',
     path: '/projects',
@@ -25,25 +18,12 @@ it('only edits directory libraries and preserves other saved libraries', async (
     source: '/designs',
     type: 'external',
   }
-  registry = new Registry()
-  await registry.configure([
-    contribute(projectLibraryTypesFacet, () => ({
-      type: 'directory',
-      title: 'Directory',
-      defaultSetting: local,
-    })),
-    contribute(projectLibraryTypesFacet, () => ({
-      type: 'external',
-      title: 'External',
-    })),
-  ])
   const updateValue = vi.fn()
   render(
     <MemoryRouter>
       <ProjectLibrariesSetting
         value={[local, external]}
         updateValue={updateValue}
-        registry={registry}
       />
     </MemoryRouter>
   )

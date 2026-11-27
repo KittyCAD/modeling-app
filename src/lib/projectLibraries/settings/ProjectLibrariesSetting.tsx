@@ -1,4 +1,3 @@
-import { useSignals } from '@preact/signals-react/runtime'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import {
@@ -7,23 +6,16 @@ import {
 } from '@src/lib/projectLibraries'
 import { ProjectLibrariesSettingInput } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import type { SettingComponentProps } from '@src/lib/settings/settingsTypes'
-import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 export function ProjectLibrariesSetting({
   value,
   updateValue,
-  registry,
 }: Pick<
   SettingComponentProps<ProjectLibrarySetting[]>,
-  'value' | 'updateValue' | 'registry'
+  'value' | 'updateValue'
 >) {
-  useSignals()
-  const canManageLibraries = isDesktop()
-  const directoryType = registry
-    .observe(projectLibraryTypesFacet)
-    .value.get(DIRECTORY_PROJECT_LIBRARY_TYPE)
   const localLibraries = useMemo(
     () =>
       value.filter(
@@ -44,10 +36,7 @@ export function ProjectLibrariesSetting({
             ),
           ])
         }
-        directoryType={directoryType}
-        canAddLibraries={canManageLibraries}
-        canReorderLibraries={canManageLibraries}
-        canEditLibraryDetails={canManageLibraries}
+        canManageLibraries={isDesktop()}
       />
       <Link to={PATHS.HOME} className="text-sm text-2 underline">
         Manage other libraries on Home.

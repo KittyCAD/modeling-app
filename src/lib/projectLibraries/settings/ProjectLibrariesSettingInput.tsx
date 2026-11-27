@@ -1,9 +1,10 @@
 import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon, isCustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import {
   areProjectLibrarySettingsEqual,
+  DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   moveProjectLibrarySetting,
   NEW_PROJECT_LIBRARY_TITLE,
@@ -13,32 +14,38 @@ import {
 } from '@src/lib/projectLibraries'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import type {
-  ProjectLibrarySettingsDetailsProps,
-  ProjectLibraryTypeContribution,
-} from '@src/registry/contracts/projectLibraries'
 import { type DragEvent, useEffect, useRef, useState } from 'react'
 
 interface ProjectLibrariesSettingInputProps {
   value: ProjectLibrarySetting[]
   updateValue: (value: ProjectLibrarySetting[]) => void
-  directoryType?: ProjectLibraryTypeContribution
-  canAddLibraries?: boolean
-  canReorderLibraries?: boolean
-  canEditLibraryDetails?: boolean
-  canRemoveLibrary?: (library: ProjectLibrarySetting) => boolean
+  canManageLibraries?: boolean
 }
 
-function DefaultProjectLibrarySettingsDetails() {
-  return <></>
+const defaultDirectoryLibrary = {
+  title: DEFAULT_PROJECT_LIBRARY_TITLE,
+  path: 'projects',
+  type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+} satisfies ProjectLibrarySetting
+
+interface ProjectLibrarySettingsDetailsProps {
+  library: ProjectLibrarySetting
+  index: number
+  updateLibrary: (library: ProjectLibrarySetting) => void
+  commitLibrary: (library?: ProjectLibrarySetting) => void
+  readOnly: boolean
+  chooseDirectory?: (input: {
+    defaultPath?: string
+    title?: string
+  }) => Promise<string | undefined>
 }
 
-export function DirectoryProjectLibrarySettingsDetails({
+function DirectoryProjectLibrarySettingsDetails({
   library,
   index,
   updateLibrary,
   commitLibrary,
-  readOnly = false,
+  readOnly,
   chooseDirectory,
 }: ProjectLibrarySettingsDetailsProps) {
   async function chooseLibraryPath() {
@@ -113,25 +120,10 @@ export function DirectoryProjectLibrarySettingsDetails({
 export function ProjectLibrariesSettingInput({
   value,
   updateValue,
-  directoryType,
-  canAddLibraries = true,
-  canReorderLibraries = true,
-  canEditLibraryDetails = true,
-  canRemoveLibrary = () => true,
+  canManageLibraries = true,
 }: ProjectLibrariesSettingInputProps) {
   const electron = typeof window === 'undefined' ? undefined : window.electron
-  const typeLabel = directoryType?.title ?? 'Directory'
-  const typeIcon = isCustomIconName(directoryType?.icon)
-    ? directoryType.icon
-    : 'folder'
-  const fallbackLibrary = {
-    title: directoryType?.title ?? NEW_PROJECT_LIBRARY_TITLE,
-    path: 'projects',
-    type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-  }
-  const defaultLibrary = directoryType?.defaultSetting ?? fallbackLibrary
-  const SettingsDetails =
-    directoryType?.settingsDetails ?? DefaultProjectLibrarySettingsDetails
+  const typeLabel = 'Directory'
   const [draftLibraries, setDraftLibraries] =
     useState<ProjectLibrarySetting[]>(value)
   const committedLibrariesRef = useRef<ProjectLibrarySetting[]>(value)
@@ -158,7 +150,7 @@ export function ProjectLibrariesSettingInput({
 
   function commit(nextLibraries: ProjectLibrarySetting[]) {
     const normalizedLibraries = nextLibraries.map((library) =>
-      normalizeProjectLibrarySetting(library, defaultLibrary)
+      normalizeProjectLibrarySetting(library, defaultDirectoryLibrary)
     )
     setDraftLibraries(normalizedLibraries)
     if (
@@ -208,11 +200,10 @@ export function ProjectLibrariesSettingInput({
   }
 
   async function addLibrary() {
-    if (!directoryType) {
-      return
+    const newLibrary = {
+      ...defaultDirectoryLibrary,
+      title: NEW_PROJECT_LIBRARY_TITLE,
     }
-
-    const newLibrary = directoryType.newLibrarySetting ?? fallbackLibrary
     if (!electron) {
       commit([...draftLibraries, newLibrary])
       return
@@ -288,6 +279,13 @@ export function ProjectLibrariesSettingInput({
     dragPreviewIdRef.current = null
   }
 
+  const gridColsClass = canManageLibraries
+    ? 'grid-cols-[auto_auto_minmax(0,1fr)_auto]'
+    : 'grid-cols-[auto_minmax(0,1fr)_auto]'
+  const detailsColClass = canManageLibraries
+    ? 'col-start-3 col-end-5'
+    : 'col-start-2 col-end-4'
+
   return (
     <div
       className="flex min-w-0 w-full flex-col gap-3"
@@ -296,51 +294,35 @@ export function ProjectLibrariesSettingInput({
       {draftLibraries.length > 0 && (
         <ul className="flex min-w-0 flex-col gap-2">
           {draftLibraries.map((library, index) => {
-            const canRemoveCurrentLibrary = canRemoveLibrary(library)
-            const showRemoveColumn = draftLibraries.some(canRemoveLibrary)
-            const gridColsClass = canReorderLibraries
-              ? showRemoveColumn
-                ? 'grid-cols-[auto_auto_minmax(0,1fr)_auto]'
-                : 'grid-cols-[auto_auto_minmax(0,1fr)]'
-              : showRemoveColumn
-                ? 'grid-cols-[auto_minmax(0,1fr)_auto]'
-                : 'grid-cols-[auto_minmax(0,1fr)]'
-            const detailsColClass = canReorderLibraries
-              ? showRemoveColumn
-                ? 'col-start-3 col-end-5'
-                : 'col-start-3'
-              : showRemoveColumn
-                ? 'col-start-2 col-end-4'
-                : 'col-start-2'
-
+            const isDragging = draggedLibraryIndex === index
             return (
               <li
                 key={`${index}-${library.type}`}
                 className={`grid min-w-0 items-center gap-2 rounded-sm border p-2 dark:border-chalkboard-80 ${gridColsClass} ${
-                  canReorderLibraries ? 'pl-1' : ''
+                  canManageLibraries ? 'pl-1' : ''
                 } ${
                   dragOverLibraryIndex === index
                     ? 'border-primary bg-primary/5 dark:border-primary'
                     : 'border-chalkboard-30'
-                } ${draggedLibraryIndex === index ? 'opacity-60' : ''}`}
+                } ${isDragging ? 'opacity-60' : ''}`}
                 onDragOver={
-                  canReorderLibraries
+                  canManageLibraries
                     ? (event) => handleDragOver(event, index)
                     : undefined
                 }
                 onDrop={
-                  canReorderLibraries
+                  canManageLibraries
                     ? (event) => handleDrop(event, index)
                     : undefined
                 }
                 data-testid="project-library-row"
               >
-                {canReorderLibraries && (
+                {canManageLibraries && (
                   <button
                     type="button"
                     draggable
                     aria-label={`Reorder ${library.title || 'project library'}`}
-                    aria-grabbed={draggedLibraryIndex === index}
+                    aria-grabbed={isDragging}
                     className="flex shrink-0 cursor-grab items-center justify-center self-stretch rounded-sm border !border-transparent p-0 text-2 !bg-transparent active:cursor-grabbing"
                     data-testid="project-library-drag-handle"
                     onDragStart={(event) => handleDragStart(event, index)}
@@ -356,7 +338,7 @@ export function ProjectLibrariesSettingInput({
                   aria-label={`Library type: ${typeLabel}`}
                   title={typeLabel}
                 >
-                  <CustomIcon name={typeIcon} className="h-5 w-5" />
+                  <CustomIcon name="folder" className="h-5 w-5" />
                   <Tooltip position="top-right">{typeLabel}</Tooltip>
                 </span>
                 <input
@@ -368,28 +350,23 @@ export function ProjectLibrariesSettingInput({
                   className="h-8 min-w-0 w-full rounded-sm border border-chalkboard-30 bg-transparent px-1 text-sm dark:border-chalkboard-70"
                   data-testid="project-library-title"
                 />
-                {showRemoveColumn &&
-                  (canRemoveCurrentLibrary ? (
-                    <ActionButton
-                      Element="button"
-                      type="button"
-                      tabIndex={0}
-                      onClick={() => removeLibrary(index)}
-                      className="h-8 w-8 shrink-0 justify-center !p-0"
-                      iconStart={{
-                        icon: 'trash',
-                        bgClassName: '!bg-transparent',
-                        iconClassName: 'dark:!text-chalkboard-30',
-                      }}
-                      data-testid="project-library-remove"
-                    >
-                      <Tooltip position="top-right">Remove library</Tooltip>
-                    </ActionButton>
-                  ) : (
-                    <span aria-hidden="true" className="h-8 w-8 shrink-0" />
-                  ))}
-                <div className={`min-w-0 empty:hidden ${detailsColClass}`}>
-                  <SettingsDetails
+                <ActionButton
+                  Element="button"
+                  type="button"
+                  tabIndex={0}
+                  onClick={() => removeLibrary(index)}
+                  className="h-8 w-8 shrink-0 justify-center !p-0"
+                  iconStart={{
+                    icon: 'trash',
+                    bgClassName: '!bg-transparent',
+                    iconClassName: 'dark:!text-chalkboard-30',
+                  }}
+                  data-testid="project-library-remove"
+                >
+                  <Tooltip position="top-right">Remove library</Tooltip>
+                </ActionButton>
+                <div className={`min-w-0 ${detailsColClass}`}>
+                  <DirectoryProjectLibrarySettingsDetails
                     library={library}
                     index={index}
                     updateLibrary={(nextLibrary) =>
@@ -412,9 +389,9 @@ export function ProjectLibrariesSettingInput({
                           : draftLibraries
                       )
                     }
-                    readOnly={!canEditLibraryDetails}
+                    readOnly={!canManageLibraries}
                     chooseDirectory={
-                      electron && canEditLibraryDetails
+                      electron && canManageLibraries
                         ? chooseDirectory
                         : undefined
                     }
@@ -425,14 +402,13 @@ export function ProjectLibrariesSettingInput({
           })}
         </ul>
       )}
-      {canAddLibraries && (
+      {canManageLibraries && (
         <ActionButton
           Element="button"
           type="button"
           tabIndex={0}
           onClick={toSync(addLibrary, reportRejection)}
-          disabled={!directoryType}
-          className="self-start disabled:cursor-not-allowed disabled:opacity-60"
+          className="self-start"
           iconStart={{ icon: 'folder', size: 'sm', className: 'p-1' }}
           data-testid="project-library-add"
         >
