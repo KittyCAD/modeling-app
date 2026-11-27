@@ -192,9 +192,9 @@ fn named_view_info(
 }
 
 /// Resolves every view using the same visibility targets from completed execution data.
-pub(crate) fn resolve_all(
+pub(crate) fn resolve_all<'a>(
     artifact_graph: &ArtifactGraph,
-    operations: &IndexMap<ModuleId, Vec<Operation>>,
+    operations: impl IntoIterator<Item = &'a Operation>,
     filenames: &IndexMap<ModuleId, ModulePath>,
 ) -> ResolvedViewBatch {
     let targets = VisibilityTargets::new(artifact_graph);

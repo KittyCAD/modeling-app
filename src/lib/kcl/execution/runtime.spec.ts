@@ -114,6 +114,55 @@ it('executes current KCL and resolves imports from the captured project bytes', 
   )
   expect(updated.variables.answer).toMatchObject({ value: 44 })
 })
+
+it('preserves feature tree operations across multiple WASM chunks', async () => {
+  const model = await runtime()
+  const result = await model.execute(
+    snapshot(
+      `@settings(kclVersion = 3.0)
+import base from "planes.kcl"
+fn keep(@value) { return value }
+values = map([0..2047], f = keep)
+`,
+      {
+        '/model/planes.kcl':
+          '@settings(kclVersion = 3.0)\nexport base = offsetPlane(XY, offset = 10mm)',
+      }
+    )
+  )
+  const root = result.operations.map[0] ?? []
+  const groups = root.filter(
+    (operation) =>
+      operation.type === 'GroupBegin' || operation.type === 'GroupEnd'
+  )
+  expect(groups).toHaveLength(4096)
+  expect(groups.map((operation) => operation.type)).toEqual(
+    Array.from({ length: 2048 }, () => ['GroupBegin', 'GroupEnd']).flat()
+  )
+  expect(
+    groups.flatMap((operation) => {
+      if (
+        operation.type !== 'GroupBegin' ||
+        operation.group.type !== 'FunctionCall'
+      )
+        return []
+      const value = operation.group.unlabeledArg?.value
+      return [value?.type === 'Number' ? value.value : undefined]
+    })
+  ).toEqual(Array.from({ length: 2048 }, (_, index) => index))
+  const imported = Object.entries(result.operations.map).filter(
+    ([id]) => id !== '0'
+  )
+  expect(
+    imported.some(([, operations]) =>
+      operations?.some(
+        (operation) =>
+          operation.type === 'StdLibCall' && operation.name === 'offsetPlane'
+      )
+    )
+  ).toBe(true)
+})
+
 it('keeps models independent and recovers after invalid source', async () => {
   const first = await runtime()
   const second = await runtime()

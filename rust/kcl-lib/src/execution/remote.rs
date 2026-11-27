@@ -17,7 +17,6 @@ use super::ExecOutcome;
 use super::ExecState;
 use super::ExecutorContext;
 use super::IdGenerator;
-use super::OperationsByModule;
 use crate::Program;
 use crate::SourceRange;
 use crate::TypedPath;
@@ -313,9 +312,7 @@ impl UploadedProject {
                         self.restore_entrypoint_name(&mut issue.message);
                     }
                     error.variables = response.variables;
-                    error.operations = OperationsByModule {
-                        map: response.operations,
-                    };
+                    error.operations = response.operations.into();
                     error.artifact_graph = response.artifact_graph;
                     error.scene_objects = response.scene_objects;
                     error.filenames = response.filenames;
@@ -344,9 +341,7 @@ impl UploadedProject {
         let source_files = self.sources(&mut filenames);
         Ok(ExecOutcome {
             variables: response.variables,
-            operations: OperationsByModule {
-                map: response.operations,
-            },
+            operations: response.operations.into(),
             artifact_graph: response.artifact_graph,
             named_views: None,
             scene_objects: response.scene_objects,

@@ -126,6 +126,45 @@ describe('unit testing engine connection', () => {
     expect(callbackOnUnitTestingConnection).toHaveBeenCalledWith('auth success')
     expect(connection.handleMessage).toHaveBeenCalledOnce()
   })
+
+  it('keeps the desktop WebSocket alive while its first pong is missing', async () => {
+    const connection = new Connection({
+      url: 'wss://engine.test',
+      token: 'token',
+      geometryOnly: true,
+      handleOnDataChannelMessage: vi.fn(),
+      recordShutdownTrigger: vi.fn(() => true),
+      tearDownManager: vi.fn(),
+      rejectPendingCommand: vi.fn(),
+      handleMessage: vi.fn(),
+      getCloudProjectId: () => undefined,
+    })
+    const connected = connection.connect()
+    const websocket = TestWebSocket.instances[0]
+    websocket.dispatchEvent(new Event('open'))
+    const ping = JSON.stringify({ type: 'ping' })
+    expect(websocket.send).toHaveBeenNthCalledWith(2, ping)
+    vi.advanceTimersByTime(3 * PING_INTERVAL_MS)
+    expect(websocket.send.mock.calls.slice(1)).toEqual([
+      [ping],
+      [ping],
+      [ping],
+      [ping],
+    ])
+    expect(connection.connected).toBe(false)
+
+    websocket.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({ success: true, resp: { type: 'pong' } }),
+      })
+    )
+    await connected
+    expect(connection.connected).toBe(true)
+    websocket.close()
+    expect(connection.pingIntervalId).toBeUndefined()
+    vi.advanceTimersByTime(PING_INTERVAL_MS)
+    expect(websocket.send).toHaveBeenCalledTimes(5)
+  })
   it.each([false, true])(
     'keeps an authenticated test session alive while modeling is idle (WebRTC: %s)',
     (webrtc) => {
@@ -152,13 +191,13 @@ describe('unit testing engine connection', () => {
         JSON.stringify({ type: 'ping' })
       )
       vi.advanceTimersByTime(PING_INTERVAL_MS)
-      expect(websocket.send).toHaveBeenCalledTimes(1)
+      expect(websocket.send).toHaveBeenCalledTimes(2)
       message({ type: 'pong' })
       vi.advanceTimersByTime(PING_INTERVAL_MS)
-      expect(websocket.send).toHaveBeenCalledTimes(2)
+      expect(websocket.send).toHaveBeenCalledTimes(3)
       websocket.close()
       vi.advanceTimersByTime(3 * PING_INTERVAL_MS)
-      expect(websocket.send).toHaveBeenCalledTimes(2)
+      expect(websocket.send).toHaveBeenCalledTimes(3)
       expect(connection.pingIntervalId).toBeUndefined()
     }
   )
