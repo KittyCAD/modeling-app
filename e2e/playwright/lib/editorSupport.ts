@@ -8,17 +8,6 @@ export const toNormalizedCode = (text: string) => {
 
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 
-export async function removeCurrentCode(page: Page) {
-  // First, hover the element in case the current mouse position is in the way
-  await page.mouse.move(0, 0)
-  await page.locator('.cm-content').click({ delay: 50 })
-  await page.keyboard.down('ControlOrMeta')
-  await page.keyboard.press('a')
-  await page.keyboard.up('ControlOrMeta')
-  await page.keyboard.press('Backspace')
-  await expect(page.locator('.cm-content')).toHaveText('')
-}
-
 export async function openKclCodePanel(page: Page) {
   await openPane(page, 'code-pane-button')
 
@@ -32,17 +21,6 @@ export async function openKclCodePanel(page: Page) {
       scrollIntoView: true,
     })
   })
-}
-
-export async function closeKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('code-pane-button')
-  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
-  const isOpen = ariaSelected === 'true'
-
-  if (isOpen) {
-    await paneLocator.click()
-    await expect(paneLocator).not.toHaveAttribute('aria-pressed', 'true')
-  }
 }
 
 export async function pollEditorLinesSelectedLength(page: Page, lines: number) {

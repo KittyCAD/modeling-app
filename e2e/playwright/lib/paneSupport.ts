@@ -1,8 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
-export type PaneId = 'variables' | 'code' | 'files' | 'logs'
-
 export async function checkIfPaneIsOpen(page: Page, testId: string) {
   const paneButtonLocator = page.getByTestId(testId)
   await expect(paneButtonLocator).toBeVisible()

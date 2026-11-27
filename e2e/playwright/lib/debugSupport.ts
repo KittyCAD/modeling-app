@@ -26,16 +26,6 @@ export async function expectCmdLog(
   await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
-// Ignoring the lint since I assume someone will want to use this for a test.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function waitForDefaultPlanesToBeVisible(page: Page) {
-  await page.waitForFunction(
-    () =>
-      document.querySelectorAll('[data-receive-command-type="object_visible"]')
-        .length >= 3
-  )
-}
-
 export async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 

@@ -46,11 +46,6 @@ export class ToolbarFixture {
   lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
   debugPaneBtn!: Locator
-  fileTreeBtn!: Locator
-  createFileBtn!: Locator
-  fileCreateToast!: Locator
-  filePane!: Locator
-  treeInputField!: Locator
   /** The sidebar button for the Feature Tree pane */
   featureTreeId = DefaultLayoutPaneID.FeatureTree
   /** The pane element for the Feature Tree */
@@ -98,14 +93,9 @@ export class ToolbarFixture {
     this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.debugPaneBtn = page.locator('[id="debug-button-holder"]')
-    this.fileTreeBtn = page.locator('[id="files-button-holder"]')
-    this.createFileBtn = page.getByTestId('create-file-button')
-    this.treeInputField = page.getByTestId('file-rename-field')
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
-    this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#operations-list-pane')
-    this.fileCreateToast = page.getByText('Successfully created')
 
     // Note to test writers: having two locators like this is preferable to one
     // which changes another el property because it means our test "signal" is

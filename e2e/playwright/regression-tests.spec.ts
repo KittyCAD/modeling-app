@@ -198,7 +198,6 @@ extrude001 = extrude(sketch001, length = 50)
     'ProgramMemory can be serialised',
     { tag: '@localRenderer' },
     async ({ page, homePage, scene }) => {
-      // const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
