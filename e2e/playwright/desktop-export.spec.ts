@@ -1,12 +1,10 @@
-import path from 'path'
 import fsp from 'fs/promises'
+import path from 'path'
 
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import {
-  executorInputPath,
-  getPlaywrightDownloadDir,
-  getUtils,
-} from '@e2e/playwright/test-utils'
+import { getPlaywrightDownloadDir } from '@e2e/playwright/lib/exportSupport'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(

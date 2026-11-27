@@ -1,6 +1,6 @@
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import path from 'path'
 import * as fsp from 'fs/promises'
+import path from 'path'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
@@ -9,11 +9,11 @@ import type { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDia
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import { doAndWaitForImageDiff } from '@e2e/playwright/lib/imageAssertions'
 import {
-  doAndWaitForImageDiff,
   executorInputPath,
   testsInputPath,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
 import { isStepFile } from '@src/lib/fileExtensions'

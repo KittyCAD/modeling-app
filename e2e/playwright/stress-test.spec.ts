@@ -1,4 +1,4 @@
-import { createProject } from '@e2e/playwright/test-utils'
+import { createProject } from '@e2e/playwright/lib/projectSupport'
 import { test } from '@e2e/playwright/zoo-test'
 
 test.describe('Stress test', { tag: ['@desktop', '@localRenderer'] }, () => {

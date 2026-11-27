@@ -1,15 +1,13 @@
 import {
-  executorInputPath,
-  expectRenderedDiagnosticText,
-  getUtils,
-  TEST_COLORS,
-} from '@e2e/playwright/test-utils'
-import { expect, test } from '@e2e/playwright/zoo-test'
-import {
   cacheModelCode,
   cacheSceneReceipt,
   waitForExecutedModel,
 } from '@e2e/playwright/lib/cache-model'
+import { TEST_COLORS } from '@e2e/playwright/lib/imageAssertions'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
+import { expectRenderedDiagnosticText } from '@e2e/playwright/lib/textAssertions'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'

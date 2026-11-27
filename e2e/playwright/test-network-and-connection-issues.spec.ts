@@ -1,5 +1,7 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import { circleMove, getUtils, TEST_COLORS } from '@e2e/playwright/test-utils'
+import { circleMove } from '@e2e/playwright/lib/gestures'
+import { TEST_COLORS } from '@e2e/playwright/lib/imageAssertions'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {

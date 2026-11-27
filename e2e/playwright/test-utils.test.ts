@@ -2,7 +2,7 @@ import {
   runningOnLinux,
   runningOnMac,
   runningOnWindows,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/testPaths'
 import { afterAll, describe, expect, it } from 'vitest'
 
 describe('platform detection utilities', () => {

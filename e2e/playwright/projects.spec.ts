@@ -1,17 +1,20 @@
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
-import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/lib/appSetup'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import { createProject } from '@e2e/playwright/lib/projectSupport'
 import {
-  closeOnboardingModalIfPresent,
-  createProject,
-  executorInputPath,
-  expectRenderedDiagnosticText,
   expectKeybindingsSettingsVisible,
-  getUtils,
-  isOutOfViewInScrollContainer,
-  runningOnWindows,
   tomlToPerProjectSettings,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/settingsSupport'
+import {
+  executorInputPath,
+  runningOnWindows,
+} from '@e2e/playwright/lib/testPaths'
+import {
+  expectRenderedDiagnosticText,
+  isOutOfViewInScrollContainer,
+} from '@e2e/playwright/lib/textAssertions'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import {
@@ -19,6 +22,7 @@ import {
   PROJECT_IMAGE_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import nodeFsSync from 'fs'

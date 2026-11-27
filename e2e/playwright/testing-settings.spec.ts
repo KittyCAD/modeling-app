@@ -1,23 +1,23 @@
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   cacheModelCode,
   cacheSceneReceipt,
   presentedEngineFrame,
   waitForExecutedModel,
 } from '@e2e/playwright/lib/cache-model'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import { createProject } from '@e2e/playwright/lib/projectSupport'
+import {
+  settingsToToml,
+  tomlToSettings,
+} from '@e2e/playwright/lib/settingsSupport'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
-import {
-  createProject,
-  executorInputPath,
-  getUtils,
-  settingsToToml,
-  tomlToSettings,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'

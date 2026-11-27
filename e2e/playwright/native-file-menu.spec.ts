@@ -5,7 +5,7 @@ import {
   expectKeybindingsSettingsVisible,
   openSettingsExpectLocator,
   openSettingsExpectText,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/settingsSupport'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 

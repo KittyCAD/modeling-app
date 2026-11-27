@@ -1,4 +1,4 @@
-import { executorInputPath } from '@e2e/playwright/test-utils'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as fsp from 'fs/promises'

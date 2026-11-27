@@ -1,4 +1,4 @@
-import { getPixelRGBs } from '@e2e/playwright/test-utils'
+import { getPixelRGBs } from '@e2e/playwright/lib/imageAssertions'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 

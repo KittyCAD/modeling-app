@@ -1,11 +1,9 @@
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { TestColor } from '@e2e/playwright/lib/imageAssertions'
+import { TEST_COLORS } from '@e2e/playwright/lib/imageAssertions'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
-import type { TestColor } from '@e2e/playwright/test-utils'
-import {
-  executorInputPath,
-  getUtils,
-  TEST_COLORS,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -454,7 +452,9 @@ extrude002 = extrude(profile002, length = 150)`
 
       // A fast export can complete before its progress toast is observed.
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 })
+      await expect(successToastMessage.first()).toBeVisible({
+        timeout: 15_000,
+      })
       await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
     }

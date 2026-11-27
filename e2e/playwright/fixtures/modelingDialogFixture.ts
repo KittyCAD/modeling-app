@@ -1,5 +1,5 @@
+import { escapeRegExp } from '@e2e/playwright/lib/textAssertions'
 import { expect, type Locator, type Page } from '@playwright/test'
-import { escapeRegExp } from '@e2e/playwright/test-utils'
 
 // Match the full label, ignoring case and the required-field marker.
 const fieldLabel = (label: string | RegExp) =>

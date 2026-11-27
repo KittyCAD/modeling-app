@@ -1,11 +1,9 @@
-import { join } from 'node:path'
-import fsSync from 'node:fs'
 import { FILE_EXT } from '@src/lib/constants'
+import fsSync from 'node:fs'
+import { join } from 'node:path'
 
-import {
-  getUtils,
-  waitForWebKitBillingToSettle,
-} from '@e2e/playwright/test-utils'
+import { waitForWebKitBillingToSettle } from '@e2e/playwright/lib/appSetup'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 

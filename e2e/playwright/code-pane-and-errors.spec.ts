@@ -1,12 +1,10 @@
-import { join } from 'path'
 import fsp from 'fs/promises'
+import { join } from 'path'
 
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
+import { expectRenderedDiagnosticText } from '@e2e/playwright/lib/textAssertions'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import {
-  executorInputPath,
-  expectRenderedDiagnosticText,
-  getUtils,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 

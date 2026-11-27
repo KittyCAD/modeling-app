@@ -1,6 +1,6 @@
+import { waitForAppLoad } from '@e2e/playwright/lib/appSetup'
 import { expect, type Page } from '@playwright/test'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
-import { waitForAppLoad } from '@e2e/playwright/test-utils'
 
 export async function navigateToAppRoute(page: Page, route: string) {
   if (process.env.TARGET === 'web') await page.goto(route)

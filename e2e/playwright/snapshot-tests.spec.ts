@@ -1,8 +1,6 @@
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
-import {
-  PLAYWRIGHT_LAYOUT_SETTINGS,
-  settingsToToml,
-} from '@e2e/playwright/test-utils'
+import { PLAYWRIGHT_LAYOUT_SETTINGS } from '@e2e/playwright/lib/appSetup'
+import { settingsToToml } from '@e2e/playwright/lib/settingsSupport'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { Themes } from '@src/lib/theme'

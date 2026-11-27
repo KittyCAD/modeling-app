@@ -5,15 +5,17 @@ import type {
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/lib/appSetup'
 import {
   closeDebugPanel,
-  closeOnboardingModalIfPresent,
-  doAndWaitForImageDiff,
-  getPixelRGBs,
   openAndClearDebugPanel,
   sendCustomCmd,
-  sendSceneCommand,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/debugSupport'
+import {
+  doAndWaitForImageDiff,
+  getPixelRGBs,
+} from '@e2e/playwright/lib/imageAssertions'
+import { sendSceneCommand } from '@e2e/playwright/lib/sceneSupport'
 import { expect } from '@e2e/playwright/zoo-test'
 
 type EntityQueryKind = ProjectedEntity['kind'] | 'face'
@@ -168,7 +170,12 @@ export class SceneFixture {
     kind: EntityQueryKind
     index?: number
     id?: string
-    stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
+    stream: {
+      x: number
+      y: number
+      format: 'pixels' | 'ratio'
+      steps?: number
+    }
     timeout?: number
     visible?: boolean
   }) => {

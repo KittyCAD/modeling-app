@@ -1,4 +1,4 @@
-import { setup } from '@e2e/playwright/test-utils'
+import { setup } from '@e2e/playwright/lib/appSetup'
 import { expect, test } from '@playwright/test'
 
 test(

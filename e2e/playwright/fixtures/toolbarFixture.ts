@@ -2,12 +2,12 @@ import { type Locator, type Page, test } from '@playwright/test'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
+import { doAndWaitForImageDiff } from '@e2e/playwright/lib/imageAssertions'
 import {
   checkIfPaneIsOpen,
   closePane,
-  doAndWaitForImageDiff,
   openPane,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/paneSupport'
 import { expect } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'

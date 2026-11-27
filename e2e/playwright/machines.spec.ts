@@ -1,8 +1,8 @@
-import { join } from 'path'
 import type { Page } from '@playwright/test'
 import fsp from 'fs/promises'
+import { join } from 'path'
 
-import { executorInputPath } from '@e2e/playwright/test-utils'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 async function setMachineApiEnabled(page: Page, enabled: boolean) {

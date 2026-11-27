@@ -1,9 +1,7 @@
-import {
-  createProject,
-  executorInputPath,
-  getUtils,
-  PLAYWRIGHT_TEST_SCOPE_KEY,
-} from '@e2e/playwright/test-utils'
+import { PLAYWRIGHT_TEST_SCOPE_KEY } from '@e2e/playwright/lib/appSetup'
+import { createProject } from '@e2e/playwright/lib/projectSupport'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'

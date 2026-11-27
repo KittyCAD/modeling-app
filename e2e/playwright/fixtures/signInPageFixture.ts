@@ -1,4 +1,4 @@
-import { token } from '@e2e/playwright/test-utils'
+import { token } from '@e2e/playwright/lib/appSetup'
 import type { Locator, Page } from '@playwright/test'
 
 export class SignInPageFixture {

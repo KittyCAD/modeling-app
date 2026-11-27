@@ -5,8 +5,8 @@ import {
   checkIfPaneIsOpen,
   closePane,
   openPane,
-  sansWhitespace,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/paneSupport'
+import { sansWhitespace } from '@e2e/playwright/lib/textAssertions'
 
 interface EditorState {
   activeLines: Array<string>

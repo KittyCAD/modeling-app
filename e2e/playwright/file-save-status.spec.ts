@@ -1,6 +1,6 @@
 import { expect, test } from '@e2e/playwright/base-test'
+import { mockClientErrorReports, setup } from '@e2e/playwright/lib/appSetup'
 import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
 
 test(
   'keeps save progress and Retry beside the project title without shifting it',

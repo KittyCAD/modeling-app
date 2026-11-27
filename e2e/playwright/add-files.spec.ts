@@ -1,7 +1,7 @@
-import { readFile, writeFile } from 'node:fs/promises'
-import { testsInputPath } from '@e2e/playwright/test-utils'
+import { testsInputPath } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { readFile, writeFile } from 'node:fs/promises'
 
 test(
   'Home: creates a sample project from the command palette',

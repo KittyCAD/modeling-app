@@ -1,25 +1,25 @@
-import { randomUUID } from 'node:crypto'
-import type { BrowserContext, Page, TestInfo } from '@playwright/test'
-import { expect } from '@playwright/test'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
-import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
-import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForAppLoad,
+} from '@e2e/playwright/lib/appSetup'
 import {
   navigateToAppRoute,
   openProjectLibrary,
   selectProjectLibraries,
 } from '@e2e/playwright/lib/appTestUtils'
-import {
-  mockClientErrorReports,
-  setup,
-  waitForAppLoad,
-} from '@e2e/playwright/test-utils'
-import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
+import type { BrowserContext, Page, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
 import {
   getDefaultCloudProjectLibrarySetting,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import { randomUUID } from 'node:crypto'
 
 export type StorageKind = 'local' | 'cloud'
 

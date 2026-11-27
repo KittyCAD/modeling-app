@@ -1,9 +1,7 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import {
-  doExport,
-  expectKeybindingsSettingsVisible,
-  getUtils,
-} from '@e2e/playwright/test-utils'
+import { doExport } from '@e2e/playwright/lib/exportSupport'
+import { expectKeybindingsSettingsVisible } from '@e2e/playwright/lib/settingsSupport'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(

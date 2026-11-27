@@ -1,7 +1,7 @@
 import {
   waitForAppLoad,
   waitForWebKitBillingToSettle,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/appSetup'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 

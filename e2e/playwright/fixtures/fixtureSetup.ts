@@ -8,21 +8,21 @@ import type {
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
 
-import fs from 'node:fs'
-import path from 'path'
 import { PROJECT_FOLDER, SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
+import fs from 'node:fs'
+import path from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
+import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   attachRendererCrashDiagnostics,
   startRendererCrashDiagnostics,
 } from '@e2e/playwright/fixtures/electronCrashDiagnostics'
-import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
-import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
@@ -32,20 +32,20 @@ import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import {
+  PLAYWRIGHT_LAYOUT_SETTINGS,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
+  setup,
+  waitForAppLoad,
+  waitForAuthentication,
+} from '@e2e/playwright/lib/appSetup'
+import { settingsToToml } from '@e2e/playwright/lib/settingsSupport'
+import {
   TEST_SETTINGS,
   geometryOnlyForTestTags,
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
-import {
-  PLAYWRIGHT_LAYOUT_SETTINGS,
-  PLAYWRIGHT_TEST_SCOPE_KEY,
-  getUtils,
-  settingsToToml,
-  setup,
-  waitForAppLoad,
-  waitForAuthentication,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { Themes } from '@src/lib/theme'
 import { isArray } from '@src/lib/utils'
@@ -403,7 +403,10 @@ export class ElectronZoo {
       this.tracingEnabled =
         trace !== 'off' && !(typeof trace === 'object' && trace.mode === 'off')
       if (this.tracingEnabled) {
-        await this.context.tracing.start({ screenshots: true, snapshots: true })
+        await this.context.tracing.start({
+          screenshots: true,
+          snapshots: true,
+        })
       }
 
       // We need to patch this because addInitScript will bind too late in our

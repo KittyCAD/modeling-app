@@ -1,5 +1,5 @@
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { resetView } from '@e2e/playwright/test-utils'
+import { resetView } from '@e2e/playwright/lib/sceneSupport'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { isArray } from '@src/lib/utils'

@@ -1,7 +1,7 @@
 import {
   closeOnboardingModalIfPresent,
   waitForAuthentication,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/appSetup'
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
