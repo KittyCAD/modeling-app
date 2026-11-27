@@ -174,10 +174,10 @@ export function HomeHeader({
         <div className="my-4">
           <p className="m-0 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
             {libraryDetailsDescription ? `${libraryDetailsDescription} ` : null}
-            {library.type === DIRECTORY_PROJECT_LIBRARY_TYPE && (
-              <span className="whitespace-nowrap">
-                Folder:{' '}
-                {canManageLocalLibraries ? (
+            {canManageLocalLibraries &&
+              library.type === DIRECTORY_PROJECT_LIBRARY_TYPE && (
+                <span className="whitespace-nowrap">
+                  Folder:{' '}
                   <Link
                     data-testid="project-directory-settings-link"
                     to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
@@ -185,11 +185,8 @@ export function HomeHeader({
                   >
                     {library.path}
                   </Link>
-                ) : (
-                  library.path
-                )}
-              </span>
-            )}
+                </span>
+              )}
             {libraryDetails}
           </p>
         </div>

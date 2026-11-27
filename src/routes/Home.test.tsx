@@ -1,6 +1,5 @@
 import { signal } from '@preact/signals-core'
 import { describeCloudLibrary } from '@src/lib/cloudProjects/libraryPresentation'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import { HomeHeader } from '@src/routes/HomeHeader'
@@ -10,7 +9,7 @@ import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/isDesktop', () => ({ isDesktop: vi.fn(() => false) }))
+vi.mock('@src/lib/isDesktop', () => ({ isDesktop: () => true }))
 
 const cloudLibrary = {
   id: 'cloud-personal',
@@ -92,10 +91,7 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
 }
 
 describe('HomeHeader', () => {
-  afterEach(() => {
-    vi.useRealTimers()
-    vi.mocked(isDesktop).mockReset()
-  })
+  afterEach(() => vi.useRealTimers())
 
   it('allows another refresh after five seconds without showing it as busy during cooldown', async () => {
     vi.useFakeTimers()
@@ -163,7 +159,6 @@ describe('HomeHeader', () => {
   })
 
   it('links a directory library to Local Libraries and back to Home', () => {
-    vi.mocked(isDesktop).mockReturnValue(true)
     renderHomeHeader({
       library: {
         id: 'local-library',
@@ -186,22 +181,6 @@ describe('HomeHeader', () => {
       'aria-hidden',
       'true'
     )
-  })
-
-  it('shows the directory path on web without a settings link', () => {
-    renderHomeHeader({
-      library: {
-        id: 'local-library',
-        title: 'Work',
-        path: '/projects/work',
-        type: 'directory',
-      },
-    })
-
-    expect(screen.getByText('Folder: /projects/work')).toBeVisible()
-    expect(
-      screen.queryByRole('link', { name: '/projects/work' })
-    ).not.toBeInTheDocument()
   })
 })
 

@@ -2,7 +2,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { useProjectSearch } from '@src/components/ProjectSearchBar'
 import { Spinner } from '@src/components/Spinner'
@@ -336,6 +335,7 @@ const Home = () => {
   const librarySettings = settingsValues.app.libraries.current
   const [searchParams, setSearchParams] = useSearchParams()
   const projectLibraryTypes = registry.observe(projectLibraryTypesFacet).value
+  // Saved libraries keep their order and win when providers contribute the same ID.
   const projectLibraries = projectLibrariesFromSettings(
     librarySettings,
     projectLibraryTypes
@@ -348,18 +348,7 @@ const Home = () => {
         libraryType?.describeLibrary?.(library) ?? library.presentation,
     }
   })
-  const projectLibraryRealizations = registry.optional(
-    projectLibraryRealizationsService
-  )
-  const directoryLibraryIds = useMemo(
-    () =>
-      projectLibrariesFromSettings(librarySettings)
-        .filter(({ type }) => type === DIRECTORY_PROJECT_LIBRARY_TYPE)
-        .map(({ id }) => id),
-    [librarySettings]
-  )
-  const homeProjectActions = registry.required(homeProjectActionsService)
-  const visibleProjectLibraries = projectLibraries.filter(
+  const overviewLibraries = projectLibraries.filter(
     ({ type, hiddenByDefault }) =>
       !hiddenByDefault &&
       (type === DIRECTORY_PROJECT_LIBRARY_TYPE ||
@@ -373,17 +362,9 @@ const Home = () => {
     })
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
-  const routeSelectedProjectLibrary = libraryId
+  const selectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
     : undefined
-  const singleProjectLibrary =
-    !libraryId &&
-    visibleProjectLibraries.length === 1 &&
-    visibleProjectLibraries[0].type === DIRECTORY_PROJECT_LIBRARY_TYPE
-      ? visibleProjectLibraries[0]
-      : undefined
-  const selectedProjectLibrary =
-    routeSelectedProjectLibrary ?? singleProjectLibrary
   const LibraryDetails =
     selectedProjectLibrary &&
     projectLibraryTypes.get(selectedProjectLibrary.type)?.homeDetails
@@ -394,20 +375,23 @@ const Home = () => {
   const settledLibraryIds = registry.observe(
     homeProjectSettledLibraryIdsFacet
   ).value
-  const visibleLibraries = selectedProjectLibrary
+  const librariesOnPage = selectedProjectLibrary
     ? [selectedProjectLibrary]
-    : visibleProjectLibraries
-  const projectsInitiallyLoaded = visibleLibraries.every((library) =>
+    : overviewLibraries
+  const projectsInitiallyLoaded = librariesOnPage.every((library) =>
     settledLibraryIds.includes(library.id)
   )
   const projectsLoaded =
     app.projectOperations.pending.value === 0 &&
     projectsInitiallyLoaded &&
-    !visibleLibraries.some(({ id }) => loadingLibraryIds.includes(id))
+    !librariesOnPage.some(({ id }) => loadingLibraryIds.includes(id))
+  const projectLibraryRealizations = registry.optional(
+    projectLibraryRealizationsService
+  )
   const refreshProjectList = () => {
     if (!projectsLoaded) return
     void Promise.all(
-      visibleLibraries.map((library) => {
+      librariesOnPage.map((library) => {
         const operation = getProjectLibraryOperation(
           projectLibraryTypes.get(library.type),
           library,
@@ -430,16 +414,12 @@ const Home = () => {
       })
       .catch(reportRejection)
   }
-  const scopedHomeProjectEntries = routeSelectedProjectLibrary
-    ? getHomeProjectEntriesForLibrary(
-        homeProjectEntries,
-        routeSelectedProjectLibrary.id
-      )
-    : libraryId
+  const scopedHomeProjectEntries =
+    libraryId && !selectedProjectLibrary
       ? []
       : homeProjectEntries.filter((project) =>
           project.libraryIds?.some((id) =>
-            visibleProjectLibraries.some((library) => library.id === id)
+            librariesOnPage.some((library) => library.id === id)
           )
         )
   const { searchResults, query, setQuery } = useProjectSearch(
@@ -459,6 +439,7 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+  const homeProjectActions = registry.required(homeProjectActionsService)
   const duplicateProjectToLibrary = useCallback(
     (project: HomeProjectEntry, libraryId?: string) => {
       if (!homeProjectActions.canDuplicateToLibrary(project)) {
@@ -485,6 +466,13 @@ const Home = () => {
     onDuplicateToLibrary: duplicateProjectToLibrary,
   })
 
+  const directoryLibraryIds = useMemo(
+    () =>
+      projectLibrariesFromSettings(librarySettings)
+        .filter(({ type }) => type === DIRECTORY_PROJECT_LIBRARY_TYPE)
+        .map(({ id }) => id),
+    [librarySettings]
+  )
   useEffect(() => {
     for (const id of directoryLibraryIds) {
       if (!libraryId || id === libraryId) {
@@ -649,8 +637,8 @@ const Home = () => {
                 : 'Project Libraries'
           }
           library={selectedProjectLibrary}
-          isOverview={!selectedProjectLibrary && !libraryId}
-          showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
+          isOverview={!libraryId}
+          showLibraryBackLink={Boolean(selectedProjectLibrary)}
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -794,7 +782,7 @@ const Home = () => {
           </ul>
         </aside>
         <div className="home-project-list col-start-2 -col-end-1 min-h-0">
-          {selectedProjectLibrary || libraryId ? (
+          {libraryId ? (
             <ProjectGrid
               projectShellEnabled={projectShellEnabled}
               searchResults={searchResults ?? []}
@@ -813,7 +801,7 @@ const Home = () => {
           ) : (
             <ProjectLibraryOverview
               projectShellEnabled={projectShellEnabled}
-              libraries={visibleProjectLibraries}
+              libraries={overviewLibraries}
               searchResults={searchResults ?? []}
               projects={scopedHomeProjectEntries}
               projectsLoaded={projectsInitiallyLoaded}
@@ -970,13 +958,6 @@ function ProjectLibraryOverview({
   const sections = librarySections.map(({ type, title }) =>
     renderSection(type, title)
   )
-  if (libraries.length === 0) {
-    return (
-      <ProjectLibrariesEmptyState {...rest}>
-        {sections}
-      </ProjectLibrariesEmptyState>
-    )
-  }
   return (
     <section data-testid="home-section" {...rest}>
       <div className="flex flex-col gap-8">
@@ -1013,46 +994,6 @@ function ProjectLibraryOverview({
         {sections}
       </div>
       {!initiallyLoading && loadingMore}
-    </section>
-  )
-}
-function ProjectLibrariesEmptyState({
-  children,
-  ...props
-}: HTMLProps<HTMLDivElement>) {
-  const canManageLocalLibraries = isDesktop()
-  return (
-    <section data-testid="home-section" {...props}>
-      <div
-        className="my-8 flex max-w-xl flex-col items-start gap-4 rounded-sm border border-dashed border-chalkboard-30 p-6 dark:border-chalkboard-70"
-        data-testid="project-libraries-empty"
-      >
-        <span className="grid h-10 w-10 place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20">
-          <CustomIcon name="folderPlus" className="h-6 w-6" />
-        </span>
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">No project libraries</h2>
-          {canManageLocalLibraries && (
-            <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-              Add a library to choose where projects are loaded from.
-            </p>
-          )}
-        </div>
-        {canManageLocalLibraries && (
-          <ActionButton
-            Element="link"
-            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-            iconStart={{
-              icon: 'plus',
-              bgClassName: '!bg-transparent',
-            }}
-            data-testid="project-libraries-empty-add"
-          >
-            Add library
-          </ActionButton>
-        )}
-      </div>
-      {children}
     </section>
   )
 }
