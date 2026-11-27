@@ -14,6 +14,10 @@ export function getApiProjectLibraryId(library: { source?: string }) {
 
 export const apiProjectLibraryId = (id: string) => `cloud-library-${id}`
 
+export function formatCloudLibraryLabel(name: string, organizationId?: string) {
+  return `${name} (${organizationId ? 'Organization' : 'Personal'})`
+}
+
 export function apiProjectLibraries(
   libraries: readonly Pick<
     ProjectLibraryResponse,
@@ -27,6 +31,7 @@ export function apiProjectLibraries(
     .map((library) => ({
       id: apiProjectLibraryId(library.id),
       title: library.name,
+      commandLabel: formatCloudLibraryLabel(library.name, library.org_id),
       type: CLOUD_PROJECT_LIBRARY_TYPE,
       source: `${API_LIBRARY_SOURCE_PREFIX}${library.id}`,
       path: `zoo://project-libraries/${library.id}`,

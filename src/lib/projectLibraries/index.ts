@@ -58,6 +58,7 @@ export interface ProjectLibrarySetting {
 
 export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
+  commandLabel?: string
   presentation?: ProjectLibraryPresentation
   icon?: string
   order?: number

@@ -362,7 +362,16 @@ const Home = () => {
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .flatMap(({ type, homeSection }) => {
       if (!homeSection || type === DIRECTORY_PROJECT_LIBRARY_TYPE) return []
-      return [{ type, title: homeSection.title }]
+      const { title, CreateButton } = homeSection
+      return [
+        {
+          type,
+          title,
+          createAction: CreateButton && (
+            <CreateButton key={type} registry={registry} />
+          ),
+        },
+      ]
     })
   const session = registry.required(projectSession)
   const { libraryId } = useParams()
@@ -873,6 +882,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   librarySections: readonly {
     type: ProjectLibrary['type']
     title: string
+    createAction?: ReactNode
   }[]
 }
 function ProjectLibraryOverview({
@@ -955,8 +965,8 @@ function ProjectLibraryOverview({
       </section>
     )
   }
-  const sections = librarySections.map(({ type, title }) =>
-    renderSection(type, title)
+  const sections = librarySections.map(({ type, title, createAction }) =>
+    renderSection(type, title, createAction)
   )
   return (
     <section data-testid="home-section" {...rest}>

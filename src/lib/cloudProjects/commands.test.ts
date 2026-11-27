@@ -1,4 +1,4 @@
-import { createCloudProjectCommands } from '@src/lib/cloudProjects/commands'
+import { createCloudLibraryCommand } from '@src/lib/cloudProjects/commands'
 import { createRemoteProjectLibrary } from '@src/lib/cloudProjects/runtime/api'
 import toast from 'react-hot-toast'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -12,7 +12,7 @@ afterEach(() => {
 
 it('offers organization ownership to members and lets the API authorize creation', async () => {
   const createLibrary = vi.fn(async () => {})
-  const [command] = createCloudProjectCommands({
+  const command = createCloudLibraryCommand({
     enabled: () => true,
     organization: () => ({ name: 'Design team' }),
     createLibrary,
@@ -23,21 +23,30 @@ it('offers organization ownership to members and lets the API authorize creation
   expect(
     scope.options({ argumentsToSubmit: {} }).map((option) => option.value)
   ).toEqual(['personal', 'organization'])
+  expect(scope.valueSummary?.('organization')).toBe('Design team')
   await command.onSubmit({ name: '  Designs  ', scope: 'organization' })
   expect(createLibrary).toHaveBeenCalledWith('Designs', 'organization')
 })
 
 it.each([
-  'Only organization admins can create organization libraries.',
-  'An active organization is required to create an organization library.',
+  {
+    status: 403,
+    error_code: 'Forbidden',
+    message: 'Only organization admins can create organization libraries.',
+  },
+  {
+    status: 409,
+    error_code: 'Conflict',
+    message: 'A library with this name already exists for this owner.',
+  },
 ])(
-  'returns the API denial for the Command Bar to display: %s',
-  async (message) => {
+  'returns the API error for the Command Bar to display ($status)',
+  async ({ status, error_code, message }) => {
     const fetchMock = vi.fn<typeof fetch>(async () =>
-      Response.json({ error_code: 'Forbidden', message }, { status: 403 })
+      Response.json({ error_code, message }, { status })
     )
     vi.stubGlobal('fetch', fetchMock)
-    const [command] = createCloudProjectCommands({
+    const command = createCloudLibraryCommand({
       enabled: () => true,
       organization: () => ({ name: 'Design team' }),
       createLibrary: (name, scope) =>
@@ -52,7 +61,7 @@ it.each([
       scope: 'organization',
     })
     expect(result).toBeInstanceOf(Error)
-    expect(result).toMatchObject({ status: 403, message })
+    expect(result).toMatchObject({ status, message })
     expect(fetchMock).toHaveBeenCalledOnce()
     expect(toast.success).not.toHaveBeenCalled()
   }
@@ -60,7 +69,7 @@ it.each([
 
 it('creates personal libraries without an organization and rejects blank names', async () => {
   const createLibrary = vi.fn(async () => {})
-  const [command] = createCloudProjectCommands({
+  const command = createCloudLibraryCommand({
     enabled: () => true,
     organization: () => undefined,
     createLibrary,

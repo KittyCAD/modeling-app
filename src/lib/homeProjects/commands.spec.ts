@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
+import { apiProjectLibraries } from '@src/lib/cloudProjects/apiProjectLibraries'
 import { createProjectCommands } from '@src/lib/homeProjects/commands'
 import { commandKey } from '@src/lib/commandUtils'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
@@ -73,6 +74,11 @@ function createLibrary(
     type,
   }
 }
+
+const [personalDesigns, organizationDesigns] = apiProjectLibraries([
+  { id: 'personal', name: 'Designs', source: 'zds' },
+  { id: 'shared', name: 'Designs', org_id: 'org', source: 'zds' },
+])
 
 function createHomeProject({
   id,
@@ -289,24 +295,15 @@ describe('project command config', () => {
     expect(dependencies.projectOperations.createProject).not.toHaveBeenCalled()
   })
 
-  it('defaults create project to the current library context', () => {
+  it('distinguishes same-named create destinations and defaults to the current library', () => {
     const commands = createProjectCommands({
       ...createCommandDependencies(),
-      getCurrentProjectLibraryId: () => 'client-projects',
-      getCreateProjectLibraryTargets: () => [
-        {
-          library: createLibrary('default-projects', 'Default Projects'),
-          createProject: {
-            run: vi.fn(),
-          },
-        },
-        {
-          library: createLibrary('client-projects', 'Client Projects'),
-          createProject: {
-            run: vi.fn(),
-          },
-        },
-      ],
+      getCurrentProjectLibraryId: () => organizationDesigns.id,
+      getCreateProjectLibraryTargets: () =>
+        [personalDesigns, organizationDesigns].map((library) => ({
+          library,
+          createProject: { run: vi.fn() },
+        })),
     })
     const createCommand = commands.find(
       (command) => command.name === 'Create project'
@@ -316,19 +313,22 @@ describe('project command config', () => {
       options: () => CommandArgumentOption<string>[]
     }
 
-    expect(libraryArg.defaultValue()).toBe('client-projects')
+    expect(libraryArg.defaultValue()).toBe(organizationDesigns.id)
     expect(libraryArg.options()).toEqual([
       {
-        name: 'Default Projects',
-        value: 'default-projects',
+        name: 'Designs (Personal)',
+        value: personalDesigns.id,
         isCurrent: false,
       },
       {
-        name: 'Client Projects',
-        value: 'client-projects',
+        name: 'Designs (Organization)',
+        value: organizationDesigns.id,
         isCurrent: false,
       },
     ])
+    expect(
+      createCommand?.args?.libraryId.valueSummary?.(organizationDesigns.id)
+    ).toBe('Designs (Organization)')
   })
 
   it('shows a prepopulated library picker when creating into multiple libraries', () => {
@@ -698,11 +698,7 @@ describe('project command config', () => {
   it('duplicates home project entries to a selected library through project actions', async () => {
     const dependencies = createCommandDependencies()
     const sourceLibrary = createLibrary('client-projects', 'Client Projects')
-    const targetLibrary = createLibrary(
-      'cloud-personal',
-      'Personal Cloud',
-      'cloud'
-    )
+    const targetLibrary = organizationDesigns
     const homeProject = createHomeProject({
       id: 'local:/client-projects/bracket',
       title: 'Client Bracket',
@@ -712,19 +708,23 @@ describe('project command config', () => {
     })
     const homeProjectActions = createHomeProjectActions({
       canDuplicateToLibrary: vi.fn(() => true),
-      getDuplicateToLibraryTargets: vi.fn(() => [
-        {
+      getDuplicateToLibraryTargets: vi.fn(() =>
+        [targetLibrary, personalDesigns].map((library) => ({
           sourceLibrary,
-          library: targetLibrary,
-        },
-      ]),
+          library,
+        }))
+      ),
       duplicateToLibrary: vi.fn(async () => ({
         defaultFile: '/cloud/bracket/main.kcl',
       })),
     })
     const commands = createProjectCommands({
       ...dependencies,
-      getProjectLibraries: () => [sourceLibrary, targetLibrary],
+      getProjectLibraries: () => [
+        sourceLibrary,
+        targetLibrary,
+        personalDesigns,
+      ],
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -770,8 +770,13 @@ describe('project command config', () => {
       })
     ).toEqual([
       {
-        name: 'Personal Cloud',
-        value: 'cloud-personal',
+        name: 'Designs (Organization)',
+        value: targetLibrary.id,
+        isCurrent: false,
+      },
+      {
+        name: 'Designs (Personal)',
+        value: personalDesigns.id,
         isCurrent: false,
       },
     ])
@@ -781,7 +786,7 @@ describe('project command config', () => {
           project: homeProject.id,
         },
       } as unknown as ContextFrom<typeof commandBarMachine>)
-    ).toBe('cloud-personal')
+    ).toBe(targetLibrary.id)
     // Arguments remain editable on review; Step back can return to the library.
     expect(projectArg.hidden).toBeUndefined()
     expect(libraryArg.hidden).toBeUndefined()
@@ -790,7 +795,7 @@ describe('project command config', () => {
       'Client Bracket'
     )
     expect(summaries.library.valueSummary!(targetLibrary.id)).toBe(
-      'Personal Cloud'
+      'Designs (Organization)'
     )
 
     await duplicateCommand?.onSubmit({

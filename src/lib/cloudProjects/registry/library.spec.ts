@@ -170,6 +170,9 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
       .filter((library) => library.hiddenByDefault)
       .map((library) => library.id)
   ).toEqual(['cloud-library-factory'])
+  const factoryLibrary = libraries().find(
+    (library) => library.id === 'cloud-library-factory'
+  )!
   const entries = registry.get(homeProjectEntriesFacet)
   expect(entries).toEqual([
     expect.objectContaining({
@@ -178,6 +181,12 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
       readWriteAccess: false,
     }),
   ])
+  expect(
+    getProjectLibraryOperation(type, factoryLibrary, 'createProject')
+  ).toBeUndefined()
+  expect(
+    getProjectLibraryOperation(type, factoryLibrary, 'cloneProjectTo')
+  ).toBeUndefined()
   const dataset = libraries().find(
     (library) => library.id === 'cloud-library-dataset'
   )!
@@ -227,4 +236,25 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
     'cloud-library-second',
   ])
   expect(sessionExpiredNotice.value).toBeUndefined()
+
+  const created = { id: 'designs', name: 'Designs', source: 'zds' }
+  const refreshedCatalog = Promise.withResolvers<Response>()
+  fetchMock
+    .mockResolvedValueOnce(Response.json(created, { status: 201 }))
+    .mockReturnValueOnce(refreshedCatalog.promise)
+  try {
+    await createLibrary!.onSubmit({ name: 'Designs' })
+    expect(libraries().map((library) => library.id)).toEqual([
+      'cloud-personal',
+      'cloud-library-designs',
+      'cloud-library-second',
+    ])
+  } finally {
+    refreshedCatalog.resolve(
+      Response.json({
+        items: [created, { id: 'second', name: 'Second account' }],
+        next_page: null,
+      })
+    )
+  }
 })

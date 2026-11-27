@@ -7,7 +7,7 @@ import type { AnyStateMachine } from 'xstate'
 
 export const CREATE_CLOUD_LIBRARY_COMMAND = 'Create cloud library'
 
-export function createCloudProjectCommands({
+export function createCloudLibraryCommand({
   enabled,
   organization,
   createLibrary,
@@ -15,16 +15,18 @@ export function createCloudProjectCommands({
   enabled: () => boolean
   organization: () => Pick<UserOrgInfo, 'name'> | undefined
   createLibrary: (name: string, scope: ProjectLibraryScope) => Promise<unknown>
-}): Command[] {
-  const create: Command<
-    AnyStateMachine,
-    typeof CREATE_CLOUD_LIBRARY_COMMAND,
-    { name?: string; scope?: ProjectLibraryScope }
-  > = {
+}): Command<
+  AnyStateMachine,
+  typeof CREATE_CLOUD_LIBRARY_COMMAND,
+  { name?: string; scope?: ProjectLibraryScope }
+> {
+  return {
     name: CREATE_CLOUD_LIBRARY_COMMAND,
+    description:
+      'Store projects in your Zoo account or share them with your organization',
     groupId: 'projects',
     scopes: GLOBAL_COMMAND_SCOPES,
-    icon: 'folderPlus',
+    icon: 'cloud',
     disabled: !enabled(),
     needsReview: true,
     args: {
@@ -47,6 +49,10 @@ export function createCloudProjectCommands({
         defaultValue: 'personal',
         prepopulate: true,
         hidden: () => !organization(),
+        valueSummary: (scope) =>
+          scope === 'organization'
+            ? (organization()?.name ?? 'Organization')
+            : 'Personal',
         options: () => [
           { name: 'Personal', value: 'personal' as const, isCurrent: false },
           ...(organization()
@@ -71,11 +77,14 @@ export function createCloudProjectCommands({
       try {
         await createLibrary(name, scope)
       } catch (error) {
-        if (error instanceof CloudApiError && error.status === 403) return error
+        if (
+          error instanceof CloudApiError &&
+          (error.status === 403 || error.status === 409)
+        )
+          return error
         return Promise.reject(error)
       }
       toast.success(`Created library "${name}".`)
     },
   }
-  return [create]
 }

@@ -637,15 +637,17 @@ test(
     await expect(page.getByTestId('home-header')).toBeVisible({
       timeout: 30_000,
     })
-    const heading = page.getByRole('heading', { level: 1 })
-    await expect(heading).toHaveText(
-      /^(Project Libraries|Personal Cloud|Projects)$/
-    )
-    if ((await heading.innerText()) === 'Project Libraries') {
-      await page
-        .getByRole('link', { name: 'Open Personal Cloud library', exact: true })
-        .click()
-    }
+    await expect(
+      page
+        .getByRole('region', { name: 'Cloud Libraries' })
+        .getByRole('button', { name: 'Create cloud library' })
+    ).toBeVisible()
+    await page
+      .getByRole('link', { name: 'Open Personal Cloud library', exact: true })
+      .click()
+    await expect(
+      page.getByRole('button', { name: 'Create cloud library' })
+    ).toHaveCount(0)
     await page.evaluate(async (id) => {
       const root = '/documents/legacy-cloud-mirror'
       await window.fsZds.mkdir(root, { recursive: true })
