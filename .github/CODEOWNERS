@@ -22,6 +22,7 @@ package.json                      @KittyCAD/frontend @KittyCAD/kcl
 package-lock.json                 @KittyCAD/frontend @KittyCAD/kcl
 
 # Documentation
+AGENTS.md                         @KittyCAD/frontend @KittyCAD/kcl
 README.md                         @KittyCAD/frontend @KittyCAD/kcl
 GLOSSARY-MAP.md                   @KittyCAD/frontend @KittyCAD/kcl
 /dev-docs/                        @KittyCAD/frontend @KittyCAD/kcl
