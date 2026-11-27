@@ -1752,6 +1752,7 @@ function getSplitOutputExprFromSelection(
   if (
     outputIndex == null ||
     (artifact?.subType?.toLowerCase() !== 'split' &&
+      artifact?.subType?.toLowerCase() !== 'subtract' &&
       inferredOutputIndex == null)
   ) {
     return null

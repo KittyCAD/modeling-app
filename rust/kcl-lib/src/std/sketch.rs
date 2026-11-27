@@ -1348,6 +1348,7 @@ pub(crate) async fn create_sketch(
         original_id: path_id,
         artifact_id: path_id.into(),
         origin_sketch_id: None,
+        region_history_tag: None,
         on: sketch_surface,
         paths: Default::default(),
         inner_paths: vec![],
@@ -2934,7 +2935,12 @@ pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let intersection_index = args.get_kw_arg_opt("intersectionIndex", &RuntimeType::count(), exec_state)?;
     let direction = args.get_kw_arg_opt("direction", &RuntimeType::string(), exec_state)?;
     let sketch = args.get_kw_arg_opt("sketch", &RuntimeType::any(), exec_state)?;
-    inner_region(point, segments, intersection_index, direction, sketch, exec_state, args).await
+    let tag: Option<TagNode> = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
+    let mut result = inner_region(point, segments, intersection_index, direction, sketch, exec_state, args).await?;
+    if let KclValue::Sketch { value } = &mut result {
+        value.region_history_tag = tag.map(|tag| tag.name.clone());
+    }
+    Ok(result)
 }
 
 /// Helper enum to reduce cloning of Sketch and Segment in the two branches of
@@ -3155,6 +3161,7 @@ async fn inner_region(
                     original_id: region_id,
                     artifact_id: region_id.into(),
                     origin_sketch_id: None,
+                    region_history_tag: None,
                     on: segment.surface,
                     paths: imbl::vector![first_path],
                     inner_paths: vec![],

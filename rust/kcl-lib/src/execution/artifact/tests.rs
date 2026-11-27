@@ -193,7 +193,7 @@ fn plane_visibility_commands_update_cached_planes() {
         };
         graph = build_artifact_graph(
             &[command],
-            &IndexMap::default(),
+            &AHashMap::default(),
             &ast,
             &mut IndexMap::default(),
             graph,
@@ -827,6 +827,8 @@ fn entity_clone_remaps_composite_solid_ids() {
     artifacts.insert(
         source_id,
         Artifact::CompositeSolid(CompositeSolid {
+            subtraction_face_sources: Default::default(),
+            subtraction_face_identity_lineage: None,
             id: source_id,
             consumed: true,
             sub_type: CompositeSolidSubType::Subtract,
@@ -1736,6 +1738,8 @@ fn pattern_artifact_does_not_materialize_composite_solid_copies() {
     artifacts.insert(
         source_id,
         Artifact::CompositeSolid(CompositeSolid {
+            subtraction_face_sources: Default::default(),
+            subtraction_face_identity_lineage: None,
             id: source_id,
             consumed: false,
             sub_type: CompositeSolidSubType::Union,
@@ -2006,6 +2010,7 @@ fn entity_clone_of_2d_pattern_copy_does_not_create_body() {
             sub_type: PatternSubType::Linear,
             source_id: source_path_id,
             copy_ids: vec![ArtifactId::new(copy_id)],
+            copy_face_sources: Default::default(),
             copy_face_ids: Vec::new(),
             copy_edge_ids: Vec::new(),
             code_ref,
@@ -2227,6 +2232,7 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     assert!(matches!(
         &updated[0],
         Artifact::EdgeCut(EdgeCut {
+            copy_source_face_id: None,
             id,
             sub_type: EdgeCutSubType::Fillet,
             source_selector_index: Some(0),
@@ -2237,6 +2243,7 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     assert!(matches!(
         &updated[1],
         Artifact::EdgeCut(EdgeCut {
+            copy_source_face_id: None,
             id,
             sub_type: EdgeCutSubType::Fillet,
             source_selector_index: Some(1),
@@ -2251,6 +2258,51 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
     assert_eq!(
         body_update.surface_ids,
         vec![ArtifactId::new(cmd_id), ArtifactId::new(extra_face_id)]
+    );
+
+    // A single topology selector can expand to several faces, and output order
+    // is unrelated to the order in which KCL reserved candidate UUIDs.
+    let expanded_face_id = Uuid::new_v4();
+    let responses = AHashMap::from([(
+        cmd_id,
+        OkModelingCmdResponse::Solid3dCutEdgeReferences(
+            kcmc::output::Solid3dCutEdgeReferences {
+                created_face_ids: Some(vec![expanded_face_id, cmd_id]),
+                single_edge_per_selector: false,
+                face_sources: Vec::new(),
+            },
+        ),
+    )]);
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &responses,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+    assert_eq!(updated.len(), 3);
+    for (artifact, face_id) in updated.iter().zip([expanded_face_id, cmd_id]) {
+        assert!(matches!(
+            artifact,
+            Artifact::EdgeCut(EdgeCut {
+                id,
+                source_selector_index: None,
+                unattributed: Some(true),
+                ..
+            }) if *id == ArtifactId::new(face_id)
+        ));
+    }
+    let Some(Artifact::Sweep(body_update)) = updated.last() else {
+        panic!("Missing treatment body update");
+    };
+    assert_eq!(
+        body_update.surface_ids,
+        vec![ArtifactId::new(expanded_face_id), ArtifactId::new(cmd_id)]
     );
 }
 

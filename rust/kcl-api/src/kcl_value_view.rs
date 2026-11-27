@@ -546,6 +546,18 @@ pub struct SolidView {
     pub end_cap_id: Option<uuid::Uuid>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCutView>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub primary_chamfer_faces: Vec<Option<uuid::Uuid>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub history_walls: Vec<(uuid::Uuid, usize, String)>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub history_face_groups: Vec<(uuid::Uuid, usize, String, String)>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub history_anchor_groups: Vec<(uuid::Uuid, String, String, String)>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub history_extrusion_sources: Vec<SourceRange>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub boolean_output_names: Vec<String>,
     pub units: UnitLength,
     pub sectional: bool,
 }

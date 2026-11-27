@@ -528,6 +528,7 @@ async fn inner_chamfer_with_engine_refs(
         )
         .await?;
 
+    solid.primary_chamfer_faces.push(Some(id));
     solid.pending_edge_cut_ids.push(id);
 
     if let Some(ref tag) = tag {

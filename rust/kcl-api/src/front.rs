@@ -134,6 +134,9 @@ pub struct PrimitiveFacePlane {
     /// Engine ID of the solid which owns the face.
     pub solid_id: uuid::Uuid,
     pub index: usize,
+    /// Live face ID from the viewport pick, used to find semantic construction roles.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub face_id: Option<uuid::Uuid>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]

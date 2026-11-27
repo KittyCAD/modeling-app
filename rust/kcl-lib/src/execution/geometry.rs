@@ -940,6 +940,10 @@ pub struct Sketch {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(skip)]
     pub origin_sketch_id: Option<uuid::Uuid>,
+    /// Explicit name for the region as an extrusion history anchor.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) region_history_tag: Option<String>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
@@ -1332,6 +1336,30 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub pending_edge_cut_ids: Vec<uuid::Uuid>,
+    /// Direct face correspondence reported by experimental separated subtraction.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) subtraction_face_reassignments: Vec<kcmc::shared::BooleanTopologyReassignment>,
+    /// Live input-face identity links composed across reported subtraction effects.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) subtraction_face_identity_lineage: Option<Vec<kcmc::shared::BooleanTopologyReassignment>>,
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) subtraction_face_origins: Vec<(crate::std::csg::SubtractionFaceOrigin, Uuid)>,
+    /// Primary face IDs keyed by chamfer occurrence. Empty slots retain the occurrence
+    /// when a topology-preserving copy did not report a surviving face.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) primary_chamfer_faces: Vec<Option<Uuid>>,
+    /// Extrusion contributions carried through supported body operations.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) extrusion_history: Vec<crate::std::history::ExtrusionHistory>,
+    /// Names assigned to this output by the separated Boolean that produced it.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) boolean_output_names: Vec<String>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1422,6 +1450,12 @@ impl Solid {
     /// longer applies. Independent copies also stop updating their source
     /// region's tags, including when mock execution does not remap child IDs.
     pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId, kind: NewBodyKind) {
+        self.subtraction_face_reassignments.clear();
+        self.subtraction_face_identity_lineage = None;
+        self.subtraction_face_origins.clear();
+        self.primary_chamfer_faces.clear();
+        self.extrusion_history.clear();
+        self.boolean_output_names.clear();
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
         self.artifact_id = artifact_id;
@@ -1431,10 +1465,28 @@ impl Solid {
         }
     }
 
+    pub(crate) fn inherit_primary_chamfer_faces(&mut self, source: &Self, pairs: &[[Uuid; 2]]) {
+        self.primary_chamfer_faces = source
+            .primary_chamfer_faces
+            .iter()
+            .map(|source| {
+                pairs
+                    .iter()
+                    .find_map(|[from, to]| (Some(*from) == *source).then_some(*to))
+            })
+            .collect();
+    }
+
     /// Make this solid a pattern copy. It gets a new top-level entity artifact
     /// while retaining the source body's topology and semantic artifact
     /// provenance.
     pub(crate) fn become_pattern_copy(&mut self, copy_engine_id: uuid::Uuid) {
+        self.subtraction_face_reassignments.clear();
+        self.subtraction_face_identity_lineage = None;
+        self.subtraction_face_origins.clear();
+        self.primary_chamfer_faces.clear();
+        self.extrusion_history.clear();
+        self.boolean_output_names.clear();
         self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
         self.artifact_id = ArtifactId::new(copy_engine_id);
         self.tag_update_source_artifact_id = None;

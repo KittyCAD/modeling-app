@@ -385,10 +385,17 @@ async fn send_pattern_transform<T: GeometryTrait>(
     };
 
     let mut geometries = vec![geometry.clone()];
-    for id in entity_ids.iter().copied() {
+    for (index, id) in entity_ids.iter().copied().enumerate() {
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        if entity_id == geometry_id
+            && let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
+            } = &resp
+        {
+            new_geometry.inherit_copy_faces(geometry, &pattern_info.entity_face_edge_ids[index].face_copies);
+        }
         geometries.push(new_geometry);
     }
     Ok(geometries)
@@ -562,6 +569,7 @@ pub trait GeometryTrait: Clone {
     fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
+    fn inherit_copy_faces(&mut self, _source: &Self, _pairs: &[[Uuid; 2]]) {}
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -621,6 +629,11 @@ impl GeometryTrait for Solid {
 
     fn topology_id(&self) -> Uuid {
         Solid::topology_id(self)
+    }
+
+    fn inherit_copy_faces(&mut self, source: &Self, pairs: &[[Uuid; 2]]) {
+        self.inherit_primary_chamfer_faces(source, pairs);
+        super::history::inherit_copy_history(self, source, pairs);
     }
 
     fn array_to_point3d(

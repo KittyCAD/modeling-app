@@ -217,6 +217,11 @@ export function addDeleteFace({
   for (const selection of faces.graphSelections) {
     const resolved = resolveToCodeRef(selection, artifactGraph)
     if (resolved?.artifact?.type !== 'edgeCut') continue
+    if (resolved.artifact.unattributed) {
+      return new Error(
+        'Cannot tag this cut face without a unique source selector'
+      )
+    }
     if (resolved.artifact.sourceSelectorIndex != null) continue
 
     const tagResult = addTagToSingletonEdgeCut(

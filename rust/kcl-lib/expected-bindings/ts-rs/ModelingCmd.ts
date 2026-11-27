@@ -3709,6 +3709,10 @@ object_id: string,
  */
 edges_references: Array<EdgeSpecifier>, 
 /**
+ * Require the references together to identify exactly one edge.
+ */
+require_unique_edge?: boolean,
+/**
  * The cut type and information required to perform the cut.
  */
 cut_type: CutTypeV2, 
@@ -3933,7 +3937,11 @@ object_id: string,
 /**
  * The faces being queried
  */
-face_ids: [string, string], };
+face_ids: [string, string],
+/**
+ * Return every shared edge, including an empty result.
+ */
+all?: boolean, };
 
 /**
  * What is the UUID of this body's n-th edge?

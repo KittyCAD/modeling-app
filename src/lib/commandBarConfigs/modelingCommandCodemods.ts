@@ -1,3 +1,4 @@
+import { planImportedRegionAnchor } from '@src/lib/projectSession/importedSketchAnchor'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -8,7 +9,14 @@ import {
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import {
+  addBlend,
+  addChamfer,
+  addFillet,
+  importedFilletAnchorTarget,
+  verifyCopyFilletEdge,
+  verifyExpandedFilletSides,
+} from '@src/lang/modifyAst/edges'
 import {
   addDeleteFace,
   addHole,
@@ -306,7 +314,83 @@ export const modelingCommandCodemods = {
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),
   'Spur Gear': withAst('Spur Gear', addSpurGear),
   'Ring Gear': withAst('Ring Gear', addRingGear),
-  Fillet: withSolidEdgeSelections(withArtifactGraph('Fillet', addFillet)),
+  Fillet: withSolidEdgeSelections(
+    defineModelingCodemod<CommandArgsByName['Fillet']>({
+      ...withStdLibExperimentalFeatures('Fillet'),
+      run: async ({
+        args,
+        ast,
+        kclManager,
+        wasmInstance,
+        planProjectEdits,
+      }) => {
+        const { artifactGraph, variables } = kclManager
+        const expandedSidesVerified = args.nodeToEdit
+          ? false
+          : await verifyExpandedFilletSides(
+              args.selection,
+              ast,
+              artifactGraph,
+              variables,
+              kclManager.engineCommandManager
+            )
+        if (expandedSidesVerified instanceof Error) return expandedSidesVerified
+        const verifiedCopyEdge = args.nodeToEdit
+          ? undefined
+          : await verifyCopyFilletEdge(
+              args.selection,
+              artifactGraph,
+              ast,
+              variables,
+              kclManager.engineCommandManager
+            )
+        if (verifiedCopyEdge instanceof Error) return verifiedCopyEdge
+        if (
+          (expandedSidesVerified || verifiedCopyEdge) &&
+          (artifactGraph !== kclManager.artifactGraph ||
+            variables !== kclManager.variables)
+        ) {
+          return new Error(
+            'The model changed while resolving the selected edge. Pick the edge again.'
+          )
+        }
+        const target =
+          planProjectEdits && !args.nodeToEdit
+            ? importedFilletAnchorTarget(ast, variables, args.selection)
+            : undefined
+        const importedAnchor = target
+          ? await planImportedRegionAnchor(
+              kclManager,
+              target.source,
+              wasmInstance
+            )
+          : undefined
+        if (
+          importedAnchor &&
+          (artifactGraph !== kclManager.artifactGraph ||
+            variables !== kclManager.variables)
+        ) {
+          return new Error(
+            'The model changed while resolving the selected edge. Pick the edge again.'
+          )
+        }
+        const result = addFillet({
+          ...args,
+          ast,
+          artifactGraph,
+          variables,
+          wasmInstance,
+          expandedSidesVerified,
+          verifiedCopyEdge,
+          importedAnchor:
+            target && importedAnchor
+              ? { ...target, name: importedAnchor.anchor }
+              : undefined,
+        })
+        return result instanceof Error ? result : { ...result, importedAnchor }
+      },
+    })
+  ),
   Chamfer: withSolidEdgeSelections(withArtifactGraph('Chamfer', addChamfer)),
   Appearance: withArtifactGraph('Appearance', addAppearance),
   Delete: withArtifactGraph('Delete', addDelete, {

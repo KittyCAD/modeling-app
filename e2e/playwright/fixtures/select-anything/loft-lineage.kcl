@@ -1,0 +1,19 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+lower = sketch(on = XY) {
+  rim = circle(start = [30mm, 0mm], center = [20mm, 0mm])
+}
+middle = sketch(on = offsetPlane(XY, offset = 10mm)) {
+  rim = circle(start = [26mm, 0mm], center = [20mm, 0mm])
+}
+upper = sketch(on = offsetPlane(XY, offset = 20mm)) {
+  rim = circle(start = [28mm, 0mm], center = [20mm, 0mm])
+}
+lowerSection = region(segments = [lower.rim])
+middleSection = region(segments = [middle.rim])
+upperSection = region(segments = [upper.rim])
+export lofted = loft([lowerSection, middleSection, upperSection], tagStart = $loftStart, tagEnd = $loftEnd)
+export reflected = mirror3d(lofted, across = YZ)[0]
+hide([lower, middle, upper])
+export loftWall = lofted.history.extrusions[0].wallFaces.rim
+export reflectedWall = reflected.history.extrusions[0].wallFaces.rim

@@ -1,4 +1,6 @@
 import type { Block } from '@rust/kcl-lib/bindings/Block'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import type { VariableMap } from '@src/lang/wasm'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
@@ -39,6 +41,7 @@ import {
   traverse,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { traceSubtractionFaceOrigin } from '@src/lang/std/subtractionLineage'
 import { programTextEqual } from '@src/lang/programTextEqual'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -48,6 +51,7 @@ import {
   getCommonFacesForEdge,
   getFaceCodeRef,
   getMergedSweepBodyArtifact,
+  getPatternArtifactForCopyId,
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
   type ResolvedGraphSelection,
@@ -73,6 +77,7 @@ import { recast } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { shouldInjectSelectionAnchors } from '@src/lib/selectionAnchors'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
@@ -99,9 +104,431 @@ function insertKclVariables(
   }
 }
 
+type HistoryFaceGroups = [string, number, string, string][]
+type HistoryAnchorGroups = [string, string, string, string][]
+
+function historyGroupFaces(
+  groups: HistoryFaceGroups | HistoryAnchorGroups,
+  id: string
+): string[] {
+  const source = groups.find(([face]) => face === id)
+  if (!source) return []
+  const [, extrusion, collection, member] = source
+  return [
+    ...new Set(
+      groups
+        .filter(
+          ([, e, c, m]) => e === extrusion && c === collection && m === member
+        )
+        .map(([face]) => face)
+    ),
+  ]
+}
+
+function matchingAnchorFaceGroup(
+  groups: HistoryFaceGroups,
+  anchorGroups: HistoryAnchorGroups | undefined,
+  id: string
+) {
+  if (!anchorGroups) return
+  const anchor = anchorGroups.find(([faceId]) => faceId === id)
+  if (!anchor) return
+  const namedFaces = historyGroupFaces(groups, id)
+  const anchoredFaces = historyGroupFaces(anchorGroups, id)
+  if (
+    namedFaces.length === anchoredFaces.length &&
+    anchoredFaces.every((face) => namedFaces.includes(face))
+  ) {
+    return anchor
+  }
+}
+
+function findSolidOutputInBinding(
+  variables: VariableMap,
+  name: string,
+  solidId: string
+) {
+  const binding = variables[name]
+  if (binding?.type === 'Solid' && binding.value.id === solidId) {
+    return {
+      name,
+      body: binding.value,
+      index: undefined,
+      outputName: undefined,
+    }
+  }
+  if (binding?.type !== 'HomArray' && binding?.type !== 'Tuple') return
+  const index = binding.value.findIndex(
+    (body) => body.type === 'Solid' && body.value.id === solidId
+  )
+  const output = binding.value[index]
+  if (output?.type !== 'Solid') return
+  const outputName = [...(output.value.booleanOutputNames ?? [])]
+    .sort()
+    .find(
+      (label) =>
+        binding.value.filter(
+          (body) =>
+            body.type === 'Solid' &&
+            body.value.booleanOutputNames?.includes(label)
+        ).length === 1
+    )
+  return { name, body: output.value, index, outputName }
+}
+
+function findImportedSolidOutput(
+  ast: Node<Program>,
+  variables: VariableMap,
+  solidId: string
+) {
+  for (const statement of ast.body) {
+    if (
+      statement.type !== 'ImportStatement' ||
+      statement.selector.type !== 'List'
+    )
+      continue
+    for (const item of statement.selector.items) {
+      const output = findSolidOutputInBinding(
+        variables,
+        (item.alias ?? item.name).name,
+        solidId
+      )
+      if (output) return output
+    }
+  }
+}
+
+function findEditableSolidOutput(
+  ast: Node<Program>,
+  variables: VariableMap,
+  solidId: string
+) {
+  for (const statement of ast.body) {
+    if (statement.type !== 'VariableDeclaration') continue
+    const output = findSolidOutputInBinding(
+      variables,
+      statement.declaration.id.name,
+      solidId
+    )
+    if (output) return output
+  }
+}
+
+function editableRegionAnchor(
+  ast: Node<Program>,
+  reference: Extract<EntityReference, { type: 'edge' }>,
+  groups: HistoryFaceGroups | undefined,
+  sources: SourceRange[] | undefined,
+  addTag: boolean
+): { extrusion: number; name: string } | undefined {
+  if (
+    !reference.end_faces?.length ||
+    reference.index != null ||
+    reference.side_faces.length !== 2
+  )
+    return
+  const named = [...reference.side_faces, ...reference.end_faces].map((id) =>
+    groups?.find(([face]) => face === id)
+  )
+  if (!named.every((entry) => entry !== undefined)) return
+  const [first, second] = named
+  // Anchor the common source profile for the side faces. A cutter can keep
+  // its existing operation reference, so this action adds at most one tag.
+  if (!first || !second || first[1] !== second[1]) return
+  const extrusion = first[1]
+  const source = sources?.[extrusion]
+  if (!source) return
+  const localCalls = ast.body.flatMap((statement) => {
+    if (statement.type !== 'VariableDeclaration') return []
+    const { id, init } = statement.declaration
+    return init.type === 'CallExpressionKw' &&
+      init.callee.type === 'Name' &&
+      init.callee.path.length === 0
+      ? [{ name: id.name, call: init }]
+      : []
+  })
+  const extrude = localCalls.find(
+    ({ call }) =>
+      call.callee.name.name === 'extrude' &&
+      call.moduleId === source[2] &&
+      call.start <= source[0] &&
+      source[1] <= call.end
+  )
+  const profile = extrude?.call.unlabeled
+  if (profile?.type !== 'Name' || profile.path.length !== 0) return
+  const regionName = profile.name.name
+  const region = localCalls.find(
+    ({ name, call }) =>
+      name === regionName && call.callee.name.name === 'region'
+  )
+  if (
+    !region ||
+    localCalls.filter(
+      ({ call }) =>
+        call.callee.name.name === 'extrude' &&
+        call.unlabeled?.type === 'Name' &&
+        call.unlabeled.name.name === regionName
+    ).length !== 1
+  )
+    return
+  const existing = region.call.arguments.find(
+    (argument) => getLabelName(argument) === 'tag'
+  )
+  if (existing) {
+    return existing.arg.type === 'TagDeclarator'
+      ? { extrusion, name: existing.arg.value }
+      : undefined
+  }
+  const name = findUniqueName(ast, 'regionAnchor')
+  if (addTag) {
+    region.call.arguments.push(
+      createLabeledArg('tag', createTagDeclarator(name))
+    )
+  }
+  return { extrusion, name }
+}
+
+/** Verify an expanded named side pair against the actual pick before emitting KCL. */
+export async function verifyExpandedFilletSides(
+  selection: Selections,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph,
+  variables: VariableMap,
+  engine: import('@src/lib/engineConnection/connectionManager').ConnectionManager
+): Promise<boolean | Error> {
+  const picked = selection.graphSelections[0]
+  const ref = picked?.entityRef
+  if (
+    ref?.type !== 'edge' ||
+    ref.end_faces?.length ||
+    ref.index != null ||
+    ref.side_faces.length !== 2
+  )
+    return false
+  const parent =
+    ref.topology_fallback?.parent_id ?? picked.engineTopologyFallback?.parentId
+  const owner = parent ? artifactGraph.get(parent) : undefined
+  if (owner?.type !== 'compositeSolid') return false
+  const groups = findImportedSolidOutput(ast, variables, owner.id)?.body
+    .historyFaceGroups
+  if (!groups) return false
+  const [left, right] = ref.side_faces.map((id) =>
+    historyGroupFaces(groups, id)
+  )
+  if (
+    !left?.length ||
+    !right?.length ||
+    (left.length === 1 && right.length === 1)
+  )
+    return false
+  if (left.length * right.length > 64)
+    return new Error('The selected edge has too many possible side faces.')
+  const replies = await Promise.all(
+    left.flatMap((a) =>
+      right.map((b) => {
+        const cmd = {
+          type: 'solid3d_get_common_edge' as const,
+          object_id: owner.id,
+          face_ids: [a, b] as [string, string],
+          all: true,
+        }
+        return engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: crypto.randomUUID(),
+          cmd,
+        })
+      })
+    )
+  )
+  const matches = new Set<string>()
+  for (const reply of replies) {
+    if (
+      !reply ||
+      Array.isArray(reply) ||
+      !('resp' in reply) ||
+      reply.resp.type !== 'modeling'
+    ) {
+      return new Error('Could not verify the named side faces with the engine.')
+    }
+    const result = reply.resp.data.modeling_response
+    if (
+      result.type !== 'solid3d_get_common_edge' ||
+      !('edges' in result.data) ||
+      !Array.isArray(result.data.edges) ||
+      !result.data.edges.every((id): id is string => typeof id === 'string')
+    ) {
+      return new Error(
+        'The engine did not report all matches for the selected edge.'
+      )
+    }
+    for (const id of result.data.edges) matches.add(id)
+  }
+  if (matches.size > 1) {
+    return new Error(
+      `The named side faces match ${matches.size} edges. An end face is needed to distinguish the selected edge.`
+    )
+  }
+  let pickedId = picked.engineEntityId
+  const primitiveIndex =
+    ref.topology_fallback?.primitive_index ??
+    picked.engineTopologyFallback?.primitiveIndex
+  if (!pickedId && primitiveIndex != null) {
+    const reply = await engine.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: crypto.randomUUID(),
+      cmd: {
+        type: 'solid3d_get_edge_uuid',
+        object_id: owner.id,
+        edge_index: primitiveIndex,
+      },
+    })
+    if (
+      reply &&
+      !Array.isArray(reply) &&
+      'resp' in reply &&
+      reply.resp.type === 'modeling'
+    ) {
+      const result = reply.resp.data.modeling_response
+      if (result.type === 'solid3d_get_edge_uuid')
+        pickedId = result.data.edge_id
+    }
+  }
+  if (!pickedId || !matches.has(pickedId)) {
+    return new Error('The named side faces do not resolve to the picked edge.')
+  }
+  return true
+}
+
+type VerifiedCopyFilletEdge = {
+  bodyId: string
+  chamfer: number
+  wall: HistoryFaceGroups[number]
+}
+
+export async function verifyCopyFilletEdge(
+  selection: Selections,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  variables: VariableMap,
+  engine: import('@src/lib/engineConnection/connectionManager').ConnectionManager
+): Promise<VerifiedCopyFilletEdge | undefined | Error> {
+  const [picked] = selection.graphSelections
+  const [primitive] = selection.otherSelections
+  const ref = picked?.entityRef
+  if (selection.graphSelections.length + selection.otherSelections.length !== 1)
+    return
+  const directPrimitive =
+    isEnginePrimitiveSelection(primitive) && primitive.primitiveType === 'edge'
+      ? primitive
+      : undefined
+  const bodyId =
+    (ref?.type === 'edge' ? ref.topology_fallback?.parent_id : undefined) ??
+    picked?.engineTopologyFallback?.parentId ??
+    directPrimitive?.parentEntityId
+  if (!bodyId) return
+  const pattern = getPatternArtifactForCopyId(bodyId, artifactGraph)
+  if (!pattern?.copyIds.includes(bodyId)) return
+
+  const pickedId = picked?.engineEntityId ?? directPrimitive?.entityId
+  const body = (
+    findImportedSolidOutput(ast, variables, bodyId) ??
+    findEditableSolidOutput(ast, variables, bodyId)
+  )?.body
+  const groups = body?.historyFaceGroups
+  if (!pickedId || ref?.type !== 'edge' || ref.side_faces.length !== 2) {
+    return new Error(
+      'The pattern copy pick has no reported pair of incident faces.'
+    )
+  }
+  const chamferFace = ref.side_faces.find((id) =>
+    body?.primaryChamferFaces?.includes(id)
+  )
+  const chamfer = chamferFace
+    ? (body?.primaryChamferFaces?.indexOf(chamferFace) ?? -1)
+    : -1
+  const wallId = ref.side_faces.find((id) => id !== chamferFace)
+  const wall = groups?.find(([id]) => id === wallId)
+  if (
+    chamfer < 0 ||
+    !groups ||
+    !wall ||
+    !wallId ||
+    historyGroupFaces(groups, wallId).length !== 1
+  ) {
+    return new Error(
+      'The copy edge needs a mapped chamfer face and an unambiguous adjoining history face.'
+    )
+  }
+  const cmd = {
+    type: 'solid3d_get_common_edge' as const,
+    object_id: bodyId,
+    face_ids: ref.side_faces,
+    all: true,
+  }
+  const reply = await engine.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: crypto.randomUUID(),
+    cmd,
+  })
+  if (
+    reply &&
+    !Array.isArray(reply) &&
+    'resp' in reply &&
+    reply.resp.type === 'modeling'
+  ) {
+    const response = reply.resp.data.modeling_response
+    if (
+      response.type === 'solid3d_get_common_edge' &&
+      'edges' in response.data &&
+      Array.isArray(response.data.edges) &&
+      response.data.edges.length === 1 &&
+      response.data.edges[0] === pickedId
+    ) {
+      return { bodyId, chamfer, wall }
+    }
+  }
+  return new Error(
+    'The copied chamfer and adjoining face do not identify exactly the picked edge.'
+  )
+}
+
+export function importedFilletAnchorTarget(
+  ast: Node<Program>,
+  variables: VariableMap,
+  selection: Selections
+) {
+  if (
+    selection.graphSelections.length !== 1 ||
+    selection.otherSelections.length
+  )
+    return
+  const pick = selection.graphSelections[0]
+  const ref = pick.entityRef
+  if (ref?.type !== 'edge') return
+  const bodyId =
+    ref.topology_fallback?.parent_id ?? pick.engineTopologyFallback?.parentId
+  if (!bodyId) return
+  const body = findImportedSolidOutput(ast, variables, bodyId)?.body
+  const groups = body?.historyFaceGroups
+  if (!groups) return
+  const [first, second] = ref.side_faces.map((id) =>
+    groups.find(([face]) => face === id)
+  )
+  if (!first || !second || first[1] !== second[1]) return
+  if (
+    ref.side_faces.every((id) =>
+      matchingAnchorFaceGroup(groups, body?.historyAnchorGroups, id)
+    )
+  )
+    return
+  const source = body?.historyExtrusionSources?.[first[1]]
+  if (source) return { source, extrusion: first[1], bodyId }
+}
+
 export function addFillet({
   ast,
   artifactGraph,
+  variables,
   selection,
   radius,
   tolerance,
@@ -110,9 +537,13 @@ export function addFillet({
   tangentChain,
   nodeToEdit,
   wasmInstance,
+  expandedSidesVerified = false,
+  verifiedCopyEdge,
+  importedAnchor,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
+  variables?: VariableMap
   selection: Selections
   radius: KclCommandValue
   tolerance?: KclCommandValue
@@ -121,6 +552,9 @@ export function addFillet({
   tangentChain?: boolean
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
+  expandedSidesVerified?: boolean
+  verifiedCopyEdge?: VerifiedCopyFilletEdge
+  importedAnchor?: { bodyId: string; extrusion: number; name: string }
 }):
   | {
       modifiedAst: Node<Program>
@@ -160,6 +594,177 @@ export function addFillet({
       ),
       pathToEdit: mNodeToEdit,
       labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    return { modifiedAst, pathToNode: [pathToNode] }
+  }
+
+  // Named imports are resolved against the live value so other exports from
+  // the same producer cannot accidentally name the selected output.
+  const selectedEdge = selection.graphSelections[0]
+  const ref = selectedEdge?.entityRef
+  const fallback = selectedEdge?.engineTopologyFallback
+  const primitive = selection.otherSelections
+    .filter(isEnginePrimitiveSelection)
+    .find((item) => item.primitiveType === 'edge')
+  const parentId =
+    (ref?.type === 'edge'
+      ? (ref.topology_fallback?.parent_id ?? fallback?.parentId)
+      : undefined) ?? primitive?.parentEntityId
+  const owner = parentId ? artifactGraph.get(parentId) : undefined
+  if (variables && owner?.type === 'compositeSolid') {
+    const imported = findImportedSolidOutput(modifiedAst, variables, owner.id)
+    const hasSubtractionLineage =
+      owner.subtractionFaceIdentityLineage && owner.outputIndex != null
+    const output =
+      imported?.body.historyFaceGroups?.length || hasSubtractionLineage
+        ? (imported ??
+          findEditableSolidOutput(modifiedAst, variables, owner.id))
+        : undefined
+    const injectAnchors = shouldInjectSelectionAnchors()
+    const anchor =
+      !imported && output && ref?.type === 'edge'
+        ? editableRegionAnchor(
+            modifiedAst,
+            ref,
+            output.body.historyFaceGroups,
+            output.body.historyExtrusionSources,
+            injectAnchors
+          )
+        : undefined
+    if (output && (imported || anchor || output.outputName)) {
+      if (ref?.type !== 'edge') {
+        return new Error(
+          'The selected edge has no reported face lineage on this imported body.'
+        )
+      }
+      if (
+        selection.graphSelections.length !== 1 ||
+        selection.otherSelections.length !== 0
+      ) {
+        return new Error('Select one edge for a lineage fillet')
+      }
+      const bodyExpr = output.outputName
+        ? createMemberExpression(
+            createMemberExpression(output.name, 'outputs'),
+            output.outputName
+          )
+        : output.index === undefined
+          ? createLocalName(output.name)
+          : createMemberExpression(
+              output.name,
+              createLiteral(output.index, wasmInstance),
+              true
+            )
+      const edge = createSubtractionLineageEdgeRef(
+        ref.topology_fallback || !fallback
+          ? ref
+          : {
+              ...ref,
+              topology_fallback: {
+                parent_id: fallback.parentId,
+                primitive_index: fallback.primitiveIndex,
+              },
+            },
+        owner,
+        artifactGraph,
+        wasmInstance,
+        {
+          body: bodyExpr,
+          expandedSidesVerified,
+          groups: output.body.historyFaceGroups,
+          anchorGroups: output.body.historyAnchorGroups,
+          anchor:
+            importedAnchor?.bodyId === owner.id
+              ? importedAnchor
+              : injectAnchors
+                ? anchor
+                : undefined,
+        }
+      )
+      if (err(edge)) return edge
+      insertKclVariables(variableValues, modifiedAst)
+      const call = createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Fillet'),
+        bodyExpr,
+        [
+          createLabeledArg('edges', createArrayExpression([edge])),
+          ...nonSelectionArgs.filter(
+            (arg) => getLabelName(arg) !== 'tangentChain'
+          ),
+          createLabeledArg('tangentChain', createLiteral(false, wasmInstance)),
+        ]
+      )
+      const pathToNode = setCallInAst({
+        ast: modifiedAst,
+        call,
+        variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
+        wasmInstance,
+      })
+      if (err(pathToNode)) return pathToNode
+      return { modifiedAst, pathToNode: [pathToNode] }
+    }
+  }
+
+  if (variables && verifiedCopyEdge) {
+    const { bodyId, chamfer, wall } = verifiedCopyEdge
+    const output =
+      findImportedSolidOutput(modifiedAst, variables, bodyId) ??
+      findEditableSolidOutput(modifiedAst, variables, bodyId)
+    if (!output)
+      return new Error(
+        'Could not resolve the selected pattern copy to a KCL binding.'
+      )
+
+    const body =
+      output.index === undefined
+        ? createLocalName(output.name)
+        : createMemberExpression(
+            output.name,
+            createLiteral(output.index, wasmInstance),
+            true
+          )
+    const anchored = output.body.historyFaceGroups
+      ? matchingAnchorFaceGroup(
+          output.body.historyFaceGroups,
+          output.body.historyAnchorGroups,
+          wall[0]
+        )
+      : undefined
+    const [, occurrence, collection, member] = wall
+    const wallExpr = historyFaceExpression(
+      body,
+      occurrence,
+      anchored?.[1],
+      anchored?.[2] ?? collection,
+      anchored?.[3] ?? member,
+      wasmInstance
+    )
+    const chamferExpr = createCallExpressionStdLibKw(
+      'faceOf',
+      structuredClone(body),
+      [createLabeledArg('chamferFace', createLiteral(chamfer, wasmInstance))]
+    )
+    const edge = createObjectExpression({
+      sideFaces: createArrayExpression([chamferExpr, wallExpr]),
+      endFaces: createArrayExpression([]),
+    })
+    insertKclVariables(variableValues, modifiedAst)
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Fillet'),
+        body,
+        [
+          createLabeledArg('edges', createArrayExpression([edge])),
+          ...nonSelectionArgs.filter(
+            (arg) => getLabelName(arg) !== 'tangentChain'
+          ),
+          createLabeledArg('tangentChain', createLiteral(false, wasmInstance)),
+        ]
+      ),
+      variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
@@ -729,6 +1334,139 @@ export function entityReferenceToEdgeRefPayload(
   return payload
 }
 
+function historyFaceExpression(
+  solid: Expr,
+  occurrence: number,
+  anchor: string | undefined,
+  collection: string,
+  member: string,
+  wasm: ModuleType
+): Expr {
+  const body = structuredClone(solid)
+  const entry = anchor
+    ? createMemberExpression(createMemberExpression(body, 'anchors'), anchor)
+    : createMemberExpression(
+        createMemberExpression(
+          createMemberExpression(body, 'history'),
+          'extrusions'
+        ),
+        createLiteral(occurrence, wasm),
+        true
+      )
+  return createMemberExpression(
+    createMemberExpression(entry, collection),
+    member
+  )
+}
+
+/** Build the provisional lineage selector for a topologically narrowed edge. */
+export function createSubtractionLineageEdgeRef(
+  reference: Extract<EntityReference, { type: 'edge' }>,
+  owner: Extract<Artifact, { type: 'compositeSolid' }>,
+  graph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  history?: {
+    body: Expr
+    groups?: HistoryFaceGroups
+    expandedSidesVerified?: boolean
+    anchorGroups?: HistoryAnchorGroups
+    anchor?: { extrusion: number; name: string }
+  }
+): Expr | Error {
+  if (reference.topology_fallback?.parent_id !== owner.id) {
+    return new Error(
+      'The selected edge does not belong to the selected subtraction output.'
+    )
+  }
+  if (reference.side_faces.length !== 2) {
+    return new Error(
+      'The selected edge has no reported pair of side faces on this imported body.'
+    )
+  }
+  if (reference.index != null) {
+    return new Error(
+      'The selected edge needs a face discriminator to distinguish it from sibling edges.'
+    )
+  }
+
+  const endFaceIds = reference.end_faces ?? []
+  if (history?.groups) {
+    const namedFaces = (ids: string[]) =>
+      ids.map((id) => {
+        const group = history.groups?.find(([faceId]) => faceId === id)
+        if (!group) return undefined
+        const [, extrusion, collection, member] = group
+        const anchor =
+          history.anchor?.extrusion === extrusion ? history.anchor : undefined
+        const safeAnchor = matchingAnchorFaceGroup(
+          history.groups!,
+          history.anchorGroups,
+          id
+        )
+        return historyFaceExpression(
+          history.body,
+          extrusion,
+          safeAnchor?.[1] ?? anchor?.name,
+          safeAnchor?.[2] ?? collection,
+          safeAnchor?.[3] ?? member,
+          wasmInstance
+        )
+      })
+    const sideFaces = namedFaces(reference.side_faces)
+    const endFaces = namedFaces(endFaceIds)
+    if (
+      // Without an end face, a split source group can match a sibling edge.
+      (endFaceIds.length > 0 ||
+        history.expandedSidesVerified ||
+        reference.side_faces.every(
+          (id) => historyGroupFaces(history.groups!, id).length === 1
+        )) &&
+      sideFaces.every((face) => face !== undefined) &&
+      endFaces.every((face) => face !== undefined)
+    ) {
+      return createObjectExpression({
+        sideFaces: createArrayExpression(sideFaces),
+        endFaces: createArrayExpression(endFaces),
+      })
+    }
+  }
+
+  if (endFaceIds.length === 0) {
+    return new Error(
+      'The selected edge needs an end face to distinguish it from sibling edges.'
+    )
+  }
+
+  const faceExpressions = (ids: string[]): Expr[] | Error => {
+    const expressions: Expr[] = []
+    for (const id of ids) {
+      const origin = traceSubtractionFaceOrigin(owner, id, graph)
+      if (!origin)
+        return new Error('A selected face has no reported construction role')
+      expressions.push(
+        createObjectExpression({
+          cutDepth: createLiteral(origin.cutDepth, wasmInstance),
+          operand: createLiteral(origin.operand, wasmInstance),
+          role: createLiteral(origin.role.type, wasmInstance),
+          ...(origin.role.type === 'wall' && {
+            segmentIndex: createLiteral(origin.role.segmentIndex, wasmInstance),
+          }),
+        })
+      )
+    }
+    return expressions
+  }
+
+  const sideFaces = faceExpressions(reference.side_faces)
+  if (err(sideFaces)) return sideFaces
+  const endFaces = faceExpressions(endFaceIds)
+  if (err(endFaces)) return endFaces
+  return createObjectExpression({
+    sideFaces: createArrayExpression(sideFaces),
+    endFaces: createArrayExpression(endFaces),
+  })
+}
+
 /**
  * Creates KCL object expression for an edgeRef payload.
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
@@ -748,11 +1486,20 @@ export function createEdgeRefObjectExpression(
   owningBodyExpr?: Expr | null,
   options?: { requireEveryFace?: boolean }
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
+  const owner = originalEdgeSelection?.artifact
+  const faceSources =
+    owner?.type === 'compositeSolid' &&
+    owner.subType === 'subtract' &&
+    owner.outputIndex != null
+      ? (owner.subtractionFaceSources ?? {})
+      : undefined
+
   const sideFaceExprs: Expr[] = []
   // Solid2D tagging mutates its AST argument. The popover path must not tag
   // the live program, so every helper below runs on a clone. Codemod callers
   // still receive the AST they passed in.
-  let currentAst = options?.requireEveryFace ? structuredClone(ast) : ast
+  let currentAst =
+    options?.requireEveryFace || faceSources ? structuredClone(ast) : ast
   const effectiveTagsBaseExpr =
     tagsBaseExpr && tagsBaseMatchesOwningBody(tagsBaseExpr, owningBodyExpr)
       ? tagsBaseExpr
@@ -891,7 +1638,8 @@ export function createEdgeRefObjectExpression(
     )
   }
 
-  for (const faceId of payload.side_faces) {
+  for (const pickedFaceId of payload.side_faces) {
+    const faceId = faceSources?.[pickedFaceId] ?? pickedFaceId
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
       return new Error(
@@ -899,7 +1647,10 @@ export function createEdgeRefObjectExpression(
       )
     }
 
-    const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+    const faceCodeRef = faceSources && getFaceCodeRef(faceArtifact)
+    const codeRefs = faceCodeRef
+      ? [faceCodeRef]
+      : getCodeRefsByArtifactId(faceId, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       return new Error(
         `Could not find codeRefs for face ${faceId} in edge reference`
@@ -1017,10 +1768,21 @@ export function createEdgeRefObjectExpression(
     // `endFaces` narrows ambiguous side-face matches, but the refactor should
     // still be useful when we cannot tag them: `sideFaces` alone is valid KCL
     // and may intentionally select multiple adjacent edges for fillet/chamfer.
-    for (const faceId of payload.end_faces) {
+    for (const pickedFaceId of payload.end_faces) {
+      const faceId = faceSources?.[pickedFaceId] ?? pickedFaceId
       const endFaceArtifact = artifactGraph.get(faceId)
       if (!endFaceArtifact) continue
-      const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+      const existingExpr =
+        getExistingSketchTagExprForFace(endFaceArtifact) ??
+        getSegmentExtrudeFaceExpr(endFaceArtifact)
+      if (existingExpr) {
+        endFaceExprs.push(existingExpr)
+        continue
+      }
+      const faceCodeRef = faceSources && getFaceCodeRef(endFaceArtifact)
+      const codeRefs = faceCodeRef
+        ? [faceCodeRef]
+        : getCodeRefsByArtifactId(faceId, artifactGraph)
       if (!codeRefs?.length) continue
 
       const tagResult = modifyAstWithTagsForSelection(
@@ -1039,7 +1801,9 @@ export function createEdgeRefObjectExpression(
       const endFaceTagExpr = tagResult.exprs[0]
       if (!endFaceTagExpr) continue
 
-      endFaceExprs.push(structuredClone(endFaceTagExpr))
+      endFaceExprs.push(
+        applyTagsBaseExprIfNeeded(endFaceTagExpr, endFaceArtifact)
+      )
       currentAst = tagResult.modifiedAst
     }
   }
@@ -1057,17 +1821,22 @@ export function createEdgeRefObjectExpression(
     properties.index = createLiteral(payload.index, wasmInstance)
   }
 
-  if (options?.requireEveryFace) {
+  if (options?.requireEveryFace || faceSources) {
     const endFaceCount = payload.end_faces?.length ?? 0
     if (
       sideFaceExprs.length !== payload.side_faces.length ||
       endFaceExprs.length !== endFaceCount
     ) {
       return new Error(
-        'Not every face in the edge reference could be expressed without editing the file'
+        faceSources
+          ? 'The split edge requires all picked side and end faces to be expressible'
+          : 'Not every face in the edge reference could be expressed without editing the file'
       )
     }
-    if (!programTextEqual(ast, currentAst, wasmInstance)) {
+    if (
+      options?.requireEveryFace &&
+      !programTextEqual(ast, currentAst, wasmInstance)
+    ) {
       return new Error('Edge reference would edit the file')
     }
   }
@@ -2670,7 +3439,9 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     const bodyToV2Selections = new Map<
       string,
       {
-        sweepArtifact: SweepArtifact
+        bodyArtifact:
+          | (SweepArtifact & { type: 'sweep' })
+          | Extract<Artifact, { type: 'compositeSolid' }>
         edgeEntityRefs: Array<{
           selection: Selection
           reference: Extract<EntityReference, { type: 'edge' }>
@@ -2708,8 +3479,17 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       // Find an adjacent face that can identify the owning body. A generated
       // edgeCut can be tagged, but it intentionally has no consumed-edge
       // lineage, so another adjacent wall/cap may be needed for body lookup.
-      let sweepArtifact: SweepArtifact | null = null
-      for (const faceId of edgeEntityRef.side_faces) {
+      const splitOwner =
+        resolved.artifact.type === 'compositeSolid' &&
+        resolved.artifact.subType === 'subtract' &&
+        resolved.artifact.outputIndex != null
+          ? resolved.artifact
+          : undefined
+      let bodyArtifact:
+        | (SweepArtifact & { type: 'sweep' })
+        | Extract<Artifact, { type: 'compositeSolid' }>
+        | undefined = splitOwner
+      for (const faceId of splitOwner ? [] : edgeEntityRef.side_faces) {
         const faceArtifact = artifactGraph.get(faceId)
         if (!faceArtifact) continue
         const faceCodeRef =
@@ -2721,16 +3501,17 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           artifactGraph
         )
         if (!err(sweepTry)) {
-          sweepArtifact = sweepTry
+          bodyArtifact = { ...sweepTry, type: 'sweep' }
           break
         }
       }
-      if (!sweepArtifact) continue
+      if (!bodyArtifact) continue
 
-      const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
+      const bodyKey =
+        splitOwner?.id ?? JSON.stringify(bodyArtifact.codeRef.pathToNode)
       if (!bodyToV2Selections.has(bodyKey)) {
         bodyToV2Selections.set(bodyKey, {
-          sweepArtifact,
+          bodyArtifact,
           edgeEntityRefs: [],
         })
       }
@@ -2745,8 +3526,12 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       const solids: Selections = {
         graphSelections: [
           {
-            entityRef: artifactToEntityRef('sweep', bodyData.sweepArtifact.id),
-            codeRef: bodyData.sweepArtifact.codeRef,
+            entityRef: artifactToEntityRef(
+              bodyData.bodyArtifact.type,
+              bodyData.bodyArtifact.id
+            ),
+            artifact: bodyData.bodyArtifact,
+            codeRef: bodyData.bodyArtifact.codeRef,
           },
         ],
         otherSelections: [],
@@ -2758,7 +3543,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         wasmInstance,
         nodeToEdit,
         {
-          lastChildLookup: true,
+          lastChildLookup: bodyData.bodyArtifact.type === 'sweep',
           artifactTypeFilter: ['compositeSolid', 'sweep'],
         }
       )
@@ -2777,7 +3562,12 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           wasmInstance,
           modifiedAst,
           artifactGraph,
-          undefined,
+          bodyData.bodyArtifact.type === 'compositeSolid'
+            ? {
+                artifact: bodyData.bodyArtifact,
+                codeRef: bodyData.bodyArtifact.codeRef,
+              }
+            : undefined,
           undefined,
           undefined,
           vars.exprs[0]

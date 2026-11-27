@@ -231,6 +231,64 @@ impl EngineManager {
         Ok(std::mem::take(&mut *ids))
     }
 
+    /// Read the copy effects after the batch containing a clone has completed.
+    pub(crate) async fn clone_face_copies(&self, clone_id: Uuid) -> Vec<[Uuid; 2]> {
+        let responses = self.responses();
+        let responses = responses.read().await;
+        responses
+            .values()
+            .rev()
+            .find_map(|response| {
+                let WebSocketResponse::Success(response) = response else {
+                    return None;
+                };
+                let modeling_response = match &response.resp {
+                    OkWebSocketResponseData::Modeling { modeling_response } => modeling_response,
+                    OkWebSocketResponseData::ModelingBatch { responses } => {
+                        let BatchResponse::Success { response } = responses.get(&clone_id.into())? else {
+                            return None;
+                        };
+                        response
+                    }
+                    _ => return None,
+                };
+                let OkModelingCmdResponse::EntityClone(clone) = modeling_response else {
+                    return None;
+                };
+                clone
+                    .face_edge_ids
+                    .iter()
+                    .find(|copy| copy.object_id == clone_id)
+                    .map(|copy| copy.face_copies.clone())
+            })
+            .unwrap_or_default()
+    }
+
+    /// Read exact chamfer provenance from a completed cut in the current execution.
+    pub(crate) async fn cut_face_sources(&self, id: Uuid) -> Option<Vec<kcmc::shared::EdgeCutFaceSource>> {
+        let responses = self.responses();
+        let responses = responses.read().await;
+        responses.iter().rev().find_map(|(request_id, response)| {
+            let WebSocketResponse::Success(response) = response else {
+                return None;
+            };
+            let result = match &response.resp {
+                OkWebSocketResponseData::Modeling { modeling_response } if *request_id == id => modeling_response,
+                OkWebSocketResponseData::ModelingBatch { responses } => {
+                    let BatchResponse::Success { response } = responses.get(&id.into())? else {
+                        return None;
+                    };
+                    response
+                }
+                _ => return None,
+            };
+            let OkModelingCmdResponse::Solid3dCutEdgeReferences(result) = result else {
+                return None;
+            };
+            Some(result.face_sources.clone())
+        })
+    }
+
     /// Take the responses that have accumulated so far and clear them.
     pub async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
         std::mem::take(&mut *self.responses().write().await)

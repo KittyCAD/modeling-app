@@ -1003,6 +1003,12 @@ function modifyAstWithTagForEdgeCutFace(
     return new Error('Selection artifact is not a valid edgeCut type')
   }
 
+  if (edgeCutFace.unattributed) {
+    return new Error(
+      'Cannot tag this cut face without a unique source selector'
+    )
+  }
+
   const tagInfo = {
     node: structuredClone(ast),
     pathToNode: edgeCutFace.codeRef.pathToNode,

@@ -4,10 +4,11 @@ import type { EdgeCutView } from "./EdgeCutView";
 import type { ExtrudeSurfaceView } from "./ExtrudeSurfaceView";
 import type { UnitLength } from "./ModelingCmd";
 import type { SolidCreatorView } from "./SolidCreatorView";
+import type { SourceRange } from "./SourceRange";
 import type { TagIdentifierView } from "./TagIdentifierView";
 
 export type SolidView = { type: "Solid", id: string, originalId: string, topologyId: string, artifactId: ArtifactId, 
 /**
  * Surface summaries are retained for the debug memory pane.
  */
-value: Array<ExtrudeSurfaceView>, faces?: { [key in string]: TagIdentifierView }, sketch: SolidCreatorView, startCapId: string | null, endCapId: string | null, edgeCuts?: Array<EdgeCutView>, units: UnitLength, sectional: boolean, };
+value: Array<ExtrudeSurfaceView>, faces?: { [key in string]: TagIdentifierView }, sketch: SolidCreatorView, startCapId: string | null, endCapId: string | null, edgeCuts?: Array<EdgeCutView>, primaryChamferFaces?: Array<string | null>, historyWalls?: Array<[string, number, string]>, historyFaceGroups?: Array<[string, number, string, string]>, historyAnchorGroups?: Array<[string, string, string, string]>, historyExtrusionSources?: Array<SourceRange>, booleanOutputNames?: Array<string>, units: UnitLength, sectional: boolean, };

@@ -136,7 +136,13 @@ consumed: boolean, subType: CompositeSolidSubType,
  * Index of this output in the expression result, for operations that
  * return multiple selectable bodies from one KCL variable.
  */
-outputIndex?: number | null, 
+outputIndex?: number | null,
+/** Source faces for live output face IDs reported by separated subtraction. */
+subtractionFaceSources?: { [key in ArtifactId]?: ArtifactId },
+/**
+ * Observed face identity links for this subtraction output.
+ */
+subtractionFaceIdentityLineage?: SubtractionFaceIdentityLineage | null,
 /**
  * Constituent solids of the composite solid.
  */
@@ -155,16 +161,47 @@ compositeSolidId?: ArtifactId | null,
  */
 patternIds?: Array<ArtifactId>, };
 
+export type SubtractionFaceIdentityLineage = {
+/**
+ * Command occurrence shared by all output bodies.
+ */
+operationId: ArtifactId,
+/**
+ * Original operation range, including the producer module ID.
+ */
+sourceRange: SourceRange,
+/**
+ * Live face ID to input face ID, including surviving IDs that did not change.
+ */
+sources: { [key in ArtifactId]?: ArtifactId }, };
+
 export type CompositeSolidSubType = "intersect" | "subtract" | "split" | "union";
 
-export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, 
+export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType,
+/**
+ * Immediate source face confirmed by the engine for a cloned edge cut.
+ */
+copySourceFaceId?: ArtifactId | null,
 /**
  * Index of the source selector in an `edges` argument, when this edge cut
  * was created from an edge-reference command.
  */
-sourceSelectorIndex?: number | null, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
+sourceSelectorIndex?: number | null,
+/**
+ * This generated face has no safe selector for a tag-injection codemod.
+ */
+unattributed?: boolean | null,
+/**
+ * Pre-cut edge identity for an engine-confirmed generated face.
+ */
+generatedFrom?: CutFaceOrigin | null, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
+
+/**
+ * The chamfer occurrence and the pre-cut edge that produced a face.
+ */
+export type CutFaceOrigin = { operationId: string, edgeId: string, sideFaces: [string, string], };
 
 export type EdgeCutSubType = "fillet" | "chamfer" | "custom";
 
@@ -276,7 +313,11 @@ copyIds: Array<ArtifactId>,
 /**
  * IDs of copied faces created by the pattern operation.
  */
-copyFaceIds: Array<ArtifactId>, 
+copyFaceIds: Array<ArtifactId>,
+/**
+ * Copied face ID to its source face ID.
+ */
+copyFaceSources?: { [key in ArtifactId]?: ArtifactId },
 /**
  * IDs of copied edges created by the pattern operation.
  */

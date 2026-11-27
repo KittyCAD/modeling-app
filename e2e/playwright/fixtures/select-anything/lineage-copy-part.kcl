@@ -1,0 +1,18 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+baseSketch = sketch(on = XY) {
+  side0 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  side1 = line(start = [var 40mm, var 0mm], end = [var 40mm, var 30mm])
+  side2 = line(start = [var 40mm, var 30mm], end = [var 0mm, var 30mm])
+  side3 = line(start = [var 0mm, var 30mm], end = [var 0mm, var 0mm])
+  coincident([side0.end, side1.start])
+  coincident([side1.end, side2.start])
+  coincident([side2.end, side3.start])
+  coincident([side3.end, side0.start])
+}
+baseRegion = region(segments = [baseSketch.side0, baseSketch.side1, baseSketch.side2, baseSketch.side3])
+base = extrude(baseRegion, length = 10mm)
+
+beveled = chamfer(base, edges = [{ sideFaces = [baseRegion.tags.side0, baseRegion.tags.side1] }], length = 2mm)
+copied = clone(beveled) |> translate(y = 45mm)
+export instances = patternLinear3d(copied, axis = [1, 0, 0], instances = 3, distance = 55mm)

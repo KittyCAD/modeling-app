@@ -2554,6 +2554,57 @@ box = extrude(
 )
 `
 
+  test('builds a semantic edge reference from reported split face sources', async () => {
+    const world = await parsedSelectionWorld(taggedCapSource)
+    const extrudeRef = world.codeRefForSnippet('extrude(')
+    const sweep = extrudeSweep('box-sweep', extrudeRef)
+    const start = capFace('start-cap', 'start', sweep.id, extrudeRef)
+    const end = capFace('end-cap', 'end', sweep.id, extrudeRef)
+    const owner = {
+      type: 'compositeSolid',
+      id: 'cut-output',
+      subType: 'subtract',
+      outputIndex: 1,
+      subtractionFaceSources: {
+        'picked-start': start.id,
+        'picked-end': end.id,
+      },
+      consumed: false,
+      solidIds: [sweep.id],
+      toolIds: [],
+      codeRef: extrudeRef,
+    } satisfies Extract<Artifact, { type: 'compositeSolid' }>
+    const graph = new Map<string, Artifact>([
+      [sweep.id, sweep],
+      [start.id, start],
+      [end.id, end],
+      [owner.id, owner],
+    ])
+    const result = createEdgeRefObjectExpression(
+      { side_faces: ['picked-start', 'picked-end'] },
+      world.instance,
+      world.ast,
+      graph,
+      { artifact: owner, codeRef: owner.codeRef }
+    )
+    if (result instanceof Error) throw result
+    expect(result.expr).toMatchObject({
+      type: 'ObjectExpression',
+      properties: [
+        {
+          key: { name: 'sideFaces' },
+          value: {
+            type: 'ArrayExpression',
+            elements: [
+              { type: 'Name', name: { name: 'boxStart' } },
+              { type: 'Name', name: { name: 'boxEnd' } },
+            ],
+          },
+        },
+      ],
+    })
+  })
+
   test('copies an existing start cap tag', async () => {
     const world = await parsedSelectionWorld(taggedCapSource)
     const extrudeRef = world.codeRefForSnippet(`extrude(
@@ -3789,6 +3840,66 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
       },
     })
   })
+
+  test.each([undefined, { 'picked-face': 'source-face' }])(
+    'keeps semantic edge picks on a separated subtraction output with face sources %j',
+    async (subtractionFaceSources) => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const ast = assertParse(
+        'result = subtract([base], tools = [tool], separateBodies = true)',
+        instance
+      )
+      const owner = {
+        type: 'compositeSolid',
+        id: 'right-output',
+        subType: 'subtract',
+        outputIndex: 1,
+        subtractionFaceSources,
+        consumed: false,
+        solidIds: ['base'],
+        toolIds: ['tool'],
+        codeRef: {
+          range: [0, 0, 0] as SourceRange,
+          pathToNode: [],
+          nodePath: { steps: [] },
+        },
+      } satisfies Extract<Artifact, { type: 'compositeSolid' }>
+      const artifactGraph: ArtifactGraph = new Map([[owner.id, owner]])
+      const sendSceneCommand = vi.fn().mockResolvedValue(undefined)
+
+      const event = await getEventForQueryEntityTypeWithPoint(
+        {
+          entity_id: 'picked-edge',
+          reference: {
+            type: 'edge',
+            side_faces: ['picked-face', 'tool-face'],
+            topology_fallback: { parent_id: owner.id, primitive_index: 7 },
+          },
+        },
+        {
+          engineCommandManager: { sendSceneCommand } as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+        }
+      )
+
+      expect(event).toMatchObject({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            artifact: owner,
+            engineEntityId: 'picked-edge',
+            entityRef: {
+              type: 'edge',
+              side_faces: ['picked-face', 'tool-face'],
+            },
+          },
+        },
+      })
+    }
+  )
 
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any

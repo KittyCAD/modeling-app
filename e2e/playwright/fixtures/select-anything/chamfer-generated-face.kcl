@@ -1,0 +1,16 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+profile = sketch(on = XY) {
+  lower = line(start = [0mm, 0mm], end = [30mm, 0mm])
+  right = line(start = [30mm, 0mm], end = [30mm, 20mm])
+  upper = line(start = [30mm, 20mm], end = [0mm, 20mm])
+  curve = arc(start = [0mm, 20mm], end = [0mm, 0mm], center = [0mm, 10mm])
+}
+profileRegion = region(point = [15mm, 10mm], sketch = profile)
+base = extrude(profileRegion, length = 12mm, tagStart = $bottomCap, tagEnd = $topCap)
+beveled = chamfer(
+  base,
+  edges = [{ sideFaces = [profileRegion.tags.lower, base.faces.topCap] }],
+  length = 1mm,
+  tangentChain = true,
+)

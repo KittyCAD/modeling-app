@@ -12,6 +12,8 @@ use kcl_api::ObjectKind;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 pub use kittycad_modeling_cmds::KclVersion;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::EdgeCutFaceSource;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -223,6 +225,8 @@ pub(super) struct ArtifactState {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output artifact graph.
     pub graph: ArtifactGraph,
+    /// Cached engine feedback survives the viewport projecting a cut face as a sketch plane.
+    cut_face_sources: AHashMap<Uuid, Vec<EdgeCutFaceSource>>,
 }
 
 /// Which stdlib edge function produced this refactor metadata (for lint/code mod).
@@ -1501,12 +1505,13 @@ impl ExecState {
         }
 
         let initial_graph = self.global.artifacts.graph.clone();
+        let responses = crate::execution::artifact::flatten_modeling_command_responses(&new_responses);
 
         // Build the artifact graph.
         let programs = self.build_program_lookup(program.clone());
         let graph_result = crate::execution::artifact::build_artifact_graph(
             &new_commands,
-            &new_responses,
+            &responses,
             program,
             &mut self.global.artifacts.artifacts,
             initial_graph,
@@ -1522,8 +1527,18 @@ impl ExecState {
 
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
+        self.global.artifacts.cut_face_sources.extend(responses.into_iter().filter_map(
+            |(id, response)| match response {
+                OkModelingCmdResponse::Solid3dCutEdgeReferences(result) => Some((id, result.face_sources)),
+                _ => None,
+            },
+        ));
 
         Ok(())
+    }
+
+    pub(crate) fn cached_cut_face_sources(&self, operation: Uuid) -> Vec<EdgeCutFaceSource> {
+        self.global.artifacts.cut_face_sources.get(&operation).cloned().unwrap_or_default()
     }
 
     /// The KCL version governing version-conditional runtime behavior.
@@ -1800,6 +1815,7 @@ impl ArtifactState {
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.graph.clear();
+        self.cut_face_sources.clear();
     }
 }
 

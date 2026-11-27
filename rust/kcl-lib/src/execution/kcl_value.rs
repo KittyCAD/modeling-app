@@ -66,6 +66,20 @@ pub type KclObjectFields = HashMap<String, KclValue>;
 pub enum KclObjectKind {
     #[default]
     Default,
+    BooleanOutputs,
+    HistoryExtrusions {
+        #[serde(skip)]
+        value: Box<crate::std::history::HistoryExtrusions>,
+    },
+    HistoryFaceGroup {
+        owner: uuid::Uuid,
+        value_id: uuid::Uuid,
+        faces: Vec<uuid::Uuid>,
+    },
+    HistoryWalls {
+        #[serde(skip)]
+        value: Box<crate::std::history::HistoryWalls>,
+    },
     SketchTags {
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         deprecated_solid_tag_names: Vec<String>,
@@ -76,13 +90,21 @@ impl KclObjectKind {
     pub(crate) fn is_default(&self) -> bool {
         match self {
             KclObjectKind::Default => true,
-            KclObjectKind::SketchTags { .. } => false,
+            KclObjectKind::SketchTags { .. }
+            | KclObjectKind::HistoryWalls { .. }
+            | KclObjectKind::HistoryExtrusions { .. }
+            | KclObjectKind::HistoryFaceGroup { .. }
+            | KclObjectKind::BooleanOutputs => false,
         }
     }
 
     pub(crate) fn deprecated_solid_tag_names(&self) -> &[String] {
         match self {
-            Self::Default => &[],
+            Self::Default
+            | Self::BooleanOutputs
+            | Self::HistoryWalls { .. }
+            | Self::HistoryExtrusions { .. }
+            | Self::HistoryFaceGroup { .. } => &[],
             Self::SketchTags {
                 deprecated_solid_tag_names,
             } => deprecated_solid_tag_names,

@@ -203,6 +203,12 @@ pub struct CompositeSolid {
     /// return multiple selectable bodies from one KCL variable.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub output_index: Option<usize>,
+    /// Source faces for live output face IDs reported by separated subtraction.
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub subtraction_face_sources: std::collections::BTreeMap<ArtifactId, ArtifactId>,
+    /// Observed face identity links for this subtraction output.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub subtraction_face_identity_lineage: Option<SubtractionFaceIdentityLineage>,
     /// Constituent solids of the composite solid.
     pub solid_ids: Vec<ArtifactId>,
     /// Tool solids used for asymmetric operations like subtract.
@@ -215,6 +221,18 @@ pub struct CompositeSolid {
     /// Pattern operations that use this composite solid as their source.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pattern_ids: Vec<ArtifactId>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SubtractionFaceIdentityLineage {
+    /// Command occurrence shared by all output bodies.
+    pub operation_id: ArtifactId,
+    /// Original operation range, including the producer module ID.
+    pub source_range: SourceRange,
+    /// Live face ID to input face ID, including surviving IDs that did not change.
+    pub sources: std::collections::BTreeMap<ArtifactId, ArtifactId>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
@@ -547,16 +565,35 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
+    /// Immediate source face confirmed by the engine for a cloned edge cut.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub copy_source_face_id: Option<ArtifactId>,
     /// Index of the source selector in an `edges` argument, when this edge cut
     /// was created from an edge-reference command.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_selector_index: Option<usize>,
+    /// This generated face has no safe selector for a tag-injection codemod.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unattributed: Option<bool>,
+    /// Pre-cut edge identity for an engine-confirmed generated face.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub generated_from: Option<CutFaceOrigin>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+}
+
+/// The chamfer occurrence and the pre-cut edge that produced a face.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct CutFaceOrigin {
+    pub operation_id: uuid::Uuid,
+    pub edge_id: uuid::Uuid,
+    pub side_faces: [uuid::Uuid; 2],
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
@@ -657,6 +694,9 @@ pub struct Pattern {
     pub copy_ids: Vec<ArtifactId>,
     /// IDs of copied faces created by the pattern operation.
     pub copy_face_ids: Vec<ArtifactId>,
+    /// Copied face ID to its source face ID.
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub copy_face_sources: std::collections::BTreeMap<ArtifactId, ArtifactId>,
     /// IDs of copied edges created by the pattern operation.
     pub copy_edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,

@@ -304,6 +304,8 @@ fn edge_cut_view(edge_cut: runtime::EdgeCut) -> EdgeCutView {
 fn solid_view(solid: runtime::Solid) -> SolidView {
     let original_id = solid.original_id();
     let topology_id = solid.topology_id();
+    let (history_walls, history_face_groups, history_anchor_groups, history_extrusion_sources) =
+        crate::std::history::history_references(&solid);
     SolidView {
         type_: SolidViewType::Solid,
         id: solid.id,
@@ -319,6 +321,12 @@ fn solid_view(solid: runtime::Solid) -> SolidView {
         creator: solid_creator_view(solid.creator),
         start_cap_id: solid.start_cap_id,
         end_cap_id: solid.end_cap_id,
+        primary_chamfer_faces: solid.primary_chamfer_faces,
+        history_walls,
+        history_face_groups,
+        history_anchor_groups,
+        history_extrusion_sources,
+        boolean_output_names: solid.boolean_output_names,
         edge_cuts: solid.edge_cuts.into_iter().map(edge_cut_view).collect(),
         units: solid.units,
         sectional: solid.sectional,

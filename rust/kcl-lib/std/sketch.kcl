@@ -3435,7 +3435,12 @@ export fn faceOf(
   /// The solid that has the face.
   @solid: Solid,
   /// Which face of the solid.
-  face: TaggedFace | Segment,
+  face?: TaggedFace | Segment,
+  /// Zero-based chamfer occurrence whose primary generated face to use.
+  chamferFace?: number(Count),
+  /// Two construction face groups identifying the original edge of the bevel.
+  /// Requires chamferFace to select the chamfer occurrence.
+  fromFaces?: [any],
 ): Face {}
 
 /// Create a region from closed segments.
@@ -3535,4 +3540,6 @@ export fn region(
   direction?: string = "ccw",
   /// The sketch that the region is from. This is required when point is a `Point2d`.
   sketch?: any,
+  /// A named anchor for this profile in a resulting body's history.
+  tag?: TagDecl,
 ): Sketch {}

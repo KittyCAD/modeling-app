@@ -1625,6 +1625,12 @@ export fn subtract(
   @solids: [Solid; 1+],
   /// The solids to subtract. These tool solids are also consumed by this operation.
   tools: [Solid],
+  /// Return disconnected results as separate solids. Defaults to false.
+  separateBodies?: bool,
+  /// Name separated outputs by a surviving wall from a tagged region segment.
+  /// For example, outputNames = { left = baseRegion.tags.leftWall } makes the
+  /// surviving output available at result.outputs.left.
+  outputNames?: any,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.

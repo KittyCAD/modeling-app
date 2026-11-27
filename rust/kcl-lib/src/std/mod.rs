@@ -17,6 +17,7 @@ pub mod fail;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
+pub(crate) mod history;
 pub mod ids;
 pub mod loft;
 pub mod math;

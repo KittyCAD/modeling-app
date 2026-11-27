@@ -1,0 +1,15 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm)
+
+profile = sketch(on = XY) {
+  front = line(start = [-2mm, -2mm], end = [2mm, -2mm])
+  right = line(start = [2mm, -2mm], end = [2mm, 2mm])
+  back = line(start = [2mm, 2mm], end = [-2mm, 2mm])
+  left = line(start = [-2mm, 2mm], end = [-2mm, -2mm])
+}
+path = sketch(on = XZ) {
+  rise = line(start = [0mm, 0mm], end = [0mm, 16mm])
+  bend = line(start = [0mm, 16mm], end = [12mm, 28mm])
+}
+section = region(segments = [profile.front, profile.right])
+export swept = sweep(section, path = [path.rise, path.bend], tagStart = $sweepStart, tagEnd = $sweepEnd)
+export sweptFront = swept.history.extrusions[0].walls.front
