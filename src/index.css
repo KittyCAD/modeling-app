@@ -396,6 +396,19 @@ code,
     grid-template-rows: auto 1fr;
   }
 
+  .home-project-list {
+    container-type: inline-size;
+  }
+
+  .home-project-list > section {
+    @apply h-full overflow-y-auto pb-24;
+  }
+
+  .home-project-list > section > * {
+    /* The scrollbar takes up the difference between the two widths. */
+    margin-inline-end: clamp(0px, 100cqi - 100%, 0.5rem);
+  }
+
   .avatar {
     @apply grid place-content-center overflow-hidden;
     @apply border rounded border-chalkboard-30/50 dark:border-chalkboard-80/30;

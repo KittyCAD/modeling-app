@@ -787,44 +787,44 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-        {selectedProjectLibrary || libraryId ? (
-          <ProjectGrid
-            aria-busy={!projectsLoaded}
-            projectShellEnabled={projectShellEnabled}
-            searchResults={searchResults ?? []}
-            projects={scopedHomeProjectEntries}
-            projectsLoaded={projectsInitiallyLoaded}
-            query={query}
-            sort={sort}
-            projectStatuses={projectStatuses}
-            projectActions={homeProjectActions}
-            fileOperations={app.fileOperations}
-            showCloudSyncUi
-            showSourceStatusBadges={false}
-            onDuplicateToLibrary={duplicateProjectToLibrary}
-            projectLibraryEmptyTestId="project-library-empty"
-            className="flex-1 col-start-2 -col-end-1 overflow-y-auto pb-24"
-          />
-        ) : (
-          <ProjectLibraryOverview
-            aria-busy={!projectsLoaded}
-            projectShellEnabled={projectShellEnabled}
-            libraries={visibleProjectLibraries}
-            searchResults={searchResults ?? []}
-            projects={scopedHomeProjectEntries}
-            projectsLoaded={projectsInitiallyLoaded}
-            query={query}
-            sort={sort}
-            projectStatuses={projectStatuses}
-            projectActions={homeProjectActions}
-            fileOperations={app.fileOperations}
-            showCloudSyncUi
-            onDuplicateToLibrary={duplicateProjectToLibrary}
-            projectLibraryDrag={projectLibraryDrag}
-            librarySections={librarySections}
-            className="flex-1 col-start-2 -col-end-1 overflow-y-auto pb-24"
-          />
-        )}
+        <div className="home-project-list col-start-2 -col-end-1 min-h-0">
+          {selectedProjectLibrary || libraryId ? (
+            <ProjectGrid
+              aria-busy={!projectsLoaded}
+              projectShellEnabled={projectShellEnabled}
+              searchResults={searchResults ?? []}
+              projects={scopedHomeProjectEntries}
+              projectsLoaded={projectsInitiallyLoaded}
+              query={query}
+              sort={sort}
+              projectStatuses={projectStatuses}
+              projectActions={homeProjectActions}
+              fileOperations={app.fileOperations}
+              showCloudSyncUi
+              showSourceStatusBadges={false}
+              onDuplicateToLibrary={duplicateProjectToLibrary}
+              projectLibraryEmptyTestId="project-library-empty"
+            />
+          ) : (
+            <ProjectLibraryOverview
+              aria-busy={!projectsLoaded}
+              projectShellEnabled={projectShellEnabled}
+              libraries={visibleProjectLibraries}
+              searchResults={searchResults ?? []}
+              projects={scopedHomeProjectEntries}
+              projectsLoaded={projectsInitiallyLoaded}
+              query={query}
+              sort={sort}
+              projectStatuses={projectStatuses}
+              projectActions={homeProjectActions}
+              fileOperations={app.fileOperations}
+              showCloudSyncUi
+              onDuplicateToLibrary={duplicateProjectToLibrary}
+              projectLibraryDrag={projectLibraryDrag}
+              librarySections={librarySections}
+            />
+          )}
+        </div>
       </div>
       <StatusBar
         globalItems={[
