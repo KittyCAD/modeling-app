@@ -3,12 +3,12 @@ import {
   runningOnMac,
   runningOnWindows,
 } from '@e2e/playwright/lib/testPaths'
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
 describe('platform detection utilities', () => {
   const originalPlatform = process.platform
 
-  afterAll(() => {
+  afterEach(() => {
     Object.defineProperty(process, 'platform', {
       value: originalPlatform,
     })
