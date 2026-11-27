@@ -15,7 +15,13 @@ it.each([true, false])(
     const command = createCloudLibraryDeleteCommand({
       enabled: () => true,
       libraries: () => [
-        { id, name: 'Client designs', can_manage: true, revision: 'revision' },
+        {
+          id,
+          name: 'Client designs',
+          org_id: 'organization',
+          can_manage: true,
+          revision: 'revision',
+        },
       ],
       projects: () => [],
       deleteLibrary,
@@ -51,7 +57,7 @@ it.each([true, false])(
         typeof command.reviewMessage === 'function' &&
           command.reviewMessage(context)
       ).toBe(
-        'Delete the empty cloud library "Client designs"? This cannot be undone.'
+        'Delete the empty cloud library "Client designs (Organization)"? This cannot be undone.'
       )
       expect(deleteLibrary).not.toHaveBeenCalled()
       actor.send({

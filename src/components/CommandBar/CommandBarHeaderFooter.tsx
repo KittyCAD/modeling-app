@@ -5,10 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
-import {
-  evaluateCommandBarArg,
-  getCommandOptionName,
-} from '@src/components/CommandBar/utils'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
@@ -282,13 +279,7 @@ function CommandBarHeaderFooter({
                           <em>
                             {arg.valueSummary
                               ? arg.valueSummary(argValue)
-                              : arg.inputType === 'options'
-                                ? getCommandOptionName(
-                                    arg,
-                                    argValue,
-                                    commandBarState.context
-                                  )
-                                : argValue}
+                              : argValue}
                           </em>
                         )
                       ) : null}

@@ -19,7 +19,11 @@ it('offers only empty manageable libraries and reviews deletion using the librar
   const deleteLibrary = vi.fn(async () => {})
   const command = createCloudLibraryDeleteCommand({
     enabled: () => true,
-    libraries: () => [library, { ...library, id: 'full' }],
+    libraries: () => [
+      library,
+      { ...library, id: 'org-library', org_id: 'organization' },
+      { ...library, id: 'full' },
+    ],
     projects: () => [{ id: 'project', library_id: 'full' }],
     deleteLibrary,
   })
@@ -32,8 +36,10 @@ it('offers only empty manageable libraries and reviews deletion using the librar
   )
     throw new Error('Expected library options')
   expect(argument.options({ argumentsToSubmit: {} })).toEqual([
-    { name: 'Designs', value: 'library', isCurrent: false },
+    { name: 'Designs (Personal)', value: 'library', isCurrent: false },
+    { name: 'Designs (Organization)', value: 'org-library', isCurrent: false },
   ])
+  expect(argument.valueSummary?.('org-library')).toBe('Designs (Organization)')
   await command.onSubmit({ library: 'library' })
   expect(deleteLibrary).toHaveBeenCalledExactlyOnceWith(
     'library',

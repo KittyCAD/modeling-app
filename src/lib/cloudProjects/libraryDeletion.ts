@@ -1,4 +1,5 @@
 import type { ProjectLibraryResponse } from '@kittycad/lib'
+import { formatCloudLibraryLabel } from '@src/lib/cloudProjects/apiProjectLibraries'
 import type { RemoteProjectSummary } from '@src/lib/cloudProjects/runtime/types'
 import type { Command } from '@src/lib/commandTypes'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
@@ -41,6 +42,12 @@ export function createCloudLibraryDeleteCommand({
 }): Command {
   const deletableLibraries = () =>
     libraries().filter((library) => canDeleteCloudLibrary(library, projects()))
+  const libraryLabel = (id: unknown) => {
+    const library = libraries().find((library) => library.id === id)
+    return library
+      ? formatCloudLibraryLabel(library.name, library.org_id)
+      : 'Unavailable library'
+  }
   const command: Command<
     AnyStateMachine,
     typeof DELETE_CLOUD_LIBRARY_COMMAND,
@@ -52,21 +59,18 @@ export function createCloudLibraryDeleteCommand({
     icon: 'trash',
     disabled: !enabled() || deletableLibraries().length === 0,
     needsReview: true,
-    reviewMessage: ({ argumentsToSubmit }) => {
-      const library = libraries().find(
-        (library) => library.id === argumentsToSubmit.library
-      )
-      return `Delete the empty cloud library "${library?.name ?? 'Unavailable library'}"? This cannot be undone.`
-    },
+    reviewMessage: ({ argumentsToSubmit }) =>
+      `Delete the empty cloud library "${libraryLabel(argumentsToSubmit.library)}"? This cannot be undone.`,
     args: {
       library: {
         displayName: 'Library',
         inputType: 'options',
         required: true,
         skip: true,
+        valueSummary: libraryLabel,
         options: () =>
           deletableLibraries().map((library) => ({
-            name: library.name,
+            name: formatCloudLibraryLabel(library.name, library.org_id),
             value: library.id,
             isCurrent: false,
           })),

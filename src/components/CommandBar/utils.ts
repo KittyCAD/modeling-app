@@ -1,17 +1,5 @@
 import type { CommandArgument } from '@src/lib/commandTypes'
 
-export function getCommandOptionName(
-  arg: CommandArgument<unknown> & { inputType: 'options' },
-  value: unknown,
-  context: { argumentsToSubmit: Record<string, unknown> }
-) {
-  const options =
-    typeof arg.options === 'function'
-      ? arg.options(context, arg.machineActor?.getSnapshot().context)
-      : arg.options
-  return options.find((option) => option.value === value)?.name ?? 'Unavailable'
-}
-
 export function evaluateCommandBarArg(
   name: string,
   arg: CommandArgument<unknown>,
