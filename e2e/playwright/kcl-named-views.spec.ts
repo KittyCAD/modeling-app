@@ -1,9 +1,8 @@
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { uuidv4 } from '@src/lib/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { uuidv4 } from '@src/lib/utils'
 
 /** Declared apart from `MAIN_KCL` so a test can remove exactly this view. */
 const TOP_VIEW_KCL = `topDown = view::named(
@@ -220,12 +219,12 @@ test.describe('KCL named views', { tag: '@web' }, () => {
       toolbar,
       page,
       folderSetupFn,
+      debug: debugFixture,
     }) => {
-      const u = await getUtils(page)
       await folderSetupFn((dir) => writeTopTargetProject(dir, fs))
       await homePage.openProject('top-target')
       await scene.settled()
-      if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      if (rendererTag === '@streamRenderer') await debugFixture.open()
       const pane = page.locator(VIEW_SWITCHER_PANE)
       await expect(page.getByTestId(VIEW_SWITCHER_BUTTON)).toBeVisible()
       await expect(pane).toHaveCount(0)
@@ -238,7 +237,8 @@ test.describe('KCL named views', { tag: '@web' }, () => {
       await expect(pane.getByTestId('named-view-create')).toBeVisible()
       await expect(defaultView).toHaveAttribute('data-active', 'true')
 
-      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      if (rendererTag === '@streamRenderer')
+        await debugFixture.clearCommandLogs()
       await top
         .getByRole('button', { name: 'Apply TopAt', exact: true })
         .click()
@@ -247,16 +247,16 @@ test.describe('KCL named views', { tag: '@web' }, () => {
 
       if (rendererTag === '@streamRenderer') {
         // Top and bottom take the quaternion route rather than a look-at.
-        await u.waitForCmdReceive('default_camera_set_view')
-        await u.clearCommandLogs()
-        await u.sendCustomCmd({
+        await debugFixture.waitForCommandReceived('default_camera_set_view')
+        await debugFixture.clearCommandLogs()
+        await debugFixture.sendCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'default_camera_get_settings',
           },
         })
-        await u.waitForCmdReceive('default_camera_get_settings')
+        await debugFixture.waitForCommandReceived('default_camera_get_settings')
       }
       if (rendererTag === '@localRenderer') {
         await expect
@@ -286,22 +286,23 @@ test.describe('KCL named views', { tag: '@web' }, () => {
       toolbar,
       page,
       folderSetupFn,
+      debug: debugFixture,
     }) => {
-      const u = await getUtils(page)
       await folderSetupFn((dir) => writeIsometricTargetProject(dir, fs))
       await homePage.openProject('isometric-target')
       await scene.settled()
-      if (rendererTag === '@streamRenderer') await u.openDebugPanel()
+      if (rendererTag === '@streamRenderer') await debugFixture.open()
       await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
-      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      if (rendererTag === '@streamRenderer')
+        await debugFixture.clearCommandLogs()
       await page
         .locator(VIEW_SWITCHER_PANE)
         .getByRole('button', { name: 'Apply IsometricAt', exact: true })
         .click()
 
       if (rendererTag === '@streamRenderer')
-        await u.waitForCmdReceive('default_camera_set_view')
+        await debugFixture.waitForCommandReceived('default_camera_set_view')
       await expect(async () => {
         const camera = await scene.getCameraInfo()
 

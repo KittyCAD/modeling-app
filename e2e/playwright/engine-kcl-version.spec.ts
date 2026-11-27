@@ -1,4 +1,3 @@
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 
@@ -16,7 +15,16 @@ const kcl3 = kcl2.replace('2.0', '"3.0-preview"')
 test(
   'synchronizes the engine KCL version on connect, file switches, and edits',
   { tag: ['@web', '@desktop', '@localRenderer'] },
-  async ({ page, folderSetupFn, fs, homePage, toolbar, editor, scene }) => {
+  async ({
+    page,
+    folderSetupFn,
+    fs,
+    homePage,
+    toolbar,
+    editor,
+    scene,
+    fileTree: fileTreeFixture,
+  }) => {
     await folderSetupFn(async (dir) => {
       const project = await fs.join(dir, 'engine-kcl-version')
       await fs.mkdir(project, { recursive: true })
@@ -58,8 +66,10 @@ test(
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     versions.length = 0
 
-    await (await getUtils(page)).openFilePanel()
-    await scene.waitForExecutionDoneAfter(() => toolbar.openFile('preview.kcl'))
+    await fileTreeFixture.openPane()
+    await scene.waitForExecutionDoneAfter(() =>
+      fileTreeFixture.openFile('preview.kcl')
+    )
     expect(versions).toEqual(['3.0-preview'])
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
 

@@ -1,25 +1,25 @@
-import {
-  readEditorCode,
-  holdFileRead,
-  holdModelingOpen,
-} from '@e2e/playwright/lib/editorTestUtils'
-import {
-  installPausedClock,
-  pauseAppClock,
-  openLayoutPanes,
-} from '@e2e/playwright/lib/appTestUtils'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { expect, test } from '@e2e/playwright/base-test'
 import {
   mockClientErrorReports,
   setup,
   waitForAppLoad,
-} from '@e2e/playwright/test-utils'
-import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
-import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
+} from '@e2e/playwright/lib/appSetup'
+import {
+  installPausedClock,
+  openLayoutPanes,
+  pauseAppClock,
+} from '@e2e/playwright/lib/appTestUtils'
 import type * as BrowserTestUtils from '@e2e/playwright/lib/browserTestUtils'
 import { browserTestUtilsPath } from '@e2e/playwright/lib/browserTestUtilsPath'
+import { cloudProjectResponse } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
+import {
+  holdFileRead,
+  holdModelingOpen,
+  readEditorCode,
+} from '@e2e/playwright/lib/editorTestUtils'
 import { decode } from '@msgpack/msgpack'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 const projectId = '12902000-0000-4000-8000-000000000091'
 

@@ -1,12 +1,12 @@
 import { expect, test } from '@e2e/playwright/base-test'
-import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
-import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
 import {
   mockClientErrorReports,
   setup,
   waitForAppLoad,
   waitForWebKitBillingToSettle,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/appSetup'
+import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import { mockCloudStorage } from '@e2e/playwright/lib/cloudStorageFixture'
 import { PLAYWRIGHT_PROJECT_DIRECTORY } from '@e2e/playwright/storageStates'
 import { test as liveTest } from '@e2e/playwright/zoo-test'
 const TUTORIAL_PROJECT_ID = '12902000-0000-4000-8000-000000000001'

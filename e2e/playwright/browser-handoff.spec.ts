@@ -1,5 +1,5 @@
 import { expect, test } from '@e2e/playwright/base-test'
-import { setup } from '@e2e/playwright/test-utils'
+import { setup } from '@e2e/playwright/lib/appSetup'
 import { devices } from '@playwright/test'
 import { getAppFolderName } from '@src/lib/appFolderName'
 

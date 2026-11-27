@@ -1,12 +1,9 @@
-import path from 'path'
 import fsp from 'fs/promises'
+import path from 'path'
 
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import {
-  executorInputPath,
-  getPlaywrightDownloadDir,
-  getUtils,
-} from '@e2e/playwright/test-utils'
+import { getPlaywrightDownloadDir } from '@e2e/playwright/lib/exportSupport'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
@@ -21,7 +18,15 @@ test(
     ],
   },
   async (
-    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    {
+      page,
+      scene,
+      tronApp,
+      cmdBar,
+      toolbar,
+      folderSetupFn,
+      fileTree: fileTreeFixture,
+    },
     testInfo
   ) => {
     if (!tronApp) throwTronAppMissing()
@@ -104,14 +109,15 @@ test(
     })
 
     await test.step('on open of file in file pane', async () => {
-      const u = await getUtils(page)
-      await u.openFilePanel()
+      await fileTreeFixture.openPane()
 
       // Click on the other file
-      await scene.waitForExecutionDoneAfter(() => toolbar.openFile('other.kcl'))
+      await scene.waitForExecutionDoneAfter(() =>
+        fileTreeFixture.openFile('other.kcl')
+      )
 
       // Close the file pane
-      await u.closeFilePanel()
+      await fileTreeFixture.closePane()
       await scene.settled()
 
       // Expect zero errors in gutter
@@ -189,7 +195,17 @@ test(
     ],
   },
   async (
-    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    {
+      page,
+      scene,
+      tronApp,
+      cmdBar,
+      toolbar,
+      folderSetupFn,
+      fileTree: fileTreeFixture,
+      debug: debugFixture,
+      editor: editorFixture,
+    },
     testInfo
   ) => {
     if (!tronApp) throwTronAppMissing()
@@ -221,10 +237,10 @@ extrude001 = extrude(profile001, length = 5)`
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     // Close other panes and ensure only feature tree is open
-    const u = await getUtils(page)
-    await u.closeFilePanel()
-    await u.closeDebugPanel()
-    await u.closeKclCodePanel()
+
+    await fileTreeFixture.closePane()
+    await debugFixture.close()
+    await editorFixture.closePane()
 
     // Open the feature tree pane
     await toolbar.openFeatureTreePane()
@@ -290,7 +306,17 @@ test(
     ],
   },
   async (
-    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    {
+      page,
+      scene,
+      tronApp,
+      cmdBar,
+      toolbar,
+      folderSetupFn,
+      fileTree: fileTreeFixture,
+      debug: debugFixture,
+      editor: editorFixture,
+    },
     testInfo
   ) => {
     if (!tronApp) throwTronAppMissing()
@@ -324,10 +350,10 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     // Close other panes and ensure only feature tree is open
-    const u = await getUtils(page)
-    await u.closeFilePanel()
-    await u.closeDebugPanel()
-    await u.closeKclCodePanel()
+
+    await fileTreeFixture.closePane()
+    await debugFixture.close()
+    await editorFixture.closePane()
 
     // Open the feature tree pane
     await toolbar.openFeatureTreePane()

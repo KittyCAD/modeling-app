@@ -162,13 +162,13 @@ export default defineConfig([
           selector:
             "CallExpression[callee.object.name='TOML'][callee.property.name='stringify']",
           message:
-            'Do not use TOML.stringify directly. Use the wrappers in test-utils instead like settingsToToml.',
+            'Do not use TOML.stringify directly. Use the wrappers in e2e/playwright/lib/settingsSupport instead like settingsToToml.',
         },
         {
           selector:
             "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
           message:
-            'Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings.',
+            'Do not use TOML.parse directly. Use the wrappers in e2e/playwright/lib/settingsSupport instead like tomlToSettings.',
         },
         {
           selector:
@@ -186,6 +186,11 @@ export default defineConfig([
         'error',
         {
           patterns: [
+            {
+              group: ['@e2e/playwright/test-utils', '**/playwright/test-utils'],
+              message:
+                'Use injected Playwright fixtures for UI actions or a focused e2e/playwright/lib support module.',
+            },
             {
               group: ['./*', '../*', '!./*.css', '!../*.css'],
               message: 'Use absolute imports instead.',

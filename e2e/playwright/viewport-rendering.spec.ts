@@ -1,5 +1,8 @@
+import {
+  settingsToToml,
+  tomlToSettings,
+} from '@e2e/playwright/lib/settingsSupport'
 import { TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
-import { settingsToToml, tomlToSettings } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(

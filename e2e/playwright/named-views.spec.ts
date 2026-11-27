@@ -1,17 +1,17 @@
-import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
+import { join } from 'path'
 
-import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { Page } from '@playwright/test'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
+import { createProject } from '@e2e/playwright/lib/projectSupport'
 import {
-  createProject,
   perProjectSettingsToToml,
-  runningOnWindows,
   tomlToPerProjectSettings,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/settingsSupport'
+import { runningOnWindows } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 // Helper function to determine if the file path on disk exists

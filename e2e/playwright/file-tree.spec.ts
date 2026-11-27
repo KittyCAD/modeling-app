@@ -1,9 +1,6 @@
-import {
-  createProject,
-  executorInputPath,
-  getUtils,
-  PLAYWRIGHT_TEST_SCOPE_KEY,
-} from '@e2e/playwright/test-utils'
+import { PLAYWRIGHT_TEST_SCOPE_KEY } from '@e2e/playwright/lib/appSetup'
+import { createProject } from '@e2e/playwright/lib/projectSupport'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -25,7 +22,7 @@ const exists = async (
 test(
   'opens and saves text files from the project explorer',
   { tag: ['@desktop', '@windows', '@localRenderer'] },
-  async ({ folderSetupFn, fs, homePage, toolbar, page }) => {
+  async ({ folderSetupFn, fs, homePage, toolbar, page, fileTree }) => {
     const projectName = 'text-files'
     const encoder = new TextEncoder()
     const { dir } = await folderSetupFn(async (dir) => {
@@ -53,7 +50,7 @@ test(
     await toolbar.closePane(DefaultLayoutPaneID.Code)
 
     const textEditor = page.locator('#code-pane').getByRole('textbox')
-    await toolbar.openFile('config.toml')
+    await fileTree.openFile('config.toml')
     await expect(textEditor).toContainText('title = "Example"')
     await textEditor.press('ControlOrMeta+End')
     await textEditor.pressSequentially('enabled = true')
@@ -71,7 +68,7 @@ test(
         )
       )
 
-    await toolbar.openFile('unsupported.bin')
+    await fileTree.openFile('unsupported.bin')
     await expect(
       page.getByText('This file is binary or is not UTF-8 text.', {
         exact: false,
@@ -83,7 +80,7 @@ test(
         .getByRole('button', { name: 'Import in current file', exact: true })
     ).not.toBeVisible()
 
-    await toolbar.openFile('config')
+    await fileTree.openFile('config')
     await expect(textEditor).toHaveText('No extension')
     await toolbar.closePane(DefaultLayoutPaneID.Code)
     const tree = page.getByRole('tree', { name: 'Files Explorer' })
@@ -94,7 +91,7 @@ test(
     await tree.press('Enter')
     await expect(textEditor).toHaveText('No extension')
 
-    await toolbar.openFile('main.kcl')
+    await fileTree.openFile('main.kcl')
     await expect(page.locator('.cm-content[data-language="kcl"]')).toBeVisible()
   }
 )
@@ -214,6 +211,7 @@ test.describe(
       fs,
       homePage,
       scene,
+      fileTree: fileTreeFixture,
     }) => {
       const { dir } = await folderSetupFn(async (dir) => {
         const testDir = await fs.join(dir, 'browser-file-tree-project')
@@ -227,7 +225,7 @@ test.describe(
           testData
         )
       })
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
 
       // Use app navigation so WebKit doesn't interrupt startup filesystem and
@@ -235,7 +233,7 @@ test.describe(
       await homePage.projectsLoaded()
       await homePage.openProject('browser-file-tree-project')
       await scene.settled()
-      await u.openFilePanel()
+      await fileTreeFixture.openPane()
       await expect
         .poll(
           async () =>
@@ -341,35 +339,30 @@ test.describe(
       page,
       scene,
       cmdBar,
+      toolbar: toolbarFixture,
+      editor: editorFixture,
+      fileTree: fileTreeFixture,
     }, testInfo) => {
-      const {
-        panesOpen,
-        pasteCodeInEditor,
-        renameFile,
-        editorTextMatches,
-        goToHomePageFromModeling,
-      } = await getUtils(page, test)
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       const projectName = 'project-000'
       await homePage.createAndGoToProject(projectName)
-      await panesOpen(['files', 'code'])
+      await toolbarFixture.openPanes(['files', 'code'])
 
       // File the main.kcl with contents
       const kclCube = await nodeFsP.readFile(
         executorInputPath('cube.kcl'),
         'utf-8'
       )
-      await pasteCodeInEditor(kclCube)
+      await editorFixture.pasteCode(kclCube)
       await scene.settled()
-      await renameFile(fromFile, toFile)
-      await goToHomePageFromModeling()
+      await fileTreeFixture.renameFile(fromFile, toFile)
+      await homePage.goToHomePageFromModeling()
       await homePage.openProject(projectName)
 
       await test.step('Postcondition: editor has same content as before the rename', async () => {
-        await editorTextMatches(kclCube)
+        await editorFixture.expectNormalizedCode(kclCube)
       })
 
       await test.step('Postcondition: opening and closing settings works', async () => {
@@ -388,6 +381,8 @@ test.describe(
       page,
       homePage,
       scene,
+      editor,
+      fileTree,
     }) => {
       const projectName = 'cube'
       const mainFile = 'main.kcl'
@@ -419,10 +414,6 @@ test.describe(
         )
       })
 
-      const utils = await getUtils(page, test)
-      const { editorTextMatches, locatorFile, openFilePanel, selectFile } =
-        utils
-
       await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
         await homePage.expectState({
           projectCards: [
@@ -437,12 +428,12 @@ test.describe(
         await homePage.openProject(projectName)
         await scene.settled()
 
-        await openFilePanel()
-        await selectFile(secondFile)
+        await fileTree.openPane()
+        await fileTree.selectFile(secondFile)
       })
 
       await test.step(`Attempt to rename ${secondFile} to ${mainFile}`, async () => {
-        await locatorFile(secondFile).click({ button: 'right' })
+        await fileTree.file(secondFile).click({ button: 'right' })
         await page.getByTestId('context-menu-rename').click()
         await page.getByTestId('file-rename-field').fill(mainFile)
         await page.keyboard.press('Enter')
@@ -454,9 +445,9 @@ test.describe(
         await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
           secondFile
         )
-        await expect(locatorFile(secondFile)).toBeVisible()
-        await expect(locatorFile(mainFile)).toBeVisible()
-        await editorTextMatches(kclCylinder)
+        await expect(fileTree.file(secondFile)).toBeVisible()
+        await expect(fileTree.file(mainFile)).toBeVisible()
+        await editor.expectNormalizedCode(kclCylinder)
       })
 
       await test.step(`Postcondition: ${mainFile} is byte-for-byte unchanged`, async () => {
@@ -479,17 +470,27 @@ test.describe(
     test(
       `create new folders and that doesn't trigger a navigation`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, scene, toolbar, cmdBar }) => {
+      async ({
+        page,
+        homePage,
+        scene,
+        toolbar,
+        cmdBar,
+        fileTree: fileTreeFixture,
+      }) => {
         await homePage.createAndGoToProject('project-000')
         await scene.settled()
         await toolbar.openPane(DefaultLayoutPaneID.Files)
-        const { createNewFolder } = await getUtils(page, test)
 
-        await createNewFolder('folder')
-        await toolbar.expectFileTreeState(['folder', 'main.kcl'])
+        await fileTreeFixture.createFolder('folder')
+        await fileTreeFixture.expectFileTreeState(['folder', 'main.kcl'])
 
-        await createNewFolder('folder.kcl')
-        await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
+        await fileTreeFixture.createFolder('folder.kcl')
+        await fileTreeFixture.expectFileTreeState([
+          'folder',
+          'folder.kcl',
+          'main.kcl',
+        ])
 
         await expect(toolbar.fileName).toHaveText('main.kcl')
       }
@@ -503,6 +504,7 @@ test.describe(
       scene,
       toolbar,
       cmdBar,
+      fileTree,
     }, testInfo) => {
       const projectName = 'nested-file-navigation'
       const folderName = 'parts'
@@ -543,7 +545,7 @@ test.describe(
         await scene.settled()
         await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-        await toolbar.ensureFolderOpen(treeItem(folderName), true)
+        await fileTree.ensureFolderOpen(treeItem(folderName), true)
         await expect(treeItem(nestedFileName)).toBeVisible()
         await expect.poll(projectDirectoryPath).toBe(dir)
         expect(await exists(fs, await nestedProjectSettingsFile())).toBeFalsy()
@@ -555,7 +557,7 @@ test.describe(
 
         await expect(toolbar.fileName).toContainText(nestedFileName)
         await expect.poll(projectDirectoryPath).toBe(dir)
-        await toolbar.expectFileTreeState([
+        await fileTree.expectFileTreeState([
           folderName,
           nestedFileName,
           'main.kcl',
@@ -566,28 +568,28 @@ test.describe(
 
     test('deleting all files recreates a default main.kcl with no code', async ({
       page,
+      toolbar: toolbarFixture,
+      editor: editorFixture,
+      fileTree: fileTreeFixture,
     }, testInfo) => {
-      const { panesOpen, pasteCodeInEditor, deleteFile, editorTextMatches } =
-        await getUtils(page, test)
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       await createProject({ name: 'project-000', page })
-      await panesOpen(['files', 'code'])
+      await toolbarFixture.openPanes(['files', 'code'])
       // File the main.kcl with contents
       const kclCube = await nodeFsP.readFile(
         'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
-      await pasteCodeInEditor(kclCube)
+      await editorFixture.pasteCode(kclCube)
 
       const mainFile = 'main.kcl'
 
-      await deleteFile(mainFile)
+      await fileTreeFixture.deleteFile(mainFile)
 
       await test.step(`Postcondition: ${mainFile} is recreated but has no content`, async () => {
-        await editorTextMatches('')
+        await editorFixture.expectNormalizedCode('')
       })
     })
 
@@ -597,22 +599,16 @@ test.describe(
       toolbar,
       scene,
       cmdBar,
+      editor: editorFixture,
+      fileTree: fileTreeFixture,
+      debug: debugFixture,
     }, testInfo) => {
-      const {
-        panesOpen,
-        pasteCodeInEditor,
-        createNewFile,
-        openDebugPanel,
-        closeDebugPanel,
-        expectCmdLog,
-      } = await getUtils(page, test)
-
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       await homePage.createAndGoToProject('project-000')
       await scene.settled()
-      await panesOpen(['files', 'code'])
+      await toolbar.openPanes(['files', 'code'])
 
       // Create a small file
       const kclCube = await nodeFsP.readFile(
@@ -620,27 +616,33 @@ test.describe(
         'utf-8'
       )
       // pasted into main.kcl
-      await pasteCodeInEditor(kclCube)
+      await editorFixture.pasteCode(kclCube)
 
       // Create a large lego file
-      await createNewFile('lego')
+      await fileTreeFixture.createFileAndWaitForNavigation('lego')
       const kclLego = await nodeFsP.readFile(
         executorInputPath('lego.kcl'),
         'utf-8'
       )
-      await pasteCodeInEditor(kclLego)
+      await editorFixture.pasteCode(kclLego)
 
       await test.step('swap between small and large files', async () => {
-        await openDebugPanel()
+        await debugFixture.open()
         // Previously created a file so we need to start back at main.kcl
-        await toolbar.openFile('main.kcl')
-        await expectCmdLog('[data-message-type="execution-done"]', 60_000)
+        await fileTreeFixture.openFile('main.kcl')
+        await debugFixture.expectCommandLog(
+          '[data-message-type="execution-done"]',
+          60_000
+        )
         // Click the large file
-        await toolbar.openFile('lego.kcl')
+        await fileTreeFixture.openFile('lego.kcl')
         // Once it is building, click back to the smaller file
-        await toolbar.openFile('main.kcl')
-        await expectCmdLog('[data-message-type="execution-done"]', 60_000)
-        await closeDebugPanel()
+        await fileTreeFixture.openFile('main.kcl')
+        await debugFixture.expectCommandLog(
+          '[data-message-type="execution-done"]',
+          60_000
+        )
+        await debugFixture.close()
       })
     })
   }
@@ -656,6 +658,8 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
     }, testInfo) => {
       const { dir } = await folderSetupFn(async (dir) => {
         await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
@@ -675,7 +679,7 @@ test.describe(
           new Uint8Array(testData2)
         )
       })
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
@@ -712,15 +716,15 @@ test.describe(
         await expect(projectMenuButton).toBeVisible()
         await expect(projectMenuButton).toContainText('main.kcl')
 
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
         await expect(fileToRename).toBeVisible()
         expect(await checkUnRenamedFS()).toBeTruthy()
         expect(await checkRenamedFS()).toBeFalsy()
         await fileToRename.click()
         await expect(projectMenuButton).toContainText('fileToRename.kcl')
-        await u.openKclCodePanel()
+        await editorFixture.openPaneAndRevealCode()
         await expect(codeLocator).toContainText('circle(')
-        await u.closeKclCodePanel()
+        await editorFixture.closePane()
       })
 
       await test.step('Rename the file', async () => {
@@ -791,7 +795,7 @@ test.describe(
           })
           .not.toContain('main.kcl')
 
-        await u.openKclCodePanel()
+        await editorFixture.openPaneAndRevealCode()
         await expect(codeLocator).toContainText('circle(')
       })
     })
@@ -802,6 +806,8 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
     }, testInfo) => {
       const { dir } = await folderSetupFn(async (dir) => {
         await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
@@ -820,7 +826,7 @@ test.describe(
           testData2
         )
       })
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
@@ -857,7 +863,7 @@ test.describe(
         await expect(projectMenuButton).toBeVisible()
         await expect(projectMenuButton).toContainText('main.kcl')
 
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
         await expect(fileToRename).toBeVisible()
         expect(await checkUnRenamedFS()).toBeTruthy()
         expect(await checkRenamedFS()).toBeFalsy()
@@ -902,7 +908,7 @@ test.describe(
         )
         await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
 
-        await u.openKclCodePanel()
+        await editorFixture.openPaneAndRevealCode()
         await expect(codeLocator).toContainText('fillet(')
       })
     })
@@ -913,20 +919,20 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
     }, testInfo) => {
       const { dir } = await folderSetupFn((dir) =>
         seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToRename')
       )
 
-      const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = u.locatorFolder('folderToRename')
-      const renamedFolder = u.locatorFolder('newFolderName')
+      const folderToRename = fileTreeFixture.folder('folderToRename')
+      const renamedFolder = fileTreeFixture.folder('newFolderName')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -955,7 +961,7 @@ test.describe(
         await expect(page).toHaveURL(/main\.kcl/)
         await expect(page).not.toHaveURL(/folderToRename/)
 
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
         await expect(folderToRename).toBeVisible()
         expect(await checkUnRenamedFolderFS()).toBeTruthy()
         expect(await checkRenamedFolderFS()).toBeFalsy()
@@ -988,21 +994,21 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
     }, testInfo) => {
       const { dir } = await folderSetupFn((dir) =>
         seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToRename')
       )
 
-      const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = u.locatorFolder('folderToRename')
-      const renamedFolder = u.locatorFolder('newFolderName')
-      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
+      const folderToRename = fileTreeFixture.folder('folderToRename')
+      const renamedFolder = fileTreeFixture.folder('newFolderName')
+      const fileWithinFolder = fileTreeFixture.file('someFileWithin.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -1031,7 +1037,7 @@ test.describe(
         await expect(page).toHaveURL(/main\.kcl/)
         await expect(page).not.toHaveURL(/folderToRename/)
 
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
         await expect(folderToRename).toBeVisible()
         await folderToRename.click()
         await expect(fileWithinFolder).toBeVisible()
@@ -1073,7 +1079,18 @@ test.describe(
     test(
       `delete file when main.kcl exists, navigate to main.kcl`,
       { tag: '@windows' },
-      async ({ page, folderSetupFn, scene, cmdBar, fs }, testInfo) => {
+      async (
+        {
+          page,
+          folderSetupFn,
+          scene,
+          cmdBar,
+          fs,
+          fileTree: fileTreeFixture,
+          editor: editorFixture,
+        },
+        testInfo
+      ) => {
         let mainPath = ''
         let originalMainBytes = new Uint8Array()
         await folderSetupFn(async (dir) => {
@@ -1094,14 +1111,14 @@ test.describe(
             testData2
           )
         })
-        const u = await getUtils(page)
+
         await page.setViewportSize({ width: 1200, height: 500 })
         page.on('console', console.log)
 
         // Constants and locators
         const projectCard = page.getByText('testProject')
         const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-        const fileToDelete = u.locatorFile('fileToDelete.kcl')
+        const fileToDelete = fileTreeFixture.file('fileToDelete.kcl')
         const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
         const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -1109,13 +1126,15 @@ test.describe(
           await projectCard.click()
           await scene.settled()
 
-          await u.openFilePanel()
+          await fileTreeFixture.openPane()
 
           await fileToDelete.click()
 
-          await u.openKclCodePanel()
-          await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
-          await u.closeKclCodePanel()
+          await editorFixture.openPaneAndRevealCode()
+          await expect(editorFixture.codeContent).toContainText(
+            'getOppositeEdge(thing)'
+          )
+          await editorFixture.closePane()
         })
 
         await test.step('Delete fileToDelete.kcl', async () => {
@@ -1168,9 +1187,9 @@ test.describe(
           expect(Array.from(await fs.readFile(mainPath))).toEqual(
             Array.from(originalMainBytes)
           )
-          await u.closeFilePanel()
-          await u.openKclCodePanel()
-          await expect(u.codeLocator).toHaveText(expectedEditorCode)
+          await fileTreeFixture.closePane()
+          await editorFixture.openPaneAndRevealCode()
+          await expect(editorFixture.codeContent).toHaveText(expectedEditorCode)
           await expect(projectMenuButton).toContainText('main.kcl')
         })
       }
@@ -1182,18 +1201,20 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
     }, testInfo) => {
       await folderSetupFn((dir) =>
         seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToDelete')
       )
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = u.locatorFolder('folderToDelete')
+      const folderToDelete = fileTreeFixture.folder('folderToDelete')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -1201,8 +1222,8 @@ test.describe(
         await projectCard.click()
         await scene.settled()
         await expect(projectMenuButton).toContainText('main.kcl')
-        await u.closeKclCodePanel()
-        await u.openFilePanel()
+        await editorFixture.closePane()
+        await fileTreeFixture.openPane()
       })
 
       await test.step('Delete folderToDelete', async () => {
@@ -1227,19 +1248,21 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
     }, testInfo) => {
       await folderSetupFn((dir) =>
         seedProjectWithNestedFile(fs, dir, 'Test Project', 'folderToDelete')
       )
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = u.locatorFolder('folderToDelete')
-      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
+      const folderToDelete = fileTreeFixture.folder('folderToDelete')
+      const fileWithinFolder = fileTreeFixture.file('someFileWithin.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -1247,8 +1270,8 @@ test.describe(
         await projectCard.click()
         await scene.settled()
         await expect(projectMenuButton).toContainText('main.kcl')
-        await u.closeKclCodePanel()
-        await u.openFilePanel()
+        await editorFixture.closePane()
+        await fileTreeFixture.openPane()
 
         await folderToDelete.click()
         await expect(fileWithinFolder).toBeVisible()
@@ -1278,26 +1301,37 @@ test.describe(
 test(
   `external deletion of project navigates back home`,
   { tag: ['@desktop', '@localRenderer'] },
-  async ({ folderSetupFn, page, fs, scene, cmdBar }, testInfo) => {
+  async (
+    {
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
+    },
+    testInfo
+  ) => {
     const TEST_PROJECT_NAME = 'Test Project'
     const { dir: projectsDirName } = await folderSetupFn((dir) =>
       seedProjectWithNestedFile(fs, dir, TEST_PROJECT_NAME, 'folderToDelete')
     )
-    const u = await getUtils(page)
+
     await page.setViewportSize({ width: 1200, height: 500 })
 
     // Constants and locators
     const projectCard = page.getByText(TEST_PROJECT_NAME)
     const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const folderToDelete = u.locatorFolder('folderToDelete')
-    const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
+    const folderToDelete = fileTreeFixture.folder('folderToDelete')
+    const fileWithinFolder = fileTreeFixture.file('someFileWithin.kcl')
 
     await test.step('Open project and navigate into folderToDelete', async () => {
       await projectCard.click()
       await scene.settled()
       await expect(projectMenuButton).toContainText('main.kcl')
-      await u.closeKclCodePanel()
-      await u.openFilePanel()
+      await editorFixture.closePane()
+      await fileTreeFixture.openPane()
 
       await folderToDelete.click()
       await expect(fileWithinFolder).toBeVisible()
@@ -1334,6 +1368,8 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
     }, testInfo) => {
       await folderSetupFn(async (dir) => {
         const testDir = await fs.join(dir, 'testProject')
@@ -1348,52 +1384,54 @@ test.describe(
         )
         await fs.writeFile(await fs.join(testDir, 'other.kcl'), testData2)
       })
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = u.locatorFile('other.kcl')
+      const otherFile = fileTreeFixture.file('other.kcl')
 
       await test.step('Open project and make a change to the file', async () => {
         await projectCard.click()
         await scene.settled()
 
         // Get the text in the code locator.
-        const originalText = await u.codeLocator.innerText()
+        const originalText = await editorFixture.codeContent.innerText()
         // Click in the editor and add some new lines.
-        await u.codeLocator.click()
+        await editorFixture.codeContent.click()
 
         await page.keyboard.type(`sketch001 = startSketchOn(XY)
     some other shit`)
 
         // Ensure the content in the editor changed.
-        const newContent = await u.codeLocator.innerText()
+        const newContent = await editorFixture.codeContent.innerText()
 
         expect(originalText !== newContent)
       })
 
       await test.step('navigate to other.kcl', async () => {
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
 
         await otherFile.click()
         await scene.settled()
 
-        await u.openKclCodePanel()
-        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        await editorFixture.openPaneAndRevealCode()
+        await expect(editorFixture.codeContent).toContainText(
+          'getOppositeEdge(thing)'
+        )
       })
 
       await test.step('hit undo', async () => {
         // Get the original content of the file.
-        const originalText = await u.codeLocator.innerText()
+        const originalText = await editorFixture.codeContent.innerText()
         // Now hit undo
         await page.keyboard.down('ControlOrMeta')
         await page.keyboard.press('KeyZ')
         await page.keyboard.up('ControlOrMeta')
 
         await page.waitForTimeout(100)
-        await expect(u.codeLocator).toContainText(originalText)
+        await expect(editorFixture.codeContent).toContainText(originalText)
       })
     })
 
@@ -1403,6 +1441,8 @@ test.describe(
       fs,
       scene,
       cmdBar,
+      fileTree: fileTreeFixture,
+      editor: editorFixture,
     }, testInfo) => {
       await folderSetupFn(async (dir) => {
         const testDir = await fs.join(dir, 'testProject')
@@ -1417,13 +1457,13 @@ test.describe(
         )
         await fs.writeFile(await fs.join(testDir, 'other.kcl'), testData2)
       })
-      const u = await getUtils(page)
+
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = u.locatorFile('other.kcl')
+      const otherFile = fileTreeFixture.file('other.kcl')
 
       const badContent = 'this shit'
       await test.step('Open project and make a change to the file', async () => {
@@ -1431,14 +1471,14 @@ test.describe(
         await scene.settled()
 
         // Get the text in the code locator.
-        const originalText = await u.codeLocator.innerText()
+        const originalText = await editorFixture.codeContent.innerText()
         // Click in the editor and add some new lines.
-        await u.codeLocator.click()
+        await editorFixture.codeContent.click()
 
         await page.keyboard.type(badContent)
 
         // Ensure the content in the editor changed.
-        const newContent = await u.codeLocator.innerText()
+        const newContent = await editorFixture.codeContent.innerText()
 
         expect(originalText !== newContent)
 
@@ -1448,8 +1488,8 @@ test.describe(
         await page.keyboard.up('ControlOrMeta')
 
         await page.waitForTimeout(100)
-        await expect(u.codeLocator).toContainText(originalText)
-        await expect(u.codeLocator).not.toContainText(badContent)
+        await expect(editorFixture.codeContent).toContainText(originalText)
+        await expect(editorFixture.codeContent).not.toContainText(badContent)
 
         // Hit redo.
         await page.keyboard.down('Shift')
@@ -1459,8 +1499,8 @@ test.describe(
         await page.keyboard.up('Shift')
 
         await page.waitForTimeout(100)
-        await expect(u.codeLocator).toContainText(originalText)
-        await expect(u.codeLocator).toContainText(badContent)
+        await expect(editorFixture.codeContent).toContainText(originalText)
+        await expect(editorFixture.codeContent).toContainText(badContent)
 
         // Now hit undo
         await page.keyboard.down('ControlOrMeta')
@@ -1468,23 +1508,25 @@ test.describe(
         await page.keyboard.up('ControlOrMeta')
 
         await page.waitForTimeout(100)
-        await expect(u.codeLocator).toContainText(originalText)
-        await expect(u.codeLocator).not.toContainText(badContent)
+        await expect(editorFixture.codeContent).toContainText(originalText)
+        await expect(editorFixture.codeContent).not.toContainText(badContent)
       })
 
       await test.step('navigate to other.kcl', async () => {
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
 
         await otherFile.click()
         await scene.settled()
-        await u.openKclCodePanel()
-        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
-        await expect(u.codeLocator).not.toContainText(badContent)
+        await editorFixture.openPaneAndRevealCode()
+        await expect(editorFixture.codeContent).toContainText(
+          'getOppositeEdge(thing)'
+        )
+        await expect(editorFixture.codeContent).not.toContainText(badContent)
       })
 
       await test.step('hit redo', async () => {
         // Get the original content of the file.
-        const originalText = await u.codeLocator.innerText()
+        const originalText = await editorFixture.codeContent.innerText()
         // Now hit redo
         await page.keyboard.down('Shift')
         await page.keyboard.down('ControlOrMeta')
@@ -1493,8 +1535,8 @@ test.describe(
         await page.keyboard.up('Shift')
 
         await page.waitForTimeout(100)
-        await expect(u.codeLocator).toContainText(originalText)
-        await expect(u.codeLocator).not.toContainText(badContent)
+        await expect(editorFixture.codeContent).toContainText(originalText)
+        await expect(editorFixture.codeContent).not.toContainText(badContent)
       })
     })
   }

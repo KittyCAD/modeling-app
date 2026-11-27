@@ -1,11 +1,8 @@
-import { join } from 'node:path'
-import fsSync from 'node:fs'
 import { FILE_EXT } from '@src/lib/constants'
+import fsSync from 'node:fs'
+import { join } from 'node:path'
 
-import {
-  getUtils,
-  waitForWebKitBillingToSettle,
-} from '@e2e/playwright/test-utils'
+import { waitForWebKitBillingToSettle } from '@e2e/playwright/lib/appSetup'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -23,7 +20,6 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
   test.fail(
     'Web: should overwrite current code, cannot create new file',
     async ({ editor, context, page, homePage, cmdBar }) => {
-      const u = await getUtils(page)
       await test.step('Test setup', async () => {
         await context.addInitScript((code) => {
           window.localStorage.setItem('persistCode', code)
@@ -55,7 +51,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       const warningText = page.getByText('Overwrite current file with sample?')
 
       await test.step('Precondition: check the initial code', async () => {
-        await u.openKclCodePanel()
+        await editor.openPaneAndRevealCode()
         await editor.scrollToText(bracket.split('\n')[0])
         await editor.expectEditor.toContain(bracket.split('\n')[0])
       })
@@ -83,7 +79,16 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
   test(
     'should create new file by default, creates a second file with automatic unique name',
     { tag: '@localRenderer' },
-    async ({ editor, page, scene, cmdBar, toolbar, folderSetupFn, fs }) => {
+    async ({
+      editor,
+      page,
+      scene,
+      cmdBar,
+      toolbar,
+      folderSetupFn,
+      fs,
+      fileTree: fileTreeFixture,
+    }) => {
       await folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fs.mkdir(bracketDir, { recursive: true })
@@ -92,7 +97,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
           new TextEncoder().encode(bracket)
         )
       })
-      const u = await getUtils(page)
+
       const sampleOne = {
         file: `ball-bearing${FILE_EXT}`,
         title: 'Ball Bearing',
@@ -123,7 +128,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       })
 
       await test.step('Ensure we made and opened a new file', async () => {
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
         await expect(
           page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
         ).toBeVisible()
@@ -137,7 +142,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       })
 
       await test.step('Ensure we made and opened a new file with a unique name', async () => {
-        await u.openFilePanel()
+        await fileTreeFixture.openPane()
         await expect(
           page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
         ).toBeVisible()

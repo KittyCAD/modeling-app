@@ -1,4 +1,4 @@
-import { executorInputPath } from '@e2e/playwright/test-utils'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as fsp from 'fs/promises'
@@ -199,6 +199,7 @@ test.describe(
       homePage,
       toolbar,
       folderSetupFn,
+      fileTree,
     }) => {
       await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'testProjectDir')
@@ -268,7 +269,7 @@ test.describe(
       await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
         await editor.expectEditor.toContain('extrusionDistance = 12')
         await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
+        await fileTree.expectFileTreeState(['main-1.kcl', 'main.kcl'])
       })
     })
 

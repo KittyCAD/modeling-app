@@ -1,5 +1,4 @@
 import { TEST_CODE_GIZMO } from '@e2e/playwright/storageStates'
-import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Locator } from '@playwright/test'
 import { uuidv4 } from '@src/lib/utils'
@@ -117,9 +116,8 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
         homePage,
         scene,
         editor,
+        debug: debugFixture,
       }) => {
-        const u = await getUtils(page)
-
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
@@ -127,12 +125,14 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
         await scene.waitForExecutionDoneAfter(() =>
           editor.replaceCode('', TEST_CODE_GIZMO)
         )
-        await u.waitForPageLoad()
+        await scene.waitForSketchButtonEnabled()
 
         // wait for execution done
         if (rendererTag === '@streamRenderer') {
-          await u.openDebugPanel()
-          await u.expectCmdLog('[data-message-type="execution-done"]')
+          await debugFixture.open()
+          await debugFixture.expectCommandLog(
+            '[data-message-type="execution-done"]'
+          )
         }
         if (rendererTag === '@localRenderer') {
           await scene.waitForModelReady()
@@ -147,7 +147,7 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
               target: [800, -152, 26],
             })
         } else {
-          await u.sendCustomCmd({
+          await debugFixture.sendCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
@@ -166,18 +166,21 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
             },
           })
           await page.waitForTimeout(100)
-          await u.clearCommandLogs()
-          await u.sendCustomCmd({
+          await debugFixture.clearCommandLogs()
+          await debugFixture.sendCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
               type: 'default_camera_get_settings',
             },
           })
-          await u.waitForCmdReceive('default_camera_get_settings')
+          await debugFixture.waitForCommandReceived(
+            'default_camera_get_settings'
+          )
         }
 
-        if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+        if (rendererTag === '@streamRenderer')
+          await debugFixture.clearCommandLogs()
         const gizmo = page.locator('[aria-label*=gizmo]')
         await expect(gizmo).toBeVisible()
         const clickTarget = gizmo.locator('canvas')
@@ -194,20 +197,22 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
         if (rendererTag === '@streamRenderer') {
           // We use different camera commands for top/bottom cf. all others.
           if (['top view', 'bottom view'].includes(testDescription)) {
-            await u.waitForCmdReceive('default_camera_set_view')
+            await debugFixture.waitForCommandReceived('default_camera_set_view')
           } else {
-            await u.waitForCmdReceive('default_camera_look_at')
+            await debugFixture.waitForCommandReceived('default_camera_look_at')
           }
-          await u.clearCommandLogs()
+          await debugFixture.clearCommandLogs()
 
-          await u.sendCustomCmd({
+          await debugFixture.sendCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
               type: 'default_camera_get_settings',
             },
           })
-          await u.waitForCmdReceive('default_camera_get_settings')
+          await debugFixture.waitForCommandReceived(
+            'default_camera_get_settings'
+          )
         }
         if (rendererTag === '@localRenderer') {
           await expect
@@ -248,6 +253,7 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
       homePage,
       scene,
       editor,
+      debug: debugFixture,
     }) => {
       const testCase = {
         testDescription: 'Right view',
@@ -256,7 +262,6 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
       }
 
       // Test prelude taken from the above test
-      const u = await getUtils(page)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
@@ -268,8 +273,10 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
       await page.waitForTimeout(100)
       // wait for execution done
       if (rendererTag === '@streamRenderer') {
-        await u.openDebugPanel()
-        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await debugFixture.open()
+        await debugFixture.expectCommandLog(
+          '[data-message-type="execution-done"]'
+        )
       }
       if (rendererTag === '@localRenderer') {
         await scene.moveCameraTo(
@@ -277,7 +284,7 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
           { x: 800, y: -152, z: 26 }
         )
       } else {
-        await u.sendCustomCmd({
+        await debugFixture.sendCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -296,20 +303,21 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
           },
         })
         await page.waitForTimeout(100)
-        await u.clearCommandLogs()
-        await u.sendCustomCmd({
+        await debugFixture.clearCommandLogs()
+        await debugFixture.sendCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'default_camera_get_settings',
           },
         })
-        await u.waitForCmdReceive('default_camera_get_settings')
+        await debugFixture.waitForCommandReceived('default_camera_get_settings')
       }
 
       // Now find and select the correct
       // view from the context menu
-      if (rendererTag === '@streamRenderer') await u.clearCommandLogs()
+      if (rendererTag === '@streamRenderer')
+        await debugFixture.clearCommandLogs()
       const gizmo = page.locator('[aria-label*=gizmo]')
       await gizmo.click({ button: 'right' })
       const buttonToTest = page.getByRole('button', {
@@ -321,16 +329,16 @@ test.describe('Testing Gizmo', { tag: '@web' }, () => {
       if (rendererTag === '@streamRenderer') {
         // Now assert we've moved to the correct view
         // Taken from the above test
-        await u.waitForCmdReceive('default_camera_look_at')
+        await debugFixture.waitForCommandReceived('default_camera_look_at')
 
-        await u.sendCustomCmd({
+        await debugFixture.sendCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'default_camera_get_settings',
           },
         })
-        await u.waitForCmdReceive('default_camera_get_settings')
+        await debugFixture.waitForCommandReceived('default_camera_get_settings')
         await page.waitForTimeout(400)
       }
       if (rendererTag === '@localRenderer') {

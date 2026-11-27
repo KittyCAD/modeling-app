@@ -1,17 +1,17 @@
-import * as fsp from 'node:fs/promises'
-import path from 'node:path'
-import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
+import { mockClientErrorReports } from '@e2e/playwright/lib/appSetup'
 import {
   type CloudProject,
   cloudProjectResponse,
   routeCloudProjects,
   zipProject,
 } from '@e2e/playwright/lib/cloudProjectTestUtils'
+import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
-import { mockClientErrorReports } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH } from '@src/lib/projectLibraries'
+import * as fsp from 'node:fs/promises'
+import path from 'node:path'
 
 const FLOW_TIMEOUT = 30_000
 const publicationCode = '@settings(kclVersion = 3.0)\npublishedPart = 42\n'

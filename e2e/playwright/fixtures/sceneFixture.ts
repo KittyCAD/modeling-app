@@ -1,20 +1,26 @@
+import {
+  closeDebugPanel,
+  openAndClearDebugPanel,
+  sendCustomCmd,
+} from '@e2e/playwright/lib/debugSupport'
+import {
+  convertPagePositionToStream,
+  doAndWaitForImageDiff,
+  getPixelRGBs,
+} from '@e2e/playwright/lib/imageAssertions'
+import { waitForPageLoad } from '@e2e/playwright/lib/sceneSupport'
 import type { Locator, Page } from '@playwright/test'
+import { expect } from '@playwright/test'
 import type {
   LocalRenderer,
   ProjectedEntity,
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { isArray, uuidv4 } from '@src/lib/utils'
+import type { Protocol } from 'playwright-core/types/protocol'
+import { PNG } from 'pngjs'
 
-import {
-  closeDebugPanel,
-  closeOnboardingModalIfPresent,
-  doAndWaitForImageDiff,
-  getPixelRGBs,
-  openAndClearDebugPanel,
-  sendCustomCmd,
-  sendSceneCommand,
-} from '@e2e/playwright/test-utils'
-import { expect } from '@e2e/playwright/zoo-test'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/lib/appSetup'
+import { sendSceneCommand } from '@e2e/playwright/lib/sceneSupport'
 
 type EntityQueryKind = ProjectedEntity['kind'] | 'face'
 
@@ -168,7 +174,12 @@ export class SceneFixture {
     kind: EntityQueryKind
     index?: number
     id?: string
-    stream: { x: number; y: number; format: 'pixels' | 'ratio'; steps?: number }
+    stream: {
+      x: number
+      y: number
+      format: 'pixels' | 'ratio'
+      steps?: number
+    }
     timeout?: number
     visible?: boolean
   }) => {
@@ -864,6 +875,57 @@ export class SceneFixture {
       'data-native-file-menu',
       'true'
     )
+  }
+
+  waitForSketchButtonEnabled = () => waitForPageLoad(this.page)
+
+  getGreatestPixDiff = async (
+    coords: { x: number; y: number },
+    expected: [number, number, number]
+  ): Promise<number> => {
+    const transformedCoords = await convertPagePositionToStream(
+      coords.x,
+      coords.y,
+      this.page
+    )
+    const buffer = await this.page.screenshot({
+      fullPage: true,
+    })
+    const screenshot = PNG.sync.read(buffer)
+    const pixMultiplier: number = await this.page.evaluate(
+      'window.devicePixelRatio'
+    )
+    const index =
+      (screenshot.width * transformedCoords.y * pixMultiplier +
+        transformedCoords.x * pixMultiplier) *
+      4 // rbga is 4 channels
+    const maxDiff = Math.max(
+      Math.abs(screenshot.data[index] - expected[0]),
+      Math.abs(screenshot.data[index + 1] - expected[1]),
+      Math.abs(screenshot.data[index + 2] - expected[2])
+    )
+    if (maxDiff > 4) {
+      console.log(
+        `Expected: ${expected} Actual: [${screenshot.data[index]}, ${
+          screenshot.data[index + 1]
+        }, ${screenshot.data[index + 2]}]`
+      )
+    }
+    return maxDiff
+  }
+
+  doAndWaitForImageDiff = (
+    fn: () => Promise<unknown>,
+    diffCount = 200,
+    locator?: Locator
+  ) => doAndWaitForImageDiff(locator || this.page, fn, diffCount)
+
+  emulateNetworkConditions = async (
+    networkOptions: Protocol.Network.emulateNetworkConditionsParameters
+  ) => {
+    return networkOptions.offline
+      ? this.page.evaluate('window.engineCommandManager.offline()')
+      : this.page.evaluate('window.engineCommandManager.online()')
   }
 }
 

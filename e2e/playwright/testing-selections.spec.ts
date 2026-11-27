@@ -1,4 +1,5 @@
-import { resetView, sansWhitespace } from '@e2e/playwright/test-utils'
+import { resetView } from '@e2e/playwright/lib/sceneSupport'
+import { sansWhitespace } from '@e2e/playwright/lib/textAssertions'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import fs from 'fs'

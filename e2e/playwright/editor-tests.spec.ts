@@ -1,15 +1,12 @@
 import {
-  executorInputPath,
-  expectRenderedDiagnosticText,
-  getUtils,
-  TEST_COLORS,
-} from '@e2e/playwright/test-utils'
-import { expect, test } from '@e2e/playwright/zoo-test'
-import {
   cacheModelCode,
   cacheSceneReceipt,
   waitForExecutedModel,
 } from '@e2e/playwright/lib/cache-model'
+import { TEST_COLORS } from '@e2e/playwright/lib/imageAssertions'
+import { executorInputPath } from '@e2e/playwright/lib/testPaths'
+import { expectRenderedDiagnosticText } from '@e2e/playwright/lib/textAssertions'
+import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -243,7 +240,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 12)`
-      const u = await getUtils(page)
+
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
@@ -257,7 +254,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      await u.codeLocator.click()
+      await editor.codeContent.click()
 
       // Move the cursor to the start of the code
       await page.keyboard.press('ControlOrMeta+Home')
@@ -298,8 +295,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you click the format button it formats your code and executes so lints are still there',
     { tag: '@localRenderer' },
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, editor: editorFixture, debug: debugFixture }) => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
@@ -307,12 +303,14 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       await page.keyboard.type(`my_var =  1+2`)
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+      await debugFixture.open()
+      await debugFixture.expectCommandLog(
+        '[data-message-type="execution-done"]'
+      )
+      await debugFixture.close()
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -326,9 +324,11 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.locator('#code-pane button:first-child').click()
       await page.locator('button:has-text("Format code")').click()
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+      await debugFixture.open()
+      await debugFixture.expectCommandLog(
+        '[data-message-type="execution-done"]'
+      )
+      await debugFixture.close()
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in, kclVersion = 3.0)
@@ -424,8 +424,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'hover over functions shows function description',
     { tag: '@localRenderer' },
-    async ({ editor, scene, page, homePage }) => {
-      const u = await getUtils(page)
+    async ({ editor, scene, page, homePage, debug: debugFixture }) => {
       const initialCode = `sketch001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
@@ -444,12 +443,14 @@ my_var = 1 + 2`.replaceAll('\n', '')
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+      await debugFixture.open()
+      await debugFixture.expectCommandLog(
+        '[data-message-type="execution-done"]'
+      )
+      await debugFixture.close()
 
       // focus the editor
-      await u.codeLocator.click()
+      await editor.codeContent.click()
 
       // Hover over  the startSketchOn function
       await page.getByText('startSketchOn').hover()
@@ -472,8 +473,7 @@ my_var = 1 + 2`.replaceAll('\n', '')
   test(
     'if you use the format keyboard binding it formats your code and executes so lints are shown',
     { tag: '@localRenderer' },
-    async ({ editor, scene, page, homePage }) => {
-      const u = await getUtils(page)
+    async ({ editor, scene, page, homePage, debug: debugFixture }) => {
       const initialCode = `sketch_001 = startSketchOn(XY)
     |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
@@ -492,9 +492,11 @@ my_var = 1 + 2`.replaceAll('\n', '')
       )
       await editor.scrollToText(initialCode.trimStart().split('\n')[0])
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+      await debugFixture.open()
+      await debugFixture.expectCommandLog(
+        '[data-message-type="execution-done"]'
+      )
+      await debugFixture.close()
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -506,14 +508,16 @@ my_var = 1 + 2`.replaceAll('\n', '')
       ).toBeVisible()
 
       // focus the editor
-      await u.codeLocator.click()
+      await editor.codeContent.click()
 
       // Hit alt+shift+f to format the code
       await page.keyboard.press('Alt+Shift+KeyF')
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+      await debugFixture.open()
+      await debugFixture.expectCommandLog(
+        '[data-message-type="execution-done"]'
+      )
+      await debugFixture.close()
 
       await expect(
         page.locator('.cm-content')
@@ -656,8 +660,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you write kcl with lint errors you get lints',
     { tag: ['@web', '@localRenderer'] },
-    async ({ page, homePage, scene }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, scene, editor: editorFixture }) => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
@@ -665,7 +668,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
 
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       await page.keyboard.type('my_snake_case_var = 5')
       await page.keyboard.press('Enter')
       await page.keyboard.type('myCamelCaseVar = 5')
@@ -703,7 +706,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     'if you fixup kcl errors you clear lints',
     { tag: '@localRenderer' },
     async ({ editor, scene, page, homePage }) => {
-      const u = await getUtils(page)
       const initialCode = `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
@@ -723,13 +725,13 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       // check no error to begin with
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      await u.codeLocator.click()
+      await editor.codeContent.click()
 
       const editedLine = page
         .locator('.cm-line')
         .filter({ hasText: '|> line(end = [2.48, 2.44]' })
       await editedLine.click()
-      await expect(u.codeLocator).toBeFocused()
+      await expect(editor.codeContent).toBeFocused()
 
       await expect(
         page.locator('.cm-lint-marker-error').first()
@@ -750,8 +752,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   test(
     'if you write invalid kcl you get inlined errors',
     { tag: ['@web', '@localRenderer'] },
-    async ({ page, homePage, scene }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, scene, editor: editorFixture }) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
@@ -767,7 +768,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     const topAng = 30
     const bottomAng = 25
    */
-      await u.codeLocator.click()
+      await editorFixture.codeContent.click()
       await page.keyboard.type('~ error')
 
       // press arrows to clear autocomplete
@@ -1021,8 +1022,8 @@ sketch001 = startSketchOn(XZ)
     toolbar,
     modelingDialog,
     scene,
+    debug: debugFixture,
   }) => {
-    const u = await getUtils(page)
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
@@ -1040,8 +1041,8 @@ sketch001 = startSketchOn(XZ)
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
+    await debugFixture.openAndClear()
+    await debugFixture.sendCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -1052,7 +1053,7 @@ sketch001 = startSketchOn(XZ)
       },
     })
     await page.waitForTimeout(100)
-    await u.sendCustomCmd({
+    await debugFixture.sendCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -1093,7 +1094,14 @@ sketch001 = startSketchOn(XZ)
   test(
     `Can import a local OBJ file`,
     { tag: '@localRenderer' },
-    async ({ fs, page, scene, cmdBar, folderSetupFn }) => {
+    async ({
+      fs,
+      page,
+      scene,
+      cmdBar,
+      folderSetupFn,
+      editor: editorFixture,
+    }) => {
       await folderSetupFn(async (dir) => {
         const bracketDir = await fs.join(dir, 'cube')
         await fs.mkdir(bracketDir, { recursive: true })
@@ -1111,7 +1119,7 @@ sketch001 = startSketchOn(XZ)
       await page.setBodyDimensions(viewportSize)
 
       // Locators and constants
-      const u = await getUtils(page)
+
       const projectLink = page.getByRole('link', { name: 'cube' })
       const errorIndicators = page.locator('.cm-lint-marker-error')
 
@@ -1120,7 +1128,7 @@ sketch001 = startSketchOn(XZ)
         await scene.settled()
       })
       await test.step(`Write the import function line`, async () => {
-        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
+        await editorFixture.codeContent.fill(`import 'cube.obj'\ncube`)
         await page.waitForTimeout(800)
       })
       await test.step(`Verify that we see no errors`, async () => {
@@ -1227,8 +1235,7 @@ sketch001 = startSketchOn(XZ)
   test(
     'syntax errors still show when reopening KCL pane',
     { tag: ['@web', '@localRenderer'] },
-    async ({ page, homePage, scene, cmdBar }) => {
-      const u = await getUtils(page)
+    async ({ page, homePage, scene, cmdBar, editor: editorFixture }) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
@@ -1239,18 +1246,18 @@ sketch001 = startSketchOn(XZ)
       await scene.settled()
 
       // Code with no error
-      await u.codeLocator.fill(`x = 7`)
+      await editorFixture.codeContent.fill(`x = 7`)
       await page.waitForTimeout(200) // allow some time for the error to show potentially
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
 
       // Code with error
-      await u.codeLocator.fill(`x 7`)
+      await editorFixture.codeContent.fill(`x 7`)
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
 
       // Close and reopen KCL code panel
-      await u.closeKclCodePanel()
+      await editorFixture.closePane()
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0) // error disappears on close
-      await u.openKclCodePanel()
+      await editorFixture.openPaneAndRevealCode()
 
       // Verify error is still visible
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
@@ -1261,7 +1268,16 @@ sketch001 = startSketchOn(XZ)
 test(
   'Undo and redo file deletions interleaved with code edits',
   { tag: ['@web', '@localRenderer'] },
-  async ({ page, homePage, toolbar, editor, folderSetupFn, fs, scene }) => {
+  async ({
+    page,
+    homePage,
+    toolbar,
+    editor,
+    folderSetupFn,
+    fs,
+    scene,
+    fileTree: fileTreeFixture,
+  }) => {
     await folderSetupFn(async (dir) => {
       const projectDir = await fs.join(dir, 'History Project')
       await fs.mkdir(projectDir, { recursive: true })
@@ -1275,11 +1291,10 @@ test(
       )
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.projectsLoaded()
 
-    const fileToDelete = u.locatorFile('fileToDelete.kcl')
+    const fileToDelete = fileTreeFixture.file('fileToDelete.kcl')
     const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
     const deleteConfirmation = page.getByTestId('delete-confirmation')
     const undoButton = page.getByRole('button', { name: 'arrow turn left' })
@@ -1313,8 +1328,8 @@ test(
       await editor.codeContent.focus()
       await page.keyboard.type('\ninterleaveB = 2')
       await undoButton.click()
-      await expect(u.codeLocator).not.toContainText('interleaveB = 2')
-      await expect(u.codeLocator).toContainText('interleaveA = 1')
+      await expect(editor.codeContent).not.toContainText('interleaveB = 2')
+      await expect(editor.codeContent).toContainText('interleaveA = 1')
       await expect(fileToDelete).not.toBeAttached()
       await expect(undoButton).toBeEnabled()
       await undoButton.click()
@@ -1326,17 +1341,17 @@ test(
         )
       )
       await undoButton.click()
-      await expect(u.codeLocator).not.toContainText('interleaveA = 1')
+      await expect(editor.codeContent).not.toContainText('interleaveA = 1')
       await expect(fileToDelete).toBeVisible()
     })
 
     await test.step('Redo code edits and the intervening file deletion', async () => {
       await redoButton.click()
-      await expect(u.codeLocator).toContainText('interleaveA = 1')
+      await expect(editor.codeContent).toContainText('interleaveA = 1')
       await redoButton.click()
       await expect(fileToDelete).not.toBeAttached()
       await redoButton.click()
-      await expect(u.codeLocator).toContainText('interleaveB = 2')
+      await expect(editor.codeContent).toContainText('interleaveB = 2')
       await expect(fileToDelete).not.toBeAttached()
       await expect(fs.stat(deletedPath)).rejects.toBeDefined()
     })

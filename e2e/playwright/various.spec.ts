@@ -1,9 +1,6 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import {
-  doExport,
-  expectKeybindingsSettingsVisible,
-  getUtils,
-} from '@e2e/playwright/test-utils'
+import { doExport } from '@e2e/playwright/lib/exportSupport'
+import { expectKeybindingsSettingsVisible } from '@e2e/playwright/lib/settingsSupport'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
@@ -38,10 +35,13 @@ test(
 test(
   'Successful export shows a success toast',
   { tag: ['@desktop', '@skipLocalEngine', '@localRenderer'] },
-  async ({ page, homePage, cmdBar, tronApp }, testInfo) => {
+  async (
+    { page, homePage, cmdBar, tronApp, debug: debugFixture },
+    testInfo
+  ) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
-    const u = await getUtils(page)
+
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -82,11 +82,11 @@ part001 = startSketchOn(-XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.waitForCmdReceive('extrude')
+    await debugFixture.open()
+    await debugFixture.expectCommandLog('[data-message-type="execution-done"]')
+    await debugFixture.waitForCommandReceived('extrude')
     await page.waitForTimeout(1000)
-    await u.clearAndCloseDebugPanel()
+    await debugFixture.clearAndClose()
 
     if (!tronApp) throwTronAppMissing()
 

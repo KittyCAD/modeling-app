@@ -1,24 +1,24 @@
+import { test as browserTest, expect } from '@e2e/playwright/base-test'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForAppLoad,
+} from '@e2e/playwright/lib/appSetup'
 import {
   installPausedClock,
   navigateToAppRoute,
   openProjectLibrary,
   selectProjectLibraries,
 } from '@e2e/playwright/lib/appTestUtils'
-import { expect, test as browserTest } from '@e2e/playwright/base-test'
-import { test as appTest } from '@e2e/playwright/zoo-test'
+import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
 import {
   mockCloudStorage,
   uploadedProject,
 } from '@e2e/playwright/lib/cloudStorageFixture'
-import { projectToml } from '@e2e/playwright/lib/cloudProjectTestUtils'
-import {
-  mockClientErrorReports,
-  setup,
-  waitForAppLoad,
-} from '@e2e/playwright/test-utils'
+import { test as appTest } from '@e2e/playwright/zoo-test'
+import type { BrowserContext, Page, TestInfo } from '@playwright/test'
 import { getDefaultCloudProjectLibrarySetting } from '@src/lib/projectLibraries'
 import { PROJECT_SHELL_FEATURE } from '@src/lib/projectSession/next/feature'
-import type { BrowserContext, Page, TestInfo } from '@playwright/test'
 
 const web = process.env.TARGET === 'web'
 const test = web ? browserTest : appTest

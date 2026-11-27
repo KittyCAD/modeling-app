@@ -1,5 +1,6 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import { circleMove, getUtils, TEST_COLORS } from '@e2e/playwright/test-utils'
+import { circleMove } from '@e2e/playwright/lib/gestures'
+import { TEST_COLORS } from '@e2e/playwright/lib/imageAssertions'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
@@ -12,7 +13,6 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.waitForAuthentication()
@@ -48,7 +48,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(networkPopover).not.toBeVisible()
 
       // Turn off the network
-      await u.emulateNetworkConditions({
+      await scene.emulateNetworkConditions({
         offline: true,
         // values of 0 remove any active throttling. crbug.com/456324#c9
         latency: 0,
@@ -71,7 +71,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(networkPopover).not.toBeVisible()
 
       // Turn back on the network
-      await u.emulateNetworkConditions({
+      await scene.emulateNetworkConditions({
         offline: false,
         // values of 0 remove any active throttling. crbug.com/456324#c9
         latency: 0,

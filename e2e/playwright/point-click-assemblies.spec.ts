@@ -1,6 +1,6 @@
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import path from 'path'
 import * as fsp from 'fs/promises'
+import path from 'path'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
@@ -9,11 +9,11 @@ import type { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDia
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import { doAndWaitForImageDiff } from '@e2e/playwright/lib/imageAssertions'
 import {
-  doAndWaitForImageDiff,
   executorInputPath,
   testsInputPath,
-} from '@e2e/playwright/test-utils'
+} from '@e2e/playwright/lib/testPaths'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
 import { isStepFile } from '@src/lib/fileExtensions'
@@ -532,6 +532,7 @@ test.describe(
         editor,
         toolbar,
         cmdBar,
+        fileTree,
       }) => {
         const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
         const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
@@ -569,7 +570,7 @@ test.describe(
 
         await test.step('Import step part as module', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
-          await toolbar.openFile('cube.step')
+          await fileTree.openFile('cube.step')
           await expect(
             page.getByText('Text files larger than 1 MiB cannot be edited.', {
               exact: false,
@@ -604,7 +605,7 @@ test.describe(
 
         await test.step('Import second foreign part from the binary-file preview', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
-          await toolbar.expectFileTreeState([
+          await fileTree.expectFileTreeState([
             'folder.prt',
             complexPlmFileName,
             'cube.step',
@@ -625,7 +626,7 @@ test.describe(
           await expect(importAction).not.toBeVisible()
           await page.keyboard.press('Escape')
 
-          await toolbar.openFile(complexPlmFileName)
+          await fileTree.openFile(complexPlmFileName)
           await page
             .locator('#code-pane')
             .getByRole('button', {

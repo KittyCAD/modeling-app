@@ -1,9 +1,9 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
+import { resetView } from '@e2e/playwright/lib/sceneSupport'
 import { getEndCapId } from '@e2e/playwright/lib/solidSelection'
-import { resetView } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 test.use({ useTestSettings: true })
 

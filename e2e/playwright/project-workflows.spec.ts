@@ -1,30 +1,28 @@
-import { setTimeout as delay } from 'node:timers/promises'
-import {
-  readEditorCode,
-  expandFileTreeFolder,
-  holdFileRead,
-  holdModelingOpen,
-  holdEditorWrites,
-} from '@e2e/playwright/lib/editorTestUtils'
-import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { expect, test as appTest } from '@e2e/playwright/zoo-test'
 import { test as browserTest } from '@e2e/playwright/base-test'
-import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import {
-  doAndWaitForImageDiff,
-  waitForAppLoad,
-} from '@e2e/playwright/test-utils'
-import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
+import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
-import type { Page } from '@playwright/test'
-import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
+import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { waitForAppLoad } from '@e2e/playwright/lib/appSetup'
 import {
-  openLayoutPanes,
   installPausedClock,
+  openLayoutPanes,
   pauseAppClock,
 } from '@e2e/playwright/lib/appTestUtils'
+import { uploadedProject } from '@e2e/playwright/lib/cloudStorageFixture'
+import {
+  expandFileTreeFolder,
+  holdEditorWrites,
+  holdFileRead,
+  holdModelingOpen,
+  readEditorCode,
+} from '@e2e/playwright/lib/editorTestUtils'
+import { doAndWaitForImageDiff } from '@e2e/playwright/lib/imageAssertions'
+import { prepareStorage } from '@e2e/playwright/lib/projectStorageFixture'
+import { test as appTest, expect } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { setTimeout as delay } from 'node:timers/promises'
 
 const test = process.env.TARGET === 'web' ? browserTest : appTest
 
@@ -667,7 +665,9 @@ for (const kind of storageKinds) {
         )
         const before = await storage.read(root)
         const code = () => readEditorCode(page)
-        const [center] = scene.makeMouseHelpers(0.35, 0.35, { format: 'ratio' })
+        const [center] = scene.makeMouseHelpers(0.35, 0.35, {
+          format: 'ratio',
+        })
         const [radius, moveRadius] = scene.makeMouseHelpers(0.6, 0.6, {
           format: 'ratio',
         })
