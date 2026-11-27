@@ -1052,7 +1052,6 @@ test.describe(
       })
 
       await test.step('Rename the folder', async () => {
-        await page.waitForTimeout(1000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
@@ -1229,15 +1228,12 @@ test.describe(
 
       await test.step('Delete folderToDelete', async () => {
         await folderToDelete.click({ button: 'right' })
-        await page.waitForTimeout(1000)
 
         await expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await page.waitForTimeout(1000)
 
         await expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
-        await page.waitForTimeout(1000)
       })
 
       await test.step('Check deletion and no navigation', async () => {
@@ -1287,11 +1283,9 @@ test.describe(
         await folderToDelete.click({ button: 'right' })
         await expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await page.waitForTimeout(1000)
 
         await expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
-        await page.waitForTimeout(1000)
       })
 
       await test.step('Check deletion and navigation to main.kcl', async () => {

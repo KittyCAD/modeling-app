@@ -115,8 +115,6 @@ test.describe(
               })
               await clickSecondObject({ pixelDiff: 50 })
 
-              await page.waitForTimeout(1000)
-
               if (operationName === 'subtract') {
                 await expect(modelingDialog.selection('Solids')).toHaveText(
                   '1 sweep'

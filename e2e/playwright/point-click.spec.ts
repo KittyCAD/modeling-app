@@ -807,7 +807,7 @@ extrude001 = extrude(region001, length = -12)`
       })
 
       await test.step(`Apply fillet to the preselected edge`, async () => {
-        await page.waitForTimeout(100)
+        await expect(toolbar.selectionStatus).not.toContainText('No selection')
         await editor.closePane()
         await toolbar.filletButton.click()
         await modelingDialog.selection('Selection').click()
@@ -866,12 +866,11 @@ extrude001 = extrude(region001, length = -12)`
 
       // Test 2: Modeling dialog without preselected edges
       await test.step(`Open fillet UI without selecting edges`, async () => {
-        await page.waitForTimeout(100)
         const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
           format: 'ratio',
         })
         await clearSelection()
-        await page.waitForTimeout(100)
+        await expect(toolbar.selectionStatus).not.toContainText('edge')
         await editor.closePane()
         await toolbar.filletButton.click()
         await modelingDialog.selection('Selection').click()
@@ -926,7 +925,6 @@ extrude001 = extrude(region001, length = -12)`
       await test.step('Delete fillet via feature tree selection', async () => {
         await test.step('Open Feature Tree Pane', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          await page.waitForTimeout(500)
         })
         await test.step('Delete fillet via feature tree selection', async () => {
           await editor.expectEditor.toContain(secondFilletDeclaration, {
@@ -938,7 +936,6 @@ extrude001 = extrude(region001, length = -12)`
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
           await editor.expectEditor.not.toContain(secondFilletDeclaration)
         })
       })
@@ -1411,7 +1408,7 @@ extrude001 = extrude(region001, length = -12)`
       })
 
       await test.step(`Apply chamfer to the preselected edge`, async () => {
-        await page.waitForTimeout(100)
+        await expect(toolbar.selectionStatus).not.toContainText('No selection')
         await toolbar.chamferButton.click()
         await modelingDialog.selection('Selection').click()
 
@@ -1435,7 +1432,6 @@ extrude001 = extrude(region001, length = -12)`
         newValue: string
       ) {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await page.waitForTimeout(300)
         const operationButton = await toolbar.getFeatureTreeOperation(
           operationName,
           0
@@ -1473,7 +1469,6 @@ extrude001 = extrude(region001, length = -12)`
         })
         await clearSelection()
         await expect(toolbar.selectionStatus).not.toContainText('edge')
-        await page.waitForTimeout(100)
         await toolbar.chamferButton.click()
         await modelingDialog.selection('Selection').click()
       })
@@ -1532,7 +1527,6 @@ extrude001 = extrude(region001, length = -12)`
       // Test 3: Delete chamfer via feature tree selection
       await test.step('Open Feature Tree Pane', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await page.waitForTimeout(500)
       })
       await test.step('Delete chamfer via feature tree selection', async () => {
         const operationButton = await toolbar.getFeatureTreeOperation(

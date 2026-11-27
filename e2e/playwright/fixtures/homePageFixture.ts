@@ -74,19 +74,16 @@ export class HomePageFixture {
   private _serialiseProjectCards = async (): Promise<
     Array<ProjectCardState>
   > => {
-    const projectCards = await this.projectCard.all()
-    const projectCardStates: Array<ProjectCardState> = []
-    for (const projectCard of projectCards) {
-      const [title, fileCount] = await Promise.all([
-        projectCard.locator(this.projectCardTitle).textContent(),
-        projectCard.locator(this.projectCardFile).textContent(),
-      ])
-      projectCardStates.push({
-        title: title || '',
-        fileCount: Number(fileCount),
-      })
-    }
-    return projectCardStates
+    return this.projectCard.evaluateAll((cards) =>
+      cards.map((card) => ({
+        title:
+          card.querySelector('[data-testid="project-title"]')?.textContent ||
+          '',
+        fileCount: Number(
+          card.querySelector('[data-testid="project-file-count"]')?.textContent
+        ),
+      }))
+    )
   }
 
   /**
@@ -97,8 +94,10 @@ export class HomePageFixture {
     await this.projectsLoaded()
     await expect.poll(this._serialiseSortBy).toEqual(expectedState.sortBy)
 
-    for (const projectCard of expectedState.projectCards) {
-      await expect.poll(this._serialiseProjectCards).toContainEqual(projectCard)
+    if (expectedState.projectCards.length > 0) {
+      await expect
+        .poll(this._serialiseProjectCards)
+        .toEqual(expect.arrayContaining(expectedState.projectCards))
     }
   }
 

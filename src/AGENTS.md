@@ -87,6 +87,15 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 - Keep XState event, state, and context changes close to the owning machine. Avoid threading machine internals through unrelated components.
 - When a component depends on import-time browser or desktop globals, mock those modules before importing the component in tests.
 
+## Keyboard shortcuts
+
+- Implement application shortcuts as registered commands with keymap facet contributions. Add a keymap context when availability depends on focus, mode, or interaction state.
+- Route editor commands to the focused editor view through explicit dependencies.
+- Before adding a keyboard handler, inspect the existing keymap extension and reuse its dispatch and customization mechanisms.
+- Reserve direct keyboard handlers for intrinsic widget interactions, such as arrow-key navigation, Escape dismissal, and text editing. Do not use them to implement application shortcuts.
+- Cover focus routing, command availability, and user remapping when adding shortcuts.
+- See the [Modeling camera contributions](src/lib/kcl/registry/cameraCommands.ts) for command, scope, and keymap registration, and the [focus adapter](src/lib/kcl/modeling/cameraCommands.ts) for targeting a view.
+
 ## Tests
 
 - Vitest picks the suite from the filename: `*.test.ts(x)` is unit (`npm run test:unit`); `*.spec.ts(x)` is integration (`npm run test:integration`).
