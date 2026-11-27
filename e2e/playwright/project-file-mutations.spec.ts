@@ -9,11 +9,11 @@ const storageBrowserTest = browserTest.extend<{
   editor: EditorFixture
   fileTree: FileTreeFixture
 }>({
-  editor: async ({ page }, use) => {
-    await use(new EditorFixture(page))
+  editor: async ({ page }, provide) => {
+    await provide(new EditorFixture(page))
   },
-  fileTree: async ({ page }, use) => {
-    await use(new FileTreeFixture(page))
+  fileTree: async ({ page }, provide) => {
+    await provide(new FileTreeFixture(page))
   },
 })
 const test = web ? storageBrowserTest : appTest
