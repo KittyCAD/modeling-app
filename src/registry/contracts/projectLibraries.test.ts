@@ -2,14 +2,12 @@ import {
   areProjectLibrarySettingsEqual,
   DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
   DEFAULT_PROJECT_LIBRARY_ID,
-  formatProjectLibraryPathForDisplay,
   getContainingDirectoryProjectLibraryPath,
   getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
   getProjectLibraryDetailsDescription,
   getProjectLibraryIdFromSetting,
-  getProjectLibraryLocationLabel,
   getProjectLibrarySummaryDescription,
   getProjectLibrarySummaryTooltip,
   LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
@@ -163,50 +161,35 @@ describe('project library settings', () => {
     ).toBeUndefined()
   })
 
-  test('formats cloud library paths with a zoo:// display prefix', () => {
-    expect(
-      formatProjectLibraryPathForDisplay({
-        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
-        type: 'cloud',
-      })
-    ).toBe('zoo://personal')
-    expect(
-      formatProjectLibraryPathForDisplay({
-        path: '/cloud/team',
-        source: '/team',
-        type: 'cloud',
-      })
-    ).toBe('zoo://team')
-    expect(
-      formatProjectLibraryPathForDisplay({
-        path: '/projects',
-        type: 'directory',
-      })
-    ).toBe('/projects')
+  test('uses presentation supplied by a library provider', () => {
+    const presentation = {
+      summaryDescription: 'Projects from an external provider',
+      detailsDescription: 'This provider controls project storage.',
+    }
+    const library = {
+      ...projectLibraryFromSetting({
+        title: 'Designs',
+        path: '/cache',
+        type: 'external',
+      }),
+      presentation,
+    }
+    expect(getProjectLibrarySummaryDescription(library)).toBe(
+      presentation.summaryDescription
+    )
+    expect(getProjectLibraryDetailsDescription(library)).toBe(
+      presentation.detailsDescription
+    )
+    expect(getProjectLibrarySummaryTooltip(library)).toBe(
+      presentation.detailsDescription
+    )
   })
 
-  test('summarizes project library storage in plain language', () => {
-    const cloudLibrary = {
-      path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
-      type: 'cloud',
-    }
+  test('summarizes directory library storage in plain language', () => {
     const directoryLibrary = {
       path: '/projects',
       type: 'directory',
     }
-
-    expect(getProjectLibrarySummaryDescription(cloudLibrary)).toBe(
-      'Projects in this library are saved to your Zoo account'
-    )
-    expect(getProjectLibrarySummaryTooltip(cloudLibrary)).toContain(
-      'Technical source: zoo://personal'
-    )
-    expect(getProjectLibraryDetailsDescription(cloudLibrary)).toBe(
-      'Projects in this library are saved to your Zoo account. Storage type and model-training controls depend on your plan.'
-    )
-    expect(getProjectLibraryLocationLabel(cloudLibrary)).toBe(
-      'Technical source'
-    )
     expect(getProjectLibrarySummaryDescription(directoryLibrary)).toBe(
       'Projects in this library are saved only on this computer'
     )
@@ -216,7 +199,6 @@ describe('project library settings', () => {
     expect(getProjectLibraryDetailsDescription(directoryLibrary)).toBe(
       'Projects in this library are saved only on this computer.'
     )
-    expect(getProjectLibraryLocationLabel(directoryLibrary)).toBe('Folder')
   })
 
   test('treats the first directory library as the default local project target', () => {
@@ -427,6 +409,10 @@ describe('project library settings', () => {
 })
 
 describe('projectLibrariesFromSettings', () => {
+  test('returns no libraries without settings or contributions', () => {
+    expect(projectLibrariesFromSettings([])).toEqual([])
+  })
+
   test('derives visible library instances from settings order', () => {
     expect(
       projectLibrariesFromSettings([

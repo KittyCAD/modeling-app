@@ -1,4 +1,4 @@
-import type { RemoteProjectLibrary } from '@src/lib/cloudProjects/runtime/api'
+import type { ProjectLibraryResponse } from '@kittycad/lib'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   type ProjectLibrary,
@@ -13,7 +13,10 @@ export function isApiProjectLibrary(library: { source?: string }) {
 export const apiProjectLibraryId = (id: string) => `cloud-library-${id}`
 
 export function apiProjectLibraries(
-  libraries: readonly RemoteProjectLibrary[]
+  libraries: readonly Pick<
+    ProjectLibraryResponse,
+    'id' | 'name' | 'org_id' | 'source'
+  >[]
 ): ProjectLibrary[] {
   return libraries
     .toSorted(
@@ -26,5 +29,6 @@ export function apiProjectLibraries(
       source: `${API_LIBRARY_SOURCE_PREFIX}${library.id}`,
       path: `zoo://project-libraries/${library.id}`,
       hiddenByDefault: library.source === 'factory_portal',
+      organizationId: library.org_id,
     }))
 }

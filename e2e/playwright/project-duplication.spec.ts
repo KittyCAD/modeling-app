@@ -106,13 +106,7 @@ async function prepare(
     page,
     sameLibrary ? [sourceLibrary] : [sourceLibrary, destinationLibrary]
   )
-  if (sameLibrary && source === 'cloud') {
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-      sourceLibrary.title
-    )
-  } else {
-    await openProjectLibrary(page, sourceLibrary.title)
-  }
+  await openProjectLibrary(page, sourceLibrary.title)
   const card = page
     .getByTestId('project-link')
     .filter({ has: page.getByText('Original', { exact: true }) })

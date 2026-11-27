@@ -1,21 +1,22 @@
 import { signal } from '@preact/signals-core'
+import { describeCloudLibrary } from '@src/lib/cloudProjects/libraryPresentation'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
-import {
-  FREE_CLOUD_PROJECT_TRAINING_POLICY_URL,
-  shouldShowFreeCloudProjectTrainingDisclosure,
-} from '@src/lib/projectLibraries/trainingDisclosure'
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import { ProjectLibraryPreviewRow } from '@src/routes/HomeProjectCards'
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/isDesktop', () => ({ isDesktop: () => true }))
 
 const cloudLibrary = {
   id: 'cloud-personal',
   title: 'Personal Cloud',
   path: '/documents/Zoo Projects',
   type: 'cloud',
+  presentation: describeCloudLibrary({}),
 } satisfies ProjectLibrary
 
 const projectActions = {
@@ -39,30 +40,30 @@ const projectActions = {
 } satisfies HomeProjectActionsService
 
 function renderHomeHeader({
-  showFreeCloudProjectTrainingDisclosure,
+  library = cloudLibrary,
+  libraryDetails,
   showLibraryBackLink = false,
   onRefresh,
   isRefreshing = false,
 }: {
-  showFreeCloudProjectTrainingDisclosure: boolean
+  library?: ProjectLibrary
+  libraryDetails?: ReactNode
   showLibraryBackLink?: boolean
   onRefresh?: () => void
   isRefreshing?: boolean
-}) {
+} = {}) {
   render(
     <MemoryRouter>
       <HomeHeader
         title="Personal Cloud"
         onRefresh={onRefresh}
         isRefreshing={isRefreshing}
-        library={cloudLibrary}
+        library={library}
         setQuery={vi.fn()}
         sort="modified:desc"
         setSearchParams={vi.fn()}
         readWriteProjectDir={{ value: true, error: undefined }}
-        showFreeCloudProjectTrainingDisclosure={
-          showFreeCloudProjectTrainingDisclosure
-        }
+        libraryDetails={libraryDetails}
         showLibraryBackLink={showLibraryBackLink}
       />
     </MemoryRouter>
@@ -95,10 +96,7 @@ describe('HomeHeader', () => {
   it('allows another refresh after five seconds without showing it as busy during cooldown', async () => {
     vi.useFakeTimers()
     const onRefresh = vi.fn()
-    renderHomeHeader({
-      showFreeCloudProjectTrainingDisclosure: false,
-      onRefresh,
-    })
+    renderHomeHeader({ onRefresh })
     const button = screen.getByRole('button', { name: 'Refresh projects' })
     fireEvent.click(button)
     expect(button).toBeDisabled()
@@ -114,11 +112,7 @@ describe('HomeHeader', () => {
 
   it('keeps refresh disabled after the cooldown while a request is still running', async () => {
     vi.useFakeTimers()
-    renderHomeHeader({
-      showFreeCloudProjectTrainingDisclosure: false,
-      onRefresh: vi.fn(),
-      isRefreshing: true,
-    })
+    renderHomeHeader({ onRefresh: vi.fn(), isRefreshing: true })
     await act(() => vi.advanceTimersByTime(5_000))
     expect(
       screen.getByRole('button', { name: 'Refresh projects' })
@@ -129,11 +123,7 @@ describe('HomeHeader', () => {
     'shows the refresh button with loading=%s',
     (isRefreshing) => {
       const onRefresh = vi.fn()
-      renderHomeHeader({
-        showFreeCloudProjectTrainingDisclosure: false,
-        onRefresh,
-        isRefreshing,
-      })
+      renderHomeHeader({ onRefresh, isRefreshing })
       const button = screen.getByRole('button', { name: 'Refresh projects' })
       expect(button).toHaveAttribute('aria-busy', String(isRefreshing))
       if (isRefreshing) expect(button).toBeDisabled()
@@ -142,38 +132,18 @@ describe('HomeHeader', () => {
       expect(onRefresh).toHaveBeenCalledTimes(isRefreshing ? 0 : 1)
     }
   )
-
-  it('shows the Free cloud-project training disclosure with the policy link', () => {
+  it('renders contributed library details with the description', () => {
     renderHomeHeader({
-      showFreeCloudProjectTrainingDisclosure:
-        shouldShowFreeCloudProjectTrainingDisclosure({
-          library: cloudLibrary,
-          hasSubscription: false,
-        }),
+      libraryDetails: <span>Additional library details</span>,
     })
 
     expect(
-      screen.getByText(/Zoo trains on Free user cloud projects/)
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'See our policy' })
-    ).toHaveAttribute('href', FREE_CLOUD_PROJECT_TRAINING_POLICY_URL)
+      screen.getByText(/Projects in this library are saved to your Zoo account/)
+    ).toHaveTextContent('Additional library details')
   })
 
-  it('does not show the disclosure when the condition is false', () => {
-    renderHomeHeader({
-      showFreeCloudProjectTrainingDisclosure: false,
-    })
-
-    expect(
-      screen.queryByText(/Zoo trains on Free user cloud projects/)
-    ).not.toBeInTheDocument()
-  })
-
-  it('shows cloud library details without the technical source', () => {
-    renderHomeHeader({
-      showFreeCloudProjectTrainingDisclosure: false,
-    })
+  it('keeps non-directory locations out of the Settings link', () => {
+    renderHomeHeader({ library: { ...cloudLibrary, type: 'external' } })
 
     expect(
       screen.getByText(/Projects in this library are saved to your Zoo account/)
@@ -183,18 +153,25 @@ describe('HomeHeader', () => {
         /Storage type and model-training controls depend on your plan/
       )
     ).toBeInTheDocument()
-    expect(screen.queryByText(/Technical source:/)).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('link', { name: 'zoo://personal' })
+      screen.queryByTestId('project-directory-settings-link')
     ).not.toBeInTheDocument()
   })
 
-  it('shows the selected library type icon and caret back link', () => {
+  it('links a directory library to Local Libraries and back to Home', () => {
     renderHomeHeader({
-      showFreeCloudProjectTrainingDisclosure: false,
+      library: {
+        id: 'local-library',
+        title: 'Work',
+        path: '/projects/work',
+        type: 'directory',
+      },
       showLibraryBackLink: true,
     })
 
+    expect(
+      screen.getByRole('link', { name: '/projects/work' })
+    ).toHaveAttribute('href', '/home/settings?tab=user#libraries')
     const backLink = screen.getByRole('link', { name: 'All libraries' })
     expect(backLink).toHaveAttribute('href', '/home')
     expect(backLink.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
@@ -208,7 +185,7 @@ describe('HomeHeader', () => {
 })
 
 describe('ProjectLibraryPreviewRow', () => {
-  it('shows cloud library helper text instead of the technical zoo source', () => {
+  it('shows only descriptive text in the cloud library summary and tooltip', () => {
     renderProjectLibraryPreviewRow(cloudLibrary)
 
     const libraryLink = screen.getByTestId('project-library-link')
@@ -216,13 +193,11 @@ describe('ProjectLibraryPreviewRow', () => {
       'project-library-summary-description'
     )
     expect(libraryLink).toHaveTextContent('Personal Cloud')
-    expect(summaryDescription).toHaveTextContent(
-      'Projects in this library are saved to your Zoo account'
+    expect(summaryDescription.textContent).toBe(
+      cloudLibrary.presentation.summaryDescription
     )
-    expect(summaryDescription).not.toHaveTextContent('zoo://personal')
-    expect(screen.getByRole('tooltip', { hidden: true })).toBeInTheDocument()
-    expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent(
-      'Technical source: zoo://personal'
+    expect(screen.getByRole('tooltip', { hidden: true }).textContent).toBe(
+      cloudLibrary.presentation.detailsDescription
     )
   })
 })

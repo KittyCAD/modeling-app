@@ -61,11 +61,7 @@ async function capturePendingScreenshot(
 
 async function expectHome(page: Page) {
   await expect(page).toHaveURL(/\/home\/?$/)
-  await expect(
-    page.getByRole('heading', {
-      name: /^(Projects|Project Libraries|Personal Cloud)$/,
-    })
-  ).toBeVisible()
+  await expect(page.getByTestId('home-header')).toBeVisible()
 }
 
 test.use({ trace: 'on' })
@@ -90,7 +86,6 @@ test.describe(
           modeling: true,
         }
       )
-      await expectHome(page)
 
       await test.step('Settings Replay shows pending state', async () => {
         await toolbar.userSidebarButton.click()

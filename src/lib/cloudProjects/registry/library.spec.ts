@@ -25,7 +25,6 @@ import {
   runtimeService,
   type RuntimeRegistryService,
 } from '@src/registry/contracts/runtime'
-import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import cloudProjects from '@src/lib/cloudProjects/registry/library'
 import { afterEach, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
@@ -124,8 +123,8 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
       saves: signal(new Map()),
     } as unknown as CloudStorageService),
   ])
-  const libraries = () =>
-    projectLibrariesFromSettings([], registry!.get(projectLibraryTypesFacet))
+  const libraryTypes = registry.observe(projectLibraryTypesFacet)
+  const libraries = () => libraryTypes.value.get('cloud')?.libraries ?? []
   await vi.waitFor(() => expect(libraries()).toHaveLength(4))
   expect(fetchMock.mock.calls.map(([url]) => String(url))).toEqual([
     'https://api.test/user/project-libraries',
@@ -134,6 +133,7 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
   expect(
     new Headers(fetchMock.mock.calls[0][1]?.headers).get('Authorization')
   ).toBe('Bearer first-token')
+  const type = libraryTypes.value.get('cloud')
   expect(
     libraries()
       .filter((library) => library.hiddenByDefault)
@@ -147,7 +147,6 @@ it('discovers paged libraries, groups read-only projects, and drops an old accou
       readWriteAccess: false,
     }),
   ])
-  const type = registry.get(projectLibraryTypesFacet).get('cloud')
   const dataset = libraries().find(
     (library) => library.id === 'cloud-library-dataset'
   )!

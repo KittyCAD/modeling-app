@@ -1592,12 +1592,11 @@ test(
     await homePage.projectsLoaded()
 
     await test.step('We can change the root project directory', async () => {
-      // expect to see the project directory settings link
-      await expect(
-        page.getByTestId('project-directory-settings-link')
-      ).toBeVisible()
-
-      await page.getByTestId('project-directory-settings-link').click()
+      await page.getByTestId('app-logo').click()
+      await page
+        .getByRole('region', { name: 'Local Libraries' })
+        .getByRole('link', { name: 'Manage in Settings' })
+        .click()
 
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
       originalProjectDirName = await page

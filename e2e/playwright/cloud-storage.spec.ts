@@ -92,11 +92,14 @@ for (const startEmpty of [false, true]) {
         const loading = page.getByRole('status', { name: 'Loading projects' })
         await expect(loading).toBeVisible()
         release.resolve(undefined)
+        const cloudLibraries = page.getByRole('region', {
+          name: 'Cloud Libraries',
+        })
         const refresh = page.getByRole('button', { name: 'Refresh projects' })
         await expect(refresh).toHaveAttribute('aria-busy', 'false')
         await expect(loading).toHaveCount(0)
         const contents = startEmpty
-          ? page.getByTestId('projects-none')
+          ? cloudLibraries.getByTestId('project-library-empty')
           : page.getByText('Cloud memory model', { exact: true })
         await expect(contents).toBeVisible()
         release = Promise.withResolvers<undefined>()

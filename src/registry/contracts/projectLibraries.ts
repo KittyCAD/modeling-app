@@ -5,6 +5,7 @@ import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
   ProjectLibrary,
   ProjectLibraryInitialProject,
+  ProjectLibraryPresentation,
   ProjectLibrarySetting,
   ProjectLibraryType,
 } from '@src/lib/projectLibraries'
@@ -12,9 +13,8 @@ import {
   mergeProjectLibrarySettings,
   normalizeLibraryPath,
 } from '@src/lib/projectLibraries'
-import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
-import { contract, Facet, service } from 'plankton'
+import { contract, Facet, type Registry, service } from 'plankton'
 
 type CloudProjectRelationship = {
   remoteProject?: RemoteProjectSummary
@@ -212,26 +212,9 @@ export interface ProjectLibraryTypeOperations {
   cloneProjectFrom?: ProjectLibraryCloneProjectFromOperation
   cloneProjectTo?: ProjectLibraryCloneProjectToOperation
 }
-export interface ProjectLibrarySettingsDetailsProps {
-  library: ProjectLibrarySetting
-  index: number
-  updateLibrary: (library: ProjectLibrarySetting) => void
-  commitLibrary: (library?: ProjectLibrarySetting) => void
-  readOnly?: boolean
-  chooseDirectory?: (input: {
-    defaultPath?: string
-    title?: string
-  }) => Promise<string | undefined>
-}
-
-/**
- * Home-page library summary renderers let a project-library type attach compact
- * type-specific state to both the library overview row and the library detail
- * header without coupling Home to a plugin implementation.
- */
-export interface ProjectLibraryHomeSummaryProps {
+export interface ProjectLibraryHomeDetailProps {
   library: ProjectLibrary
-  projects: readonly HomeProjectEntry[]
+  registry: Registry
 }
 
 /**
@@ -251,18 +234,16 @@ export interface ProjectLibraryTypeContribution {
   libraries?: readonly ProjectLibrary[]
   icon?: string
   order?: number
-  /** Initial value used when settings are seeded or migrated for this type. */
-  defaultSetting?: ProjectLibrarySetting
-  /** Template used when a user manually adds a new library of this type. */
-  newLibrarySetting?: ProjectLibrarySetting
-  /** Optional detail cell rendered in the project libraries settings row. */
-  settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
-  /** Optional compact status/action component for Home library surfaces. */
-  homeSummary?: ComponentType<ProjectLibraryHomeSummaryProps>
+  /** Supplies presentation for configured and discovered libraries on Home. */
+  describeLibrary?: (library: ProjectLibrary) => ProjectLibraryPresentation
+  /** Optional inline content for the library detail description on Home. */
+  homeDetails?: ComponentType<ProjectLibraryHomeDetailProps>
+  /** Group this library type on Home, after libraries without a section. */
+  homeSection?: {
+    title: string
+  }
   /** Policies assigning provider relationships to specific libraries. */
   relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
-  /** Hide this type from creation/editing UI while keeping runtime support. */
-  hideInSettingsOnPlatform?: HideOnPlatformValue
   operations?: ProjectLibraryTypeOperations
   /**
    * Discover local project folders for one configured library. Implementations
