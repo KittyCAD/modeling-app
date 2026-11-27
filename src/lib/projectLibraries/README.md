@@ -13,14 +13,16 @@ presentation.
   project operations through the file-operations service.
 - **`cloud`** comes from the [cloud projects extension](../cloudProjects/registry/library.ts).
   It contributes Personal Cloud and the libraries discovered from the API, along
-  with cloud project entries and operations. Its refresh operation reloads the
+  with cloud project entries and operations. It supplies **Create cloud library**
+  in its **Cloud Libraries** section on Home. Its refresh operation reloads the
   cloud library catalog and projects.
 
 ## How Home assembles the list
 
 [`projectLibrariesFromSettings`](index.ts) combines configured libraries with
 provider-contributed libraries by ID. A configured entry takes precedence for a
-matching ID. Pickers use library IDs for selection and titles for display.
+matching ID. Pickers use library IDs for selection, with titles and optional
+command labels for display.
 
 The [Home overview](../../routes/Home.tsx) renders **Local Libraries** first in
 settings order, followed by the sections contributed through `homeSection`. A new

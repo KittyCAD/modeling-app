@@ -1,15 +1,20 @@
 import type { ProjectLibraryResponse } from '@kittycad/lib'
 import { computed, effect, signal } from '@preact/signals-core'
+import { CloudLibraryCreateButton } from '@src/lib/cloudProjects/CloudLibraryCreateButton'
 import { CloudLibraryTrainingDisclosure } from '@src/lib/cloudProjects/CloudLibraryTrainingDisclosure'
 import {
   apiProjectLibraries,
   apiProjectLibraryId,
-  isApiProjectLibrary,
+  getApiProjectLibraryId,
 } from '@src/lib/cloudProjects/apiProjectLibraries'
+import { createCloudLibraryCommand } from '@src/lib/cloudProjects/commands'
 import { describeCloudLibrary } from '@src/lib/cloudProjects/libraryPresentation'
 import { newKclFile } from '@src/lang/project'
 import { observations as cloudProjectsObservations } from '@src/lib/cloudProjects/registry/contract'
-import { listRemoteProjectLibraries } from '@src/lib/cloudProjects/runtime/api'
+import {
+  listRemoteProjectLibraries,
+  createRemoteProjectLibrary,
+} from '@src/lib/cloudProjects/runtime/api'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -28,6 +33,7 @@ import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/
 import { collectProjectFilesForUpload } from '@src/lib/projectSession/projectFiles'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { observations as authObservations } from '@src/registry/contracts/auth'
+import { commandsFacet } from '@src/registry/contracts/commands'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntryContribution,
@@ -87,6 +93,7 @@ export default defineFactory({
       personalCloudLibrary,
       ...apiProjectLibraries(remoteLibraries.value),
     ])
+    const organization = computed(() => auth.value?.organization.current.value)
     const refreshCatalog = signal(0)
     const libraryIds = computed(() => libraries.value.map(({ id }) => id))
     const pathname = computed(() => router.value?.location.value.pathname)
@@ -165,6 +172,7 @@ export default defineFactory({
       getDefaultLibraries: ({ isDesktop }) =>
         isDesktop ? undefined : [getDefaultCloudProjectLibrarySetting()],
     } satisfies InputOf<typeof projectLibrarySettingDefaultPoliciesFacet>
+    const canCreateCloudLibraries = () => auth.value?.isLoggedIn.value === true
     const _projectLibraryTypesContribution: InputOf<
       typeof projectLibraryTypesFacet
     > = {
@@ -197,8 +205,9 @@ export default defineFactory({
           },
         },
         createProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
+          isAvailable: ({ library }) => !library.hiddenByDefault,
           run: async ({
+            library,
             requestedProjectTitle,
             initialKclFile,
             initialProject,
@@ -228,7 +237,8 @@ export default defineFactory({
                 ]
             const created = await cloud().createProject(
               requestedProjectTitle,
-              archive
+              archive,
+              { libraryId: getApiProjectLibraryId(library) }
             )
             return projectInfo(created.id)
           },
@@ -244,7 +254,6 @@ export default defineFactory({
           },
         },
         renameProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project, requestedName }) => {
             if (project.remoteProjectId)
               await cloud().renameProject(
@@ -254,14 +263,12 @@ export default defineFactory({
           },
         },
         deleteProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project }) => {
             if (project.remoteProjectId)
               await cloud().deleteProject(project.remoteProjectId)
           },
         },
         duplicateProject: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
           run: async ({ project }) => {
             if (!project.remoteProjectId) return undefined
             const title = `${getHomeProjectDisplayName(project)}-copy`
@@ -289,8 +296,8 @@ export default defineFactory({
           },
         },
         cloneProjectTo: {
-          isAvailable: ({ library }) => !isApiProjectLibrary(library),
-          run: async ({ source, project, requestedProjectTitle }) => {
+          isAvailable: ({ library }) => !library.hiddenByDefault,
+          run: async ({ library, source, project, requestedProjectTitle }) => {
             const archive =
               source.files ??
               (await collectProjectFilesForUpload({
@@ -300,7 +307,8 @@ export default defineFactory({
               }))
             const created = await cloud().createProject(
               requestedProjectTitle ?? getHomeProjectDisplayName(project),
-              archive
+              archive,
+              { libraryId: getApiProjectLibraryId(library) }
             )
             const info = await projectInfo(created.id)
             invalidateProjectLibraryRealizations()
@@ -312,6 +320,33 @@ export default defineFactory({
         },
       },
     } satisfies InputOf<typeof projectLibraryTypesFacet>
+    const newLibraryCommand = () =>
+      createCloudLibraryCommand({
+        enabled: () => canCreateCloudLibraries() && !isOffline(),
+        organization: () => organization.value,
+        createLibrary: async (name, scope) => {
+          const requestAuth = auth.peek()
+          const requestAccount = requestAuth?.user.peek()?.id
+          const config = {
+            enabled: true,
+            token: requestAuth?.token.peek(),
+            baseUrl: runtime.peek()?.current.peek().apiBaseUrl,
+          }
+          const created = await createRemoteProjectLibrary(config, name, scope)
+          if (
+            disposed ||
+            auth.peek()?.user.peek()?.id !== requestAccount ||
+            runtime.peek()?.current.peek().apiBaseUrl !== config.baseUrl
+          )
+            return
+          if (auth.peek()?.token.peek() === config.token)
+            remoteLibraries.value = [
+              ...remoteLibraries.peek().filter(({ id }) => id !== created.id),
+              created,
+            ]
+          refreshCatalog.value += 1
+        },
+      })
     return {
       start: () => {
         const onVisibilityChange = () => {
@@ -372,6 +407,9 @@ export default defineFactory({
         }
       },
       items: [
+        contribute(commandsFacet, newLibraryCommand, {
+          key: 'cloud-projects.create-library',
+        }),
         contribute(
           homeProjectSettledLibraryIdsFacet,
           () => {
@@ -408,6 +446,9 @@ export default defineFactory({
           libraries: libraries.value,
           homeSection: {
             title: 'Cloud Libraries',
+            CreateButton: canCreateCloudLibraries()
+              ? CloudLibraryCreateButton
+              : undefined,
           },
         })),
       ],

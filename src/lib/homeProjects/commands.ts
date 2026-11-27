@@ -71,6 +71,10 @@ export interface CreateProjectLibraryTarget {
   >
 }
 
+function getLibraryDestinationLabel(library: ProjectLibrary) {
+  return library.commandLabel ?? library.title
+}
+
 export function createProjectLibraryArgument(
   options: () => CommandArgumentOption<string>[],
   defaultValue: () => string
@@ -278,7 +282,7 @@ export function createProjectCommands({
 
   const createProjectLibraryOptions = () =>
     createProjectTargetsSnapshot()?.map((target) => ({
-      name: target.library.title,
+      name: getLibraryDestinationLabel(target.library),
       value: target.library.id,
       isCurrent: false,
     })) ?? []
@@ -330,7 +334,7 @@ export function createProjectCommands({
   }) =>
     duplicateToLibraryTargets(argumentsToSubmit.project).map(
       ({ duplicateTarget }) => ({
-        name: duplicateTarget.library.title,
+        name: getLibraryDestinationLabel(duplicateTarget.library),
         value: duplicateTarget.library.id,
         isCurrent: false,
       })
@@ -539,9 +543,10 @@ export function createProjectCommands({
         heading: differentType
           ? 'Duplicate project into a different library type?'
           : 'Duplicate project?',
-        message: target
-          ? `Create a new project in "${targetLibrary?.title}" from "${projectName}". The original project in "${sourceLibrary?.title}" will be kept.`
-          : `Create a new project from "${projectName}" in the selected library. The original will be kept.`,
+        message:
+          sourceLibrary && targetLibrary
+            ? `Create a new project in "${getLibraryDestinationLabel(targetLibrary)}" from "${projectName}". The original project in "${getLibraryDestinationLabel(sourceLibrary)}" will be kept.`
+            : `Create a new project from "${projectName}" in the selected library. The original will be kept.`,
       })
     },
     args: {
@@ -555,9 +560,12 @@ export function createProjectCommands({
       library: {
         inputType: 'options',
         required: true,
-        valueSummary: (value) =>
-          getProjectLibraries?.().find((library) => library.id === value)
-            ?.title ?? 'Library',
+        valueSummary: (value) => {
+          const library = getProjectLibraries?.().find(
+            (library) => library.id === value
+          )
+          return library ? getLibraryDestinationLabel(library) : 'Library'
+        },
         options: duplicateToLibraryOptions,
         defaultValue: defaultDuplicateToLibraryId,
       },

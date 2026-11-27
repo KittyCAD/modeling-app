@@ -241,6 +241,8 @@ export interface ProjectLibraryTypeContribution {
   /** Group this library type on Home, after libraries without a section. */
   homeSection?: {
     title: string
+    /** Keep the overview accessible when this action is available. */
+    CreateButton?: ComponentType<{ registry: Registry }>
   }
   /** Policies assigning provider relationships to specific libraries. */
   relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
