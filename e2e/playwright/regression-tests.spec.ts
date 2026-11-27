@@ -1,4 +1,4 @@
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
@@ -94,18 +94,18 @@ extrude001 = extrude(sketch001, length = 50)
       await test.step('Check arrow down works', async () => {
         await cmdBar.cmdBarOpenBtn.click()
         await cmdBar.cmdOptions
-          .getByText('Export 3D model', { exact: true })
+          .getByText('Settings · app · theme', { exact: true })
           .click()
+        await expect(cmdBar.argumentInput).toBeFocused()
 
-        // press arrow down key twice
+        // Press arrow down twice to reach the third theme option.
         await page.keyboard.press('ArrowDown')
         await page.waitForTimeout(100)
         await page.keyboard.press('ArrowDown')
 
-        // STL is the third option, which makes sense for two arrow downs
         await expect(
-          page.locator('[data-headlessui-state="active"]')
-        ).toHaveText('STL')
+          page.locator('[data-headlessui-state~="active"]')
+        ).toHaveText('system')
 
         await page.keyboard.press('Escape')
         await page.keyboard.press('Escape')
@@ -117,12 +117,13 @@ extrude001 = extrude(sketch001, length = 50)
         await cmdBar.cmdBarOpenBtn.click()
 
         await page.getByText('The overall appearance of the').click()
+        await expect(cmdBar.argumentInput).toBeFocused()
 
         await page.keyboard.press('ArrowUp')
         await page.waitForTimeout(100)
 
         await expect(
-          page.locator('[data-headlessui-state="active"]')
+          page.locator('[data-headlessui-state~="active"]')
         ).toHaveText('light')
       })
     }
@@ -384,7 +385,7 @@ extrude002 = extrude(profile002, length = 150)`
   test(
     'when engine fails export we handle the failure and alert the user',
     { tag: ['@skipLocalEngine', '@localRenderer'] },
-    async ({ scene, page, homePage, cmdBar }) => {
+    async ({ scene, page, homePage, modelingDialog }) => {
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -407,14 +408,7 @@ extrude002 = extrude(profile002, length = 150)`
       // Click the export button
       await exportButton.click()
 
-      // Click the stl.
-      const stlOption = page.getByText('glTF')
-      await expect(stlOption).toBeVisible()
-
-      await page.keyboard.press('Enter')
-
-      // Click the checkbox
-      await cmdBar.submit()
+      await modelingDialog.submit()
 
       // Find the toast.
       // Look out for the toast message
@@ -445,12 +439,7 @@ extrude002 = extrude(profile002, length = 150)`
       await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
-      // Click the stl.
-      await expect(stlOption).toBeVisible()
-      await page.keyboard.press('Enter')
-
-      // Click the checkbox
-      await cmdBar.submit()
+      await modelingDialog.submit()
 
       // A fast export can complete before its progress toast is observed.
       const successToastMessage = page.getByText(`Exported successfully`)
@@ -463,7 +452,7 @@ extrude002 = extrude(profile002, length = 150)`
   test(
     'ensure you CAN export while an export is already going',
     { tag: ['@skipLocalEngine', '@localRenderer'] },
-    async ({ page, homePage, cmdBar }) => {
+    async ({ page, homePage, modelingDialog }) => {
       const u = await getUtils(page)
       await test.step('Set up the code and durations', async () => {
         await page.addInitScript(
@@ -497,11 +486,11 @@ extrude002 = extrude(profile002, length = 150)`
       const successToastMessage = page.getByText(`Exported successfully`)
 
       await test.step('second export', async () => {
-        await clickExportButton(page, cmdBar)
+        await clickExportButton(page, modelingDialog)
 
         await expect(exportingToastMessage).toBeVisible()
 
-        await clickExportButton(page, cmdBar)
+        await clickExportButton(page, modelingDialog)
 
         await test.step('The first export still succeeds', async () => {
           await Promise.all([
@@ -523,7 +512,7 @@ extrude002 = extrude(profile002, length = 150)`
         const previousSuccessToastCount = await successToastMessage.count()
 
         // Try exporting again.
-        await clickExportButton(page, cmdBar)
+        await clickExportButton(page, modelingDialog)
 
         // Expect it to succeed.
         await Promise.all([
@@ -822,7 +811,10 @@ extrude001 = extrude(profile001, length = 5)
   )
 })
 
-async function clickExportButton(page: Page, cmdBar: CmdBarFixture) {
+async function clickExportButton(
+  page: Page,
+  modelingDialog: ModelingDialogFixture
+) {
   await test.step('Running export flow', async () => {
     // export the model
     const exportButton = page.getByTestId('export-pane-button')
@@ -831,13 +823,6 @@ async function clickExportButton(page: Page, cmdBar: CmdBarFixture) {
     // Click the export button
     await exportButton.click()
 
-    // Click the gltf.
-    const gltfOption = page.getByRole('option', { name: 'glTF' })
-    await expect(gltfOption).toBeVisible()
-
-    await page.keyboard.press('Enter')
-
-    // Click the checkbox
-    await cmdBar.submit()
+    await modelingDialog.submit()
   })
 }
