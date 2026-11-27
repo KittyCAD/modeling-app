@@ -26,7 +26,6 @@ import type { PathView as Path } from '@rust/kcl-lib/bindings/PathView'
 import type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
-import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -122,19 +121,13 @@ import {
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
-  artifactToEntityRef,
   getNodeFromPath,
   getPathNormalisedForTruncatedAst,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
-import {
-  codeRefFromRange,
-  getArtifactFromRange,
-} from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 
-import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -174,7 +167,6 @@ import {
   normalizeVec,
   subVec,
 } from '@src/lib/utils2d'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   DefaultPlane,
@@ -217,7 +209,6 @@ export class SceneEntities {
   readonly sceneInfra: SceneInfra
   readonly kclManager: KclManager
   readonly rustContext: RustContext
-  commandBarActor: CommandBarActorType
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   readonly sketchSolveGroup: Group
@@ -231,14 +222,12 @@ export class SceneEntities {
     sceneInfra: SceneInfra,
     kclManager: KclManager,
     rustContext: RustContext,
-    commandBarActor: CommandBarActorType,
     getSettings: typeof this.getSettings
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
     this.kclManager = kclManager
     this.rustContext = rustContext
-    this.commandBarActor = commandBarActor
     this.getSettings = getSettings
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
@@ -1043,18 +1032,6 @@ export class SceneEntities {
                     from: segment.from,
                     to: segment.to,
                   }
-        const startRange = _node1.node.start
-        const endRange = _node1.node.end
-        const sourceRange: SourceRange = [startRange, endRange, 0]
-        const selection: Selections = computeSelectionFromSourceRangeAndAST(
-          sourceRange,
-          maybeModdedAst,
-          this.kclManager
-        )
-        if (!this.commandBarActor) {
-          console.error('command bar actor not found.')
-          return
-        }
         const result = initSegment({
           prevSegment: sketch.paths[index - 1],
           callExpName,
@@ -1066,9 +1043,6 @@ export class SceneEntities {
           theme: this.sceneInfra.theme,
           isSelected,
           sceneInfra: this.sceneInfra,
-          selection,
-          commandBarActor: this.commandBarActor,
-          kclManager: this.kclManager,
           wasmInstance,
         })
         if (err(result)) return
@@ -4393,34 +4367,6 @@ function getSketchesInfo({
     })
   }
   return sketchesInfo
-}
-
-/**
- * Given a SourceRange [x,y,boolean] create a Selections object which contains
- * graphSelections with the artifact and codeRef.
- * This can be passed to 'Set selection' to internally set the selection of the
- * modelingMachine from code.
- */
-function computeSelectionFromSourceRangeAndAST(
-  sourceRange: SourceRange,
-  ast: Node<Program>,
-  kclManager: KclManager
-): Selections {
-  const artifactGraph = kclManager.artifactGraph
-  const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
-  const codeRef = codeRefFromRange(sourceRange, ast)
-  const entityRef: EntityReference | undefined = artifact
-    ? artifactToEntityRef(
-        artifact.type,
-        artifact.id,
-        artifact.type === 'segment' ? artifact.pathId : undefined
-      )
-    : undefined
-  const selection: Selections = {
-    graphSelections: [{ entityRef, codeRef }],
-    otherSelections: [],
-  }
-  return selection
 }
 
 function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
