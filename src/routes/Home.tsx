@@ -998,15 +998,17 @@ function ProjectLibraryOverview({
           renderSection(
             DIRECTORY_PROJECT_LIBRARY_TYPE,
             'Local Libraries',
-            <ActionButton
-              Element="link"
-              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-              aria-label="Manage in Settings"
-              className="text-xs border-primary/10"
-              iconStart={{ icon: 'settings', bgClassName: '!bg-transparent' }}
-            >
-              Manage in Settings
-            </ActionButton>
+            isDesktop() && (
+              <ActionButton
+                Element="link"
+                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                aria-label="Manage in Settings"
+                className="text-xs border-primary/10"
+                iconStart={{ icon: 'settings', bgClassName: '!bg-transparent' }}
+              >
+                Manage in Settings
+              </ActionButton>
+            )
           )}
         {sections}
       </div>
@@ -1018,6 +1020,7 @@ function ProjectLibrariesEmptyState({
   children,
   ...props
 }: HTMLProps<HTMLDivElement>) {
+  const canManageLocalLibraries = isDesktop()
   return (
     <section data-testid="home-section" {...props}>
       <div
@@ -1029,21 +1032,25 @@ function ProjectLibrariesEmptyState({
         </span>
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold">No project libraries</h2>
-          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            Add a library to choose where projects are loaded from.
-          </p>
+          {canManageLocalLibraries && (
+            <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+              Add a library to choose where projects are loaded from.
+            </p>
+          )}
         </div>
-        <ActionButton
-          Element="link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-          iconStart={{
-            icon: 'plus',
-            bgClassName: '!bg-transparent',
-          }}
-          data-testid="project-libraries-empty-add"
-        >
-          Add library
-        </ActionButton>
+        {canManageLocalLibraries && (
+          <ActionButton
+            Element="link"
+            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+            iconStart={{
+              icon: 'plus',
+              bgClassName: '!bg-transparent',
+            }}
+            data-testid="project-libraries-empty-add"
+          >
+            Add library
+          </ActionButton>
+        )}
       </div>
       {children}
     </section>

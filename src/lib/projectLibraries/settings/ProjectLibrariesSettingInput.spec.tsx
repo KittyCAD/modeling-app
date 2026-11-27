@@ -116,26 +116,6 @@ describe('ProjectLibrariesSettingInput', () => {
     ])
   })
 
-  test('allows removal when folder editing, adding, and reordering are unavailable', () => {
-    const updateValue = vi.fn()
-    render(
-      <ProjectLibrariesSettingInput
-        value={defaultLibraries}
-        updateValue={updateValue}
-        canManageLibraries={false}
-      />
-    )
-
-    expect(screen.queryByTestId('project-library-add')).toBeNull()
-    expect(screen.queryByTestId('project-library-drag-handle')).toBeNull()
-    expect(screen.getByTestId('project-directory-input')).toHaveTextContent(
-      '/projects'
-    )
-    fireEvent.click(screen.getByTestId('project-library-remove'))
-
-    expect(updateValue).toHaveBeenLastCalledWith([])
-  })
-
   test('reorders project libraries with drag and drop', () => {
     const updateValue = vi.fn()
     const dataTransferStore = new Map<string, string>()

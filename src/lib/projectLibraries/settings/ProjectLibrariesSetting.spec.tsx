@@ -4,8 +4,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { expect, it, vi } from 'vitest'
 
-vi.mock('@src/lib/isDesktop', () => ({ isDesktop: () => true }))
-
 it('only edits directory libraries and preserves other saved libraries', () => {
   const local: ProjectLibrarySetting = {
     title: 'Local projects',

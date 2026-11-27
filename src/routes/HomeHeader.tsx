@@ -1,6 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
+import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -55,6 +56,7 @@ export function HomeHeader({
   }, [refreshCoolingDown])
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
+  const canManageLocalLibraries = isDesktop()
   const libraryDetailsDescription = library
     ? getProjectLibraryDetailsDescription(library)
     : undefined
@@ -175,13 +177,17 @@ export function HomeHeader({
             {library.type === DIRECTORY_PROJECT_LIBRARY_TYPE && (
               <span className="whitespace-nowrap">
                 Folder:{' '}
-                <Link
-                  data-testid="project-directory-settings-link"
-                  to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                  className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-                >
-                  {library.path}
-                </Link>
+                {canManageLocalLibraries ? (
+                  <Link
+                    data-testid="project-directory-settings-link"
+                    to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                    className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+                  >
+                    {library.path}
+                  </Link>
+                ) : (
+                  library.path
+                )}
               </span>
             )}
             {libraryDetails}
@@ -193,13 +199,15 @@ export function HomeHeader({
           <div className="flex items-center select-none">
             <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
               <p className="">{errorMessage(readWriteProjectDir.error)}</p>
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                className="py-1 text-white underline underline-offset-2 text-sm"
-              >
-                Manage Project Libraries
-              </Link>
+              {canManageLocalLibraries && (
+                <Link
+                  data-testid="project-directory-settings-link"
+                  to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                  className="py-1 text-white underline underline-offset-2 text-sm"
+                >
+                  Manage Project Libraries
+                </Link>
+              )}
             </div>
           </div>
         </section>

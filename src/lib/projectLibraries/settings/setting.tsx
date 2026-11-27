@@ -25,6 +25,7 @@ export const projectLibrariesSettingsContribution: ExtensionSettingsContribution
             defaultValue: [],
             title: 'Local Libraries',
             description: 'Folders on this computer shown as libraries on Home.',
+            hideOnPlatform: 'web',
             hideOnLevel: 'project',
             validate: isProjectLibrarySettings,
             Component: (props) => (

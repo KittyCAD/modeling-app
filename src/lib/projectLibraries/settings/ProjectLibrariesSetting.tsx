@@ -1,4 +1,3 @@
-import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -36,7 +35,6 @@ export function ProjectLibrariesSetting({
             ),
           ])
         }
-        canManageLibraries={isDesktop()}
       />
       <Link to={PATHS.HOME} className="text-sm text-2 underline">
         Manage other libraries on Home.

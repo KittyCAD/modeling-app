@@ -404,12 +404,12 @@ describe('testing hiddenOnPlatform', () => {
     ).toBe(false)
   })
 
-  it('keeps libraries visible on desktop and web', () => {
+  it('shows Local Libraries settings only on desktop', () => {
     const settings = createSettingsWithProjectLibraries()
     const libraries = settings.app.libraries as Setting
 
     expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
-    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(false)
+    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(true)
   })
 })
 

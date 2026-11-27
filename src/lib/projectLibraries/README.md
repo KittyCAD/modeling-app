@@ -8,7 +8,7 @@ presentation.
 ## Who owns each type
 
 - **`directory`** is built into the [project libraries extension](registry/index.ts).
-  Desktop users add, edit, and reorder folders in **Settings → Local Libraries**.
+  **Settings → Local Libraries** is available on desktop for managing folders.
   The extension reads those folders through `readRealizations` and provides local
   project operations through the file-operations service.
 - **`cloud`** comes from the [cloud projects extension](../cloudProjects/registry/library.ts).
