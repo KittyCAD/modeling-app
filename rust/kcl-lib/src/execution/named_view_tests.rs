@@ -164,9 +164,13 @@ async fn per_view_failures_produce_contextual_issues_without_duplicate_cached_is
     let issue = &fresh.issues[1];
     assert_eq!(issue.source_range, failure.source_range);
     assert_eq!(issue.severity, crate::errors::Severity::Error);
-    assert!(issue.message.contains("Front"));
-    assert!(issue.message.contains(&format!("module {missing_module}")));
+    assert_eq!(issue.message, failure.message);
+    assert_eq!(
+        issue.message,
+        "Could not resolve named view \"Front\" because its declaring file is unavailable."
+    );
     let json = serde_json::to_value(&fresh).unwrap();
+    assert_eq!(json["namedViews"]["failures"][0]["message"], issue.message);
     assert_eq!(json["namedViews"]["failures"][0]["error"]["type"], "missingModulePath");
     assert_eq!(
         json["namedViews"]["failures"][0]["error"]["moduleId"],
@@ -176,6 +180,38 @@ async fn per_view_failures_produce_contextual_issues_without_duplicate_cached_is
         let hit = cached.clone().into_exec_outcome(&ctx).await.unwrap();
         assert_eq!(hit.named_views, fresh.named_views);
         assert_eq!(hit.issues, fresh.issues);
+    }
+    ctx.close().await;
+}
+
+#[tokio::test]
+async fn ambiguous_view_diagnostics_name_the_declaring_file() {
+    let mut ctx = context();
+    ctx.settings.with_current_file("parts/hinge.kcl".into());
+    let program = Program::parse_no_errs(PROGRAM).unwrap();
+    let mut state = ExecState::new(&ctx);
+    let (environment, _) = ctx.run(&program, &mut state).await.unwrap();
+
+    let (mut artifacts, item_count) = std::mem::take(&mut state.global.artifacts.graph).into_parts();
+    let rear = artifacts
+        .values_mut()
+        .find_map(|artifact| match artifact {
+            Artifact::NamedView(view) if view.name == "Rear" => Some(view),
+            _ => None,
+        })
+        .unwrap();
+    rear.name = "Front".to_owned();
+    state.global.artifacts.graph = crate::named_views::ArtifactGraph::from_parts(artifacts, item_count);
+    state.resolve_named_views();
+
+    let outcome = state.into_exec_outcome(environment, &ctx).await.unwrap();
+    assert_eq!(outcome.issues.len(), 2);
+    for issue in outcome.issues {
+        assert_eq!(issue.severity, crate::errors::Severity::Error);
+        assert_eq!(
+            issue.message,
+            "Multiple views named \"Front\" were found in \"hinge.kcl\". View names must be unique within a module."
+        );
     }
     ctx.close().await;
 }

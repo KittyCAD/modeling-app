@@ -27,6 +27,7 @@ import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { ResolvedViewBatch } from '@rust/kcl-lib/bindings/ResolvedViewBatch'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
@@ -44,7 +45,10 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
-import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
+import {
+  defaultArtifactGraph,
+  filterArtifacts,
+} from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
@@ -337,11 +341,18 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
   (typeof input[0][0] === 'number' || typeof input[0][0] === 'string') &&
   typeof input[0][1] === 'string'
 
+interface ResolvedNamedViewExecution {
+  batch: ResolvedViewBatch
+  artifacts: ReadonlyMap<ArtifactId, Extract<Artifact, { type: 'namedView' }>>
+  filenames: ExecState['filenames']
+}
+
 export interface ExecState {
   variables: { [key in string]?: KclValueView }
   operations: OperationsByModule
   artifactGraph: ArtifactGraph
-  namedViews: RustExecOutcome['namedViews']
+  /** Resolved views and the named view artifacts from the same execution. */
+  namedViews: ResolvedNamedViewExecution | null
   legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
@@ -506,7 +517,14 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
-    namedViews: execOutcome.namedViews,
+    namedViews:
+      execOutcome.namedViews === null
+        ? null
+        : {
+            batch: execOutcome.namedViews,
+            artifacts: filterArtifacts({ types: ['namedView'] }, artifactGraph),
+            filenames: execOutcome.filenames,
+          },
     legacyAngleRefactorMetadata,
     issues: execOutcome.issues,
     filenames: execOutcome.filenames,

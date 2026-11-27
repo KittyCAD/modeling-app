@@ -1,16 +1,11 @@
 import type { SweepSubType } from '@rust/kcl-lib/bindings/Artifact'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { ResolvedNamedView } from '@rust/kcl-lib/bindings/ResolvedNamedView'
 
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { VisibilityUniverse } from '@src/lang/std/kclNamedViews'
 import {
   engineIdForArtifact,
-  engineIdsForVisibility,
-  getViewUniverse,
-  listNamedViews,
   namedViewsForExport,
-  visibilityForKclDefault,
-  visibilityForView,
 } from '@src/lang/std/kclNamedViews'
 import type { ArtifactGraph, ExecState } from '@src/lang/wasm'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
@@ -55,6 +50,7 @@ function namedView({
     type: 'namedView',
     id,
     name,
+    declaringModuleId: moduleId,
     camera: {
       look: { type: 'oriented', orientation: 'front' },
       target: null,
@@ -71,13 +67,11 @@ function namedView({
 function sweep({
   id,
   consumed = false,
-  patternIds,
   subType = 'extrusion',
   pathId = `${id}-path`,
 }: {
   id: string
   consumed?: boolean
-  patternIds?: string[]
   subType?: SweepSubType
   pathId?: string
 }): Extract<Artifact, { type: 'sweep' }> {
@@ -91,7 +85,6 @@ function sweep({
     method: 'new',
     trajectoryId: null,
     consumed,
-    patternIds,
     codeRef: codeRef(),
   }
 }
@@ -173,10 +166,6 @@ function plane({
   return { type: 'plane', id, pathIds, codeRef: codeRef() }
 }
 
-function planeOfFace(id: string): Extract<Artifact, { type: 'planeOfFace' }> {
-  return { type: 'planeOfFace', id, faceId: 'face-1', codeRef: codeRef() }
-}
-
 function importedGeometry({
   id,
   consumed = false,
@@ -212,12 +201,37 @@ function graphOf(artifacts: Artifact[]): ArtifactGraph {
   return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
 
-const rootOnlyFilenames: ExecState['filenames'] = {
-  [ROOT_MODULE_ID]: ROOT_PATH,
-}
-
 describe('namedViewsForExport', () => {
-  it('serializes directed cameras and translates exceptions for both baselines', () => {
+  function resolvedView(
+    artifact: ReturnType<typeof namedView>,
+    modulePath: ModulePath = ROOT_PATH
+  ): ResolvedNamedView {
+    return {
+      info: {
+        artifactId: artifact.id,
+        name: artifact.name,
+        moduleId: artifact.declaringModuleId,
+        modulePath,
+      },
+      cameraIntent: artifact.camera,
+      visibility: {},
+    }
+  }
+
+  function resolution(
+    artifacts: ReturnType<typeof namedView>[],
+    namedViews: ResolvedNamedView[]
+  ): NonNullable<ExecState['namedViews']> {
+    return {
+      artifacts: new Map(artifacts.map((artifact) => [artifact.id, artifact])),
+      filenames: Object.fromEntries(
+        namedViews.map(({ info }) => [info.moduleId, info.modulePath])
+      ),
+      batch: { defaultView: {}, namedViews, failures: [] },
+    }
+  }
+
+  it('serializes Rust camera intent and visibility exceptions for both authored baselines', () => {
     const hidden = namedView({
       id: 'hide-body',
       name: 'Hide body',
@@ -230,7 +244,7 @@ describe('namedViewsForExport', () => {
       baseline: 'hide',
       showIds: ['body-1'],
     })
-    hidden.camera = {
+    const cameraIntent: ResolvedNamedView['cameraIntent'] = {
       look: {
         type: 'directed',
         direction: { x: 0, y: 2, z: 0, units: null },
@@ -240,15 +254,22 @@ describe('namedViewsForExport', () => {
       distance: 8,
       projection: 'perspective',
     }
-    shown.camera = hidden.camera
     const views = namedViewsForExport({
-      artifactGraph: graphOf([
-        path({ id: 'path-1', consumed: true, sweepId: 'body-1' }),
-        sweep({ id: 'body-1', pathId: 'path-1' }),
-        hidden,
-        shown,
-      ]),
-      filenames: rootOnlyFilenames,
+      namedViewResolution: resolution(
+        [hidden, shown],
+        [
+          {
+            ...resolvedView(hidden),
+            cameraIntent,
+            visibility: { 'path-1': true, 'path-2': false },
+          },
+          {
+            ...resolvedView(shown),
+            cameraIntent,
+            visibility: { 'path-1': false, 'path-2': true },
+          },
+        ]
+      ),
       fallbackDistance: 100,
     })
 
@@ -264,22 +285,27 @@ describe('namedViewsForExport', () => {
     })
   })
 
-  it('preserves same-named views across modules, even with matching filenames', () => {
+  it('exports same-named views in artifact order, even with matching filenames', () => {
+    const root = namedView({ id: 'root-front', name: 'Front' })
+    const imported = namedView({
+      id: 'imported-front',
+      name: 'Front',
+      moduleId: 1,
+    })
+    const other = namedView({ id: 'other-front', name: 'Front', moduleId: 2 })
     const views = namedViewsForExport({
-      artifactGraph: graphOf([
-        namedView({ id: 'root-front', name: 'Front' }),
-        namedView({ id: 'imported-front', name: 'Front', moduleId: 1 }),
-        namedView({ id: 'other-front', name: 'Front', moduleId: 2 }),
-      ]),
-      filenames: {
-        ...rootOnlyFilenames,
-        1: IMPORTED_PATH,
-        2: {
-          type: 'Local',
-          value: '/project/other/bracket.kcl',
-          original_import_path: 'other/bracket.kcl',
-        },
-      },
+      namedViewResolution: resolution(
+        [root, imported, other],
+        [
+          resolvedView(other, {
+            type: 'Local',
+            value: '/project/other/bracket.kcl',
+            original_import_path: 'other/bracket.kcl',
+          }),
+          resolvedView(imported, IMPORTED_PATH),
+          resolvedView(root),
+        ]
+      ),
       fallbackDistance: 12,
     })
 
@@ -297,284 +323,35 @@ describe('namedViewsForExport', () => {
       except_ids: [],
     })
   })
-})
 
-describe('listNamedViews', () => {
-  it('returns nothing when the program declared no views', () => {
-    const graph = graphOf([path({ id: 'path-1' })])
+  it('exports only resolved views paired with an artifact', () => {
+    const ready = namedView({ id: 'ready', name: 'Ready' })
+    const failed = namedView({ id: 'failed', name: 'Failed', moduleId: 7 })
+    const missingArtifact = namedView({ id: 'missing', name: 'Missing' })
+    const namedViewResolution = resolution(
+      [failed, ready],
+      [resolvedView(ready), resolvedView(missingArtifact)]
+    )
+    namedViewResolution.batch.failures.push({
+      artifactId: failed.id,
+      name: failed.name,
+      moduleId: failed.declaringModuleId,
+      sourceRange: failed.codeRef.range,
+      error: { type: 'missingModulePath', moduleId: failed.declaringModuleId },
+      message: 'Could not resolve named view "Failed".',
+    })
 
     expect(
-      listNamedViews({ artifactGraph: graph, filenames: rootOnlyFilenames })
-    ).toEqual([])
+      Object.keys(
+        namedViewsForExport({ namedViewResolution, fallbackDistance: 12 })
+      )
+    ).toEqual(['Ready'])
   })
 
-  it('returns every view in graph order, each with its declaring module', () => {
-    const graph = graphOf([
-      namedView({ id: 'view-front', name: 'Front' }),
-      namedView({ id: 'view-context', name: 'Plate in context' }),
-    ])
-
-    const views = listNamedViews({
-      artifactGraph: graph,
-      filenames: rootOnlyFilenames,
-    })
-
-    expect(views).toHaveLength(2)
-    expect(views.map((view) => view.artifact.name)).toEqual([
-      'Front',
-      'Plate in context',
-    ])
-    expect(views.map((view) => view.moduleId)).toEqual([
-      ROOT_MODULE_ID,
-      ROOT_MODULE_ID,
-    ])
-    expect(views.map((view) => view.modulePath)).toEqual([ROOT_PATH, ROOT_PATH])
-  })
-
-  it('keeps two modules apart when both declare the same display name', () => {
-    const importedModuleId = 1
-    const graph = graphOf([
-      namedView({
-        id: 'view-imported-front',
-        name: 'Front',
-        moduleId: importedModuleId,
-      }),
-      namedView({ id: 'view-root-front', name: 'Front' }),
-    ])
-
-    const views = listNamedViews({
-      artifactGraph: graph,
-      filenames: {
-        [ROOT_MODULE_ID]: ROOT_PATH,
-        [importedModuleId]: IMPORTED_PATH,
-      },
-    })
-
-    expect(views).toHaveLength(2)
-    expect(views.map((view) => view.artifact.name)).toEqual(['Front', 'Front'])
+  it('exports an empty set of views when the Rust batch is missing', () => {
     expect(
-      views.map((view) => ({
-        id: view.artifact.id,
-        moduleId: view.moduleId,
-        modulePath: view.modulePath,
-      }))
-    ).toEqual([
-      {
-        id: 'view-imported-front',
-        moduleId: importedModuleId,
-        modulePath: IMPORTED_PATH,
-      },
-      {
-        id: 'view-root-front',
-        moduleId: ROOT_MODULE_ID,
-        modulePath: ROOT_PATH,
-      },
-    ])
-  })
-
-  it('reports an unknown module as an undefined path rather than dropping the view', () => {
-    const graph = graphOf([
-      namedView({ id: 'view-front', name: 'Front', moduleId: 7 }),
-    ])
-
-    const views = listNamedViews({
-      artifactGraph: graph,
-      filenames: rootOnlyFilenames,
-    })
-
-    expect(views).toHaveLength(1)
-    expect(views[0].moduleId).toBe(7)
-    expect(views[0].modulePath).toBeUndefined()
-  })
-})
-
-describe('getViewUniverse', () => {
-  it('holds the unconsumed artifact of every universe kind', () => {
-    const graph = graphOf([
-      sweep({ id: 'body' }),
-      compositeSolid({ id: 'union' }),
-      path({ id: 'sketch' }),
-      gdtAnnotation({ id: 'annotation' }),
-      helix({ id: 'helix' }),
-      plane({ id: 'plane' }),
-      importedGeometry({ id: 'imported' }),
-    ])
-
-    expect([...getViewUniverse(graph).keys()].sort()).toEqual([
-      'annotation',
-      'body',
-      'helix',
-      'imported',
-      'plane',
-      'sketch',
-      'union',
-    ])
-  })
-
-  it('drops consumed artifacts that no longer have independent engine objects', () => {
-    const graph = graphOf([
-      sweep({ id: 'body' }),
-      sweep({ id: 'merged-away', consumed: true }),
-      path({ id: 'region', consumed: true }),
-      compositeSolid({ id: 'consumed-union', consumed: true }),
-      gdtAnnotation({ id: 'deleted-annotation', consumed: true }),
-      helix({ id: 'consumed-helix', consumed: true }),
-      importedGeometry({ id: 'deleted-imported', consumed: true }),
-    ])
-
-    expect([...getViewUniverse(graph).keys()]).toEqual(['body'])
-  })
-
-  it('includes only planes that are independently visible', () => {
-    const graph = graphOf([
-      plane({ id: 'standalone-plane' }),
-      plane({ id: 'sketch-support-plane', pathIds: ['sketch'] }),
-      planeOfFace('plane-of-face'),
-    ])
-
-    expect([...getViewUniverse(graph).keys()]).toEqual(['standalone-plane'])
-  })
-
-  it('adds a pattern copy under its own id, against the pattern artifact', () => {
-    const patternArtifact = pattern({
-      id: 'pattern-1',
-      sourceId: 'body',
-      copyIds: ['copy-1', 'copy-2'],
-    })
-    const graph = graphOf([
-      sweep({ id: 'body', patternIds: ['pattern-1'] }),
-      patternArtifact,
-    ])
-
-    const universe = getViewUniverse(graph)
-
-    expect([...universe.keys()].sort()).toEqual(['body', 'copy-1', 'copy-2'])
-    expect(universe.get('copy-1')).toBe(patternArtifact)
-    // The source body keeps its own artifact. Its engine id comes from the
-    // sweep, while a copy id is already an engine id.
-    expect(universe.get('body')?.type).toBe('sweep')
-  })
-
-  it('resolves the source body through `patternIds` when `sourceId` is not a body', () => {
-    const graph = graphOf([
-      sweep({ id: 'body', patternIds: ['pattern-1'] }),
-      path({ id: 'sketch' }),
-      pattern({ id: 'pattern-1', sourceId: 'sketch', copyIds: ['copy-1'] }),
-    ])
-
-    expect([...getViewUniverse(graph).keys()].sort()).toEqual([
-      'body',
-      'copy-1',
-      'sketch',
-    ])
-  })
-
-  it('drops the copies of a pattern whose source body was consumed', () => {
-    const graph = graphOf([
-      sweep({ id: 'body', consumed: true, patternIds: ['pattern-1'] }),
-      pattern({ id: 'pattern-1', sourceId: 'body', copyIds: ['copy-1'] }),
-    ])
-
-    expect([...getViewUniverse(graph).keys()]).toEqual([])
-  })
-})
-
-describe('visibilityForView', () => {
-  const universe = getViewUniverse(
-    graphOf([
-      sweep({ id: 'body-1' }),
-      sweep({ id: 'body-2' }),
-      gdtAnnotation({ id: 'annotation' }),
-    ])
-  )
-
-  it('hides only the exceptions under a `show` baseline', () => {
-    const view = namedView({
-      id: 'view-1',
-      name: 'Front',
-      baseline: 'show',
-      hideIds: ['body-2'],
-    })
-
-    expect(visibilityForView({ universe, view })).toEqual(
-      new Map([
-        ['body-1', false],
-        ['body-2', true],
-        ['annotation', false],
-      ])
-    )
-  })
-
-  it('shows only the exceptions under a `hide` baseline', () => {
-    const view = namedView({
-      id: 'view-1',
-      name: 'Only body 2',
-      baseline: 'hide',
-      showIds: ['body-2'],
-    })
-
-    expect(visibilityForView({ universe, view })).toEqual(
-      new Map([
-        ['body-1', true],
-        ['body-2', false],
-        ['annotation', true],
-      ])
-    )
-  })
-
-  it('gives every member a state, because the engine cannot be asked for one', () => {
-    const view = namedView({ id: 'view-1', name: 'Front' })
-
-    expect([...visibilityForView({ universe, view }).keys()].sort()).toEqual(
-      [...universe.keys()].sort()
-    )
-  })
-
-  it('ignores an exception that is not a universe member', () => {
-    const view = namedView({
-      id: 'view-1',
-      name: 'Front',
-      baseline: 'show',
-      hideIds: ['a-hidden-plane'],
-    })
-
-    const visibility = visibilityForView({ universe, view })
-
-    expect(visibility.has('a-hidden-plane')).toBe(false)
-    expect([...visibility.values()]).toEqual([false, false, false])
-  })
-})
-
-describe('visibilityForKclDefault', () => {
-  it('hides what the program hid and shows the rest', () => {
-    const universe = getViewUniverse(
-      graphOf([
-        sweep({ id: 'body-1' }),
-        sweep({ id: 'body-2' }),
-        path({ id: 'sketch' }),
-      ])
-    )
-
-    expect(
-      visibilityForKclDefault({
-        universe,
-        hiddenIds: new Set(['body-2']),
-      })
-    ).toEqual(
-      new Map([
-        ['body-1', false],
-        ['body-2', true],
-        ['sketch', false],
-      ])
-    )
-  })
-
-  it('shows everything when the program hid nothing', () => {
-    const universe = getViewUniverse(graphOf([sweep({ id: 'body-1' })]))
-
-    expect(visibilityForKclDefault({ universe, hiddenIds: new Set() })).toEqual(
-      new Map([['body-1', false]])
-    )
+      namedViewsForExport({ namedViewResolution: null, fallbackDistance: 12 })
+    ).toEqual({})
   })
 })
 
@@ -696,138 +473,5 @@ describe('engineIdForArtifact', () => {
         })
       ).toBe(copyId)
     }
-  })
-
-  it('translates every member of a mirrored and patterned universe', () => {
-    const body = sweep({ id: 'body-1', patternIds: ['pattern-1'] })
-    const graph = graphOf([
-      path({ id: 'body-1-path', consumed: true, sweepId: 'body-1' }),
-      body,
-      sweep({ id: 'mirrored-1', pathId: 'body-1-path' }),
-      pattern({ id: 'pattern-1', sourceId: 'body-1', copyIds: ['copy-1'] }),
-      path({ id: 'sketch-1' }),
-      gdtAnnotation({ id: 'gdt-1' }),
-      helix({ id: 'helix-1' }),
-      plane({ id: 'plane-1' }),
-      importedGeometry({ id: 'imported-1' }),
-    ])
-
-    const universe = getViewUniverse(graph)
-    const engineIds = new Map(
-      [...universe].map(([id, artifact]) => [
-        id,
-        engineIdForArtifact({ id, artifact, artifactGraph: graph }),
-      ])
-    )
-
-    // The extruded body's engine object id is its consumed region path. That
-    // path is not a universe member.
-    expect(engineIds).toEqual(
-      new Map([
-        ['body-1', 'body-1-path'],
-        ['mirrored-1', 'mirrored-1'],
-        ['sketch-1', 'sketch-1'],
-        ['gdt-1', 'gdt-1'],
-        ['helix-1', 'helix-1'],
-        ['plane-1', 'plane-1'],
-        ['imported-1', 'imported-1'],
-        ['copy-1', 'copy-1'],
-      ])
-    )
-  })
-})
-
-describe('engineIdsForVisibility', () => {
-  it('rekeys a visibility from artifact ids to engine object ids', () => {
-    const body = sweep({ id: 'body-1', pathId: 'body-1-path' })
-    const graph = graphOf([
-      path({ id: 'body-1-path', consumed: true, sweepId: 'body-1' }),
-      body,
-      gdtAnnotation({ id: 'gdt-1' }),
-      helix({ id: 'helix-1' }),
-      plane({ id: 'plane-1' }),
-      importedGeometry({ id: 'imported-1' }),
-    ])
-    const universe = getViewUniverse(graph)
-
-    const hiddenByObjectId = engineIdsForVisibility({
-      visibility: new Map([
-        ['body-1', true],
-        ['gdt-1', false],
-        ['helix-1', false],
-        ['plane-1', true],
-        ['imported-1', false],
-      ]),
-      universe,
-      artifactGraph: graph,
-    })
-
-    expect(hiddenByObjectId).toEqual(
-      new Map([
-        ['body-1-path', true],
-        ['gdt-1', false],
-        ['helix-1', false],
-        ['plane-1', true],
-        ['imported-1', false],
-      ])
-    )
-  })
-
-  it('skips an artifact id the universe does not hold', () => {
-    const graph = graphOf([gdtAnnotation({ id: 'gdt-1' })])
-
-    const hiddenByObjectId = engineIdsForVisibility({
-      visibility: new Map([
-        ['gdt-1', true],
-        ['not-a-member', true],
-      ]),
-      universe: getViewUniverse(graph),
-      artifactGraph: graph,
-    })
-
-    expect(hiddenByObjectId).toEqual(new Map([['gdt-1', true]]))
-  })
-
-  // Both members translate to the path's id. The `!consumed` filter prevents
-  // this, so the universe is built by hand.
-  it('resolves a collision to hidden whichever order the entries arrive in', () => {
-    const body = sweep({ id: 'body-1', pathId: 'shared-path' })
-    const collidingPath = path({ id: 'shared-path', sweepId: 'body-1' })
-    const graph = graphOf([collidingPath, body])
-    const universe: VisibilityUniverse = new Map()
-    universe.set('body-1', body)
-    universe.set('shared-path', collidingPath)
-
-    const hideThenShow = engineIdsForVisibility({
-      visibility: new Map([
-        ['body-1', true],
-        ['shared-path', false],
-      ]),
-      universe,
-      artifactGraph: graph,
-    })
-    const showThenHide = engineIdsForVisibility({
-      visibility: new Map([
-        ['shared-path', false],
-        ['body-1', true],
-      ]),
-      universe,
-      artifactGraph: graph,
-    })
-
-    expect(hideThenShow).toEqual(new Map([['shared-path', true]]))
-    expect(showThenHide).toEqual(new Map([['shared-path', true]]))
-  })
-
-  it('returns nothing for an empty visibility', () => {
-    const graph = graphOf([gdtAnnotation({ id: 'gdt-1' })])
-
-    expect(
-      engineIdsForVisibility({
-        visibility: new Map(),
-        universe: getViewUniverse(graph),
-        artifactGraph: graph,
-      })
-    ).toEqual(new Map())
   })
 })

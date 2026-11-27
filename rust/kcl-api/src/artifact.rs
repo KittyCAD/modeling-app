@@ -629,8 +629,6 @@ pub struct NamedViewArtifact {
     /// the views declared by the same module.
     pub name: String,
     /// Defining module id -- the module that calls `view::named`.
-    // TODO: Expose this field when TypeScript adopts the Rust named-view resolver.
-    #[ts(skip)]
     pub declaring_module_id: ModuleId,
     pub camera: ArtifactCameraView,
     /// Whether objects start visible or hidden, which decides which of the two

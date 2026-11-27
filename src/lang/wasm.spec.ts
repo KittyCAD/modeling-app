@@ -122,7 +122,7 @@ front = view::named(
   )
 
   const actual = await rustContextInThisFile.execute(ast, {})
-  expect(actual.namedViews).toMatchObject({
+  expect(actual.namedViews?.batch).toMatchObject({
     namedViews: [
       {
         info: { name: 'Front', moduleId: 0 },
@@ -131,9 +131,11 @@ front = view::named(
     ],
     failures: [],
   })
-  expect(Object.keys(actual.namedViews?.defaultView ?? {})).toHaveLength(1)
-  expect(actual.namedViews?.namedViews[0].visibility).toEqual(
-    actual.namedViews?.defaultView
+  const batch = actual.namedViews?.batch
+  expect(Object.keys(batch?.defaultView ?? {})).toHaveLength(1)
+  expect(batch?.namedViews[0].visibility).toEqual(batch?.defaultView)
+  expect(Array.from(actual.namedViews?.artifacts.values() ?? [])).toMatchObject(
+    [{ name: 'Front' }]
   )
 
   const mock = await rustContextInThisFile.executeMock(

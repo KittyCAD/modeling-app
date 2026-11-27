@@ -1,6 +1,7 @@
 import { selectCommand } from '@src/lib/commandUtils'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ArtifactCameraLook } from '@rust/kcl-lib/bindings/Artifact'
+import type { ResolvedNamedView } from '@rust/kcl-lib/bindings/ResolvedNamedView'
 import type { ComponentProps, ReactNode } from 'react'
 import { useRef } from 'react'
 
@@ -8,13 +9,13 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
+import { filterArtifacts } from '@src/lang/std/artifactGraph'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
-import {
-  listNamedViews,
-  namedViewDisplayNames,
-} from '@src/lang/std/kclNamedViews'
+import { namedViewDisplayNames } from '@src/lang/std/kclNamedViews'
+import type { ExecState } from '@src/lang/wasm'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendDeleteCommand } from '@src/lib/featureTree'
@@ -45,7 +46,10 @@ export type ViewRow = {
   details?: string
   /** What `activeViewSignal` holds when this row is active. */
   identity: ActiveView
-  target: ActivationTarget
+  target: ActivationTarget | null
+  view?: KclNamedView
+  editableView?: KclNamedView
+  error?: string
 }
 
 export function canManageNamedView(view: KclNamedView): boolean {
@@ -67,18 +71,99 @@ function cameraLookLabel(look: ArtifactCameraLook): string {
   }
 }
 
-/**
- * Returns one row per view, `Default View` first.
- *
- * A display name two modules both declare is prefixed with the declaring
- * module, as `bracket::Front`. Unique names are left bare.
- */
-export function viewRows(views: KclNamedView[]): ViewRow[] {
-  const names = namedViewDisplayNames(views)
+function viewFromArtifact(
+  artifact: KclNamedView['artifact'],
+  filenames: ExecState['filenames']
+): KclNamedView {
+  const moduleId = artifact.declaringModuleId
+  return { artifact, moduleId, modulePath: filenames[moduleId] }
+}
 
-  const declared = views.map((view, index): ViewRow => {
-    const name = view.artifact.name
-    const { camera } = view.artifact
+function viewIdentity(view: KclNamedView): ActiveView {
+  return {
+    name: view.artifact.name,
+    moduleKey: moduleKeyOf(view.modulePath),
+  }
+}
+
+function matchesNamedViewDeclaration(
+  view: KclNamedView,
+  candidate: KclNamedView
+): boolean {
+  if (view.artifact.name !== candidate.artifact.name) return false
+
+  if (
+    view.moduleId === ROOT_MODULE_ID &&
+    candidate.moduleId === ROOT_MODULE_ID
+  ) {
+    return true
+  }
+
+  const moduleKey = moduleKeyOf(view.modulePath)
+  return (
+    moduleKey !== undefined && moduleKey === moduleKeyOf(candidate.modulePath)
+  )
+}
+
+/** Returns Default View followed by the views produced by execution. */
+export function viewRows(
+  views: KclNamedView[],
+  namedViewResolution: ExecState['namedViews'] = null
+): ViewRow[] {
+  const remaining = new Set(views)
+  const entries: {
+    view: KclNamedView
+    editableView?: KclNamedView
+    resolved?: ResolvedNamedView
+    error?: string
+    key: string
+  }[] = []
+  if (namedViewResolution) {
+    const { batch, artifacts, filenames } = namedViewResolution
+    const resolved = new Map(
+      batch.namedViews.map((view) => [view.info.artifactId, view])
+    )
+    const failures = new Map(
+      batch.failures.map((failure) => [failure.artifactId, failure.message])
+    )
+
+    for (const artifact of artifacts.values()) {
+      const view = viewFromArtifact(artifact, filenames)
+      // Source edits require an artifact from the graph used by the editor.
+      const exactMatch = views.find(
+        (candidate) => candidate.artifact === artifact
+      )
+      const editableView =
+        exactMatch ??
+        views.find(
+          (candidate) =>
+            remaining.has(candidate) &&
+            matchesNamedViewDeclaration(view, candidate)
+        )
+      if (editableView) remaining.delete(editableView)
+      entries.push({
+        view,
+        editableView,
+        resolved: resolved.get(artifact.id),
+        error: failures.get(artifact.id),
+        key: artifact.id,
+      })
+    }
+  }
+  for (const view of remaining) {
+    entries.push({
+      view,
+      editableView: view,
+      key: namedViewResolution?.artifacts.has(view.artifact.id)
+        ? `pending:${view.artifact.id}`
+        : view.artifact.id,
+    })
+  }
+
+  const names = namedViewDisplayNames(entries.map(({ view }) => view))
+  const declared = entries.map((entry, index): ViewRow => {
+    const { view, resolved, error, editableView, key } = entry
+    const camera = resolved?.cameraIntent ?? view.artifact.camera
     const details = [
       cameraLookLabel(camera.look),
       camera.distance === null ? undefined : `${roundOff(camera.distance)}mm`,
@@ -88,11 +173,17 @@ export function viewRows(views: KclNamedView[]): ViewRow[] {
       .join(' ')
 
     return {
-      key: view.artifact.id,
+      key,
       label: names[index],
       details,
-      identity: { name, moduleKey: moduleKeyOf(view.modulePath) },
-      target: { kind: 'declared', view },
+      identity: viewIdentity(view),
+      target:
+        resolved && error === undefined
+          ? { kind: 'declared', view: resolved }
+          : null,
+      view,
+      editableView,
+      error,
     }
   })
 
@@ -150,16 +241,16 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const { state: modelingState } = useModelingContext()
   const inSketchMode = isSketchSessionOpen(modelingState)
 
-  const views = listNamedViews({
-    artifactGraph: execState.artifactGraph,
-    filenames: execState.filenames,
-  })
-  const rows = viewRows(views)
+  const views = Array.from(
+    filterArtifacts({ types: ['namedView'] }, execState.artifactGraph).values(),
+    (artifact) => viewFromArtifact(artifact, execState.filenames)
+  )
+  const rows = viewRows(views, execState.namedViews)
   const active = activeViewSignal.value
   const actionsDisabled =
     cannotReachEngine || inSketchMode || isEditingNamedView
 
-  const editView = (view: KclNamedView) => {
+  const editView = (view: KclNamedView, identity: ActiveView) => {
     prepareNamedViewEditCommand({
       artifact: view.artifact,
       ast: kclManager.ast,
@@ -169,12 +260,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     })
       .then((event) => {
         if (trap(event)) return
-        if (
-          isSameView(activeViewSignal.peek(), {
-            name: view.artifact.name,
-            moduleKey: moduleKeyOf(view.modulePath),
-          })
-        ) {
+        if (isSameView(activeViewSignal.peek(), identity)) {
           resetNamedViewSession()
         }
         app.commands.actor.send(event)
@@ -248,11 +334,12 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
           {rows.map((row, index) => {
             const manageableView =
               canManageViews &&
-              row.target.kind === 'declared' &&
-              canManageNamedView(row.target.view)
-                ? row.target.view
+              row.editableView &&
+              canManageNamedView(row.editableView)
+                ? row.editableView
                 : undefined
-            const isActive = isSameView(row.identity, active)
+            const { target } = row
+            const isActive = target !== null && isSameView(row.identity, active)
 
             return (
               <NamedViewRow
@@ -263,7 +350,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     ? [
                         <ContextMenuItem
                           disabled={actionsDisabled}
-                          onClick={() => editView(manageableView)}
+                          onClick={() => editView(manageableView, row.identity)}
                         >
                           Edit
                         </ContextMenuItem>,
@@ -290,10 +377,11 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     isActive ? `${row.label} is active` : `Apply ${row.label}`
                   }
                   aria-pressed={isActive}
-                  disabled={actionsDisabled}
+                  disabled={target === null || actionsDisabled}
                   onClick={() => {
+                    if (target === null) return
                     activateNamedView({
-                      target: row.target,
+                      target,
                       kclManager,
                     }).catch(reportRejection)
                   }}
@@ -319,7 +407,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   onDoubleClick={(event) => {
                     if (!manageableView || actionsDisabled) return
                     event.preventDefault()
-                    editView(manageableView)
+                    editView(manageableView, row.identity)
                   }}
                 >
                   <span
@@ -344,8 +432,26 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     </>
                   )}
                 </button>
-                {row.target.kind === 'declared' &&
-                !canManageNamedView(row.target.view) ? (
+                {row.error !== undefined && (
+                  <button
+                    type="button"
+                    className="reset grid h-6 w-6 shrink-0 place-items-center border-none text-destroy-80 focus-visible:ring-1 focus-visible:ring-primary dark:text-destroy-40"
+                    aria-label={row.error}
+                  >
+                    <CustomIcon
+                      name="triangleExclamation"
+                      className="h-4 w-4"
+                      aria-hidden
+                    />
+                    <Tooltip position="left">{row.error}</Tooltip>
+                  </button>
+                )}
+                {target === null && row.error === undefined && (
+                  <span className="shrink-0 text-xs text-chalkboard-60 dark:text-chalkboard-50">
+                    Waiting for execution
+                  </span>
+                )}
+                {row.view && !canManageNamedView(row.view) ? (
                   <CustomIcon
                     name="lockClosed"
                     className="mx-1 h-4 w-4 shrink-0 text-chalkboard-50"

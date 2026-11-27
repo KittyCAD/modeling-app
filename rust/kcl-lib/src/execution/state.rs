@@ -164,15 +164,12 @@ pub(super) fn collect_execution_issues(
     named_views: Option<&ResolvedViewBatch>,
 ) -> Vec<CompilationIssue> {
     if let Some(views) = named_views {
-        issues.extend(views.failures().iter().map(|failure| {
-            CompilationIssue::err(
-                failure.source_range,
-                format!(
-                    "Could not resolve named view {:?} in module {}: {}",
-                    failure.name, failure.module_id, failure.error
-                ),
-            )
-        }));
+        issues.extend(
+            views
+                .failures()
+                .iter()
+                .map(|failure| CompilationIssue::err(failure.source_range, failure.message.clone())),
+        );
     }
     issues
 }

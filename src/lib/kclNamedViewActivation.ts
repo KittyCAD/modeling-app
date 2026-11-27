@@ -3,21 +3,12 @@ import { effect, signal } from '@preact/signals-core'
 import toast from 'react-hot-toast'
 
 import type { KclManager } from '@src/lang/KclManager'
-import type { KclNamedView } from '@src/lang/std/kclNamedViews'
-import {
-  engineIdsForVisibility,
-  getViewUniverse,
-  listNamedViews,
-  visibilityForKclDefault,
-  visibilityForView,
-} from '@src/lang/std/kclNamedViews'
+import type { ResolvedNamedView } from '@rust/kcl-lib/bindings/ResolvedNamedView'
 import type { ExecState } from '@src/lang/wasm'
-import { getAllOperations } from '@src/lang/wasm'
 import {
   applyNamedViewCamera,
   onCameraMoved,
 } from '@src/lib/kclNamedViewCamera'
-import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
@@ -26,7 +17,7 @@ import type { StateFrom } from 'xstate'
 
 export type ActivationTarget =
   | { kind: 'kclDefault' } // `kclDefault` is computed, so it carries no artifact.
-  | { kind: 'declared'; view: KclNamedView }
+  | { kind: 'declared'; view: ResolvedNamedView }
 
 export function isSketchSessionOpen(
   state: StateFrom<typeof modelingMachine> | null | undefined
@@ -94,11 +85,15 @@ export async function activateNamedView({
     return
   }
 
-  await applyVisibility({
-    target,
-    execState: kclManager.execState,
-    kclManager,
-  })
+  const batch = kclManager.execState.namedViews?.batch
+  if (target.kind === 'declared' && !batch?.namedViews.includes(target.view)) {
+    return
+  }
+
+  await applyVisibility(
+    target.kind === 'declared' ? target.view.visibility : batch?.defaultView,
+    kclManager
+  )
 
   await applyAndTrackCamera(target, kclManager)
   if (target.kind === 'declared') {
@@ -109,8 +104,8 @@ export async function activateNamedView({
     target.kind === 'kclDefault'
       ? 'kclDefault'
       : {
-          name: target.view.artifact.name,
-          moduleKey: moduleKeyOf(target.view.modulePath),
+          name: target.view.info.name,
+          moduleKey: moduleKeyOf(target.view.info.modulePath),
         }
 }
 
@@ -123,7 +118,7 @@ async function applyAndTrackCamera(
   try {
     if (target.kind === 'declared') {
       await applyNamedViewCamera({
-        camera: target.view.artifact.camera,
+        camera: target.view.cameraIntent,
         sceneInfra: kclManager.sceneInfra,
       })
     } else {
@@ -151,39 +146,22 @@ export function startTrackingActiveViewCamera(kclManager: KclManager): void {
       resetNamedViewSession()
       if (!hadActiveView || !kclManager.engineCommandManager.isReady) return
 
-      applyVisibility({
-        target: { kind: 'kclDefault' },
-        execState: kclManager.execState,
-        kclManager,
-      }).catch(reportRejection)
+      applyVisibility(
+        kclManager.execState.namedViews?.batch.defaultView,
+        kclManager
+      ).catch(reportRejection)
     }
   )
 }
 
-async function applyVisibility({
-  target,
-  execState,
-  kclManager,
-}: {
-  target: ActivationTarget
-  execState: ExecState
+async function applyVisibility(
+  visibility: ResolvedNamedView['visibility'] | undefined,
   kclManager: KclManager
-}): Promise<void> {
-  const artifactGraph = execState.artifactGraph
-  const universe = getViewUniverse(artifactGraph)
-
-  const visibility =
-    target.kind === 'kclDefault'
-      ? visibilityForKclDefault({
-          universe,
-          hiddenIds: hiddenArtifactIdsFromOperations(
-            getAllOperations(execState.operations)
-          ),
-        })
-      : visibilityForView({ universe, view: target.view.artifact })
+): Promise<void> {
+  if (visibility === undefined) return
 
   await kclManager.engineCommandManager.setObjectsHidden(
-    engineIdsForVisibility({ visibility, universe, artifactGraph })
+    new Map(Object.entries(visibility))
   )
 }
 
@@ -214,18 +192,18 @@ async function reapplyActiveView(kclManager: KclManager): Promise<void> {
     return
   }
 
-  const { active, execState, view } = context
+  const { active, batch, view } = context
 
   if (view === undefined) {
-    await fallBackToKclDefault({ active, execState, kclManager })
+    await fallBackToKclDefault({
+      active,
+      visibility: batch.defaultView,
+      kclManager,
+    })
     return
   }
 
-  await applyVisibility({
-    target: { kind: 'declared', view },
-    execState,
-    kclManager,
-  })
+  await applyVisibility(view.visibility, kclManager)
 }
 
 export async function reapplyActiveViewAfterReconnect(
@@ -237,22 +215,18 @@ export async function reapplyActiveViewAfterReconnect(
     return false
   }
 
-  const { active, execState, view } = context
+  const { active, batch, view } = context
 
   if (view === undefined) {
     return fallBackToKclDefault({
       active,
-      execState,
+      visibility: batch.defaultView,
       kclManager,
       restoreCamera,
     })
   }
 
-  await applyVisibility({
-    target: { kind: 'declared', view },
-    execState,
-    kclManager,
-  })
+  await applyVisibility(view.visibility, kclManager)
   if (!restoreCamera) {
     return false
   }
@@ -263,8 +237,8 @@ export async function reapplyActiveViewAfterReconnect(
 
 function reapplyContext(kclManager: KclManager): {
   active: DeclaredViewIdentity
-  execState: ExecState
-  view: KclNamedView | undefined
+  batch: NonNullable<ExecState['namedViews']>['batch']
+  view: ResolvedNamedView | undefined
 } | null {
   const active = activeViewSignal.peek()
 
@@ -278,46 +252,44 @@ function reapplyContext(kclManager: KclManager): {
     return null
   }
 
-  const execState = kclManager.execState
+  const execution = kclManager.execState.namedViews
+  if (execution === null) return null
 
-  return { active, execState, view: findDeclaredView({ active, execState }) }
-}
-
-/** Returns the view a declared identity names, or undefined once it is gone. */
-function findDeclaredView({
-  active,
-  execState,
-}: {
-  active: DeclaredViewIdentity
-  execState: ExecState
-}): KclNamedView | undefined {
-  return listNamedViews({
-    artifactGraph: execState.artifactGraph,
-    filenames: execState.filenames,
-  }).find((view) =>
-    isSameView(
-      { name: view.artifact.name, moduleKey: moduleKeyOf(view.modulePath) },
-      active
-    )
+  const { batch, filenames } = execution
+  const view = batch.namedViews.find(
+    ({ info }) =>
+      info.name === active.name &&
+      moduleKeyOf(info.modulePath) === active.moduleKey
   )
+  // A resolution failure can leave the active view present without a usable result.
+  if (
+    view === undefined &&
+    batch.failures.some((failure) => {
+      const path = filenames[failure.moduleId]
+      return (
+        failure.name === active.name &&
+        (path === undefined || moduleKeyOf(path) === active.moduleKey)
+      )
+    })
+  ) {
+    return null
+  }
+
+  return { active, batch, view }
 }
 
 async function fallBackToKclDefault({
   active,
-  execState,
+  visibility,
   kclManager,
   restoreCamera = true,
 }: {
   active: DeclaredViewIdentity
-  execState: ExecState
+  visibility: ResolvedNamedView['visibility']
   kclManager: KclManager
   restoreCamera?: boolean
 }): Promise<boolean> {
-  await applyVisibility({
-    target: { kind: 'kclDefault' },
-    execState,
-    kclManager,
-  })
+  await applyVisibility(visibility, kclManager)
   if (restoreCamera) {
     await applyAndTrackCamera({ kind: 'kclDefault' }, kclManager)
     activeViewSignal.value = 'kclDefault'

@@ -766,6 +766,8 @@ fn batch_preserves_other_views_when_the_second_module_path_is_missing() {
                 name: "Second".to_owned(),
                 module_id: ModuleId::from_usize(7),
                 source_range,
+                message: "Could not resolve named view \"Second\" because its declaring file is unavailable."
+                    .to_owned(),
                 error: ViewResolutionError::MissingModulePath {
                     module_id: ModuleId::from_usize(7)
                 },

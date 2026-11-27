@@ -2,6 +2,7 @@
 import type { ArtifactId } from "./ArtifactId";
 import type { ApiObjectId } from "./FrontendApi";
 import type { ModelingCmd, UnitLength } from "./ModelingCmd";
+import type { ModuleId } from "./ModuleId";
 import type { NodePath } from "./NodePath";
 import type { PlaneName } from "./PlaneName";
 import type { SourceRange } from "./SourceRange";
@@ -202,7 +203,11 @@ export type NamedViewArtifact = { id: ArtifactId,
  * The display name the author gave the view. Required, and unique among
  * the views declared by the same module.
  */
-name: string, camera: ArtifactCameraView, 
+name: string, 
+/**
+ * Defining module id -- the module that calls `view::named`.
+ */
+declaringModuleId: ModuleId, camera: ArtifactCameraView, 
 /**
  * Whether objects start visible or hidden, which decides which of the two
  * lists below can act.

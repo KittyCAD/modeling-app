@@ -154,6 +154,7 @@ pub struct NamedViewResolutionFailure {
     pub module_id: ModuleId,
     pub source_range: SourceRange,
     pub error: ViewResolutionError,
+    pub message: String,
 }
 
 impl NamedViewResolutionFailure {
@@ -163,7 +164,29 @@ impl NamedViewResolutionFailure {
             name: view.name.clone(),
             module_id: view.declaring_module_id,
             source_range: view.code_ref.range,
+            message: Self::diagnostic_message(&view.name, &error),
             error,
+        }
+    }
+
+    fn diagnostic_message(name: &str, error: &ViewResolutionError) -> String {
+        if let ViewResolutionError::Ambiguous { candidates } = error {
+            let module_name = match candidates.first().map(|candidate| &candidate.module_path) {
+                Some(ModulePath::Local { value, .. }) => value.file_name(),
+                Some(path @ ModulePath::Std { .. }) => Some(path.to_string()),
+                Some(ModulePath::Main) | None => None,
+            };
+            let location = module_name.map_or_else(|| "the same module".to_owned(), |name| format!("{name:?}"));
+            return format!(
+                "Multiple views named {name:?} were found in {location}. View names must be unique within a module."
+            );
+        }
+
+        match error {
+            ViewResolutionError::MissingModulePath { .. } => {
+                format!("Could not resolve named view {name:?} because its declaring file is unavailable.")
+            }
+            _ => format!("Could not find named view {name:?}."),
         }
     }
 }

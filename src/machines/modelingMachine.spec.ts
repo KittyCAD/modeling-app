@@ -24,6 +24,8 @@ import {
   type ArtifactGraph,
   assertParse,
   type CallExpressionKw,
+  emptyExecState,
+  type ExecState,
   recast,
 } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
@@ -186,8 +188,11 @@ body = profile |> sweep(path = path)
   )
 })
 
-describe('STEP schema export requests', () => {
-  async function exportFormat(data: ModelingCommandSchema['Export']) {
+describe('model export requests', () => {
+  async function exportFormat(
+    data: ModelingCommandSchema['Export'],
+    execState: ExecState = emptyExecState()
+  ) {
     const world = worldWithoutEngine
     const program = assertParse(
       '@settings(kclVersion = 3.0)\nvalue = 1',
@@ -199,6 +204,11 @@ describe('STEP schema export requests', () => {
     const ast = vi
       .spyOn(world.kclManager, 'ast', 'get')
       .mockReturnValue(program)
+    const execution = vi
+      .spyOn(world.kclManager, 'execState', 'get')
+      .mockReturnValue(execState)
+    const previousGraph = world.kclManager.artifactGraph
+    world.kclManager.artifactGraph = execState.artifactGraph
     const exportRequest = vi
       .spyOn(world.rustContext, 'export')
       .mockResolvedValue(undefined)
@@ -226,6 +236,8 @@ describe('STEP schema export requests', () => {
       actor.stop()
       loading.mockRestore()
       exportRequest.mockRestore()
+      world.kclManager.artifactGraph = previousGraph
+      execution.mockRestore()
       ast.mockRestore()
       hasErrors.mockRestore()
     }
@@ -250,6 +262,83 @@ describe('STEP schema export requests', () => {
         },
         views: {},
       })
+    }
+  )
+
+  it.each(['step', 'gltf'] as const)(
+    'sends the named views from the paired Rust result when exporting %s',
+    async (type) => {
+      const artifact: Extract<Artifact, { type: 'namedView' }> = {
+        type: 'namedView',
+        id: 'view',
+        name: 'Inspection',
+        declaringModuleId: 0,
+        baseline: 'hide',
+        showIds: [],
+        hideIds: [],
+        camera: {
+          look: { type: 'oriented', orientation: 'front' },
+          target: null,
+          distance: 20,
+          projection: 'orthographic',
+        },
+        codeRef: {
+          range: [0, 0, 0],
+          nodePath: { steps: [] },
+          pathToNode: [],
+        },
+      }
+      const mockArtifact = {
+        ...artifact,
+        name: 'Mock only',
+        baseline: 'show' as const,
+      }
+      const modulePath = { type: 'Main' } as const
+      const execState: ExecState = {
+        ...emptyExecState(),
+        artifactGraph: new Map([[mockArtifact.id, mockArtifact]]),
+        namedViews: {
+          artifacts: new Map([[artifact.id, artifact]]),
+          filenames: { 0: modulePath },
+          batch: {
+            defaultView: {},
+            namedViews: [
+              {
+                info: {
+                  artifactId: artifact.id,
+                  name: artifact.name,
+                  moduleId: 0,
+                  modulePath,
+                },
+                cameraIntent: {
+                  ...artifact.camera,
+                  look: { type: 'oriented', orientation: 'top' },
+                },
+                visibility: { 'engine-visible': false, 'engine-hidden': true },
+              },
+            ],
+            failures: [],
+          },
+        },
+      }
+
+      const format = await exportFormat({ type }, execState)
+      expect(format).toMatchObject({
+        type,
+        views: {
+          Inspection: {
+            vantage: { x: 0, y: 0, z: 20 },
+            target: { x: 0, y: 0, z: 0 },
+            up: { x: 0, y: 1, z: 0 },
+            projection: { type: 'orthographic' },
+            baseline: 'hide',
+            except_ids: ['engine-visible'],
+          },
+        },
+      })
+      expect(
+        format && 'views' in format ? Object.keys(format.views ?? {}) : []
+      ).toEqual(['Inspection'])
     }
   )
 
