@@ -21,7 +21,7 @@ import {
   getDefaultProjectLibrarySettings,
   LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
 } from '@src/lib/projectLibraries'
-import { directoryLibrarySettingsContribution } from '@src/lib/projectLibraries/settings/directoryLibrarySettingsContribution'
+import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { Setting } from '@src/lib/settings/Setting'
@@ -57,7 +57,7 @@ const pluginExtensionSettings = {
   },
 }
 
-const projectLibrariesExtensionSettings = directoryLibrarySettingsContribution
+const projectLibrariesExtensionSettings = projectLibrariesSettingsContribution
 
 const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)

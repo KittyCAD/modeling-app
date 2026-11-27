@@ -1,8 +1,8 @@
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import {
-  DirectoryLibrarySettingsDetails,
-  DirectoryLibrarySettingInput,
-} from '@src/lib/projectLibraries/settings/DirectoryLibrarySettingInput'
+  DirectoryProjectLibrarySettingsDetails,
+  ProjectLibrariesSettingInput,
+} from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
@@ -34,15 +34,15 @@ const directoryType = {
     path: 'projects',
     type: 'directory',
   },
-  settingsDetails: DirectoryLibrarySettingsDetails,
+  settingsDetails: DirectoryProjectLibrarySettingsDetails,
 }
 
-describe('DirectoryLibrarySettingInput', () => {
+describe('ProjectLibrariesSettingInput', () => {
   test('does not invent a directory library type when none are registered', () => {
     const updateValue = vi.fn()
 
     render(
-      <DirectoryLibrarySettingInput value={[]} updateValue={updateValue} />
+      <ProjectLibrariesSettingInput value={[]} updateValue={updateValue} />
     )
 
     const addButton = screen.getByTestId('project-library-add')
@@ -56,7 +56,7 @@ describe('DirectoryLibrarySettingInput', () => {
   test('does not update project libraries when blurring unchanged fields', () => {
     const updateValue = vi.fn()
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
         directoryType={directoryType}
@@ -72,7 +72,7 @@ describe('DirectoryLibrarySettingInput', () => {
   test('does not render implicit details for library types without a settings details contribution', () => {
     const updateValue = vi.fn()
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
         directoryType={{
@@ -89,7 +89,7 @@ describe('DirectoryLibrarySettingInput', () => {
   test('does not update project libraries when normalization matches the current value', () => {
     const updateValue = vi.fn()
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
         directoryType={directoryType}
@@ -117,7 +117,7 @@ describe('DirectoryLibrarySettingInput', () => {
     window.electron = { getPath, open } as unknown as Window['electron']
 
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
         directoryType={directoryType}
@@ -174,7 +174,7 @@ describe('DirectoryLibrarySettingInput', () => {
   test('hides library management controls when management is disabled', () => {
     const updateValue = vi.fn()
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
         directoryType={directoryType}
@@ -200,7 +200,7 @@ describe('DirectoryLibrarySettingInput', () => {
   test('allows directory library removal while edits and reordering are disabled', () => {
     const updateValue = vi.fn()
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={defaultLibraries}
         updateValue={updateValue}
         directoryType={directoryType}
@@ -229,7 +229,7 @@ describe('DirectoryLibrarySettingInput', () => {
     }
 
     render(
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={[
           ...defaultLibraries,
           {

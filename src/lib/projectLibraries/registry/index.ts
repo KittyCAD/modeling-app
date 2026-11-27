@@ -30,8 +30,8 @@ import {
   readProjectLibraryRealizationsInvalidation,
 } from '@src/lib/projectLibraries/registry/invalidation'
 import projectLibrariesRegistryService from '@src/lib/projectLibraries/registry/service'
-import { DirectoryLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/DirectoryLibrarySettingInput'
-import { directoryLibrarySettingsContribution } from '@src/lib/projectLibraries/settings/directoryLibrarySettingsContribution'
+import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { observations as fileOperationsObservations } from '@src/registry/contracts/fileOperations'
@@ -766,7 +766,7 @@ const directoryProjectLibraryType: Factory = defineFactory({
         path: 'projects',
         type: DIRECTORY_PROJECT_LIBRARY_TYPE,
       },
-      settingsDetails: DirectoryLibrarySettingsDetails,
+      settingsDetails: DirectoryProjectLibrarySettingsDetails,
       /**
        * Directory libraries return concrete folders on disk. Any cloud
        * project ID found in project metadata is carried as an observation,
@@ -834,7 +834,7 @@ const projectLibrariesExtension = [
   directoryProjectLibraryDefaultPolicy,
   directoryProjectLibraryType,
   projectLibraryRealizationsRegistryService,
-  contribute(settingsFacet, () => directoryLibrarySettingsContribution),
+  contribute(settingsFacet, () => projectLibrariesSettingsContribution),
 ]
 export {
   invalidateProjectLibraryRealizations,

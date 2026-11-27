@@ -8,15 +8,15 @@ import type { ExtensionSettingsContribution } from '@src/lib/settings/extensionS
 import { Setting } from '@src/lib/settings/Setting'
 import { Suspense, lazy } from 'react'
 
-const DirectoryLibrarySetting = lazy(() =>
-  import('@src/lib/projectLibraries/settings/DirectoryLibrarySetting').then(
+const ProjectLibrariesSetting = lazy(() =>
+  import('@src/lib/projectLibraries/settings/ProjectLibrariesSetting').then(
     (module) => ({
-      default: module.DirectoryLibrarySetting,
+      default: module.ProjectLibrariesSetting,
     })
   )
 )
 
-export const directoryLibrarySettingsContribution: ExtensionSettingsContribution =
+export const projectLibrariesSettingsContribution: ExtensionSettingsContribution =
   {
     app: {
       libraries: {
@@ -29,7 +29,7 @@ export const directoryLibrarySettingsContribution: ExtensionSettingsContribution
             validate: isProjectLibrarySettings,
             Component: (props) => (
               <Suspense fallback={null}>
-                <DirectoryLibrarySetting {...props} />
+                <ProjectLibrariesSetting {...props} />
               </Suspense>
             ),
           }),

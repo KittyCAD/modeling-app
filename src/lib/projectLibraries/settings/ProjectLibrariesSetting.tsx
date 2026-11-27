@@ -5,13 +5,13 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import { DirectoryLibrarySettingInput } from '@src/lib/projectLibraries/settings/DirectoryLibrarySettingInput'
+import { ProjectLibrariesSettingInput } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import type { SettingComponentProps } from '@src/lib/settings/settingsTypes'
 import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
-export function DirectoryLibrarySetting({
+export function ProjectLibrariesSetting({
   value,
   updateValue,
   registry,
@@ -34,7 +34,7 @@ export function DirectoryLibrarySetting({
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <DirectoryLibrarySettingInput
+      <ProjectLibrariesSettingInput
         value={localLibraries}
         updateValue={(libraries) =>
           updateValue([

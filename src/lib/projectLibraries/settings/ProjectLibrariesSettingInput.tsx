@@ -19,7 +19,7 @@ import type {
 } from '@src/registry/contracts/projectLibraries'
 import { type DragEvent, useEffect, useRef, useState } from 'react'
 
-interface DirectoryLibrarySettingInputProps {
+interface ProjectLibrariesSettingInputProps {
   value: ProjectLibrarySetting[]
   updateValue: (value: ProjectLibrarySetting[]) => void
   directoryType?: ProjectLibraryTypeContribution
@@ -33,7 +33,7 @@ function DefaultProjectLibrarySettingsDetails() {
   return <></>
 }
 
-export function DirectoryLibrarySettingsDetails({
+export function DirectoryProjectLibrarySettingsDetails({
   library,
   index,
   updateLibrary,
@@ -110,7 +110,7 @@ export function DirectoryLibrarySettingsDetails({
   )
 }
 
-export function DirectoryLibrarySettingInput({
+export function ProjectLibrariesSettingInput({
   value,
   updateValue,
   directoryType,
@@ -118,7 +118,7 @@ export function DirectoryLibrarySettingInput({
   canReorderLibraries = true,
   canEditLibraryDetails = true,
   canRemoveLibrary = () => true,
-}: DirectoryLibrarySettingInputProps) {
+}: ProjectLibrariesSettingInputProps) {
   const electron = typeof window === 'undefined' ? undefined : window.electron
   const typeLabel = directoryType?.title ?? 'Directory'
   const typeIcon = isCustomIconName(directoryType?.icon)

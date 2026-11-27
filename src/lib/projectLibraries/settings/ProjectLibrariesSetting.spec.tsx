@@ -1,5 +1,5 @@
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
-import { DirectoryLibrarySetting } from '@src/lib/projectLibraries/settings/DirectoryLibrarySetting'
+import { ProjectLibrariesSetting } from '@src/lib/projectLibraries/settings/ProjectLibrariesSetting'
 import { projectLibraryTypesFacet } from '@src/registry/contracts/projectLibraries'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { contribute, Registry } from 'plankton'
@@ -40,7 +40,7 @@ it('only edits directory libraries and preserves other saved libraries', async (
   const updateValue = vi.fn()
   render(
     <MemoryRouter>
-      <DirectoryLibrarySetting
+      <ProjectLibrariesSetting
         value={[local, external]}
         updateValue={updateValue}
         registry={registry}
