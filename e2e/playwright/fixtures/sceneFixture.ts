@@ -1,5 +1,8 @@
 import type { Locator, Page } from '@playwright/test'
-import type { ProjectedEntity } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import type {
+  LocalRenderer,
+  ProjectedEntity,
+} from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import {
@@ -21,6 +24,7 @@ type MouseParams = {
   shouldRightClick?: boolean
   delay?: number
 }
+type ProjectionOptions = Parameters<LocalRenderer['getProjectedEntities']>[0]
 type MouseDragToParams = MouseParams & {
   fromPoint: { x: number; y: number }
 }
@@ -140,13 +144,13 @@ export class SceneFixture {
     this.appHeader = this.page.getByTestId('app-header')
   }
   /** Read current CSS viewport coordinates; refresh after camera or model changes. */
-  getProjectedEntities = async () =>
-    this.page.evaluate(async () => {
+  getProjectedEntities = async (options?: ProjectionOptions) =>
+    this.page.evaluate(async (options) => {
       const view = window.app.singletons.kclManager.sceneInfra.localRenderer
       if (!view)
         throw new Error('Projected entities require the local renderer')
-      return view.getProjectedEntities()
-    })
+      return view.getProjectedEntities(options)
+    }, options)
 
   /**
    * Both modes share the same mouse actions; only the selection point differs.
@@ -201,15 +205,14 @@ export class SceneFixture {
       throw new Error('Entity index must be a non-negative integer')
     }
     const lookup = async () => {
-      const entities = (await this.getProjectedEntities()).filter(
-        (entity) =>
-          (kind === 'face'
-            ? entity.kind === 'bodyFace' || entity.kind === 'sketchFace'
-            : entity.kind === kind) && entity.visible === visible
-      )
-      return typeof indexOrId === 'number'
-        ? entities[indexOrId]
-        : entities.find((entity) => entity.id === indexOrId)
+      const entities = await this.getProjectedEntities({
+        kind,
+        visible,
+        ...(typeof indexOrId === 'number'
+          ? { limit: indexOrId + 1 }
+          : { id: indexOrId, limit: 1 }),
+      })
+      return entities[typeof indexOrId === 'number' ? indexOrId : 0]
     }
     // Pane resizing and camera updates can settle after the UI action completes.
     let entity: Awaited<ReturnType<typeof lookup>> | undefined
