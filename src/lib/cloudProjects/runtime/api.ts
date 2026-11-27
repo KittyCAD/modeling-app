@@ -115,6 +115,20 @@ export function createRemoteProjectLibrary(
   )
 }
 
+export function deleteRemoteProjectLibrary(
+  config: CloudApiConfig,
+  id: string,
+  expectedRevision: string
+) {
+  return cloudCall(config, (client) =>
+    projects.delete_project_library({
+      client,
+      id,
+      expected_revision: expectedRevision,
+    })
+  )
+}
+
 export async function listRemoteProjectLibraries(
   config: CloudApiConfig,
   signal?: AbortSignal

@@ -14,7 +14,8 @@ import type {
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
-import type { HTMLProps } from 'react'
+import type { ProjectLibraryTypeContribution } from '@src/registry/contracts/projectLibraries'
+import { useRef, type HTMLProps, type RefObject } from 'react'
 import { Link } from 'react-router-dom'
 
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
@@ -48,6 +49,7 @@ interface ProjectLibraryPreviewRowProps {
   showCloudSyncUi: boolean
   onDuplicateToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
+  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
 function getProjectLibraryRoute(library: ProjectLibrary) {
@@ -56,6 +58,27 @@ function getProjectLibraryRoute(library: ProjectLibrary) {
 
 function projectCountLabel(count: number) {
   return `${count} project${count === 1 ? '' : 's'}`
+}
+
+export function ProjectLibraryHomeContextMenuSlot({
+  library,
+  projects,
+  menuTargetElement,
+  projectLibraryTypes,
+}: {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+  menuTargetElement: RefObject<HTMLElement | null>
+  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
+}) {
+  const Menu = projectLibraryTypes?.get(library.type)?.homeContextMenu
+  return Menu ? (
+    <Menu
+      library={library}
+      projects={projects}
+      menuTargetElement={menuTargetElement}
+    />
+  ) : null
 }
 
 export function ProjectLibraryPreviewRow({
@@ -69,7 +92,9 @@ export function ProjectLibraryPreviewRow({
   showCloudSyncUi,
   onDuplicateToLibrary,
   projectLibraryDrag,
+  projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
+  const menuTargetElement = useRef<HTMLDivElement>(null)
   const previewProjects =
     query.length > 0
       ? projects
@@ -91,7 +116,10 @@ export function ProjectLibraryPreviewRow({
       aria-label={`${library.title} library`}
       {...libraryDropTargetProps}
     >
-      <div className="group flex items-center gap-3 rounded-sm border border-transparent py-1 hover:border-primary/30 hover:bg-primary/5">
+      <div
+        ref={menuTargetElement}
+        className="group flex items-center gap-3 rounded-sm border border-transparent py-1 hover:border-primary/30 hover:bg-primary/5"
+      >
         <Link
           to={getProjectLibraryRoute(library)}
           className="flex min-w-0 flex-1 items-center gap-3 !no-underline"
@@ -118,6 +146,12 @@ export function ProjectLibraryPreviewRow({
             </span>
           </span>
         </Link>
+        <ProjectLibraryHomeContextMenuSlot
+          library={library}
+          projects={projects}
+          menuTargetElement={menuTargetElement}
+          projectLibraryTypes={projectLibraryTypes}
+        />
         <Link
           to={getProjectLibraryRoute(library)}
           className="hidden flex-none select-none text-xs text-chalkboard-70 !no-underline dark:text-chalkboard-30 sm:block"
