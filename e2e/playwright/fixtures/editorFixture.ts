@@ -1,11 +1,13 @@
-import type { Locator, Page } from '@playwright/test'
-import { expect } from '@playwright/test'
-
 import {
-  checkIfPaneIsOpen,
-  closePane,
-  openPane,
-} from '@e2e/playwright/lib/paneSupport'
+  editorSelector,
+  openKclCodePanel,
+  toNormalizedCode,
+} from '@e2e/playwright/lib/editorSupport'
+import { openPane } from '@e2e/playwright/lib/paneSupport'
+import type { Locator, Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+
+import { checkIfPaneIsOpen, closePane } from '@e2e/playwright/lib/paneSupport'
 import { sansWhitespace } from '@e2e/playwright/lib/textAssertions'
 
 interface EditorState {
@@ -266,5 +268,30 @@ export class EditorFixture {
     if (!wasPaneOpen) {
       await this.closePane()
     }
+  }
+
+  openPaneAndRevealCode = () => openKclCodePanel(this.page)
+
+  async expectNormalizedCode(code: string) {
+    const editor = this.page.locator(editorSelector)
+    return expect
+      .poll(async () => {
+        try {
+          const text = await editor.textContent()
+          return toNormalizedCode(text ?? '')
+        } catch (e) {
+          console.log(e)
+          return ''
+        }
+      })
+      .toContain(toNormalizedCode(code))
+  }
+
+  pasteCode = async (code: string) => {
+    return test?.step('Paste in KCL code', async () => {
+      const editor = this.page.locator(editorSelector)
+      await editor.fill(code)
+      await this.expectNormalizedCode(code)
+    })
   }
 }

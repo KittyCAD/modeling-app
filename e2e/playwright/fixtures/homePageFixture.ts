@@ -2,6 +2,7 @@ import {
   closeOnboardingModalIfPresent,
   waitForAuthentication,
 } from '@e2e/playwright/lib/appSetup'
+import { goToHomePageFromModeling } from '@e2e/playwright/lib/projectSupport'
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
@@ -168,4 +169,6 @@ export class HomePageFixture {
       'true'
     )
   }
+
+  goToHomePageFromModeling = () => goToHomePageFromModeling(this.page)
 }

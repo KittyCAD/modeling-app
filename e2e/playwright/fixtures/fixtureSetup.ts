@@ -1,3 +1,6 @@
+import { DebugFixture } from '@e2e/playwright/fixtures/debugFixture'
+import { FileTreeFixture } from '@e2e/playwright/fixtures/fileTreeFixture'
+import { waitForAuth } from '@e2e/playwright/lib/appSetup'
 import type { Feature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
@@ -45,7 +48,6 @@ import {
   playwrightPluginSettings,
   playwrightProjectLibraries,
 } from '@e2e/playwright/storageStates'
-import { getUtils } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { Themes } from '@src/lib/theme'
 import { isArray } from '@src/lib/utils'
@@ -132,7 +134,6 @@ export class AuthenticatedApp {
     await setup(this.context, this.page, this.testInfo, userFeatures, {
       mockApiRoutes,
     })
-    const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
       // WebKit starts on about:blank, where localStorage is unavailable.
@@ -152,7 +153,7 @@ export class AuthenticatedApp {
 
     await this.page.setViewportSize(this.viewPortSize)
 
-    await u.waitForAuth()
+    await waitForAuth(this.page)
     await selectBrowserProjectLibrary(this.page)
     if (!mockApiRoutes) await waitForAuthentication(this.page)
   }
@@ -165,6 +166,8 @@ export class AuthenticatedApp {
 }
 
 export interface Fixtures {
+  fileTree: FileTreeFixture
+  debug: DebugFixture
   cmdBar: CmdBarFixture
   modelingDialog: ModelingDialogFixture
   editor: EditorFixture
@@ -742,6 +745,12 @@ interface IFormattedLog {
 }
 
 const fixturesBasedOnProcessEnvPlatform = {
+  fileTree: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new FileTreeFixture(page))
+  },
+  debug: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new DebugFixture(page))
+  },
   cmdBar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CmdBarFixture(page))
   },

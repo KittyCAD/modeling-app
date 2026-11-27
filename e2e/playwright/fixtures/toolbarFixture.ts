@@ -1,14 +1,15 @@
-import { type Locator, type Page, test } from '@playwright/test'
+import { doAndWaitForImageDiff } from '@e2e/playwright/lib/imageAssertions'
+import {
+  openLogsPane,
+  openPane,
+  openVariablesPane,
+} from '@e2e/playwright/lib/paneSupport'
+import type { Locator, Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
-import { doAndWaitForImageDiff } from '@e2e/playwright/lib/imageAssertions'
-import {
-  checkIfPaneIsOpen,
-  closePane,
-  openPane,
-} from '@e2e/playwright/lib/paneSupport'
-import { expect } from '@e2e/playwright/zoo-test'
+import { checkIfPaneIsOpen, closePane } from '@e2e/playwright/lib/paneSupport'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
 
@@ -198,48 +199,6 @@ export class ToolbarFixture {
       toBe: (mode: ToolbarModeName) =>
         expect.poll(this._getMode).not.toEqual(mode),
     },
-  }
-
-  private _serialiseFileTree = async () => {
-    return this.page
-      .locator('#files-pane')
-      .getByTestId('file-tree-item')
-      .allInnerTexts()
-  }
-  /**
-   * TODO folders, in expect state
-   */
-  expectFileTreeState = async (expected: string[]) => {
-    await expect.poll(this._serialiseFileTree).toEqual(expected)
-  }
-  createFile = async (args: {
-    fileName: string
-    waitForToastToDisappear: boolean
-  }) => {
-    await this.createFileBtn.click()
-    await this.treeInputField.fill(args.fileName)
-    await this.treeInputField.press('Enter')
-    await expect(this.fileCreateToast).toBeVisible()
-    if (args.waitForToastToDisappear) {
-      await this.fileCreateToast.waitFor({ state: 'detached' })
-    }
-  }
-  /**
-   * Opens file by it's name
-   */
-  openFile = async (fileName: string) => {
-    const fileTreeItem = this.page
-      .getByTestId('file-pane-scroll-container')
-      .getByRole('treeitem', { name: fileName, exact: true })
-    await expect(fileTreeItem).toBeVisible()
-    await fileTreeItem.click()
-  }
-  ensureFolderOpen = async (folder: Locator, open: boolean) => {
-    const expanded = await folder.getAttribute('aria-expanded')
-    const isOpen = expanded === 'true'
-    if (isOpen !== open) {
-      await folder.click()
-    }
   }
 
   selectTangentialArc = async () => {
@@ -463,5 +422,17 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('ml-ephant-conversation-input').fill(prompt)
     await this.page.getByTestId('ml-ephant-conversation-input-button').click()
+  }
+
+  openVariablesPane = () => openVariablesPane(this.page)
+
+  openLogsPane = () => openLogsPane(this.page)
+
+  openPanes = async (paneIds: string[]) => {
+    return test?.step(`Setting ${paneIds} panes to be open`, async () => {
+      for (const paneId of paneIds) {
+        await openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
+      }
+    })
   }
 }
