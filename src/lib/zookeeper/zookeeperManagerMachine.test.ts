@@ -49,7 +49,6 @@ import {
   ZOOKEEPER_MAX_MESSAGE_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
-import * as projectFileTransport from '@src/lib/zookeeper/projectFileTransport'
 import { S } from '@src/machines/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -1513,21 +1512,16 @@ describe('zookeeperManagerMachine', () => {
   })
 
   it.each([
-    ['local', false],
-    ['cloud', false],
-    ['local', true],
-    ['cloud', true],
+    ['local', false, undefined],
+    ['cloud', false, 'saved-rev'],
+    ['local', true, 'saved-rev'],
+    ['cloud', true, 'saved-rev'],
+    ['cloud', true, undefined],
   ] as const)(
-    'sends project files on prompts and resume (%s, SDK project tools: %s)',
-    async (storage, sdkHasProjectTools) => {
-      const selectTransport = projectFileTransport.usesCloudProjectTools
-      vi.spyOn(
-        projectFileTransport,
-        'usesCloudProjectTools'
-      ).mockImplementation((projectId) =>
-        selectTransport(projectId, sdkHasProjectTools)
-      )
-      const cloudTools = storage === 'cloud' && sdkHasProjectTools
+    'sends project files on prompts and resume (%s, worker cloud save: %s, saved revision: %s)',
+    async (storage, workerSupportsSave, savedCloudRevision) => {
+      const cloudTools =
+        storage === 'cloud' && workerSupportsSave && Boolean(savedCloudRevision)
       const ws = new TestSocket() as TestWebSocket
       const send = vi.fn()
       ws.send = send
@@ -1535,7 +1529,7 @@ describe('zookeeperManagerMachine', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const binaryFile = new Blob([new Uint8Array([0, 255, 128])])
       const readBinary = vi.spyOn(binaryFile, 'arrayBuffer')
-      const slowRead = storage === 'cloud' && !sdkHasProjectTools
+      const slowRead = storage === 'cloud' && !workerSupportsSave
       if (slowRead) {
         vi.useFakeTimers()
         readBinary.mockImplementation(async () => {
@@ -1555,6 +1549,7 @@ describe('zookeeperManagerMachine', () => {
       ]
       const context = {
         ...zookeeperDefaultContext({}),
+        cloudProjectSave: workerSupportsSave,
         ws,
         conversation: {
           exchanges: [
@@ -1572,6 +1567,7 @@ describe('zookeeperManagerMachine', () => {
       > = {
         type: ZookeeperManagerTransitions.MessageSend,
         prompt: 'Inspect the project',
+        savedCloudRevision,
         projectForPromptOutput: createProjectForTest('/demo', {
           name: 'demo',
           default_file: '/demo/parts/main.kcl',
@@ -1633,8 +1629,8 @@ describe('zookeeperManagerMachine', () => {
         expect(request.project_id).toMatch(new RegExp(`^${storage}:`))
         expect(request.active_file).toBe('parts/main.kcl')
         expect(request.current_files).toEqual(
-          cloudTools
-            ? {}
+          cloudTools && request.type === 'user'
+            ? undefined
             : {
                 'parts/main.kcl': Array.from(
                   new TextEncoder().encode('@settings(kclVersion = 3.0)\n')
@@ -1643,7 +1639,13 @@ describe('zookeeperManagerMachine', () => {
               }
         )
       }
-      expect(readBinary).toHaveBeenCalledTimes(cloudTools ? 0 : 2)
+      expect(requests[0].cloud_project).toEqual(
+        cloudTools
+          ? { project_id: 'cloud:remote-one', expected_revision: 'saved-rev' }
+          : undefined
+      )
+      expect(requests[1].cloud_project).toBeUndefined()
+      expect(readBinary).toHaveBeenCalledTimes(cloudTools ? 1 : 2)
       expect(requests[0].additional_files[0].name).toBe('reference.txt')
     }
   )

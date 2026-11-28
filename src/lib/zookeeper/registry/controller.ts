@@ -25,6 +25,7 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
+import { projectBuffersAreSaved } from '@src/lib/projectSession/projectBuffersAreSaved'
 import { collectProjectFiles } from '@src/lib/projectSession/projectFiles'
 import { S } from '@src/machines/utils'
 import type { ProjectOperationsService } from '@src/lib/projectSession/projectOperations'
@@ -533,20 +534,45 @@ class SessionController implements ZookeeperSessionController {
     const editorCode = kclManager.code
     const editorPath = kclManager.path
     const selections = kclManager.modelingState?.context.selectionRanges ?? null
+    const storage =
+      project.cloudProjectId &&
+      this.actor.getSnapshot().context.cloudProjectSave
+        ? this.deps.session.storageFor(project.path)
+        : undefined
+    const savedRevision = () =>
+      storage &&
+      this.actor.getSnapshot().context.cloudProjectSave &&
+      projectBuffersAreSaved(zdsProject)
+        ? storage.savedRevision?.()
+        : undefined
+    let revision = savedRevision()
     let projectFiles: Awaited<ReturnType<typeof collectProjectFiles>>
     let wasmInstance: Awaited<KclManager['wasmInstancePromise']>
     try {
-      const promptInputs = await Promise.all([
+      const collect = (kclOnly: boolean) =>
         collectProjectFiles({
           fileOperations: this.deps.fileOperations,
           selectedFileContents: editorCode,
           selectedFilePath: editorPath,
           fileNames: kclManager.execState.filenames,
           projectContext: project,
-        }),
+          ...(kclOnly && { kclOnly }),
+        })
+      const promptInputs = await Promise.all([
+        collect(Boolean(revision)),
         kclManager.wasmInstancePromise,
       ])
       projectFiles = promptInputs[0]
+      if (revision) {
+        const activeBytes = await this.deps.fileOperations.readFile(editorPath)
+        if (
+          new TextDecoder().decode(activeBytes) !== editorCode ||
+          savedRevision() !== revision
+        ) {
+          revision = undefined
+          projectFiles = await collect(false)
+        }
+      }
       wasmInstance = promptInputs[1]
     } catch (error: unknown) {
       if (
@@ -584,6 +610,7 @@ class SessionController implements ZookeeperSessionController {
       type: ZookeeperManagerTransitions.MessageSend,
       prompt,
       projectForPromptOutput: project,
+      savedCloudRevision: revision,
       applicationProjectDirectory: getParentAbsolutePath(project.path),
       fileSelectedDuringPrompting: {
         entry: loaderFile,
@@ -660,21 +687,31 @@ class SessionController implements ZookeeperSessionController {
         refresh = true
       }
     }
-    if (!refresh) return
+    if (!refresh || !change) return
     const cloudChangeGeneration = ++this.cloudChangeGeneration
     const generation = this.clearOperationGeneration
+    const opening = this.getZdsProject()
     const isCurrent = () =>
       this.active &&
       this.cloudChangeGeneration === cloudChangeGeneration &&
       this.clearOperationGeneration === generation &&
-      this.getProject()?.cloudProjectId === projectId
+      this.getProject()?.cloudProjectId === projectId &&
+      (!change.refreshLatest ||
+        (opening !== undefined &&
+          this.getZdsProject() === opening &&
+          projectBuffersAreSaved(opening)))
     this.pendingCloudRefreshes += 1
     let filesRefreshed = false
     this.cloudRefreshQueue = this.cloudRefreshQueue
       .catch(reportRejection)
       .then(async () => {
         if (!isCurrent()) return
-        await storage.refresh(isCurrent, change?.revision)
+        // A later editor save may already have superseded the worker receipt.
+        const updated = await storage.refresh(
+          isCurrent,
+          change.refreshLatest ? undefined : change.revision
+        )
+        if (updated && !updated.refreshed) return
         filesRefreshed = true
         if (!isCurrent()) return
         const project = this.getReadyZdsProject()

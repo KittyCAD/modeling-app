@@ -50,7 +50,6 @@ import {
   encodeLegacyCurrentFiles,
   encodeLegacyProjectFiles,
 } from '@src/lib/zookeeper/registry/legacy/currentFiles'
-import { usesCloudProjectTools } from '@src/lib/zookeeper/projectFileTransport'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import toast from 'react-hot-toast'
@@ -393,6 +392,7 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.MessageSend
       projectForPromptOutput: Project
+      savedCloudRevision?: string
       prompt: string
       applicationProjectDirectory: string
       fileSelectedDuringPrompting: { entry: FileEntry; content: string }
@@ -575,6 +575,7 @@ export interface ZookeeperManagerContext {
   replayPageRequestId?: string
   replayPageError?: string
   lastMessageId?: number
+  cloudProjectSave?: boolean
   cloudProjectChange?: CloudProjectToolChange
   lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
@@ -1924,6 +1925,8 @@ export const zookeeperManagerMachine = setup({
                   exchanges: maybeReplayedExchanges,
                 },
                 conversationId: response.conversation_id.conversation_id,
+                cloudProjectSave:
+                  response.conversation_id.cloud_project_save === true,
                 replayNextCursor,
                 defaultMode: maybeDefaultMode,
                 modeOptions: maybeModeOptions,
@@ -2022,14 +2025,22 @@ export const zookeeperManagerMachine = setup({
       const projectId = event.projectForPromptOutput.cloudProjectId
         ? `cloud:${event.projectForPromptOutput.cloudProjectId}`
         : `local:${event.projectForPromptOutput.projectId ?? event.projectForPromptOutput.path}`
-      const cloudProjectTools = usesCloudProjectTools(projectId)
+      const cloudProject =
+        context.cloudProjectSave &&
+        event.projectForPromptOutput.cloudProjectId &&
+        event.savedCloudRevision
+          ? {
+              project_id: projectId,
+              expected_revision: event.savedCloudRevision,
+            }
+          : undefined
       const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
         projectFiles: event.projectFiles,
-        includeProjectFiles: !cloudProjectTools,
+        includeProjectFiles: !cloudProject,
         artifactGraph: event.artifactGraph,
         projectName: event.projectForPromptOutput.name,
         currentFile: event.fileSelectedDuringPrompting,
@@ -2040,7 +2051,7 @@ export const zookeeperManagerMachine = setup({
       })
       if (isErr(requestData)) return Promise.reject(requestData)
 
-      const filesAsByteArrays = cloudProjectTools
+      const filesAsByteArrays = cloudProject
         ? {}
         : await encodeLegacyCurrentFiles(requestData.files)
 
@@ -2063,7 +2074,9 @@ export const zookeeperManagerMachine = setup({
         ...(requestData.body.source_ranges !== undefined
           ? { source_ranges: requestData.body.source_ranges }
           : {}),
-        current_files: filesAsByteArrays,
+        ...(cloudProject
+          ? { cloud_project: cloudProject }
+          : { current_files: filesAsByteArrays }),
         ...(requestData.activeFile
           ? { active_file: requestData.activeFile }
           : {}),
@@ -2108,9 +2121,9 @@ export const zookeeperManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays = usesCloudProjectTools(event.projectId)
-        ? {}
-        : await encodeLegacyProjectFiles(event.projectFiles)
+      const filesAsByteArrays = await encodeLegacyProjectFiles(
+        event.projectFiles
+      )
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',

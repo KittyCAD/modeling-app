@@ -1,3 +1,4 @@
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { parseCloudProjectToolChange } from '@src/lib/zookeeper/cloudProjectTools'
 import { describe, expect, it } from 'vitest'
 
@@ -16,7 +17,27 @@ const result = (
   },
 })
 
-describe('cloud MCP mutation returns', () => {
+describe('cloud project changes', () => {
+  it('refreshes the latest revision after a worker save', () => {
+    const message = {
+      tool_output: {
+        result: {
+          type: 'cloud_project_saved',
+          call_id: 'call-1',
+          project_id: 'cloud:one',
+          ok: true,
+          output: { id: 'one', revision: '2' },
+        },
+      },
+    } satisfies MlCopilotServerMessage
+    expect(parseCloudProjectToolChange(message)).toEqual({
+      callId: 'call-1',
+      projectId: 'one',
+      revision: '2',
+      refreshLatest: true,
+    })
+  })
+
   it.each([
     'project_write_file',
     'project_mkdir',

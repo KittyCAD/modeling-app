@@ -455,7 +455,9 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const children = [
     maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
-    deltasAggregatedMarkdown,
+    props.deltasAggregated === maybeError?.error.detail
+      ? null
+      : deltasAggregatedMarkdown,
     exportDownloadFiles.length > 0 ? (
       <ExportDownloadFiles
         key="downloads"

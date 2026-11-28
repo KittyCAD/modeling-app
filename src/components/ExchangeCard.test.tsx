@@ -1,6 +1,36 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { ExchangeCard } from '@src/components/ExchangeCard'
+import { ExchangeCard, ResponsesCard } from '@src/components/ExchangeCard'
 import { afterEach, describe, expect, test, vi } from 'vitest'
+
+describe('ResponsesCard error messages', () => {
+  const detail = 'Another editor saved a newer revision.'
+  const error = { error: { detail } }
+  const props = { isLastResponse: true, onClickClearChat: vi.fn() }
+
+  test.each([
+    { state: 'live', items: [error] },
+    {
+      state: 'replayed',
+      items: [error, { end_of_stream: { whole_response: detail } }],
+    },
+  ])('shows a repeated error once in a $state reply', ({ items }) => {
+    render(<ResponsesCard {...props} items={items} deltasAggregated={detail} />)
+    expect(screen.getByText(detail)).toBeInTheDocument()
+  })
+
+  test('keeps answer text that adds detail to an error', () => {
+    const answer = detail + ' Your change was not saved.'
+    render(
+      <ResponsesCard
+        {...props}
+        items={[error, { end_of_stream: { whole_response: answer } }]}
+        deltasAggregated={answer}
+      />
+    )
+    expect(screen.getByText(detail)).toBeInTheDocument()
+    expect(screen.getByText(answer)).toBeInTheDocument()
+  })
+})
 
 describe('ExchangeCard replay attachments', () => {
   const attachmentRef = {

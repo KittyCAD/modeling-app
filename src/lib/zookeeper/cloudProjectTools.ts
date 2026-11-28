@@ -3,10 +3,12 @@ import { isArray, isRecord } from '@src/lib/utils'
 export interface CloudProjectToolChange {
   callId: string
   projectId: string
+  refreshLatest?: boolean
   revision?: string
 }
 
 const mutations = new Set([
+  'cloud_project_saved',
   'project_write_file',
   'project_mkdir',
   'project_rm',
@@ -73,5 +75,6 @@ export function parseCloudProjectToolChange(
     callId: result.call_id,
     projectId: metadata.id,
     revision: String(metadata.revision),
+    ...(result.type === 'cloud_project_saved' && { refreshLatest: true }),
   }
 }
