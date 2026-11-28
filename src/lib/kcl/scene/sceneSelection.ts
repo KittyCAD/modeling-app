@@ -1,3 +1,4 @@
+import type { ScenePresentation } from '@src/lib/kcl/scene/connection'
 import { effect } from '@preact/signals-core'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -20,14 +21,18 @@ import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 export function createKclSceneSelection(
   manager: ConnectionManager,
   sceneInfra: SceneInfra,
-  runtime: KclRuntime
+  runtime: KclRuntime,
+  presentation: ScenePresentation
 ) {
   const sceneId = Symbol('scene')
+  let disposed = false,
+    handoffGeneration = 0
   const selection = createSceneSelection(
     sceneSelectionAdapter(manager, sceneInfra.renderer.domElement),
-    defaultSelectionFilter
+    defaultSelectionFilter,
+    presentation === 'local' ? 'separate' : 'selection'
   )
-  const stopInput = attachSceneSelectionInput(
+  let stopInput = attachSceneSelectionInput(
     sceneInfra.renderer.domElement,
     sceneInfra.camControls,
     selection
@@ -58,7 +63,29 @@ export function createKclSceneSelection(
   )
   return {
     selection,
+    handoff: (controls?: Parameters<typeof selection.handoff>[0]) => {
+      const ticket = ++handoffGeneration
+      stopInput()
+      stopInput = () => {}
+      const owner = selection.handoff(controls)
+      let released = false
+      return {
+        observe: owner.observe,
+        release: () => {
+          if (released || disposed || ticket !== handoffGeneration) return
+          released = true
+          owner.release()
+          stopInput = attachSceneSelectionInput(
+            sceneInfra.renderer.domElement,
+            sceneInfra.camControls,
+            selection
+          )
+        },
+      }
+    },
     dispose: () => {
+      disposed = true
+      handoffGeneration++
       stopInput()
       stopExecuting()
       runtime.events.removeEventListener(

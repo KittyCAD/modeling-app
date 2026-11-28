@@ -5535,31 +5535,45 @@ export const modelingMachine = setup({
         },
 
         'undo startSketchOn': {
-          invoke: [
-            {
-              id: 'sketchExit',
-              src: 'sketchExit',
-              input: ({ context }) => ({ context }),
-            },
-            {
-              src: 'AST-undo-startSketchOn',
-              id: 'AST-undo-startSketchOn',
-              input: ({ context: { sketchDetails, kclManager } }) => ({
-                sketchDetails,
-                kclManager,
-              }),
-
-              onDone: {
-                target: '#Modeling.idle',
-                reenter: true,
-              },
-
-              onError: {
-                target: '#Modeling.idle',
-                reenter: true,
+          // The view waits for `idle` before releasing its native editing owner.
+          // Document rollback and camera/scene cleanup must both finish first.
+          type: 'parallel',
+          states: {
+            scene: {
+              initial: 'exiting',
+              states: {
+                exiting: {
+                  invoke: {
+                    id: 'sketchExit',
+                    src: 'sketchExit',
+                    input: ({ context }) => ({ context }),
+                    onDone: 'done',
+                    onError: { target: 'done', actions: 'toastError' },
+                  },
+                },
+                done: { type: 'final' },
               },
             },
-          ],
+            document: {
+              initial: 'rolling back',
+              states: {
+                'rolling back': {
+                  invoke: {
+                    src: 'AST-undo-startSketchOn',
+                    id: 'AST-undo-startSketchOn',
+                    input: ({ context: { sketchDetails, kclManager } }) => ({
+                      sketchDetails,
+                      kclManager,
+                    }),
+                    onDone: 'done',
+                    onError: 'done',
+                  },
+                },
+                done: { type: 'final' },
+              },
+            },
+          },
+          onDone: { target: '#Modeling.idle', reenter: true },
         },
 
         'Rectangle tool': {

@@ -1,4 +1,13 @@
 import { inputs, observe } from '@src/registry/inputs'
+import type { MachineModelingHost } from '@src/lib/kcl/machine/host'
+import type {
+  createModelingInteractions,
+  ModelingInteractionDefinition,
+} from '@src/lib/kcl/interactions'
+import type { ModelingInteractionViewDefinition } from '@src/lib/kcl/interactionViews'
+import type { SelectionSource } from '@src/lib/kcl/selection'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import type { Signal } from '@preact/signals-core'
 import { Facet, contract } from 'plankton'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { ComponentType } from 'react'
@@ -14,6 +23,11 @@ import type { createPhysicalAnalysisService } from '@src/registry/extensions/eng
 
 /** Contributions receive their owning view explicitly; focus never changes their target. */
 export interface ModelingViewContext {
+  settings: SettingsRegistryService
+  selection: SelectionSource
+  interactions: ReturnType<typeof createModelingInteractions>
+  tools: { error: Signal<Error | undefined>; close: () => void }
+
   executor: Executor
   session: KclSession
   viewExecution: KclViewExecution
@@ -26,6 +40,10 @@ export interface ModelingViewContext {
   physicalAnalysis: ReturnType<typeof createPhysicalAnalysisService>
   statusItems: ReadonlySignal<readonly ModelingStatusItem[]>
 }
+/** The factory retains the machine's mutable ownership and disposal controls. */
+export interface ModelingViewRuntime extends ModelingViewContext {
+  machine?: Pick<MachineModelingHost, 'owner' | 'error'>
+}
 export interface ModelingStatusItem {
   id: string
   side: 'start' | 'end'
@@ -33,13 +51,27 @@ export interface ModelingStatusItem {
   Component: ComponentType<{ context: ModelingViewContext }>
 }
 export const modelingViewContract = contract({
+  modelingInteractionsFacet: new Facet<
+    ModelingInteractionDefinition,
+    readonly ModelingInteractionDefinition[]
+  >('modeling-view.interactions', (values) => values),
+  modelingInteractionViewsFacet: new Facet<
+    ModelingInteractionViewDefinition,
+    readonly ModelingInteractionViewDefinition[]
+  >('modeling-view.interaction-views', (values) => values),
   modelingStatusItemsFacet: new Facet<
     ModelingStatusItem,
     readonly ModelingStatusItem[]
   >('modeling-view.status-items', (values) => values),
 })
-export const { modelingStatusItemsFacet } = modelingViewContract
+export const {
+  modelingStatusItemsFacet,
+  modelingInteractionsFacet,
+  modelingInteractionViewsFacet,
+} = modelingViewContract
 
 export const observations = inputs({
+  modelingInteractionViewsFacet: observe(modelingInteractionViewsFacet),
+  modelingInteractionsFacet: observe(modelingInteractionsFacet),
   modelingStatusItemsFacet: observe(modelingStatusItemsFacet),
 })

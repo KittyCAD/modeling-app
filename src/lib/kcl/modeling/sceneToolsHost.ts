@@ -7,7 +7,6 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ArtifactGraph } from '@src/lang/wasm'
 const emptyGraph: ArtifactGraph = new Map()
-const emptySelection: Selections = { graphSelections: [], otherSelections: [] }
 
 /** Supplies shared status controls with geometry and services from their owning view. */
 export function viewSceneToolsHost(
@@ -15,22 +14,33 @@ export function viewSceneToolsHost(
 ): SceneToolsHost {
   const scene = context.session.resource.value
   const model = scene?.selection.model.value ?? null
-  const selected = scene?.selection.displayed.value
+  const selected = context.selection.items.value
   const graph = scene?.runtime.state.value.artifactGraph ?? emptyGraph
-  const selections: Selections = selected
-    ? {
-        graphSelections: selected.map(({ reference }) => ({
-          entityRef: reference,
-          ...resolveToCodeRef({ entityRef: reference }, graph),
-          engineTopologyFallback:
-            engineTopologyFallbackFromReference(reference),
-        })),
-        otherSelections: [],
-      }
-    : emptySelection
+  const selections: Selections = {
+    graphSelections: selected.flatMap((item) =>
+      item.kind === 'model'
+        ? [
+            {
+              entityRef: item.value.reference,
+              ...resolveToCodeRef({ entityRef: item.value.reference }, graph),
+              engineTopologyFallback: engineTopologyFallbackFromReference(
+                item.value.reference
+              ),
+            },
+          ]
+        : []
+    ),
+    otherSelections: selected.flatMap((item) =>
+      item.kind === 'engine-primitive' ? [item.selection] : []
+    ),
+  }
   const sendModelingCommand = boundSceneCommands(context, scene, model)
   const executing = scene?.runtime.executing.value ?? false
-  const idle = !!model && !executing && !scene?.runtime.failed.value
+  const idle =
+    !!model &&
+    !context.interactions.active.value &&
+    !executing &&
+    !scene?.runtime.failed.value
   const unit =
     scene?.runtime.fileSettings.value.defaultLengthUnit ??
     scene?.preferences.defaultUnit.value ??

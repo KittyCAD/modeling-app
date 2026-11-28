@@ -58,6 +58,11 @@ export function createTestKclRuntime() {
       run: <T>(work: () => Promise<T>) => work(),
       deliverResponse: <T>(work: () => Promise<T>) => work(),
     },
+    sources: signal<KclRuntime['sources']['value']>(undefined),
+    borrowModel: vi.fn<KclRuntime['borrowModel']>(
+      () => new Error('No native model in this fixture')
+    ),
+    endSketch: vi.fn<KclRuntime['endSketch']>(async () => {}),
     ast: signal<KclRuntime['ast']['value']>(null),
     fileSettings: signal<KclRuntime['fileSettings']['value']>({}),
     executionRevision: signal(0),

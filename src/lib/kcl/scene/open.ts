@@ -43,6 +43,12 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
  * presentation is fixed at creation; a local presentation also supplies a GLB host.
  */
 export interface KclSceneResource {
+  readonly sceneInfra?: SceneInfra
+  readonly machineInput?: {
+    manager: ConnectionManager
+    handoffPicking: ReturnType<typeof createKclSceneSelection>['handoff']
+  }
+
   readonly element: HTMLElement
   readonly runtime: KclRuntime
   readonly presentation: ScenePresentation
@@ -159,7 +165,12 @@ export async function openKclScene({
     stopUnits = effect(() => {
       sceneInfra.baseUnit = preferences.defaultUnit.value
     })
-    const selectionBinding = createKclSceneSelection(manager, sceneInfra, model)
+    const selectionBinding = createKclSceneSelection(
+      manager,
+      sceneInfra,
+      model,
+      presentation
+    )
     picking = selectionBinding
     const view = createSceneViewport(
       {
@@ -183,6 +194,8 @@ export async function openKclScene({
     sceneInfra.animate()
     return {
       element,
+      sceneInfra,
+      machineInput: { manager, handoffPicking: selectionBinding.handoff },
       runtime,
       presentation,
       localHost: view.localHost,
@@ -308,3 +321,12 @@ export type OpenKclScene = (
   signal: AbortSignal,
   onDisconnect: (error: Error) => void
 ) => Promise<KclSceneResource | Error>
+
+/** Machine hosts require the scene's native command and interaction dependencies. */
+export type MachineSceneResource = KclSceneResource &
+  Required<Pick<KclSceneResource, 'sceneInfra' | 'machineInput'>>
+export function hasMachineInput(
+  scene: KclSceneResource
+): scene is MachineSceneResource {
+  return !!scene.sceneInfra && !!scene.machineInput
+}
