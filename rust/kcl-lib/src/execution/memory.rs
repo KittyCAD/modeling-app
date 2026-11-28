@@ -378,6 +378,12 @@ impl Stack {
         }
     }
 
+    pub fn snapshot_for_closure(&mut self) -> Result<(EnvironmentRef, Arc<()>), KclError> {
+        match &mut self.backend {
+            StackBackend::Arena(stack) => stack.snapshot_for_closure(),
+        }
+    }
+
     pub fn snapshot(&mut self) -> Result<EnvironmentRef, KclError> {
         match &mut self.backend {
             StackBackend::Arena(stack) => stack.snapshot(),
