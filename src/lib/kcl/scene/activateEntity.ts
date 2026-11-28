@@ -22,7 +22,17 @@ import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 
-/** Shared legacy entity activation; its caller owns input eligibility and supplies the destination view. */
+/**
+ * Open the editor for the entity under a scene double-click. Sketch geometry enters
+ * sketch mode; a GD&T annotation opens its operation's edit command. Empty space
+ * and entities without a supported edit action leave the view unchanged. KCL 1.0
+ * sketch geometry shows the message that legacy sketch mode was removed.
+ *
+ * ConnectionStream and the hosted modeling machine both call this function. The
+ * supplied element converts browser coordinates to scene coordinates, and the
+ * supplied managers, command actor, and send callback belong to the clicked view.
+ * acceptsInput checks whether that view still allows the action after async work.
+ */
 export async function activateSceneEntityAtPoint(
   point: Pick<MouseEvent, 'clientX' | 'clientY'>,
   element: Pick<HTMLElement, 'getBoundingClientRect'>,
@@ -46,6 +56,8 @@ export async function activateSceneEntityAtPoint(
   }
 ) {
   if (!acceptsInput()) return
+  // Picking waits for a scene query. Discard its reply if the source or graph
+  // was replaced, or if the caller no longer permits editing in this view.
   const graph = kclManager.artifactGraph
   const code = kclManager.code
   const isCurrent = () =>
@@ -87,6 +99,7 @@ export async function activateSceneEntityAtPoint(
     case 'region':
       entityId = selectedEntityRef.region_id
       break
+    // Resolve solid edges and vertices through their first adjacent face.
     case 'edge':
     case 'vertex':
       entityId = selectedEntityRef.side_faces[0]
@@ -99,6 +112,7 @@ export async function activateSceneEntityAtPoint(
     return
   }
   const directArtifact = kclManager.artifactGraph.get(entityId)
+  // Annotation editing uses the command dialog for its generating operation.
   if (directArtifact?.type === 'gdtAnnotation') {
     const operation = findOperationForArtifact({
       artifact: directArtifact,
@@ -119,6 +133,8 @@ export async function activateSceneEntityAtPoint(
     return
   }
 
+  // A clicked segment or filled profile can lead back to its owning sketch block.
+  // Send that block to the machine so its existing sketch-entry flow can run.
   const sketchBlockArtifact = getSketchBlockForArtifact(
     directArtifact,
     kclManager.artifactGraph
@@ -131,6 +147,8 @@ export async function activateSceneEntityAtPoint(
     return
   }
 
+  // The engine can expose an enclosed region with no artifact-graph entry.
+  // Ask which sketch owns it before giving up on entering sketch mode.
   if (!directArtifact) {
     const regionSelection = await getEngineRegionSelectionFromPoint(
       entityId,
@@ -159,15 +177,20 @@ export async function activateSceneEntityAtPoint(
   if (err(artifactResult)) {
     return artifactResult
   }
-  // Anything left here belongs to a KCL 1.0 sketch, since sketch
-  // blocks and undeclared regions were handled above.
+  // These older sketch artifacts have no sketch block to edit. Keep the legacy
+  // removal message instead of trying to enter the sketch-block workflow.
   toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
     duration: 5_000,
   })
   return
 }
 
-/** Adapt the machine canvas callback to the same activation used by the legacy stream. */
+/**
+ * Handle left-button double-clicks on a hosted Modeling view's Three.js canvas.
+ * Ignore camera drags, and allow editing while the modeling machine is idle and
+ * the command bar is closed. The legacy file route uses ConnectionStream's DOM
+ * double-click handler instead, so skip managers without a document host.
+ */
 export async function tryEnterSketchOnDoubleClickFromScene(
   args: OnClickCallbackArgs,
   elementForRect: { getBoundingClientRect(): DOMRect },
@@ -177,7 +200,6 @@ export async function tryEnterSketchOnDoubleClickFromScene(
     sceneInfra: SceneInfra
   }
 ): Promise<void> {
-  // The file route already owns a DOM double-click handler on ConnectionStream.
   if (!deps.kclManager.hasDocumentHost) return
   if (args?.mouseEvent?.detail !== 2 || args.mouseEvent.which !== 1) return
   if (deps.sceneInfra.camControls.wasDragging) return
