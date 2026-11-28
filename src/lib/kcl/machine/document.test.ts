@@ -22,14 +22,22 @@ function fixture() {
     readOnly,
   }
   const create = (
-    previewText?: Parameters<
+    committedEditText?: Parameters<
       ReturnType<typeof createModelingDocumentAdapter>['createView']
     >[2]
   ) => {
-    const restored: number[] = [],
-      external = vi.fn(),
-      publish = vi.fn()
-    const adapter = createModelingDocumentAdapter(editor, publish, external)
+    const restored: number[] = []
+    const sourcesAtCheckpointRestore: string[] = []
+    const runtimeSource = signal<string | undefined>(undefined)
+    const onDocumentChangedElsewhere = vi.fn()
+    const recordRuntimeSource = vi.fn((text: string) => {
+      runtimeSource.value = text
+    })
+    const adapter = createModelingDocumentAdapter(
+      editor,
+      recordRuntimeSource,
+      onDocumentChangedElsewhere
+    )
     const view = adapter.createView(
       [
         invertedEffects.of((tr) =>
@@ -48,14 +56,27 @@ function fixture() {
           for (const tr of update.transactions) {
             if (tr.isUserEvent('undo') || tr.isUserEvent('redo'))
               for (const effect of tr.effects)
-                if (effect.is(checkpoint)) restored.push(effect.value.redo)
+                if (effect.is(checkpoint)) {
+                  restored.push(effect.value.redo)
+                  sourcesAtCheckpointRestore.push(
+                    runtimeSource.peek() ?? 'unrecorded'
+                  )
+                }
           }
         }),
       ],
       (effect) => effect.is(checkpoint),
-      previewText
+      committedEditText
     )
-    return { adapter, view, restored, external, publish }
+    return {
+      adapter,
+      view,
+      restored,
+      sourcesAtCheckpointRestore,
+      onDocumentChangedElsewhere,
+      recordRuntimeSource,
+      runtimeSource,
+    }
   }
   return { editor, readOnly, create, dispose: backing.dispose }
 }
@@ -72,8 +93,8 @@ it('shares text and history but replays native checkpoint effects only in their 
     })
     expect(document.editor.contents.peek()).toBe('after')
     expect(second.view.state.doc.toString()).toBe('after')
-    expect(second.external).toHaveBeenCalledOnce()
-    expect(first.external).not.toHaveBeenCalled()
+    expect(second.onDocumentChangedElsewhere).toHaveBeenCalledOnce()
+    expect(first.onDocumentChangedElsewhere).not.toHaveBeenCalled()
     expect(document.editor.undo()).toBe(true)
     expect(document.editor.contents.peek()).toBe('before')
     expect(first.view.state.doc.toString()).toBe('before')
@@ -86,6 +107,42 @@ it('shares text and history but replays native checkpoint effects only in their 
   } finally {
     first.adapter.dispose()
     second.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('publishes and replays checkpoints without recording unchanged runtime source', () => {
+  const document = fixture()
+  const first = document.create()
+  try {
+    first.view.dispatch({
+      changes: { from: 0, to: 6, insert: 'after' },
+      annotations: isolateHistory.of('full'),
+    })
+    first.recordRuntimeSource.mockClear()
+    const observed: string[] = []
+    const stop = document.editor.subscribe((update) =>
+      observed.push(update.state.doc.toString())
+    )
+    try {
+      first.view.dispatch({
+        effects: checkpoint.of({ undo: 10, redo: 11 }),
+        annotations: isolateHistory.of('full'),
+      })
+      expect(observed).toEqual(['after'])
+      expect(document.editor.undo()).toBe(true)
+      expect(first.restored).toEqual([10])
+      expect(document.editor.redo()).toBe(true)
+      expect(first.restored).toEqual([10, 11])
+      expect(first.sourcesAtCheckpointRestore).toEqual(['after', 'after'])
+      expect(observed).toEqual(['after', 'after', 'after'])
+      expect(first.recordRuntimeSource).not.toHaveBeenCalled()
+      expect(first.onDocumentChangedElsewhere).not.toHaveBeenCalled()
+    } finally {
+      stop()
+    }
+  } finally {
+    first.adapter.dispose()
     document.dispose()
   }
 })
@@ -110,12 +167,12 @@ it('keeps undo usable after the native checkpoint owner closes', () => {
   }
 })
 
-it('publishes source before document observers run and rejects edits when read only or disposed', () => {
+it('records runtime source before document observers run and rejects edits when read only or disposed', () => {
   const document = fixture(),
     first = document.create()
   const observed: string[] = []
   const stop = document.editor.subscribe(() =>
-    observed.push(first.publish.mock.lastCall?.[0] ?? 'unpublished')
+    observed.push(first.runtimeSource.peek() ?? 'unrecorded')
   )
   try {
     first.view.dispatch({ changes: { from: 0, to: 6, insert: 'after' } })
@@ -130,7 +187,7 @@ it('publishes source before document observers run and rejects edits when read o
       annotations: Transaction.addToHistory.of(false),
     })
     expect(document.editor.contents.peek()).toBe('elsewhere')
-    expect(first.publish).toHaveBeenCalledOnce()
+    expect(first.recordRuntimeSource).toHaveBeenCalledOnce()
   } finally {
     stop()
     first.adapter.dispose()
@@ -138,7 +195,7 @@ it('publishes source before document observers run and rejects edits when read o
   }
 })
 
-it('publishes a committed preview and its checkpoint once per history operation', () => {
+it('commits an interactive edit with an effect-only checkpoint and records restored source before replay', () => {
   const document = fixture()
   const first = document.create((effect, transaction) =>
     effect.is(checkpoint)
@@ -153,9 +210,14 @@ it('publishes a committed preview and its checkpoint once per history operation'
     })
     first.view.dispatch({
       changes: { from: 0, to: 12, insert: 'after' },
+      annotations: Transaction.addToHistory.of(false),
+    })
+    first.recordRuntimeSource.mockClear()
+    first.view.dispatch({
       effects: checkpoint.of({ undo: 10, redo: 11 }),
       annotations: isolateHistory.of('full'),
     })
+    expect(first.recordRuntimeSource).not.toHaveBeenCalled()
     const observed: string[] = []
     const stop = document.editor.subscribe((update) =>
       observed.push(update.state.doc.toString())
@@ -165,11 +227,13 @@ it('publishes a committed preview and its checkpoint once per history operation'
       expect(first.view.state.doc.toString()).toBe('before')
       expect(second.view.state.doc.toString()).toBe('before')
       expect(first.restored).toEqual([10])
+      expect(first.sourcesAtCheckpointRestore).toEqual(['before'])
       expect(second.restored).toEqual([])
       expect(document.editor.redo()).toBe(true)
       expect(first.view.state.doc.toString()).toBe('after')
       expect(second.view.state.doc.toString()).toBe('after')
       expect(first.restored).toEqual([10, 11])
+      expect(first.sourcesAtCheckpointRestore).toEqual(['before', 'after'])
       expect(observed).toEqual(['before', 'after'])
       first.adapter.dispose()
       expect(document.editor.undo()).toBe(true)
@@ -193,7 +257,7 @@ it('rejects edits after the backing editor closes before adapter cleanup', () =>
     first.view.dispatch({ changes: { from: 0, to: 6, insert: 'late' } })
     expect(document.editor.contents.peek()).toBe('before')
     expect(first.view.state.doc.toString()).toBe('before')
-    expect(first.publish).not.toHaveBeenCalled()
+    expect(first.recordRuntimeSource).not.toHaveBeenCalled()
   } finally {
     first.adapter.dispose()
     document.dispose()

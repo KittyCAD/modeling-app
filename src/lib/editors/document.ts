@@ -1,7 +1,7 @@
 import {
-  previewHistory,
-  replayDocumentPreview,
-  committedDocumentPreview,
+  interactiveEditHistory,
+  replayInteractiveEdit,
+  committedInteractiveEdit,
 } from '@src/lib/editors/historyReplay'
 import { Transaction } from '@codemirror/state'
 import {
@@ -26,14 +26,14 @@ export function createEditorDocument(
     doc: contents,
     extensions: [
       history(),
-      previewHistory,
+      interactiveEditHistory,
       EditorState.allowMultipleSelections.of(true),
     ],
   })
   const listeners = new Set<(update: EditorUpdate) => void>()
   let unrecordedBase: EditorState | undefined
   const apply = (input: Transaction) => {
-    const transactions = replayDocumentPreview(input)
+    const transactions = replayInteractiveEdit(input)
     const docChanged = transactions.some(
       (transaction) => transaction.docChanged
     )
@@ -44,8 +44,8 @@ export function createEditorDocument(
     )
     const previous = state
     const final = transactions[transactions.length - 1].state
-    const preview = input.effects.find((effect) =>
-      effect.is(committedDocumentPreview)
+    const committedEdit = input.effects.find((effect) =>
+      effect.is(committedInteractiveEdit)
     )
     const configuration = input.effects.filter(
       (effect) =>
@@ -62,13 +62,13 @@ export function createEditorDocument(
     if (unrecordedBase) unrecordedBase = withConfiguration(unrecordedBase)
     const replaying = input.isUserEvent('undo') || input.isUserEvent('redo')
     if (
-      preview &&
+      committedEdit &&
       !replaying &&
       input.annotation(Transaction.addToHistory) !== false &&
-      unrecordedBase?.doc.toString() === preview.value.before
+      unrecordedBase?.doc.toString() === committedEdit.value.before
     ) {
-      // Preview updates were excluded from history. Record their final change
-      // from the saved pre-preview state, preserving edits that those temporary
+      // The interaction's updates were excluded from history. Record the completed
+      // edit from its starting state, preserving earlier edits that those temporary
       // updates may have overwritten. Observers still receive the actual input
       // transactions from their current document, never a visible rollback.
       state = unrecordedBase.update({
@@ -91,7 +91,7 @@ export function createEditorDocument(
       input.annotation(Transaction.addToHistory) === false &&
       final.doc.eq(unrecordedBase.doc)
     ) {
-      // Cancelling a preview restores the history from before its temporary
+      // Cancelling an interactive edit restores the history from before its temporary
       // edits, not the history already remapped through those edits.
       state = unrecordedBase.update({
         selection: final.selection,
@@ -102,7 +102,7 @@ export function createEditorDocument(
       state = final
       if (
         replaying ||
-        preview ||
+        committedEdit ||
         (input.docChanged &&
           input.annotation(Transaction.addToHistory) !== false)
       )

@@ -136,6 +136,17 @@ A live text buffer managed by the editors service. An editor has a stable identi
 
 **Search anchors:** `Editor`, `EditorsService` in the [editors contract](lib/editors/registry/contract.ts).
 
+## Interactive edit
+
+One user operation, such as dragging a sketch point, that can change an editor's
+working document repeatedly before the operation finishes. Committing keeps the
+result as one undoable edit; cancellation restores the starting text and its earlier
+undo history.
+
+**Avoid:** preview, when referring to this document-editing behavior.
+
+**Related:** [Editor](#editor) owns the working document and undo history.
+
 ## Editor view instance
 
 One presentation of an editor, with its own selected mode, selection, and viewport. Closing the last view closes the backing editor; changing modes retains the view and document.

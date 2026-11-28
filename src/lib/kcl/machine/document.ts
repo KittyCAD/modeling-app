@@ -1,4 +1,4 @@
-import { committedDocumentPreview } from '@src/lib/editors/historyReplay'
+import { committedInteractiveEdit } from '@src/lib/editors/historyReplay'
 import { invertedEffects, isolateHistory } from '@codemirror/commands'
 import {
   EditorState,
@@ -18,11 +18,27 @@ interface OwnedHistory {
 const ownedHistory = StateEffect.define<OwnedHistory>()
 const configured = new WeakSet<Editor>()
 
-/** Share document/history while retaining the legacy manager's view-local selection and checkpoint listeners. */
+/**
+ * Share document text and undo history while keeping the legacy manager's local
+ * selection and checkpoint listeners.
+ *
+ * recordRuntimeSource synchronously updates the native runtime's source snapshot.
+ * When text changes locally, it runs before editor.dispatch publishes that text.
+ * When undo/redo changes text, it runs before forwarding this owner's checkpoint
+ * effects to its view. Checkpoint-only updates reuse the already recorded source.
+ * This ordering lets the runtime recognize its own edits; otherwise automatic
+ * execution can mistake them for edits from another view and close the editing session.
+ *
+ * onDocumentChangedElsewhere reports text changes outside this adapter: edits in
+ * Code, another Modeling view, or history replay without this adapter's checkpoint
+ * effects. The host uses it to invalidate native editing state that no longer
+ * matches the shared document. This adapter's own edits and checkpoint replays
+ * are handled separately.
+ */
 export function createModelingDocumentAdapter(
   editor: Editor,
-  beforePublish: (text: string) => void,
-  externalChange: () => void
+  recordRuntimeSource: (text: string) => void,
+  onDocumentChangedElsewhere: () => void
 ) {
   const owner = Symbol('modeling history')
   let view: EditorView | undefined
@@ -61,8 +77,12 @@ export function createModelingDocumentAdapter(
       (transaction) => owned(transaction).length > 0
     )
     if (!update.docChanged && !hasEffects) return
-    if (hasEffects) beforePublish(update.state.doc.toString())
-    else if (update.docChanged) externalChange()
+    // Undo/redo can repair text in a separate transaction. Use the full update
+    // to record that text before replaying checkpoints; checkpoint-only updates
+    // already have matching runtime source.
+    if (hasEffects) {
+      if (update.docChanged) recordRuntimeSource(update.state.doc.toString())
+    } else if (update.docChanged) onDocumentChangedElsewhere()
     let state = view.state
     const transactions = update.transactions.map((transaction) => {
       const next = state.update({
@@ -89,7 +109,7 @@ export function createModelingDocumentAdapter(
     createView: (
       extensions: Extension,
       acceptsHistoryEffect: (effect: StateEffect<unknown>) => boolean,
-      previewText?: (
+      committedEditText?: (
         effect: StateEffect<unknown>,
         transaction: Transaction
       ) => { before: string; after: string } | undefined
@@ -119,7 +139,11 @@ export function createModelingDocumentAdapter(
                   selection: transaction.startState.selection,
                   annotations: Transaction.addToHistory.of(false),
                 })
-              beforePublish(transaction.state.doc.toString())
+              // Record changed source before publication can trigger execution.
+              // Effect-only commits publish their checkpoints without re-recording
+              // the text already recorded during the interactive edit.
+              if (transaction.docChanged)
+                recordRuntimeSource(transaction.state.doc.toString())
               const isolation = transaction.annotation(isolateHistory)
               editor.dispatch({
                 changes: transaction.changes,
@@ -129,8 +153,8 @@ export function createModelingDocumentAdapter(
                     ? [ownedHistory.of({ owner, forward, backward })]
                     : []),
                   ...transaction.effects.flatMap((effect) => {
-                    const text = previewText?.(effect, transaction)
-                    return text ? [committedDocumentPreview.of(text)] : []
+                    const text = committedEditText?.(effect, transaction)
+                    return text ? [committedInteractiveEdit.of(text)] : []
                   }),
                 ],
                 annotations: [

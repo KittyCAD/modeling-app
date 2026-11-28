@@ -3,12 +3,14 @@ import { StateEffect, StateField, Transaction } from '@codemirror/state'
 import fc from 'fast-check'
 import { expect, it } from 'vitest'
 import { createEditorDocument } from '@src/lib/editors/document'
-import { committedDocumentPreview } from '@src/lib/editors/historyReplay'
+import { committedInteractiveEdit } from '@src/lib/editors/historyReplay'
 
 const contents = fc
   .array(fc.constantFrom('a', 'b', 'c', '\n'), { maxLength: 40 })
   .map((chars) => chars.join(''))
-it('undoes and redoes committed previews without a mounted surface, across changes in text length', () => {
+// Model a tool that updates shared text during a gesture, then commits one undo
+// step. Intermediate changes are excluded from history; the commit records both texts.
+it('undoes and redoes interactive edits without a Code view as text length changes', () => {
   fc.assert(
     fc.property(contents, contents, (before, after) => {
       const { document, dispose } = createEditorDocument(before)
@@ -19,7 +21,7 @@ it('undoes and redoes committed previews without a mounted surface, across chang
           annotations: Transaction.addToHistory.of(false),
         })
         document.dispatch({
-          effects: committedDocumentPreview.of({ before, after }),
+          effects: committedInteractiveEdit.of({ before, after }),
           annotations: isolateHistory.of('full'),
         })
         expect(document.undo()).toBe(true)
@@ -39,7 +41,7 @@ it('undoes and redoes committed previews without a mounted surface, across chang
   )
 })
 
-it('does not consume a preview history entry while the shared document is read only', () => {
+it('leaves an interactive edit in undo history while the document is read only', () => {
   let editable = true
   const { document, dispose } = createEditorDocument('before', () => editable)
   try {
@@ -48,7 +50,7 @@ it('does not consume a preview history entry while the shared document is read o
       annotations: Transaction.addToHistory.of(false),
     })
     document.dispatch({
-      effects: committedDocumentPreview.of({
+      effects: committedInteractiveEdit.of({
         before: 'before',
         after: 'after',
       }),
@@ -64,7 +66,7 @@ it('does not consume a preview history entry while the shared document is read o
   }
 })
 
-it('keeps ordinary text history valid before and after a committed preview', () => {
+it('keeps typed changes and a completed interactive edit as separate undo steps', () => {
   const { document, dispose } = createEditorDocument('abc')
   try {
     document.dispatch({
@@ -72,11 +74,15 @@ it('keeps ordinary text history valid before and after a committed preview', () 
       annotations: isolateHistory.of('full'),
     })
     document.dispatch({
-      changes: { from: 4, insert: 'XYZ' },
+      changes: { from: 4, insert: 'X' },
       annotations: Transaction.addToHistory.of(false),
     })
     document.dispatch({
-      effects: committedDocumentPreview.of({
+      changes: { from: 5, insert: 'YZ' },
+      annotations: Transaction.addToHistory.of(false),
+    })
+    document.dispatch({
+      effects: committedInteractiveEdit.of({
         before: 'abcd',
         after: 'abcdXYZ',
       }),
@@ -95,7 +101,7 @@ it('keeps ordinary text history valid before and after a committed preview', () 
   }
 })
 
-it('traverses ordinary edits around previews with or without text changes in the commit', () => {
+it('undoes typed changes and interactive edits whether committing changes the text again', () => {
   fc.assert(
     fc.property(
       contents,
@@ -108,16 +114,22 @@ it('traverses ordinary edits around previews with or without text changes in the
             changes: { from: 0, to: 7, insert: before },
             annotations: isolateHistory.of('full'),
           })
-          const preview = changesAtCommit ? `${before}preview` : after
+          const inProgressText = changesAtCommit ? `${before}dragging` : after
           document.dispatch({
-            changes: { from: 0, to: before.length, insert: preview },
+            changes: { from: 0, to: before.length, insert: inProgressText },
             annotations: Transaction.addToHistory.of(false),
           })
           document.dispatch({
             ...(changesAtCommit
-              ? { changes: { from: 0, to: preview.length, insert: after } }
+              ? {
+                  changes: {
+                    from: 0,
+                    to: inProgressText.length,
+                    insert: after,
+                  },
+                }
               : {}),
-            effects: committedDocumentPreview.of({ before, after }),
+            effects: committedInteractiveEdit.of({ before, after }),
             annotations: isolateHistory.of('full'),
           })
           for (const expected of [before, 'initial']) {
@@ -137,7 +149,7 @@ it('traverses ordinary edits around previews with or without text changes in the
   )
 })
 
-it('undoes consecutive previews and earlier edits even when previews replace overlapping text', () => {
+it('undoes consecutive interactive edits and earlier typing when they replace overlapping text', () => {
   fc.assert(
     fc.property(contents, contents, contents, (before, middle, after) => {
       const { document, dispose } = createEditorDocument('initial')
@@ -153,7 +165,7 @@ it('undoes consecutive previews and earlier edits even when previews replace ove
             annotations: Transaction.addToHistory.of(false),
           })
           document.dispatch({
-            effects: committedDocumentPreview.of({
+            effects: committedInteractiveEdit.of({
               before: current,
               after: next,
             }),
@@ -177,7 +189,7 @@ it('undoes consecutive previews and earlier edits even when previews replace ove
   )
 })
 
-it('restores earlier history when an unrecorded preview is cancelled', () => {
+it('restores earlier undo history when an in-progress edit is cancelled', () => {
   const { document, dispose } = createEditorDocument('abc')
   try {
     document.dispatch({
@@ -202,7 +214,7 @@ it('restores earlier history when an unrecorded preview is cancelled', () => {
 })
 
 it.each(['commit', 'cancel'] as const)(
-  'keeps configuration installed during a preview after %s',
+  'keeps editor configuration added during an interactive edit after %s',
   (finish) => {
     const field = StateField.define({
       create: () => 'configured',
@@ -211,7 +223,7 @@ it.each(['commit', 'cancel'] as const)(
     const { document, dispose } = createEditorDocument('before')
     try {
       document.dispatch({
-        changes: { from: 0, to: 6, insert: 'preview' },
+        changes: { from: 0, to: 6, insert: 'dragged' },
         annotations: Transaction.addToHistory.of(false),
       })
       document.dispatch({
@@ -220,9 +232,9 @@ it.each(['commit', 'cancel'] as const)(
       })
       if (finish === 'commit')
         document.dispatch({
-          effects: committedDocumentPreview.of({
+          effects: committedInteractiveEdit.of({
             before: 'before',
-            after: 'preview',
+            after: 'dragged',
           }),
           annotations: isolateHistory.of('full'),
         })

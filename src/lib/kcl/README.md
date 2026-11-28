@@ -265,10 +265,10 @@ the manager delegate to the same canonical history used by Code views.
 
 Checkpoint effects retain an owner identity. The matching Modeling view can
 restore its native checkpoint; sibling views receive the text change without
-replaying another scene's checkpoint. A committed preview also records its before
+replaying another scene's checkpoint. A committed interactive edit also records its before
 and after text, so undo remains usable after the native owner closes. The
 [editor update contract](../editors/README.md#atomic-document-updates) explains
-how preview replay reaches observers as one update.
+how undo and redo reach observers as one update.
 
 A hosted manager borrows its scene and document instead of allocating or saving
 another copy. `adoptExecution` supplies an already executed model and marks its
