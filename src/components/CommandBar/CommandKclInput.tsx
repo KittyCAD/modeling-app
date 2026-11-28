@@ -26,7 +26,22 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ReadonlySignal } from '@preact/signals-core'
+import type { Program, VariableMap } from '@src/lang/wasm'
+import type { KclExpressionRuntime } from '@src/lib/kclHelpers'
+
+/**
+ * Source, parsed program, available variables, and evaluation APIs used by
+ * `CommandKclInput`. Hosts supply these from their existing execution context;
+ * the input does not need the rest of `KclManager`.
+ */
+export interface KclExpressionInputContext {
+  readonly ast: Node<Program>
+  readonly astSignal: ReadonlySignal<Node<Program>>
+  readonly codeSignal: ReadonlySignal<string>
+  readonly variablesSignal: ReadonlySignal<VariableMap>
+  readonly rustContext: KclExpressionRuntime
+}
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
@@ -74,6 +89,7 @@ export function CommandKclInput({
   wasmPromise,
   commandScopes,
   name,
+  inputId: suppliedInputId,
   arg,
   label,
   labelAction,
@@ -90,11 +106,12 @@ export function CommandKclInput({
   onChange,
   onValidationChange,
 }: {
-  kclManager: KclManager
+  kclManager: KclExpressionInputContext
   settings: AppSettingsSystem
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
   name: string
+  inputId?: string
   arg: CommandKclArgument
   label: ReactNode
   labelAction?: ReactNode
@@ -165,7 +182,7 @@ export function CommandKclInput({
       false
   )
   const [hasEditedVariableName, setHasEditedVariableName] = useState(false)
-  const inputId = `command-kcl-input-${name}`
+  const inputId = suppliedInputId ?? `command-kcl-input-${name}`
   const labelId = `${inputId}-label`
   const editorRef = useRef<HTMLDivElement>(null)
   const miniEditorRef = useRef<EditorView | null>(null)
