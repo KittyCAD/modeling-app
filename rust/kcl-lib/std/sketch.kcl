@@ -3191,7 +3191,7 @@ export fn parabolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
   /// Where should the path end? Relative to the start point. Incompatible with `interiorAbsolute` or `endAbsolute`.
-  end: Point2d,
+  end?: Point2d,
   /// Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`.
   endAbsolute?: Point2d,
   /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`.
