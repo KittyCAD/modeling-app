@@ -224,6 +224,37 @@ The footer works without a modeling-machine host. Its assembly lives in
 [`ModelingStatusBar`](modeling/ModelingStatusBar.tsx), and the default contributions
 are listed in [`statusItems`](modeling/statusItems.ts).
 
+## Legacy modeling adapters
+
+The file route supplies its modeling dependencies through these adapters. The
+existing machine and its tools remain responsible for interaction behavior;
+connecting them to project-owned documents and Modeling views is a separate step.
+
+- [`bindModelingMachine`](../../machines/modelingMachineBinding.ts) publishes an
+  actor's state, send function, and selection to its supplied owner. Rebinding
+  removes the previous subscription; cleanup cannot clear a newer binding.
+- [`ModelingMachineToolbar`](../../components/Toolbar/ModelingMachineToolbar.tsx)
+  resolves the existing toolbar from supplied machine state, connection readiness,
+  settings, and command definitions. The file route's `Toolbar` supplies those
+  inputs and continues to use the shared `ToolbarView`.
+- [`ClientSideSceneView`](../../clientSideScene/ClientSideSceneView.tsx) receives
+  the scene's manager, settings, commands, and toolbar configuration. Its legacy
+  wrapper supplies them from the app. Sketch rendering and input still use the
+  existing scene and interaction code, including the shared viewport helpers.
+- [`bindEngineConnectionSubscriptions`](scene/modelingMachineSubscriptions.ts)
+  connects engine selection and hover events to a supplied machine. It reads the
+  actor's current state through `getState`; disposal removes its subscriptions
+  and prevents pending hover replies from updating the owner.
+- [`NativeContextHost`](../rustContext/nativeHost.ts) lets `RustContext` borrow
+  the scene runtime's native context and operation queue. The runtime alone frees
+  it after queued work and delivered responses settle. Responses use a separate
+  delivery path because they may unblock an operation waiting in that queue.
+
+A view can supply command definitions and scopes through
+[`ContextualCommandSource`](../commands/contextual.ts). The application command
+service owns their registration, palette, and invocation. These adapters do not
+create a command-bar actor for each view.
+
 ## Code map
 
 - `execution/`: source capture, native execution, and native input metadata.

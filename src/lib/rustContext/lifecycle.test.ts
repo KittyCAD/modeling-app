@@ -7,7 +7,7 @@ import RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { getModule, type ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { describe, expect, it, vi } from 'vitest'
+import { assert, describe, expect, it, vi } from 'vitest'
 import { Actor } from 'xstate'
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({
@@ -27,17 +27,17 @@ vi.mock('@src/lang/wasm', () => ({
   execStateFromRust: vi.fn(),
 }))
 
-const native = getModule()
+const wasmStub = getModule()
 type NativeContextContract = InstanceType<ModuleType['Context']>
 
-// Only the source-owned Wasm boundary is mocked. The real JS owner allocates,
-// snapshots, replays, replaces, and disposes these native handles.
-function runtime(
+// Replace WASM methods so these tests can pause native calls and inspect their
+// arguments. RustContext itself is real; no WASM bundle or engine is needed.
+function createNativeModule(
   label: string,
   open = vi.fn<ContextOpen>().mockResolvedValue(undefined)
 ) {
   const instances: NativeContext[] = []
-  class NativeContext extends native.Context {
+  class NativeContext extends wasmStub.Context {
     constructor(...args: ConstructorParameters<ModuleType['Context']>) {
       super(...args)
       instances.push(this)
@@ -53,9 +53,16 @@ function runtime(
       .fn<NativeContextContract['remove_file']>()
       .mockResolvedValue(undefined)
     get_project = vi.fn(async () => ({ module: label }))
+    sendResponse = vi.fn(async () => {})
+    edit_angle_constraint = vi.fn(async () => {
+      throw new Error('Native angle boundary reached')
+    })
+    edit_distance_constraint = vi.fn(async () => {
+      throw new Error('Native distance boundary reached')
+    })
     parseForExecution = vi
       .fn<NativeContextContract['parseForExecution']>()
-      .mockResolvedValue(parsedPlanes(1))
+      .mockResolvedValue(parsedSourceWithPlanes(1))
     new_sketch = vi
       .fn<NativeContextContract['new_sketch']>()
       .mockRejectedValue(new Error('Native sketch boundary reached'))
@@ -76,13 +83,28 @@ function runtime(
       .mockRejectedValue(new Error('Native sketch boundary reached'))
     free = vi.fn()
   }
-  return { module: { ...native, Context: NativeContext }, instances }
+  return {
+    module: { ...wasmStub, Context: NativeContext },
+    instances,
+    get instance() {
+      const instance = instances[0]
+      assert(
+        instance,
+        'Expected RustContext to have acquired its native context'
+      )
+      return instance
+    },
+  }
 }
 
 type ContextOpen = NativeContextContract['open_project']
-const main: ApiFile = { id: 0, path: '/project/main.kcl', text: 'initial code' }
+const mainFile: ApiFile = {
+  id: 0,
+  path: '/project/main.kcl',
+  text: 'initial code',
+}
 
-function owner(module: Promise<ModuleType>) {
+function createRustContext(module: Promise<ModuleType>) {
   const settingsActor = new Actor(settingsMachine)
   const manager = new ConnectionManager({ settingsActor })
   return new RustContext(module, manager, settingsActor)
@@ -97,7 +119,7 @@ const planes: DefaultPlanes = {
   negYz: '-yz',
 }
 
-function parsedPlanes(
+function parsedSourceWithPlanes(
   generation: number,
   value: DefaultPlanes | null = planes
 ): ParsedExecutionSource {
@@ -109,40 +131,42 @@ function parsedPlanes(
   }
 }
 
-function planeOwner() {
-  const first = runtime('planes')
+function createPlaneFixture() {
+  const nativeModule = createNativeModule('planes')
   const settingsActor = new Actor(settingsMachine)
   const manager = new ConnectionManager({ settingsActor })
   const context = new RustContext(
-    Promise.resolve(first.module),
+    Promise.resolve(nativeModule.module),
     manager,
     settingsActor
   )
   const notification = vi.fn()
   context.planesCreated.add(notification)
   const parse = () => context.parseForExecution('', {})
-  return { first, manager, context, notification, parse }
+  return { nativeModule, manager, context, notification, parse }
 }
 
 describe('RustContext plane notifications', () => {
-  it('suppresses only an unchanged owned scene, not recreated planes with the same IDs', async () => {
-    const { first, context, notification, parse } = planeOwner()
+  it('notifies once for unchanged planes and again when a rebuilt scene reuses their IDs', async () => {
+    const { nativeModule, context, notification, parse } = createPlaneFixture()
     await parse()
     await parse()
     expect(notification).toHaveBeenCalledTimes(1)
-    first.instances[0].parseForExecution.mockResolvedValue(parsedPlanes(2))
+    nativeModule.instance.parseForExecution.mockResolvedValue(
+      parsedSourceWithPlanes(2)
+    )
     await parse()
     expect(notification).toHaveBeenCalledTimes(2)
     expect(context.defaultPlanes).toEqual(planes)
     context.destroy()
   })
 
-  it('publishes changed plane IDs even within one scene generation', async () => {
-    const { first, context, notification, parse } = planeOwner()
+  it('notifies when plane IDs change without a scene rebuild', async () => {
+    const { nativeModule, context, notification, parse } = createPlaneFixture()
     await parse()
     const changed = { ...planes, xy: 'new-xy' }
-    first.instances[0].parseForExecution.mockResolvedValue(
-      parsedPlanes(1, changed)
+    nativeModule.instance.parseForExecution.mockResolvedValue(
+      parsedSourceWithPlanes(1, changed)
     )
     await parse()
     expect(notification).toHaveBeenCalledTimes(2)
@@ -150,71 +174,81 @@ describe('RustContext plane notifications', () => {
     context.destroy()
   })
 
-  it('does not let a retired scene receipt overwrite a newer scene', async () => {
-    const { first, context, notification, parse } = planeOwner()
+  it('ignores plane results from an older scene generation', async () => {
+    const { nativeModule, context, notification, parse } = createPlaneFixture()
     await parse()
     const changed = { ...planes, xy: 'new-xy' }
-    first.instances[0].parseForExecution.mockResolvedValue(
-      parsedPlanes(2, changed)
+    nativeModule.instance.parseForExecution.mockResolvedValue(
+      parsedSourceWithPlanes(2, changed)
     )
     await parse()
-    first.instances[0].parseForExecution.mockResolvedValue(parsedPlanes(1))
+    nativeModule.instance.parseForExecution.mockResolvedValue(
+      parsedSourceWithPlanes(1)
+    )
     await parse()
     expect(notification).toHaveBeenCalledTimes(2)
     expect(context.defaultPlanes).toEqual(changed)
     context.destroy()
   })
 
-  it.each(['connection', 'project', 'reopened project', 'destroy'])(
-    'does not publish an old result after its %s owner retires',
-    async (retired) => {
-      const { first, manager, context, notification, parse } = planeOwner()
-      await context.sendOpenProject(main.path, [main])
-      const pending = Promise.withResolvers<ParsedExecutionSource>()
-      first.instances[0].parseForExecution.mockReturnValueOnce(pending.promise)
-      const oldResult = parse()
-      await vi.waitFor(() =>
-        expect(first.instances[0].parseForExecution).toHaveBeenCalledOnce()
-      )
-      if (retired === 'connection') {
-        manager.connection = new Connection({
-          url: 'ws://localhost/planes',
-          token: 'test-token',
-          handleOnDataChannelMessage: vi.fn(),
-          recordShutdownTrigger: () => false,
-          tearDownManager: vi.fn(),
-          rejectPendingCommand: vi.fn(),
-          handleMessage: vi.fn(),
-          getCloudProjectId: () => undefined,
-        })
-      } else if (retired === 'project' || retired === 'reopened project') {
-        await context.sendOpenProject('/replacement/main.kcl', [
-          { ...main, path: '/replacement/main.kcl' },
-        ])
-        if (retired === 'reopened project')
-          await context.sendOpenProject(main.path, [main])
-      } else context.destroy()
-      if (retired !== 'destroy') await parse()
-      const before = notification.mock.calls.length
-      pending.resolve(parsedPlanes(1, { ...planes, xy: 'retired-xy' }))
-      await oldResult
-      expect(notification).toHaveBeenCalledTimes(before)
-      expect(context.defaultPlanes).toEqual(
-        retired === 'destroy' ? null : planes
-      )
-      if (retired !== 'destroy') {
-        await parse()
-        expect(notification).toHaveBeenCalledTimes(before)
-      }
-      context.destroy()
+  it.each([
+    { retired: 'connection', change: 'the engine connection changes' },
+    { retired: 'project', change: 'another project opens' },
+    {
+      retired: 'reopened project',
+      change: 'the same project closes and reopens',
+    },
+    { retired: 'destroy', change: 'the RustContext is destroyed' },
+  ])('ignores a pending plane result after $change', async ({ retired }) => {
+    const { nativeModule, manager, context, notification, parse } =
+      createPlaneFixture()
+    await context.sendOpenProject(mainFile.path, [mainFile])
+    const oldParseFinished = Promise.withResolvers<ParsedExecutionSource>()
+    nativeModule.instance.parseForExecution.mockReturnValueOnce(
+      oldParseFinished.promise
+    )
+    const oldResult = parse()
+    await vi.waitFor(() =>
+      expect(nativeModule.instance.parseForExecution).toHaveBeenCalledOnce()
+    )
+    if (retired === 'connection') {
+      manager.connection = new Connection({
+        url: 'ws://localhost/planes',
+        token: 'test-token',
+        handleOnDataChannelMessage: vi.fn(),
+        recordShutdownTrigger: () => false,
+        tearDownManager: vi.fn(),
+        rejectPendingCommand: vi.fn(),
+        handleMessage: vi.fn(),
+        getCloudProjectId: () => undefined,
+      })
+    } else if (retired === 'project' || retired === 'reopened project') {
+      await context.sendOpenProject('/replacement/main.kcl', [
+        { ...mainFile, path: '/replacement/main.kcl' },
+      ])
+      if (retired === 'reopened project')
+        await context.sendOpenProject(mainFile.path, [mainFile])
+    } else context.destroy()
+    if (retired !== 'destroy') await parse()
+    const notificationsBeforeOldResult = notification.mock.calls.length
+    oldParseFinished.resolve(
+      parsedSourceWithPlanes(1, { ...planes, xy: 'retired-xy' })
+    )
+    await oldResult
+    expect(notification).toHaveBeenCalledTimes(notificationsBeforeOldResult)
+    expect(context.defaultPlanes).toEqual(retired === 'destroy' ? null : planes)
+    if (retired !== 'destroy') {
+      await parse()
+      expect(notification).toHaveBeenCalledTimes(notificationsBeforeOldResult)
     }
-  )
+    context.destroy()
+  })
 
-  it('replays after a null result and conservatively publishes errors without a generation', async () => {
-    const { first, context, notification, parse } = planeOwner()
+  it('notifies when planes return after a null result and when their scene generation is unknown', async () => {
+    const { nativeModule, context, notification, parse } = createPlaneFixture()
     await parse()
-    first.instances[0].parseForExecution.mockResolvedValueOnce(
-      parsedPlanes(1, null)
+    nativeModule.instance.parseForExecution.mockResolvedValueOnce(
+      parsedSourceWithPlanes(1, null)
     )
     await parse()
     expect(context.defaultPlanes).toBeNull()
@@ -224,14 +258,14 @@ describe('RustContext plane notifications', () => {
       defaultPlanes: planes,
       engineSceneGeneration: 1,
     })
-    first.instances[0].parseForExecution.mockRejectedValueOnce(known)
+    nativeModule.instance.parseForExecution.mockRejectedValueOnce(known)
     expect(await parse()).toBe(known)
     expect(notification).toHaveBeenCalledTimes(2)
     const unknown = Object.assign(new Error('unknown scene'), {
       defaultPlanes: planes,
       engineSceneGeneration: null,
     })
-    first.instances[0].parseForExecution.mockRejectedValueOnce(unknown)
+    nativeModule.instance.parseForExecution.mockRejectedValueOnce(unknown)
     expect(await parse()).toBe(unknown)
     expect(notification).toHaveBeenCalledTimes(3)
     await parse()
@@ -240,21 +274,21 @@ describe('RustContext plane notifications', () => {
   })
 })
 
-describe('RustContext module lifecycle', () => {
+describe('RustContext initialization and sketch operations', () => {
   it.each(['add', 'chain'] as const)(
-    'checks once before a logical %s insertion without interrupting its native mutations',
+    'waits for storage preparation before %s and does not repeat it for later segment edits',
     async (operation) => {
       vi.useFakeTimers()
-      const native = runtime('insertion')
+      const native = createNativeModule('insertion')
       const settings = new Actor(settingsMachine)
-      const gate = Promise.withResolvers<undefined>()
-      const before = vi.fn(() => gate.promise)
+      const storageReady = Promise.withResolvers<undefined>()
+      const prepareStorage = vi.fn(() => storageReady.promise)
       const context = new RustContext(
         Promise.resolve(native.module),
         new ConnectionManager({ settingsActor: settings }),
         settings,
         0,
-        before
+        prepareStorage
       )
       const segment = {
         type: 'Point',
@@ -264,40 +298,43 @@ describe('RustContext module lifecycle', () => {
         },
       } as const
       try {
-        const call = (async () => {
+        const insertion = (async () => {
           await context.prepareForSketchInsertion()
           return operation === 'add'
             ? context.addSegment(0, 1, segment, undefined, {})
             : context.chainSegment(0, 1, 2, segment, undefined, {})
         })()
-        const result = expect(call).rejects.toThrow(
+        const rejectedInsertion = expect(insertion).rejects.toThrow(
           'Native sketch boundary reached'
         )
+        // Keep storage preparation pending to catch unwanted retries or timeouts.
         await vi.advanceTimersByTimeAsync(7_000)
-        expect(before).toHaveBeenCalledOnce()
-        expect(native.instances[0].add_segment).not.toHaveBeenCalled()
-        expect(native.instances[0].chain_segment).not.toHaveBeenCalled()
-        gate.resolve(undefined)
-        await result
+        expect(prepareStorage).toHaveBeenCalledOnce()
+        expect(native.instance.add_segment).not.toHaveBeenCalled()
+        expect(native.instance.chain_segment).not.toHaveBeenCalled()
+        storageReady.resolve(undefined)
+        await rejectedInsertion
         expect(
           operation === 'add'
-            ? native.instances[0].add_segment
-            : native.instances[0].chain_segment
+            ? native.instance.add_segment
+            : native.instance.chain_segment
         ).toHaveBeenCalledOnce()
         await expect(context.editSegments(0, 1, [], {})).rejects.toThrow(
           'Native sketch boundary reached'
         )
-        expect(native.instances[0].edit_segments).toHaveBeenCalledOnce()
-        expect(before).toHaveBeenCalledOnce()
-        before.mockRejectedValueOnce(new Error('Cannot refresh storage'))
+        expect(native.instance.edit_segments).toHaveBeenCalledOnce()
+        expect(prepareStorage).toHaveBeenCalledOnce()
+        prepareStorage.mockRejectedValueOnce(
+          new Error('Cannot refresh storage')
+        )
         await expect(context.prepareForSketchInsertion()).rejects.toThrow(
           'Cannot refresh storage'
         )
-        expect(native.instances[0].add_segment).toHaveBeenCalledTimes(
+        expect(native.instance.add_segment).toHaveBeenCalledTimes(
           operation === 'add' ? 1 : 0
         )
       } finally {
-        gate.resolve(undefined)
+        storageReady.resolve(undefined)
         context.destroy()
         vi.useRealTimers()
       }
@@ -305,10 +342,10 @@ describe('RustContext module lifecycle', () => {
   )
 
   it.each(['newSketch', 'editSketch', 'exitSketch'])(
-    '%s inherits current complete settings',
+    '%s forwards the current modeling settings on each call',
     async (operation) => {
-      const native = runtime('settings')
-      const context = owner(Promise.resolve(native.module))
+      const native = createNativeModule('settings')
+      const context = createRustContext(Promise.resolve(native.module))
       const { modeling } = context.settingsActor.getSnapshot().context
       modeling.defaultUnit.user = 'in'
       modeling.enableSSAO.user = false
@@ -324,15 +361,15 @@ describe('RustContext module lifecycle', () => {
           },
         },
       })
-      // Stop at the native boundary: this test owns the arguments, while the
-      // real-engine lifecycle case owns successful geometry and cache behavior.
-      const invoke = async () => {
+      // The fake native methods reject after receiving the call. This checks
+      // settings forwarding without requiring geometry or an engine.
+      const invokeAndCheckSettings = async () => {
         const settings = JSON.stringify(jsAppSettings(context.settingsActor))
         if (operation === 'newSketch') {
           await context
             .newSketch(0, 0, 0, { on: { default: 'xy' } })
             .catch(() => undefined)
-          expect(native.instances[0].new_sketch).toHaveBeenLastCalledWith(
+          expect(native.instance.new_sketch).toHaveBeenLastCalledWith(
             '0',
             '0',
             '0',
@@ -341,7 +378,7 @@ describe('RustContext module lifecycle', () => {
           )
         } else if (operation === 'editSketch') {
           await context.editSketch(0, 0, 0, 1).catch(() => undefined)
-          expect(native.instances[0].edit_sketch).toHaveBeenLastCalledWith(
+          expect(native.instance.edit_sketch).toHaveBeenLastCalledWith(
             '0',
             '0',
             '0',
@@ -350,47 +387,264 @@ describe('RustContext module lifecycle', () => {
           )
         } else {
           await context.exitSketch(0, 1).catch(() => undefined)
-          expect(native.instances[0].exit_sketch).toHaveBeenLastCalledWith(
+          expect(native.instance.exit_sketch).toHaveBeenLastCalledWith(
             '0',
             '1',
             settings
           )
         }
       }
-      await invoke()
+      await invokeAndCheckSettings()
       modeling.backfaceColor.user = '#654321'
-      await invoke()
+      await invokeAndCheckSettings()
       context.destroy()
     }
   )
 
-  it('registers a project arriving before initialization once, including file zero', async () => {
-    const module = Promise.withResolvers<ModuleType>()
-    const first = runtime('first')
-    const context = owner(module.promise)
-    const open = context.sendOpenProject(main.path, [main])
-    module.resolve(first.module)
+  it('opens a project requested before WASM is ready and preserves entrypoint ID zero', async () => {
+    const wasmReady = Promise.withResolvers<ModuleType>()
+    const nativeModule = createNativeModule('first')
+    const context = createRustContext(wasmReady.promise)
+    const open = context.sendOpenProject(mainFile.path, [mainFile])
+    wasmReady.resolve(nativeModule.module)
     await open
-    expect(first.instances).toHaveLength(1)
-    expect(first.instances[0].open_project).toHaveBeenCalledExactlyOnceWith(
+    expect(nativeModule.instances).toHaveLength(1)
+    expect(nativeModule.instance.open_project).toHaveBeenCalledExactlyOnceWith(
       0,
-      JSON.stringify([main]),
+      JSON.stringify([mainFile]),
       0
     )
     expect(context.hasOpenedProject).toBe(true)
     context.destroy()
   })
 
-  it('does not resurrect an owner destroyed before initialization finishes', async () => {
-    const pending = Promise.withResolvers<ModuleType>()
-    const first = runtime('first')
-    const context = owner(pending.promise)
+  it('rejects waiting calls and creates no native context if destroyed before WASM is ready', async () => {
+    const wasmReady = Promise.withResolvers<ModuleType>()
+    const nativeModule = createNativeModule('first')
+    const context = createRustContext(wasmReady.promise)
     const waiting = context.getProjectState()
     const rejected = expect(waiting).rejects.toThrow('destroyed')
     context.destroy()
     await rejected
-    pending.resolve(first.module)
-    await pending.promise
-    expect(first.instances).toHaveLength(0)
+    wasmReady.resolve(nativeModule.module)
+    await wasmReady.promise
+    expect(nativeModule.instances).toHaveLength(0)
+  })
+})
+
+describe('RustContext using a context owned by the KCL runtime', () => {
+  // Model a runtime's context and queue without loading WASM. The real
+  // RustContext wrapper must use both and leave memory ownership to the runtime.
+  function createRuntimeAndWrapper(
+    label: string,
+    projectOpenFinished?: Promise<void>
+  ) {
+    const nativeModule = createNativeModule(
+      label,
+      vi.fn<ContextOpen>(() => projectOpenFinished ?? Promise.resolve())
+    )
+    const settingsActor = new Actor(settingsMachine)
+    const manager = new ConnectionManager({ settingsActor })
+    const nativeContext = new nativeModule.module.Context(
+      manager,
+      {},
+      undefined
+    )
+    let queuedOperations: Promise<unknown> = Promise.resolve()
+    const rustContext = new RustContext(
+      Promise.resolve(nativeModule.module),
+      manager,
+      settingsActor,
+      0,
+      undefined,
+      {
+        create: async () => nativeContext,
+        deliverResponse: (work) => work(),
+        run: <T>(work: () => Promise<T>) => {
+          const next = queuedOperations.then(work)
+          queuedOperations = next.catch(() => undefined)
+          return next
+        },
+      }
+    )
+    return { rustContext, nativeContext, nativeModule }
+  }
+
+  it('uses the existing runtime context and leaves the other wrapper usable after destruction', async () => {
+    const first = createRuntimeAndWrapper('first')
+    const second = createRuntimeAndWrapper('second')
+    try {
+      expect(await first.rustContext.getProjectState()).toEqual({
+        module: 'first',
+      })
+      expect(await second.rustContext.getProjectState()).toEqual({
+        module: 'second',
+      })
+      expect(first.nativeModule.instances).toHaveLength(1)
+      expect(second.nativeModule.instances).toHaveLength(1)
+      first.rustContext.destroy()
+      await expect(first.rustContext.getProjectState()).rejects.toThrow(
+        'destroyed'
+      )
+      expect(await second.rustContext.getProjectState()).toEqual({
+        module: 'second',
+      })
+      expect(first.nativeContext.free).not.toHaveBeenCalled()
+    } finally {
+      first.rustContext.destroy()
+      second.rustContext.destroy()
+    }
+  })
+
+  it('rejects a queued project read when the wrapper is destroyed, without blocking another runtime', async () => {
+    const projectOpenFinished = Promise.withResolvers<undefined>()
+    const first = createRuntimeAndWrapper('first', projectOpenFinished.promise)
+    const second = createRuntimeAndWrapper('second')
+    const openProject = first.rustContext.sendOpenProject(mainFile.path, [
+      mainFile,
+    ])
+    try {
+      await vi.waitFor(() =>
+        expect(first.nativeContext.open_project).toHaveBeenCalledOnce()
+      )
+      const readProject = first.rustContext.getProjectState()
+      const rejectedRead = expect(readProject).rejects.toThrow('destroyed')
+      expect(first.nativeContext.get_project).not.toHaveBeenCalled()
+      expect(await second.rustContext.getProjectState()).toEqual({
+        module: 'second',
+      })
+      first.rustContext.destroy()
+      projectOpenFinished.resolve(undefined)
+      await openProject
+      await rejectedRead
+      expect(first.nativeContext.get_project).not.toHaveBeenCalled()
+      expect(first.nativeContext.free).not.toHaveBeenCalled()
+    } finally {
+      projectOpenFinished.resolve(undefined)
+      first.rustContext.destroy()
+      second.rustContext.destroy()
+    }
+  })
+  it('waits for project opening before applying a file update', async () => {
+    const projectOpenFinished = Promise.withResolvers<undefined>()
+    const current = createRuntimeAndWrapper(
+      'updates',
+      projectOpenFinished.promise
+    )
+    const openProject = current.rustContext.sendOpenProject(mainFile.path, [
+      mainFile,
+    ])
+    try {
+      await vi.waitFor(() =>
+        expect(current.nativeContext.open_project).toHaveBeenCalledOnce()
+      )
+      const updateFile = current.rustContext.sendUpdateFile(
+        mainFile.id,
+        'changed code'
+      )
+      expect(current.nativeContext.update_file).not.toHaveBeenCalled()
+      projectOpenFinished.resolve(undefined)
+      await Promise.all([openProject, updateFile])
+      expect(current.nativeContext.update_file).toHaveBeenCalledWith(
+        0,
+        mainFile.id,
+        'changed code'
+      )
+    } finally {
+      projectOpenFinished.resolve(undefined)
+      current.rustContext.destroy()
+    }
+  })
+
+  it('queues angle and distance edits behind project opening', async () => {
+    const projectOpenFinished = Promise.withResolvers<undefined>()
+    const current = createRuntimeAndWrapper(
+      'constraints',
+      projectOpenFinished.promise
+    )
+    const openProject = current.rustContext.sendOpenProject(mainFile.path, [
+      mainFile,
+    ])
+    try {
+      await vi.waitFor(() =>
+        expect(current.nativeContext.open_project).toHaveBeenCalledOnce()
+      )
+      const editAngle = current.rustContext.editAngleConstraint(
+        0,
+        1,
+        2,
+        {
+          type: 'Angle',
+          lines: [3, 4],
+          angle: { value: 90, units: 'Deg' },
+          source: { expr: '90deg', is_literal: true },
+        },
+        {}
+      )
+      const editDistance = current.rustContext.editDistanceConstraint(
+        0,
+        1,
+        5,
+        {
+          type: 'Distance',
+          segments: [],
+          distance: { value: 5, units: 'Mm' },
+          source: { expr: '5mm', is_literal: true },
+        },
+        {}
+      )
+      const rejectedAngleEdit = expect(editAngle).rejects.toThrow(
+        'Native angle boundary reached'
+      )
+      const rejectedDistanceEdit = expect(editDistance).rejects.toThrow(
+        'Native distance boundary reached'
+      )
+      await Promise.resolve()
+      expect(current.nativeContext.edit_angle_constraint).not.toHaveBeenCalled()
+      expect(
+        current.nativeContext.edit_distance_constraint
+      ).not.toHaveBeenCalled()
+      projectOpenFinished.resolve(undefined)
+      await Promise.all([openProject, rejectedAngleEdit, rejectedDistanceEdit])
+      expect(current.nativeContext.edit_angle_constraint).toHaveBeenCalledOnce()
+      expect(
+        current.nativeContext.edit_distance_constraint
+      ).toHaveBeenCalledOnce()
+    } finally {
+      projectOpenFinished.resolve(undefined)
+      current.rustContext.destroy()
+    }
+  })
+
+  it('delivers an engine reply before the queued project-opening operation finishes', async () => {
+    const projectOpenFinished = Promise.withResolvers<undefined>()
+    const current = createRuntimeAndWrapper(
+      'current',
+      projectOpenFinished.promise
+    )
+    const openProject = current.rustContext.sendOpenProject(mainFile.path, [
+      mainFile,
+    ])
+    try {
+      await vi.waitFor(() =>
+        expect(current.nativeContext.open_project).toHaveBeenCalledOnce()
+      )
+      // A native call may need an engine reply to finish. Deliver the reply
+      // while projectOpenFinished is still unresolved to catch queue deadlocks.
+      const response = current.rustContext.sendResponse({
+        success: false,
+        request_id: 'request',
+        errors: [],
+      })
+      await vi.waitFor(() =>
+        expect(current.nativeContext.sendResponse).toHaveBeenCalledOnce()
+      )
+      await response
+      expect(current.nativeContext.open_project).toHaveBeenCalledOnce()
+    } finally {
+      projectOpenFinished.resolve(undefined)
+      await openProject
+      current.rustContext.destroy()
+    }
   })
 })

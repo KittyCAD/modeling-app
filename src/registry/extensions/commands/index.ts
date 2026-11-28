@@ -1,3 +1,4 @@
+import { createContextualCommands } from '@src/lib/commands/contextual'
 import { effect, untracked } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import {
@@ -12,6 +13,7 @@ import {
   commandKey,
   commandSystemService,
   commandsFacet,
+  contextualCommandsService,
 } from '@src/registry/contracts/commands'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { machineManagerExtension } from '@src/registry/extensions/machineManager'
@@ -47,6 +49,9 @@ export const createCommandsExtension = (
     key: 'commands-extension',
     create: ({ commands: commandsInputs, machines, wasm: wasmInputs }) => {
       const commandsSignal = commandsInputs.commandsFacet
+      const contextual = createContextualCommands()
+      let ownedScopes: readonly string[] = []
+      let contextualScopeOwner: CommandScopeService | undefined
       let commandBarActor: CommandSystemService['actor'] | undefined
       let commandPaletteScopeOwner: CommandScopeService | undefined
       let stopCommandPaletteScopeSync: (() => void) | undefined
@@ -122,24 +127,41 @@ export const createCommandsExtension = (
           commandPaletteScopeSubscription.unsubscribe()
 
         stopCommandsEffect = effect(() => {
-          const nextCommands = commandsSignal.value
-
-          if (registeredCommands.length > 0) {
-            commandBarActor?.send({
-              type: 'Remove commands',
-              data: { commands: [...registeredCommands] },
-            })
-          }
-
-          if (nextCommands.length > 0) {
-            commandBarActor?.send({
-              type: 'Add commands',
-              data: { commands: [...nextCommands] },
-            })
-          }
-
-          registeredCommands = nextCommands
-          flushPendingCommandSelections()
+          const source = contextual.active.value
+          const nextCommands = [
+            ...new Map(
+              [...commandsSignal.value, ...(source?.commands.value ?? [])].map(
+                (command) => [commandKey(command), command]
+              )
+            ).values(),
+          ]
+          const nextScopes = source?.scopes.value ?? []
+          const scopes = commandsInputs.commandScopeService.current.value
+          untracked(() => {
+            if (contextualScopeOwner !== scopes) {
+              for (const scope of ownedScopes)
+                contextualScopeOwner?.removeScope(scope)
+              contextualScopeOwner = scopes
+              ownedScopes = []
+            }
+            for (const scope of ownedScopes)
+              if (!nextScopes.includes(scope)) scopes?.removeScope(scope)
+            for (const scope of nextScopes)
+              if (!ownedScopes.includes(scope)) scopes?.applyScope(scope)
+            ownedScopes = nextScopes
+            if (registeredCommands.length > 0)
+              commandBarActor?.send({
+                type: 'Remove commands',
+                data: { commands: [...registeredCommands] },
+              })
+            if (nextCommands.length > 0)
+              commandBarActor?.send({
+                type: 'Add commands',
+                data: { commands: [...nextCommands] },
+              })
+            registeredCommands = nextCommands
+            flushPendingCommandSelections()
+          })
         })
 
         return commandBarActor
@@ -174,8 +196,14 @@ export const createCommandsExtension = (
 
       return {
         exports: serviceImpl,
-        items: [provide(commandSystemService, serviceImpl)],
+        items: [
+          provide(commandSystemService, serviceImpl),
+          provide(contextualCommandsService, contextual),
+        ],
         dispose: () => {
+          contextual.dispose()
+          for (const scope of ownedScopes)
+            contextualScopeOwner?.removeScope(scope)
           pendingCommandSelections = []
           stopCommandPaletteScopeSync?.()
           // Disposal publishes an empty graph before cleanup, so retain the service

@@ -1,3 +1,4 @@
+import type { NativeContextHost } from '@src/lib/rustContext/nativeHost'
 import * as Cause from 'effect/Cause'
 import * as Effect from 'effect/Effect'
 import * as Exit from 'effect/Exit'
@@ -54,6 +55,8 @@ export async function createKclRuntime(
   const wasm = await wasmPromise
   let files: ReadonlyMap<string, Uint8Array> = new Map()
   let disposed = false
+  let nativeFreed = false
+  const pendingResponses = new Set<Promise<unknown>>()
   let queue: Promise<unknown> = Promise.resolve()
   const state = signal<ExecState>(emptyExecState())
   const executing = signal(false)
@@ -197,7 +200,27 @@ export async function createKclRuntime(
         : Promise.reject(Cause.squash(exit.cause))
     })
   }
+  // Let the legacy RustContext wrapper share this runtime's native state and
+  // operation queue. This runtime retains ownership of native.free(); see
+  // NativeContextHost for the migration rationale and replacement path.
+  const nativeContextHost: NativeContextHost = {
+    create: async () => {
+      if (disposed) return Promise.reject(new Error('The KCL scene closed'))
+      return native
+    },
+    run: enqueue,
+    deliverResponse: <T>(work: () => Promise<T>) => {
+      if (nativeFreed)
+        return Promise.reject<T>(new Error('The KCL scene closed'))
+      const response = Promise.resolve().then(work)
+      pendingResponses.add(response)
+      const settled = () => pendingResponses.delete(response)
+      response.then(settled, settled)
+      return response
+    },
+  }
   return {
+    nativeContextHost,
     state,
     ast: program,
     fileSettings,
@@ -217,6 +240,9 @@ export async function createKclRuntime(
       disposed = true
       clearInterval(elapsedTimer)
       await queue
+      while (pendingResponses.size)
+        await Promise.allSettled([...pendingResponses])
+      nativeFreed = true
       native.free()
     },
   }

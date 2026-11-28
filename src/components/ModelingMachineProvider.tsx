@@ -1,5 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { ModelingMachineContext } from '@src/machines/modelingMachineContext'
+export { ModelingMachineContext } from '@src/machines/modelingMachineContext'
 import { useAppState } from '@src/AppState'
 import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
@@ -8,8 +10,9 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingCommandsForMachineApi } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import { bindModelingMachine } from '@src/machines/modelingMachineBinding'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
@@ -27,21 +30,9 @@ import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { useMachine } from '@xstate/react'
 import type React from 'react'
-import type { MutableRefObject } from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
-import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
+import { use, useEffect, useMemo, useRef } from 'react'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
-
-export const ModelingMachineContext = createContext(
-  {} as {
-    state: StateFrom<typeof modelingMachine>
-    context: ContextFrom<typeof modelingMachine>
-    send: Prop<Actor<typeof modelingMachine>, 'send'>
-    actor: Actor<typeof modelingMachine>
-    theProject: MutableRefObject<Project | undefined>
-  }
-)
 
 export const ModelingMachineProvider = ({
   children,
@@ -59,14 +50,10 @@ export const ModelingMachineProvider = ({
     modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = settingsValues
   const machineApiEnabled = settingsValues.app.machineApi.current
-  const commandBarConfig = useMemo(() => {
-    if (machineApiEnabled) {
-      return modelingMachineCommandConfig
-    }
-
-    const { Make: _make, ...configWithoutMake } = modelingMachineCommandConfig
-    return configWithoutMake
-  }, [machineApiEnabled])
+  const commandBarConfig = useMemo(
+    () => modelingCommandsForMachineApi(machineApiEnabled),
+    [machineApiEnabled]
+  )
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const theProject = useRef<Project | undefined>(
     project?.projectIORefSignal.value
@@ -219,18 +206,10 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  // Give the state back to the kclManager.
-  useEffect(() => {
-    kclManager.modelingSend = modelingSend
-  }, [modelingSend, kclManager])
-
-  useEffect(() => {
-    kclManager.modelingState = modelingState
-  }, [modelingState, kclManager])
-
-  useEffect(() => {
-    kclManager.selectionRanges = modelingState.context.selectionRanges
-  }, [modelingState.context.selectionRanges, kclManager])
+  useEffect(
+    () => bindModelingMachine(modelingActor, kclManager),
+    [modelingActor, kclManager]
+  )
 
   // When changing camera modes reset the camera to the default orientation to correct
   // the up vector otherwise the conconical orientation for the camera modes will be

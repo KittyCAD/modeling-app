@@ -548,12 +548,15 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
   if (isModifierKey(event.key)) {
     return null
   }
+
   const key = normalizeEventKey(event)
   if (!key) {
     return null
   }
+
   const parts: string[] = []
   const usesMod = isMacPlatform() ? event.metaKey : event.ctrlKey
+
   if (usesMod) {
     parts.push('mod')
   } else {
@@ -564,6 +567,7 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
       parts.push('meta')
     }
   }
+
   if (event.altKey) {
     parts.push('alt')
   }
@@ -571,17 +575,22 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
     parts.push('shift')
   }
   parts.push(key)
+
   return parts.join('+')
 }
+
 function isModifierKey(key: string) {
   return key === 'Control' || key === 'Meta' || key === 'Shift' || key === 'Alt'
 }
+
 function isMacPlatform() {
   if (typeof navigator === 'undefined') {
     return false
   }
+
   return /mac|iphone|ipad|ipod/i.test(navigator.platform)
 }
+
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
   hasPendingKeystrokes: boolean
