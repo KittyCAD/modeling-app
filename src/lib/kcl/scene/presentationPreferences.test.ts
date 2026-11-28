@@ -62,3 +62,15 @@ it('lets native-only grid visibility refresh execution without updating presenta
     preferences.dispose()
   }
 })
+it('gives the local renderer the rendering style', () => {
+  const settings = createSettings()
+  const preferences = createScenePresentationPreferences(() => settings)
+  try {
+    settings.modeling.viewportRendering.user = 'phosphor'
+    expect(preferences.localRenderer.value.viewportRendering).toBe('phosphor')
+    settings.modeling.viewportRendering.user = 'retrocad'
+    expect(preferences.localRenderer.value.viewportRendering).toBe('retrocad')
+  } finally {
+    preferences.dispose()
+  }
+})

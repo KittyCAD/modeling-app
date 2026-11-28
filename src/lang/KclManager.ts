@@ -3054,14 +3054,10 @@ export class KclManager extends File {
   async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
     const settings = getSettingsFromActorContext(this.systemDeps.settings)
-    const useLocalRenderer =
-      this.engineCommandManager.connection?.geometryOnly ??
-      settings.modeling.useLocalRenderer.current
     const opposingTheme = applySceneOverlayTheme(
       this.sceneInfra,
       newTheme,
-      settings.modeling.viewportRendering.current,
-      useLocalRenderer
+      settings.modeling.viewportRendering.current
     )
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)

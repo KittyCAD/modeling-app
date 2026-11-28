@@ -38,6 +38,7 @@ export const LocalWebGPUSceneView = ({
   const {
     theme,
     enableSSAO,
+    viewportRendering,
     shouldHighlightEdges,
     fixedSizeGrid,
     backfaceColor,
@@ -122,6 +123,10 @@ export const LocalWebGPUSceneView = ({
   useEffect(() => {
     rendererRef.current?.setEnableSSAO(enableSSAO)
   }, [enableSSAO])
+
+  useEffect(() => {
+    rendererRef.current?.setViewportRendering(viewportRendering)
+  }, [viewportRendering])
 
   useEffect(() => {
     rendererRef.current?.setEdgeHighlighting(shouldHighlightEdges)

@@ -183,8 +183,7 @@ export function createSceneViewport(
     applySceneOverlayTheme(
       sceneInfra,
       appearance.theme,
-      appearance.viewportRendering,
-      presentation === 'local'
+      appearance.viewportRendering
     )
     if (sceneInfra.theme !== previousTheme) sceneInfra.resumeRendering()
   }

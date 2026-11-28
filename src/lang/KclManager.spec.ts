@@ -451,7 +451,7 @@ describe('KclManager default plane visibility', () => {
 
 describe('KclManager settings ownership', () => {
   it.each([true, false])(
-    'uses the active renderer for sketch colors while the local preference is %s',
+    'uses light sketch colors on the black Retro CAD and Phosphor background while the local preference is %s',
     async (useLocalRenderer) => {
       const { app, kclManager } = createKclManagerTestHarness()
       try {
@@ -473,8 +473,9 @@ describe('KclManager settings ownership', () => {
           for (const mode of ['retrocad', 'phosphor'] as const) {
             settings.modeling.viewportRendering.user = mode
             await kclManager.updateTheme(Themes.Light, false)
+            // Both renderers draw these styles on black, so sketches get light colors.
             expect(updateSegmentBaseColor).toHaveBeenLastCalledWith(
-              geometryOnly ? Themes.Dark : Themes.Light
+              Themes.Light
             )
           }
         }

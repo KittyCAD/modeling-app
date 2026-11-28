@@ -156,15 +156,10 @@ hide(profile)
     )
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).toBeChecked()
-    await expect(page.getByTestId('viewportRendering')).toHaveCount(0)
-    await expect(ssao).toBeEnabled()
+    // Both renderers draw the rendering styles, so the choice carries over.
+    await expect(rendering).toHaveValue('retrocad')
     await expect(ssao).toBeChecked()
-    await search.fill('Rendering style')
-    await expect(
-      page.getByRole('option', { name: /Rendering style/ })
-    ).toHaveCount(0)
-    await search.press('Escape')
-    await search.fill('')
+    await expect(ssao).toBeDisabled()
     await page.waitForFunction(() =>
       window.app.settings.actor.getSnapshot().matches('idle')
     )
@@ -179,7 +174,13 @@ hide(profile)
     expect(
       await page.evaluate(() => window.engineCommandManager.geometryOnly)
     ).toBe(true)
+    // The local renderer draws Retro CAD on black too.
+    await scene.expectPixelColor([0, 0, 0], backgroundPoint, 10, {
+      format: 'ratio',
+    })
     await openSettings()
+    const localConnectionCount = modes.length
+    await rendering.selectOption('default')
     await expect(ssao).toBeChecked()
     await expect(ssao).toBeEnabled()
     await toggleSSAO()
@@ -187,11 +188,14 @@ hide(profile)
     await page.waitForFunction(() =>
       window.app.settings.actor.getSnapshot().matches('idle')
     )
+    // Changing the style in local rendering needs no new engine session.
+    expect(modes).toHaveLength(localConnectionCount)
     await page.getByTestId('settings-close-button').click()
     await page.reload()
     await scene.settled()
     await openSettings()
     await expect(ssao).not.toBeChecked()
+    await rendering.selectOption('retrocad')
     await page.locator('label').filter({ has: localRenderer }).click()
     await expect(localRenderer).not.toBeChecked()
     await expect(rendering).toHaveValue('retrocad')

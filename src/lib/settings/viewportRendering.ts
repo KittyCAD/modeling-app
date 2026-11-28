@@ -48,15 +48,14 @@ export function getViewportTheme(
 /**
  * Choose the foreground theme used by `SceneInfra` for sketch graphics. Its
  * drawing helpers use that theme's color directly, so a light background needs
- * dark foregrounds. Streamed Retrocad/Phosphor use a dark background regardless
- * of the app theme; local rendering uses the app theme's background.
+ * dark foregrounds. Retrocad/Phosphor use a dark background regardless of the
+ * app theme, in both the streamed and the local renderer.
  */
 export function getSceneOverlayTheme(
   theme: Themes,
-  mode: ViewportRendering | PostEffectType,
-  geometryOnly: boolean
+  mode: ViewportRendering | PostEffectType
 ) {
-  return getOppositeTheme(geometryOnly ? theme : getViewportTheme(theme, mode))
+  return getOppositeTheme(getViewportTheme(theme, mode))
 }
 
 export function getViewportBackgroundColor(

@@ -45,6 +45,7 @@ import {
   LocalRenderer,
   assignFaceUuids,
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
+import { getSketchLineColor } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { reportClientError } from '@src/lib/clientErrors'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -167,6 +168,7 @@ function fixture(
     {
       theme: Themes.Light,
       enableSSAO: false,
+      viewportRendering: 'default',
       shouldHighlightEdges: false,
       fixedSizeGrid: true,
       backfaceColor: '#00D5FF',
@@ -822,6 +824,29 @@ describe('local GLB loading', () => {
     f.renderer.setEnableSSAO(false)
     expect(dispose).toHaveBeenCalledTimes(3)
     expect(f.state.ambientOcclusionPipeline).toBeNull()
+    f.renderer.dispose()
+  })
+
+  it('draws sketch lines in dark-theme colours on the black Retro CAD and Phosphor background', () => {
+    const f = fixture()
+    const setPlaneTheme = vi.spyOn(f.gpu.planeRenderer, 'setTheme')
+    for (const style of ['retrocad', 'phosphor'] as const) {
+      f.renderer.setViewportRendering(style)
+      expect(f.gpu.sketchLineRenderer.setColor).toHaveBeenLastCalledWith(
+        getSketchLineColor(Themes.Dark)
+      )
+      expect(setPlaneTheme).toHaveBeenLastCalledWith(Themes.Dark)
+      f.renderer.setTheme(Themes.Dark)
+      f.renderer.setTheme(Themes.Light)
+      expect(f.gpu.sketchLineRenderer.setColor).toHaveBeenLastCalledWith(
+        getSketchLineColor(Themes.Dark)
+      )
+      f.renderer.setViewportRendering('default')
+      expect(f.gpu.sketchLineRenderer.setColor).toHaveBeenLastCalledWith(
+        getSketchLineColor(Themes.Light)
+      )
+      expect(setPlaneTheme).toHaveBeenLastCalledWith(Themes.Light)
+    }
     f.renderer.dispose()
   })
 })

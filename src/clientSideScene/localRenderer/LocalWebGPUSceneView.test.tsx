@@ -21,6 +21,7 @@ const renderer = vi.hoisted(() => ({
   setPickingEnabled: vi.fn(),
   setDefaultPlaneVisibility: vi.fn(),
   setEnableSSAO: vi.fn(),
+  setViewportRendering: vi.fn(),
   setEdgeHighlighting: vi.fn(),
   setFixedSizeGrid: vi.fn(),
   setBackfaceColor: vi.fn(),
@@ -120,6 +121,7 @@ it('mounts from an explicit host without app providers and releases only its ren
       host={host}
       theme={Themes.Light}
       enableSSAO={false}
+      viewportRendering="default"
       shouldHighlightEdges={false}
       fixedSizeGrid={true}
       backfaceColor="#00D5FF"
@@ -138,6 +140,7 @@ it('mounts from an explicit host without app providers and releases only its ren
       host={host}
       theme={Themes.Light}
       enableSSAO={false}
+      viewportRendering="default"
       shouldHighlightEdges={false}
       fixedSizeGrid={true}
       backfaceColor="#00D5FF"

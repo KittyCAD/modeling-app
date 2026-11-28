@@ -1,7 +1,10 @@
 import type { PostEffectType, UnitLength } from '@kittycad/lib'
 import { computed, signal, type ReadonlySignal } from '@preact/signals-core'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { getViewportPostEffect } from '@src/lib/settings/viewportRendering'
+import {
+  getViewportPostEffect,
+  type ViewportRendering,
+} from '@src/lib/settings/viewportRendering'
 import {
   darkModeMatcher,
   getSystemTheme,
@@ -26,6 +29,7 @@ export interface SceneAppearancePreferences {
 export interface LocalRendererPreferences {
   theme: ResolvedTheme
   enableSSAO: boolean
+  viewportRendering: ViewportRendering
   backfaceColor: string
   highlightEdges: boolean
   fixedSizeGrid: boolean
@@ -77,6 +81,7 @@ export function createScenePresentationPreferences(
     return {
       theme: theme.value,
       enableSSAO: modeling.enableSSAO.currentSignal.value,
+      viewportRendering: modeling.viewportRendering.currentSignal.value,
       backfaceColor: modeling.backfaceColor.currentSignal.value,
       highlightEdges: modeling.highlightEdges.currentSignal.value,
       fixedSizeGrid: modeling.fixedSizeGrid.currentSignal.value,
