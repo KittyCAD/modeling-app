@@ -1,3 +1,5 @@
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { testFileOperations } from '@src/lib/fileSystem/testScheduler'
 import '@src/lib/projectSession/next/testFeature'
 import { contribute, provide, Registry } from 'plankton'
 import editorsExtension from '@src/lib/editors/registry'
@@ -58,6 +60,7 @@ it.each([false, true])(
     vi.mocked(openKclScene).mockImplementation(
       async ({ preferences, presentation }) => {
         const resource = createTestKclScene(presentation, { preferences })
+
         resources.push(resource)
         return resource
       }
@@ -72,6 +75,7 @@ it.each([false, true])(
       editorsExtension,
       executorsExtension,
       kclExtension,
+      provide(fileOperationsService, testFileOperations),
       [
         [provide(settingsService, settingsProvider)],
         [contribute(wasmPromiseFacet, () => wasm)],
@@ -102,6 +106,11 @@ it.each([false, true])(
         </>
       )
       await vi.waitFor(() => expect(resources).toHaveLength(2))
+      expect(
+        await screen.findAllByRole('contentinfo', {
+          name: 'Modeling view status',
+        })
+      ).toHaveLength(2)
       const nativeSettings = registry.required(kclExecutionSettingsService)
       for (const [options] of vi.mocked(openKclScene).mock.calls) {
         expect(options.wasm).toBe(wasm)
@@ -298,6 +307,7 @@ it.each([false, true])(
       editorsExtension,
       executorsExtension,
       kclExtension,
+      provide(fileOperationsService, testFileOperations),
       [[provide(settingsService, settings)]],
     ])
     try {
@@ -360,6 +370,7 @@ it('keeps a pending shared capture alive when one Modeling view closes', async (
     editorsExtension,
     executorsExtension,
     kclExtension,
+    provide(fileOperationsService, testFileOperations),
     [
       [provide(settingsService, createTestSettings())],
       [contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {}))],
@@ -436,6 +447,7 @@ it.each([false, true])(
       editorsExtension,
       executorsExtension,
       kclExtension,
+      provide(fileOperationsService, testFileOperations),
       [
         [provide(settingsService, settings)],
         [contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {}))],
@@ -549,6 +561,7 @@ it('shows stale tabs with Automatically Render Off and refreshes through the Ren
     editorsExtension,
     executorsExtension,
     kclExtension,
+    provide(fileOperationsService, testFileOperations),
     provide(settingsService, settingsProvider),
     contribute(wasmPromiseFacet, () => new Promise<ModuleType>(() => {})),
   ])

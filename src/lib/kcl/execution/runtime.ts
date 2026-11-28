@@ -1,6 +1,10 @@
 import * as Cause from 'effect/Cause'
 import * as Effect from 'effect/Effect'
 import * as Exit from 'effect/Exit'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@src/lang/wasm'
+import { getSettingsAnnotation } from '@src/lang/queryAst'
+import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { batch, signal } from '@preact/signals-core'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
@@ -53,6 +57,11 @@ export async function createKclRuntime(
   let queue: Promise<unknown> = Promise.resolve()
   const state = signal<ExecState>(emptyExecState())
   const executing = signal(false)
+  const program = signal<Node<Program> | null>(null)
+  const fileSettings = signal<KclSettingsAnnotation>({})
+  const executionRevision = signal(0)
+  const executionElapsedMs = signal<number | null>(null)
+  let elapsedTimer: ReturnType<typeof setInterval> | undefined
   const failed = signal(false)
   const events = new EventTarget()
   const native = new wasm.Context(engine, {
@@ -99,6 +108,7 @@ export async function createKclRuntime(
       if (isErr(ast)) return yield* Effect.fail(ast)
       if (!resultIsOk(ast))
         return yield* Effect.fail(new Error('Fix KCL syntax before executing'))
+      const annotation = getSettingsAnnotation(ast.program, wasm)
       if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
       const delta: SceneGraphDelta = yield* fromPromise(() =>
         native.execute(JSON.stringify(ast.program), snapshot.src, configuration)
@@ -108,6 +118,8 @@ export async function createKclRuntime(
       if (disposed) return yield* Effect.fail(new Error('The KCL scene closed'))
       batch(() => {
         state.value = result
+        program.value = ast.program
+        fileSettings.value = isErr(annotation) ? {} : annotation
         failed.value = false
       })
       return result
@@ -144,13 +156,21 @@ export async function createKclRuntime(
         Effect.acquireUseRelease(
           Effect.sync(() => {
             const stopTracking = engine.trackExecution()
+            executionRevision.value++
             executing.value = true
-            return stopTracking
+            const started = performance.now()
+            executionElapsedMs.value = 0
+            elapsedTimer = setInterval(() => {
+              executionElapsedMs.value = performance.now() - started
+            }, 100)
+            return { stopTracking, started }
           }),
           () => executionProgram(snapshot, capturedSettings),
-          (stopTracking, exit) =>
+          ({ stopTracking, started }, exit) =>
             Effect.sync(() => {
               const successful = Exit.isSuccess(exit)
+              clearInterval(elapsedTimer)
+              executionElapsedMs.value = performance.now() - started
               if (!disposed) failed.value = !successful
               executing.value = false
               stopTracking()
@@ -179,6 +199,10 @@ export async function createKclRuntime(
   }
   return {
     state,
+    ast: program,
+    fileSettings,
+    executionRevision,
+    executionElapsedMs,
     executing,
     failed,
     events,
@@ -191,6 +215,7 @@ export async function createKclRuntime(
     async dispose() {
       if (disposed) return
       disposed = true
+      clearInterval(elapsedTimer)
       await queue
       native.free()
     },

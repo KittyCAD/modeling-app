@@ -5,6 +5,7 @@ import { createKclSceneSelection } from '@src/lib/kcl/scene/sceneSelection'
 import type { SceneSelectionController } from '@src/lib/kcl/scene/selection'
 import { computed, effect } from '@preact/signals-core'
 import type { CameraViewState } from '@kittycad/lib'
+import { captureViewportScreenshot } from '@src/lib/screenshot'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { LocalRendererHost } from '@src/clientSideScene/localRenderer/host'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -48,6 +49,11 @@ export interface KclSceneResource {
   readonly localHost: LocalRendererHost | undefined
   readonly viewControls?: KclViewControlHost
   readonly selection: SceneSelectionController
+  readonly commands: Pick<
+    ConnectionManager,
+    'sendSceneCommand' | 'pendingCommands'
+  >
+  captureScreenshot: () => string
   readonly preferences: ScenePresentationPreferences
   snapshotCamera: () => CameraViewState
   restoreCamera: (view: CameraViewState) => Promise<void>
@@ -181,6 +187,20 @@ export async function openKclScene({
       presentation,
       localHost: view.localHost,
       selection: selectionBinding.selection,
+      commands: {
+        sendSceneCommand: connected.send,
+        get pendingCommands() {
+          return manager.pendingCommands
+        },
+      },
+      captureScreenshot: () =>
+        disposed
+          ? ''
+          : captureViewportScreenshot({
+              canvas: sceneInfra.renderer.domElement,
+              video: view.video,
+              localRenderer: sceneInfra.localRenderer,
+            }),
       preferences,
       viewControls: {
         id: uuidv4(),

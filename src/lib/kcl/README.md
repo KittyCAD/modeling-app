@@ -195,7 +195,34 @@ Each view owns geometry selection through `resource.selection`, scoped to its
 current execution. Both renderers use the existing picking adapters. Opening a
 command dialog gives its arguments a separate picking session; cancelling leaves
 the underlying view selection intact. Re-execution invalidates old geometry picks.
-See [the selection contract](scene/README.md#view-selection-and-dialog-picking).
+See [the selection contract](scene/README.md#view-selection).
+
+## View status
+
+Each Modeling view has its own footer for screenshot capture, execution status,
+measurement, physical analysis, selection, selection filtering, and file units.
+Preparation and native execution are reported separately. These controls reuse
+the file route's views through explicit scene inputs. Application
+status, such as network health and updates, belongs to the project footer.
+
+The [status-item facet](registry/contract.ts) lets extensions add controls to the
+start or end of the footer, ordered within each side. Contributions receive the
+owning `ModelingViewContext`; switching focus cannot redirect an open tool to
+another view. Each view owns its measurement and analysis panels and closes them
+when its mode context is released.
+
+Geometry queries use the displayed scene and its execution-qualified selection.
+With Automatically Render off, editing text or failing to capture new sources
+can leave that geometry available but out of date. Measurement continues to use
+that displayed model. Native re-execution, disconnection, scene replacement,
+and closing the view invalidate pending query responses. File-unit changes are
+editor transactions: they preserve undo history and request rendering after a
+successful edit, matching the legacy units menu. They refuse to overwrite text
+that changed while the operation was waiting for WASM.
+
+The footer works without a modeling-machine host. Its assembly lives in
+[`ModelingStatusBar`](modeling/ModelingStatusBar.tsx), and the default contributions
+are listed in [`statusItems`](modeling/statusItems.ts).
 
 ## Code map
 

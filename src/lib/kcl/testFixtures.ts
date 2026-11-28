@@ -52,6 +52,10 @@ export function createTestSettings() {
 
 export function createTestKclRuntime() {
   return {
+    ast: signal<KclRuntime['ast']['value']>(null),
+    fileSettings: signal<KclRuntime['fileSettings']['value']>({}),
+    executionRevision: signal(0),
+    executionElapsedMs: signal<number | null>(null),
     events: new EventTarget(),
     state: signal(emptyExecState()),
     executing: signal(false),
@@ -79,6 +83,13 @@ export function createTestKclScene(
   onTestFinished(selection.dispose)
   return {
     selection,
+    commands: {
+      sendSceneCommand: vi.fn<KclSceneResource['commands']['sendSceneCommand']>(
+        async () => null
+      ),
+      pendingCommands: {},
+    },
+    captureScreenshot: vi.fn(() => ''),
     element: document.createElement('div'),
     presentation,
     localHost: undefined,
