@@ -31,6 +31,7 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { isStepFile } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
+import { toWebSafePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
@@ -61,6 +62,18 @@ const EXECUTING_MESSAGE =
 const DEFAULT_IMPORT_REPRESENTATION = 'mesh' as const
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
+  const getImportPath = (projectRelativePath: string) => {
+    const project = commandProps.getProject()
+    const currentFilePath = commandProps.kclManager.path
+    if (!project || !currentFilePath) return projectRelativePath
+    return toWebSafePath(
+      fsZds.relative(
+        fsZds.dirname(currentFilePath),
+        fsZds.join(project.path, projectRelativePath)
+      )
+    )
+  }
+
   return [
     {
       scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
@@ -229,11 +242,12 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return providedOptions
           },
           validation: async ({ data }) => {
+            const path = getImportPath(data.path)
             const importExists = commandProps.kclManager.ast.body.find(
               (n) =>
                 n.type === 'ImportStatement' &&
-                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
-                  (n.path.type === 'Foreign' && n.path.path === data.path))
+                ((n.path.type === 'Kcl' && n.path.filename === path) ||
+                  (n.path.type === 'Foreign' && n.path.path === path))
             )
             if (importExists) {
               return 'This file is already imported, use the Clone command instead.'
@@ -294,7 +308,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        const { path, localName } = data
+        const { path: projectRelativePath, localName } = data
+        const path = getImportPath(projectRelativePath)
         const representation = isStepFile(path)
           ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
           : undefined
