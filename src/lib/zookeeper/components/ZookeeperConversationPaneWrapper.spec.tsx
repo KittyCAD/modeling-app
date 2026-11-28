@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   contextModeling: { selectionRanges: [] },
   conversation: { exchanges: [] },
   markdown: vi.fn(() => '# Conversation'),
+  migrationEnabled: false,
+  kclVersion: '2.0',
   paneProps: undefined as Record<string, unknown> | undefined,
   settings: {
     app: { zookeeperMode: { project: undefined, user: undefined } },
@@ -89,6 +91,17 @@ vi.mock('@src/lib/boot', () => ({
     auth: {
       useUser: () => mocks.user,
     },
+    userFeatures: {
+      useHas: (feature: string) =>
+        feature === 'zookeeper_kcl_migration' && mocks.migrationEnabled,
+    },
+    projectSignal: {
+      value: {
+        executingEditor: {
+          value: { kclProgramVersionSignal: { value: mocks.kclVersion } },
+        },
+      },
+    },
     settings: {
       actor: { send: mocks.settingsSend },
       useSettings: () => mocks.settings,
@@ -137,6 +150,8 @@ describe('ZookeeperConversationPaneWrapper', () => {
     mocks.browserSaveFile.mockClear()
     mocks.markdown.mockClear()
     mocks.paneProps = undefined
+    mocks.migrationEnabled = false
+    mocks.kclVersion = '2.0'
     mocks.settingsSend.mockClear()
   })
 
@@ -173,6 +188,21 @@ describe('ZookeeperConversationPaneWrapper', () => {
       data: { level: 'project', value: 'text-to-cad' },
     })
   })
+
+  test.each([
+    { enabled: true, version: '2.0', eligible: true },
+    { enabled: false, version: '2.0', eligible: false },
+    { enabled: true, version: '3.0', eligible: false },
+  ])(
+    'offers migration only for enabled KCL 2 entrypoints: $enabled/$version',
+    ({ enabled, version, eligible }) => {
+      mocks.migrationEnabled = enabled
+      mocks.kclVersion = version
+      renderWrapper()
+
+      expect(mocks.paneProps?.canMigrateKcl).toBe(eligible)
+    }
+  )
 
   test('exports the current conversation from the header menu', () => {
     renderWrapper()

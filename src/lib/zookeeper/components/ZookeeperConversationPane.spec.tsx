@@ -166,6 +166,7 @@ const createFakeController = ({
     clearConversation: vi.fn(async () => undefined),
     dispose: vi.fn(),
     reconnect: vi.fn(),
+    migrateKcl: vi.fn(),
     removeQueued: vi.fn(),
     resumeInterruptedTurn: vi.fn(),
     sendOrQueue: vi.fn(),
@@ -408,7 +409,10 @@ describe('ZookeeperConversationPane', () => {
     render(
       <MemoryRouter>
         <ZookeeperConversationPane
-          {...createPaneProps(fake.controller, { onMlCopilotModeChange })}
+          {...createPaneProps(fake.controller, {
+            canMigrateKcl: true,
+            onMlCopilotModeChange,
+          })}
         />
       </MemoryRouter>
     )
@@ -427,6 +431,7 @@ describe('ZookeeperConversationPane', () => {
     props.onReconnect()
     props.onCheckBilling?.()
     props.onCancel()
+    props.onMigrateKcl?.()
     props.onResumeInterruptedTurn?.()
     props.onRemoveFromQueue('queued-message')
     props.onSteer('steered-message')
@@ -443,6 +448,7 @@ describe('ZookeeperConversationPane', () => {
     expect(fake.reconnect).toHaveBeenCalledOnce()
     expect(fake.checkBillingAccess).toHaveBeenCalledOnce()
     expect(fake.cancel).toHaveBeenCalledOnce()
+    expect(fake.migrateKcl).toHaveBeenCalledOnce()
     expect(fake.resumeInterruptedTurn).toHaveBeenCalledOnce()
     expect(fake.removeQueued).toHaveBeenCalledWith('queued-message')
     expect(fake.steer).toHaveBeenCalledWith('steered-message')

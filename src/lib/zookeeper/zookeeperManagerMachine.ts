@@ -4,6 +4,7 @@ import {
 } from '@src/lib/zookeeper/cloudProjectTools'
 import type {
   AttachmentRef,
+  KclMigrationRequest,
   MlCopilotAccessDeniedCode,
   MlCopilotClientMessage,
   MlCopilotFile,
@@ -404,6 +405,7 @@ export type ZookeeperManagerEvents =
       wasmInstance: ModuleType
       mode?: MlCopilotModeId
       additionalFiles?: File[]
+      migration?: Pick<KclMigrationRequest, 'request_id' | 'project_snapshot'>
     }
   | {
       type: ZookeeperManagerStates.ContinueCheck
@@ -1062,6 +1064,9 @@ export const zookeeperManagerMachine = setup({
   actions: {
     receiveResponse: assign(({ event, context }) => {
       assertEvent(event, [ZookeeperManagerTransitions.ResponseReceive])
+
+      // Admission metadata does not change conversation or completion state.
+      if ('kcl_migration_operation' in event.response) return {}
 
       if ('attachments_error' in event.response) {
         const { prompt_id, seq, indices, detail } =
@@ -2022,11 +2027,12 @@ export const zookeeperManagerMachine = setup({
       const projectId = event.projectForPromptOutput.cloudProjectId
         ? `cloud:${event.projectForPromptOutput.cloudProjectId}`
         : `local:${event.projectForPromptOutput.projectId ?? event.projectForPromptOutput.path}`
-      const cloudProjectTools = usesCloudProjectTools(projectId)
+      const cloudProjectTools =
+        !event.migration && usesCloudProjectTools(projectId)
       const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
-        selections: event.selections,
+        selections: event.migration ? null : event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
         projectFiles: event.projectFiles,
         includeProjectFiles: !cloudProjectTools,
@@ -2071,7 +2077,26 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      const encodedRequest = msgpackEncode(request, { ignoreUndefined: true })
+      let wireRequest: MlCopilotClientMessageWithDiscoveredMode = request
+      if (event.migration) {
+        if (!requestData.activeFile) {
+          return Promise.reject(
+            new Error('No KCL entrypoint selected for migration.')
+          )
+        }
+        wireRequest = {
+          type: 'migrate_kcl',
+          request: {
+            ...event.migration,
+            target: '3.0',
+            entrypoint: requestData.activeFile,
+            current_files: filesAsByteArrays,
+          },
+        }
+      }
+      const encodedRequest = msgpackEncode(wireRequest, {
+        ignoreUndefined: true,
+      })
       if (encodedRequest.byteLength > ZOOKEEPER_MAX_MESSAGE_BYTES) {
         return Promise.reject(new ZookeeperProjectTooLargeError())
       }
