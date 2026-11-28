@@ -2,6 +2,7 @@ import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import {
   collectProjectFiles as collectProjectFilesWithFileOperations,
   collectProjectFilesForUpload,
+  collectProjectFilePathsForUpload,
 } from '@src/lib/projectSession/projectFiles'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -43,6 +44,44 @@ export function projectFilesContract(
         ...args,
         fileOperations: operations,
       })
+
+    it('lists uploadable paths without opening model or asset contents', async () => {
+      for (const path of [
+        'main.kcl',
+        'parts/bracket.kcl',
+        'assets/input.bin',
+        'ignored.kcl',
+        '.git/private.kcl',
+      ]) {
+        const absolute = fs.join(fixture.root, path)
+        await fs.mkdir(fs.dirname(absolute), { recursive: true })
+        await fs.writeFile(absolute, new Uint8Array([1, 2, 3]))
+      }
+      await fs.writeFile(
+        fs.join(fixture.root, '.gitignore'),
+        new TextEncoder().encode('ignored.kcl\n')
+      )
+      const paths = await collectProjectFilePathsForUpload({
+        projectRoot: fixture.root,
+        fileOperations: {
+          ...operations,
+          readFile: (path) =>
+            fs.basename(path) === '.gitignore'
+              ? operations.readFile(path)
+              : Promise.reject(
+                  new Error(
+                    'Model and asset contents must not be loaded for a file list.'
+                  )
+                ),
+        },
+      })
+      expect(paths).toEqual([
+        '.gitignore',
+        'assets/input.bin',
+        'main.kcl',
+        'parts/bracket.kcl',
+      ])
+    })
 
     it('collects project files and excludes .gitignore patterns', async () => {
       const projectPath = fixture.root
