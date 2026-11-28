@@ -8,7 +8,7 @@ import { createEditorSave } from '@src/lib/save/save'
 import { editorSaveService } from '@src/lib/save/registry/contract'
 import {
   editorCapabilityFacet,
-  codeEditorsExtensionFacet,
+  editorNamingService,
   editorTabIndicatorsFacet,
   type Editor,
 } from '@src/lib/editors/registry/contract'
@@ -17,10 +17,14 @@ import autosaveExtension from '@src/lib/save/autosave/registry'
 import persistToFilesExtension from '@src/lib/save/persistToFiles/registry'
 import {
   GLOBAL_COMMAND_SCOPES,
+  EDITOR_FOCUSED_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { isErr, trap, reportRejection } from '@src/lib/trap'
-import { keymapEventOwnersFacet } from '@src/registry/contracts/keymap'
+import { provideKeymapItem } from '@src/registry/contracts/keymap'
+
+import { createEditorNaming } from '@src/lib/save/naming'
+import { observations as projectObservations } from '@src/lib/projectSession/next/contract'
+import { observations as fileObservations } from '@src/registry/contracts/fileOperations'
 
 export const SAVE_EDITOR_COMMAND = {
   id: 'zds.editors.save',
@@ -28,40 +32,54 @@ export const SAVE_EDITOR_COMMAND = {
   groupId: 'editors',
 } as const
 
+export const RENAME_EDITOR_COMMAND = {
+  id: 'zds.editors.rename',
+  name: 'rename-editor',
+  groupId: 'editors',
+} as const
+
 /** Assemble saving, focused keyboard behavior, and its optional tab decoration. */
 const extension = factory({
   key: 'save',
-  dependencies: { saving: savingObservations, editors: editorsObservations },
-  create: ({ saving: savingInputs, editors: editorsInputs }) => {
-    const saving = createEditorSave(() => savingInputs.editorOnSaveFacet.value)
+  dependencies: {
+    saving: savingObservations,
+    editors: editorsObservations,
+    project: projectObservations,
+    files: fileObservations,
+  },
+  create: ({
+    saving: savingInputs,
+    editors: editorsInputs,
+    project,
+    files,
+  }) => {
+    const saving = createEditorSave(
+      () => savingInputs.editorOnSaveFacet.value,
+      (editor) => naming.request(editor)
+    )
+    const naming = createEditorNaming(
+      () => project.projectSessionService.current.value,
+      () => editorsInputs.editorsService.current.value,
+      () => files.fileOperationsService.current.value,
+      saving.service,
+      saving.withSourceLock,
+      saving.focus,
+      { defaultExtension: '.kcl' }
+    )
     const editorForEvent = (event: Event) =>
       editorViewForTarget(
         editorsInputs.editorsService.current.value?.views.peek() ?? [],
         event.composedPath()[0] ?? event.target
       )?.editor
-    const isSaveShortcut = (event: KeyboardEvent) =>
-      (event.metaKey || event.ctrlKey) &&
-      !event.altKey &&
-      !event.shiftKey &&
-      event.key.toLowerCase() === 's'
     const onFocus = (event: FocusEvent) => {
       const editor = editorForEvent(event)
       if (editor) saving.focus(editor)
     }
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || !isSaveShortcut(event)) return
-      const editor = editorForEvent(event)
-      if (!editor) return
-      event.preventDefault()
-      event.stopPropagation()
-      saving.focus(editor)
-      void saving.service
-        .save(editor)
-        .then((result) => {
-          if (isErr(result)) trap(result)
-        })
-        .catch(reportRejection)
-    }
+    const currentEditor = () =>
+      editorViewForTarget(
+        editorsInputs.editorsService.current.value?.views.peek() ?? [],
+        document.activeElement
+      )?.editor ?? saving.service.lastFocusedEditor.peek()
     function UnsavedIndicator({ editor }: { editor: Editor }) {
       useSignals()
       if (!saving.service.state(editor).value.dirty) return null
@@ -75,34 +93,49 @@ const extension = factory({
     return {
       start: () => {
         window.addEventListener('focusin', onFocus)
-        window.addEventListener('keydown', onKeyDown)
         return () => {
           window.removeEventListener('focusin', onFocus)
-          window.removeEventListener('keydown', onKeyDown)
         }
       },
       items: [
         provide(editorSaveService, saving.service),
+        provide(editorNamingService, naming.service),
         contribute(editorCapabilityFacet, () => ({
           id: 'editors.save',
           matches: '*' as const,
           setup: saving.setup,
         })),
-        contribute(codeEditorsExtensionFacet, () => ({
-          id: 'editors.save.focused',
-          matches: '*' as const,
-          extensions: saving.codeExtensions,
-        })),
         contribute(editorTabIndicatorsFacet, () => ({
           id: 'editors.unsaved',
           component: UnsavedIndicator,
         })),
-        contribute(keymapEventOwnersFacet, () => ({
-          id: 'editors.save',
-          scope: 'editors.save.focused',
-          owns: (event) =>
-            isSaveShortcut(event) && editorForEvent(event) !== undefined,
-        })),
+        provideKeymapItem({
+          id: SAVE_EDITOR_COMMAND.id,
+          title: 'Save editor',
+          source: 'Save',
+          command: SAVE_EDITOR_COMMAND.id,
+          keystrokes: ['mod+s'],
+          when: [EDITOR_FOCUSED_COMMAND_SCOPE],
+        }),
+        provideKeymapItem({
+          id: RENAME_EDITOR_COMMAND.id,
+          title: 'Rename editor',
+          source: 'Save',
+          command: RENAME_EDITOR_COMMAND.id,
+          keystrokes: ['f2'],
+        }),
+        provideCommand({
+          ...RENAME_EDITOR_COMMAND,
+          displayName: 'Rename editor',
+          description: 'Rename the last focused editor.',
+          scopes: GLOBAL_COMMAND_SCOPES,
+          needsReview: false,
+          onSubmit: () => {
+            const editor = currentEditor()
+            if (!editor) return new Error('Focus an editor to rename it')
+            return naming.service.rename(editor)
+          },
+        }),
         provideCommand({
           ...SAVE_EDITOR_COMMAND,
           displayName: 'Save editor',
@@ -110,7 +143,7 @@ const extension = factory({
           scopes: GLOBAL_COMMAND_SCOPES,
           needsReview: false,
           onSubmit: async () => {
-            const editor = saving.service.lastFocusedEditor.peek()
+            const editor = currentEditor()
             if (!editor) return new Error('Focus an editor to save it')
             const result = await saving.service.save(editor)
             return result
@@ -118,6 +151,7 @@ const extension = factory({
         }),
       ],
       dispose: () => {
+        naming.dispose()
         saving.dispose()
       },
     }

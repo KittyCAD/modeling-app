@@ -2,6 +2,8 @@ import '@src/lib/projectSession/next/testFeature'
 import { act, cleanup, render, screen } from '@testing-library/react'
 import { CloudProjectStatus } from '@src/lib/cloudProjects/next/CloudProjectStatus'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
+import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
+import { commandsFacet } from '@src/registry/contracts/commands'
 import { codeSurface } from '@src/lib/editors/testViews'
 import { editorTabIndicatorsFacet } from '@src/lib/editors/registry/contract'
 import { LayoutType } from '@src/lib/layout/types'
@@ -26,7 +28,10 @@ import { readProject } from '@src/lib/projectSession/next/utils'
 import { createProjectSessionExtension } from '@src/lib/projectSession/registry'
 import { projectSessionService } from '@src/lib/projectSession/next/contract'
 import editorsExtension from '@src/lib/editors/registry'
-import { editorsService } from '@src/lib/editors/registry/contract'
+import {
+  editorNamingService,
+  editorsService,
+} from '@src/lib/editors/registry/contract'
 import { requireSuccess } from '@src/lib/editors/testViews'
 import saveExtension from '@src/lib/save/registry'
 import { editorSaveService } from '@src/lib/save/registry/contract'
@@ -163,6 +168,109 @@ it('updates clean buffers, baselines, and the file list together after a remote 
   expect(projects.listFiles().map((file) => file.name)).toContain('added.md')
   expect(api.updateRemoteProject).not.toHaveBeenCalled()
 })
+it.each(['first save', 'rename'])(
+  'persists a nested %s through the cloud backing and reopens its uploaded contents',
+  async (operation) => {
+    const { cloud, projects, editors, editor: existing, saving } = await setup()
+    let revision = 1
+    vi.mocked(api.updateRemoteProject).mockImplementation(async ({ files }) => {
+      const uploaded = files.map(({ relativePath, data }) => ({
+        relativePath,
+        data: new Uint8Array(data),
+      }))
+      const saved = remoteSnapshot(String(++revision), uploaded)
+      vi.mocked(api.getRemoteProject).mockResolvedValue(saved)
+      vi.mocked(parseProjectArchive).mockResolvedValue(uploaded)
+      return saved
+    })
+    const root = projects.currentProject.peek()!.contents.path
+    const destination = `${root}/parts/drafts/notes.txt`
+    const editor =
+      operation === 'first save'
+        ? requireSuccess(editors.createEditor('draft contents'))
+        : existing
+    if (operation === 'rename')
+      editor.dispatch({
+        changes: {
+          from: 0,
+          to: editor.state.doc.length,
+          insert: 'unsaved edits',
+        },
+      })
+    const reads = vi.spyOn(fileServices.operations, 'readDirectory')
+    vi.mocked(api.getRemoteProject).mockClear()
+    vi.mocked(api.downloadRemoteProjectArchive).mockClear()
+    const naming = registry.required(editorNamingService)
+    expect(naming.rename(editor)).toBeUndefined()
+    await naming.submit(editor, 'parts/drafts/notes.txt')
+    expect(naming.state(editor).peek()).toBeUndefined()
+    expect(editor.src.peek()).toBe(destination)
+    expect(await fileServices.operations.readFile(destination)).toEqual(
+      new TextEncoder().encode(
+        operation === 'first save' ? 'draft contents' : 'original'
+      )
+    )
+    expect(
+      await fileServices.operations.stat(`${root}/parts/drafts`)
+    ).toMatchObject({ kind: 'directory' })
+    const uploaded = vi.mocked(api.updateRemoteProject).mock.lastCall!
+    expect(uploaded[0].files).toContainEqual(
+      file(
+        'parts/drafts/notes.txt',
+        operation === 'first save' ? 'draft contents' : 'original'
+      )
+    )
+    if (operation === 'rename') {
+      expect(uploaded[0].deletedPaths).toContain('main.kcl')
+      expect(await fileServices.operations.exists(`${root}/main.kcl`)).toBe(
+        false
+      )
+      expect(projects.listFiles().map((entry) => entry.path)).not.toContain(
+        `${root}/main.kcl`
+      )
+      expect(editor.contents.peek()).toBe('unsaved edits')
+      expect(saving.state(editor).peek().dirty).toBe(true)
+    } else expect(saving.state(editor).peek().dirty).toBe(false)
+    const arg = registry
+      .get(commandsFacet)
+      .find(({ id }) => id === OPEN_EDITOR_COMMAND.id)?.args?.src
+    if (arg?.inputType !== 'options' || typeof arg.options !== 'function')
+      throw new Error('Expected Open Editor source options')
+    expect(arg.options({ argumentsToSubmit: {} })).toContainEqual({
+      name: 'parts/drafts/notes.txt',
+      value: destination,
+    })
+    expect(reads).not.toHaveBeenCalled()
+    expect(api.getRemoteProject).not.toHaveBeenCalled()
+    expect(api.downloadRemoteProjectArchive).not.toHaveBeenCalled()
+    reads.mockRestore()
+    expect(await saving.save(editor)).toBeUndefined()
+    expect(cloud.saves.peek().get('one')?.state).toBe('saved')
+    const reopened = createCloudProjectsServices(
+      { ...noopfs.impl, ...posix },
+      () => ({ enabled: true, accountId: 'test-account' })
+    )
+    try {
+      const reopenedRoot = await reopened.cloud.openProject('one')
+      expect(
+        await reopened.cloud.readFile(`${reopenedRoot}/parts/drafts/notes.txt`)
+      ).toEqual(
+        new TextEncoder().encode(
+          operation === 'first save' ? 'draft contents' : 'unsaved edits'
+        )
+      )
+      expect(
+        await reopened.cloud.stat(`${reopenedRoot}/parts/drafts`)
+      ).toBeDefined()
+      if (operation === 'rename')
+        await expect(
+          reopened.cloud.readFile(`${reopenedRoot}/main.kcl`)
+        ).rejects.toThrow()
+    } finally {
+      await reopened.dispose()
+    }
+  }
+)
 it('maps the cursor through only the changed text when adopting a remote snapshot', async () => {
   const { cloud, editor, saving } = await setup()
   editor.dispatch({
@@ -498,3 +606,81 @@ it('shows offline status, blocks Code edits, and autosaves the pending cloud edi
     })
   ).not.toBeInTheDocument()
 })
+
+it.each(['first save', 'rename'])(
+  'retries a %s after a cloud upload failure without losing its source or edits',
+  async (operation) => {
+    const { projects, editors, editor: existing, saving } = await setup()
+    const root = projects.currentProject.peek()!.contents.path
+    const source = existing.src.peek()
+    const editor =
+      operation === 'first save'
+        ? requireSuccess(editors.createEditor('draft'))
+        : existing
+    if (operation === 'rename')
+      editor.dispatch({
+        changes: { from: 0, to: editor.state.doc.length, insert: 'draft' },
+      })
+    const naming = registry.required(editorNamingService)
+    vi.mocked(api.updateRemoteProject).mockRejectedValue(
+      new Error('Upload failed')
+    )
+    naming.rename(editor)
+    await naming.submit(editor, 'notes.txt')
+    expect(naming.state(editor).peek()?.error).toBeTruthy()
+    expect(editor.src.peek()).toBe(operation === 'rename' ? source : undefined)
+    expect(editor.contents.peek()).toBe('draft')
+    expect(saving.state(editor).peek().dirty).toBe(true)
+    expect(await fileServices.operations.exists(`${root}/notes.txt`)).toBe(
+      false
+    )
+    expect(projects.listFiles().map((entry) => entry.path)).not.toContain(
+      `${root}/notes.txt`
+    )
+    vi.mocked(api.updateRemoteProject)
+      .mockClear()
+      .mockResolvedValue(remoteSnapshot('2'))
+    await naming.submit(editor, 'notes.txt')
+    expect(naming.state(editor).peek()).toBeUndefined()
+    expect(api.updateRemoteProject).toHaveBeenCalled()
+    expect(editor.src.peek()).toBe(`${root}/notes.txt`)
+    expect(await fileServices.operations.readFile(`${root}/notes.txt`)).toEqual(
+      new TextEncoder().encode(operation === 'rename' ? 'original' : 'draft')
+    )
+    if (operation === 'rename')
+      expect(await fileServices.operations.exists(source!)).toBe(false)
+  }
+)
+it.each(['first save', 'rename'])(
+  'does not adopt a %s rejected by a cloud revision conflict',
+  async (operation) => {
+    const { projects, editors, editor: existing, saving } = await setup()
+    const root = projects.currentProject.peek()!.contents.path
+    const source = existing.src.peek()
+    const editor =
+      operation === 'first save'
+        ? requireSuccess(editors.createEditor('draft'))
+        : existing
+    if (operation === 'rename')
+      editor.dispatch({
+        changes: { from: 0, to: editor.state.doc.length, insert: 'draft' },
+      })
+    vi.mocked(api.getRemoteProject).mockResolvedValue(remoteSnapshot('2'))
+    vi.mocked(api.updateRemoteProject).mockRejectedValue(
+      new api.CloudApiError(409, 'Revision changed')
+    )
+    const naming = registry.required(editorNamingService)
+    naming.rename(editor)
+    await naming.submit(editor, 'notes.txt')
+    expect(naming.state(editor).peek()?.error).toBeTruthy()
+    expect(editor.src.peek()).toBe(operation === 'rename' ? source : undefined)
+    expect(editor.contents.peek()).toBe('draft')
+    expect(saving.state(editor).peek().dirty).toBe(true)
+    expect(await fileServices.operations.exists(`${root}/notes.txt`)).toBe(
+      false
+    )
+    expect(projects.listFiles().map((entry) => entry.path)).not.toContain(
+      `${root}/notes.txt`
+    )
+  }
+)
