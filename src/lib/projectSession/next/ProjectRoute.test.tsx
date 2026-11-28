@@ -1,5 +1,10 @@
 import '@src/lib/projectSession/next/testFeature'
 import { codeSurface } from '@src/lib/editors/testViews'
+import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
+import * as desktop from '@src/lib/isDesktop'
 import { signal } from '@preact/signals-core'
 import { factory, Registry, provide } from 'plankton'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
@@ -103,7 +108,53 @@ describe('project screen', () => {
   })
   afterEach(async () => {
     cleanup()
+    autoUpdateDownloadProgressSignal.value = null
+    autoUpdateReadySignal.value = null
+    vi.restoreAllMocks()
     await services.dispose()
+  })
+  it('shows update progress and offers a restart when the desktop update is ready', () => {
+    vi.spyOn(desktop, 'isDesktop').mockReturnValue(true)
+    const original = window.electron
+    const appRestart = vi.fn()
+    window.electron = {
+      os: { isMac: true },
+      createEditorPageMenu: vi.fn(async () => {}),
+      menuOn: () => () => {},
+      appRestart,
+    } as unknown as Window['electron']
+    try {
+      render(
+        <MemoryRouter>
+          <ProjectView session={createSession('Bracket')} />
+        </MemoryRouter>
+      )
+      expect(
+        screen.queryByRole('button', { name: /Restart to update/ })
+      ).not.toBeInTheDocument()
+      act(() => {
+        autoUpdateDownloadProgressSignal.value = {
+          bytesPerSecond: 1024,
+          delta: 512,
+          percent: 50,
+          total: 2048,
+          transferred: 1024,
+        }
+      })
+      expect(screen.getByText('Update 50%')).toBeInTheDocument()
+      act(() => {
+        autoUpdateReadySignal.value = { version: '1.2.3' }
+      })
+      expect(screen.queryByText('Update 50%')).not.toBeInTheDocument()
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Restart to update to v1.2.3',
+        })
+      )
+      expect(appRestart).toHaveBeenCalledOnce()
+    } finally {
+      window.electron = original
+    }
   })
   it('installs editor-owned native history when the new project shell opens', async () => {
     const original = window.electron
@@ -156,6 +207,14 @@ describe('project screen', () => {
       '/projects/Bracket'
     )
     expect(screen.getByText('Read-only')).toBeInTheDocument()
+    expect(screen.getByTestId('environment-subdomain-bar')).toBeInTheDocument()
+    expect(screen.queryByTestId('settings-link')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Network health/ }))
+    expect(screen.getByTestId('network-popover')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Help and resources/ }))
+    expect(
+      screen.getByRole('link', { name: 'Report a bug' })
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: 'Projects',

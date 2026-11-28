@@ -1,8 +1,17 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { appHeaderItemsFacet } from '@src/registry/contracts/appHeader'
 import { Logo } from '@src/components/Logo'
+import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
+import {
+  defaultGlobalStatusBarItems,
+  defaultLocalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
 import { useApp } from '@src/lib/boot'
 import { OPEN_EDITOR_COMMAND } from '@src/lib/editors/commands'
 import { EditorsPane } from '@src/lib/editors/EditorsPane'
@@ -62,6 +71,7 @@ function ProjectHeader({ title }: { title: string }) {
 export function ProjectView({ session }: { session: OpenProjectSession }) {
   useSignals()
   const { registry, commands } = useApp()
+  const networkHealthStatus = useNetworkHealthStatus()
   useEffect(() => {
     void window.electron?.createEditorPageMenu?.().catch(reportRejection)
   }, [])
@@ -109,6 +119,14 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
       </main>
       <StatusBar
         globalItems={[
+          networkHealthStatus,
+          ...defaultGlobalStatusBarItems({
+            autoUpdateDownloadProgress: autoUpdateDownloadProgressSignal.value,
+            autoUpdateReady: autoUpdateReadySignal.value,
+            onRestartToUpdate: () => {
+              window.electron?.appRestart()
+            },
+          }),
           {
             id: 'project-path',
             element: 'text',
@@ -131,6 +149,7 @@ export function ProjectView({ session }: { session: OpenProjectSession }) {
                 } satisfies StatusBarItemType,
               ]
             : []),
+          ...defaultLocalStatusBarItems,
         ]}
       />
     </div>
