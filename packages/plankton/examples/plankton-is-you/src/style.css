@@ -1,0 +1,936 @@
+@import "@fontsource/dm-sans/latin-400.css";
+@import "@fontsource/dm-sans/latin-500.css";
+@import "@fontsource/luckiest-guy/latin-400.css";
+:root {
+  --letterbox: #0c0c0e;
+  --world: #222224;
+  --panel: #1b1b1e;
+  --field: #111113;
+  --pixel: #323236;
+  --line: #48484e;
+  --muted: #aaa9ad;
+  font-family: "DM Sans", sans-serif;
+  color: #e6e5e2;
+  background: var(--letterbox);
+  color-scheme: dark;
+  font-size: 13px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+button:hover {
+  background: #c5ed9110;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #c5ed91;
+  outline-offset: 2px;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.stage {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.world {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  width: min(100vw, calc(100dvh * var(--ratio)));
+  aspect-ratio: var(--ratio);
+  background: var(--world);
+  outline: none;
+}
+.cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+.cell:nth-child(2n) {
+  background: #ffffff02;
+}
+.cell:hover {
+  background: #ffffff05;
+}
+.cell:disabled {
+  opacity: 1;
+}
+.tile {
+  position: absolute;
+  inset: 16%;
+  pointer-events: none;
+}
+.tile.word {
+  inset: 5%;
+}
+.placing .cell {
+  cursor: crosshair;
+}
+.placing .cell:hover {
+  outline: 1px solid #c5ed91;
+  outline-offset: -1px;
+  background: #c5ed9115;
+}
+.victory {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: #101012bb;
+  color: #c5ed91;
+  font-size: 40px;
+  letter-spacing: 5px;
+}
+.victory button {
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+}
+.editor-edge {
+  --closed-angle: -12deg;
+  --peek-angle: 7deg;
+  --peek-shift: -145px;
+  position: fixed;
+  right: -162px;
+  top: 42px;
+  width: 180px;
+  height: 200px;
+  border: 2px solid #77776c;
+  border-radius: 5px 5px 12px 12px;
+  background: #252528;
+  box-shadow: -5px 6px 0 #08080a;
+  transform-origin: 100% 0;
+  transform: rotate(var(--closed-angle));
+  transition:
+    transform 580ms cubic-bezier(0.22, 0.8, 0.24, 1.22),
+    background 180ms;
+  z-index: 2;
+  overflow: visible;
+}
+.editor-edge::before {
+  content: "";
+  position: absolute;
+  inset: 35px 18px 24px;
+  border: 1px dashed #76766b;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 20px, #c5ed910a 20px 22px),
+    repeating-linear-gradient(90deg, transparent 0 20px, #c5ed910a 20px 22px);
+}
+.editor-edge::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a9b994;
+  box-shadow: 1px 2px 0 #08080a;
+}
+.editor-edge > svg {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  bottom: 7px;
+  left: calc(50% - 15px);
+  color: #b8c5a5;
+}
+.edge-label {
+  position: absolute;
+  top: 2px;
+  left: -16px;
+  font-family: "Luckiest Guy", fantasy;
+  font-size: clamp(32px, 3.8vw, 42px);
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+  color: #f6cf75;
+  white-space: nowrap;
+  -webkit-text-stroke: 1px #101012;
+  paint-order: stroke fill;
+  text-shadow: 3px 4px 0 #08080a;
+  opacity: 0;
+  transform: translateY(0) rotate(-7deg);
+  transition:
+    opacity 180ms,
+    transform 580ms cubic-bezier(0.22, 0.8, 0.24, 1.22);
+}
+.editor-edge:is(.peek, :hover, :focus-visible) {
+  transform: translateX(var(--peek-shift)) rotate(var(--peek-angle));
+  background: #2c2c2e;
+}
+.editor-edge:is(.peek, :hover, :focus-visible) .edge-label {
+  opacity: 1;
+  transform: translateY(-14px) rotate(-7deg);
+}
+.editor-overlay {
+  position: fixed;
+  inset: 0;
+  background: #08080a66;
+  z-index: 3;
+}
+.editor {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(390px, 100vw);
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  z-index: 4;
+  --drawer-offset: 100%;
+  --drawer-tilt: -5deg;
+  --drawer-settle: 0.6deg;
+  transform-origin: top right;
+  animation: drawer-fall 480ms cubic-bezier(0.2, 0.75, 0.28, 1) both;
+}
+.editor-main {
+  height: 100%;
+  overflow-y: auto;
+  padding: 22px;
+}
+.editor header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.editor h2 {
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+.editor header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.editor-actions {
+  display: flex;
+  gap: 5px;
+}
+.editor-actions button {
+  border: 0;
+  padding: 6px;
+  width: 29px;
+  height: 29px;
+}
+.editor-description {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 6px 0 22px;
+}
+.editor section {
+  margin: 20px 0;
+}
+.vocabulary {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+.vocabulary button {
+  padding: 3px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.vocabulary svg {
+  width: 36px;
+  height: 36px;
+}
+.vocabulary small {
+  font-size: 8px;
+  color: var(--muted);
+}
+.vocabulary [aria-pressed="true"] {
+  border-color: #b3ce8e;
+  background: #b3ce8e10;
+}
+.editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: #c1c0c3;
+  margin: 15px 0;
+}
+.editor input:not([type="color"]),
+.editor select {
+  width: 100%;
+  padding: 8px;
+  background: var(--field);
+  color: #e6e5e2;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  min-width: 0;
+}
+.paint-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.paint-tools label,
+.editor .color-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 0 0;
+}
+.paint-tools button {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 8px;
+  font-size: 10px;
+}
+.paint-tools svg {
+  width: 14px;
+  height: 14px;
+}
+.paint-tools [aria-pressed="true"] {
+  border-color: #c5ed91;
+}
+.editor input[type="color"] {
+  width: 30px;
+  height: 26px;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.pixel-editor {
+  display: grid;
+  gap: 1px;
+  aspect-ratio: 1;
+  width: min(100%, 224px);
+  padding: 4px;
+  background: var(--field);
+  border: 1px solid var(--line);
+  touch-action: none;
+  margin: 18px auto;
+}
+.pixel-editor button {
+  background: var(--pixel);
+  border: 0;
+  border-radius: 0;
+  min-width: 0;
+  padding: 0;
+}
+.publish {
+  width: 100%;
+  padding: 10px;
+  color: #19191b;
+  background: #bddb99;
+  border-color: #bddb99;
+}
+.publish:hover {
+  background: #d0e7b3;
+}
+.editor footer {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-top: 22px;
+}
+.editor footer p {
+  font-size: 11px;
+  color: #d2d2ce;
+  min-height: 15px;
+}
+.editor footer small {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.resume {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+}
+.resume svg {
+  width: 14px;
+  height: 14px;
+}
+.touch-controls {
+  position: absolute;
+  left: -10000px;
+  display: flex;
+  gap: 5px;
+}
+.touch-controls:focus-within {
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+}
+.touch-controls button {
+  padding: 6px;
+  background: var(--panel);
+}
+@media (pointer: coarse) {
+  .touch-controls {
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+  }
+}
+@keyframes drawer-fall {
+  from {
+    transform: translate(var(--drawer-offset), -24px) rotate(var(--drawer-tilt));
+  }
+  72% {
+    transform: translate(0, 0) rotate(var(--drawer-settle));
+  }
+  to {
+    transform: translate(0, 0) rotate(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.rules ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rules li {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.rules li span {
+  padding: 0;
+  background: none;
+  width: 32px;
+  height: 32px;
+}
+.vocabulary .new-item svg {
+  width: 22px;
+  height: 22px;
+}
+.new-item {
+  border-style: dashed;
+}
+.editor > .tray {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  bottom: 0;
+  width: min(390px, calc(100vw - 390px));
+  margin: 0;
+  padding: 22px;
+  overflow-y: auto;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.details-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.details-heading h2 {
+  margin: 0;
+}
+.details-heading button {
+  display: flex;
+  padding: 5px;
+  border: 0;
+}
+@media (max-width: 680px) {
+  .editor > .tray {
+    right: 0;
+    width: min(390px, 100vw);
+  }
+  .editor.has-selection .editor-main {
+    visibility: hidden;
+  }
+}
+.tray-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tray-heading h2 {
+  margin: 0;
+}
+.kind-toggle {
+  display: flex;
+  gap: 3px;
+}
+.kind-toggle button {
+  padding: 5px 10px;
+  text-transform: capitalize;
+  font-size: 11px;
+}
+.kind-toggle [aria-pressed="true"] {
+  background: #b3ce8e18;
+  border-color: #b3ce8e;
+}
+.tray-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+.tray-actions > button {
+  padding: 9px;
+  flex: 1;
+}
+.tray-actions .publish {
+  width: auto;
+}
+.delete-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.delete-actions button {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  border: 0;
+  color: #d7a38f;
+  padding: 3px 0;
+  font-size: 11px;
+}
+.delete-actions svg {
+  width: 13px;
+  height: 13px;
+}
+.field-hint {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.text-button {
+  font-size: 11px;
+  padding: 6px 8px;
+  color: #b9d69d;
+}
+.action-author {
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  margin-top: 14px;
+  padding: 12px;
+}
+.action-author legend {
+  font-size: 11px;
+  color: #b9d69d;
+}
+.action-author button {
+  padding: 7px 10px;
+}
+.victory {
+  pointer-events: none;
+}
+.victory button {
+  pointer-events: auto;
+}
+.victory.loss {
+  color: #e2b295;
+  background: #151113b8;
+  font-size: 30px;
+}
+.victory.loss span {
+  font-family: "DM Sans", sans-serif;
+  font-size: clamp(14px, 3vw, 25px);
+  letter-spacing: 0;
+  max-width: 65%;
+  text-align: center;
+}
+.outcome-board {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.outcome-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.outcome-heading h2 {
+  margin: 0;
+}
+.outcome-heading button {
+  font-size: 10px;
+  padding: 6px 8px;
+}
+.outcome-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 44px)) 16px minmax(0, 44px) 24px;
+  gap: 5px;
+  align-items: center;
+  margin: 6px 0;
+}
+.outcome-row > button {
+  aspect-ratio: 1;
+  padding: 2px;
+  min-width: 0;
+}
+.outcome-row > button > svg {
+  width: 100%;
+  height: 100%;
+}
+.outcome-arrow {
+  text-align: center;
+  color: var(--muted);
+}
+.outcome-row .remove-row {
+  border: 0;
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  color: #d7a38f;
+}
+.outcome-tools {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.outcome-tools button {
+  font-size: 10px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 6px;
+}
+.outcome-tools svg {
+  width: 13px;
+  height: 13px;
+}
+.outcome-row [aria-pressed="true"] {
+  border-color: #b3ce8e;
+  background: #b3ce8e18;
+}
+.recipe-heading {
+  font-size: 11px;
+  color: #c1c0c3;
+  margin: 18px 0 8px;
+}
+.recipe-item {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+}
+.recipe-item select {
+  flex: 1;
+  min-width: 90px;
+  font-size: 10px;
+}
+.recipe-item button {
+  padding: 3px 6px;
+}
+.action-author .install-action {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  background: #bddb99;
+  color: #19191b;
+}
+
+.plankton-edge {
+  --closed-angle: 12deg;
+  --peek-angle: -7deg;
+  --peek-shift: 145px;
+  left: -162px;
+  right: auto;
+  transform-origin: 0 0;
+  box-shadow: 5px 6px 0 #08080a;
+}
+.plankton-edge::after {
+  left: 9px;
+  right: auto;
+}
+.plankton-edge .edge-label {
+  left: auto;
+  right: -60px;
+  color: #c5ed91;
+}
+.plankton-edge:is(.peek, :hover, :focus-visible) .edge-label {
+  transform: translateY(-14px) rotate(7deg);
+}
+.plankton-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(470px, 100vw);
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  z-index: 4;
+  --drawer-offset: -100%;
+  --drawer-tilt: 5deg;
+  --drawer-settle: -0.6deg;
+  transform-origin: top left;
+  animation: drawer-fall 480ms cubic-bezier(0.2, 0.75, 0.28, 1) both;
+}
+/* Native disclosure branches expose composition without a second editor or renderer. */
+.plankton-drawer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.plankton-drawer h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+.icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+.concept {
+  margin: 5px 0;
+}
+.concept summary {
+  cursor: pointer;
+  line-height: 32px;
+  font-size: 12px;
+}
+.concept summary::marker {
+  color: #bddb99;
+}
+.concept-kind {
+  display: inline-block;
+  color: #bddb99;
+  font-size: 10px;
+  margin-right: 8px;
+}
+.concept-children {
+  border-left: 1px solid var(--line);
+  margin-left: 4px;
+  padding: 2px 0 6px 13px;
+}
+.concept p,
+.concept small,
+.concept li {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.concept p {
+  margin: 6px 0;
+}
+.concept ul {
+  margin: 6px 0;
+  padding-left: 15px;
+}
+.concept-tile {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  vertical-align: middle;
+  margin-right: 5px;
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.concept-tiles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 5px 0;
+}
+.concept-tiles > span {
+  display: inline-flex;
+  align-items: center;
+}
+@media (pointer: coarse) {
+  .editor-edge {
+    --peek-shift: -78px;
+    right: -80px;
+    top: 24px;
+    width: 120px;
+    height: 96px;
+  }
+  .plankton-edge {
+    --peek-shift: 78px;
+    left: -80px;
+    right: auto;
+  }
+  .edge-label {
+    font-size: 28px;
+  }
+}
+
+.outcome-errors {
+  color: #ee927d;
+  font-size: 11px;
+  line-height: 1.6;
+  padding-left: 16px;
+  margin: 10px 0;
+}
+.outcome-row > button {
+  position: relative;
+}
+.outcome-word-kind {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  background: var(--panel);
+  color: #c5ed91;
+  font-size: 7px;
+  line-height: 1;
+}
+
+.editor h2,
+.plankton-drawer h2,
+.concept-map > .concept > summary {
+  font-family: "Luckiest Guy", fantasy;
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  line-height: 1.2;
+  color: #d5e8b5;
+  -webkit-text-stroke: 0.5px #101012;
+  paint-order: stroke fill;
+  text-shadow: 2px 3px 0 #08080a;
+}
+.editor section h2,
+.concept-map > .concept > summary {
+  font-size: 16px;
+}
+.editor header h2,
+.plankton-drawer header h2 {
+  font-size: 26px;
+}
+.concept-map > .concept > summary {
+  line-height: 34px;
+}
+.concept-kind {
+  font-family: "DM Sans", sans-serif;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
+}
+
+.placement-mode {
+  padding-right: 64px;
+}
+.placement-mode .world {
+  width: min(calc(100vw - 64px), calc(100dvh * var(--ratio)));
+  touch-action: none;
+  user-select: none;
+}
+.placement-tools {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  background: var(--panel);
+  z-index: 3;
+}
+.placement-tools button {
+  position: relative;
+  width: 46px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+.placement-tools button > svg {
+  width: 24px;
+  height: 24px;
+}
+.placement-tools button:first-child[aria-label^="Add"] {
+  height: 60px;
+}
+.placement-tools button[aria-pressed="true"] {
+  border-color: #c5ed91;
+  background: #c5ed9124;
+}
+.placement-tools small {
+  font-size: 9px;
+  line-height: 1;
+}
+.placement-tools .brush-plus {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+}
+.placement-tools [aria-label="Accept board edits"] {
+  color: #c5ed91;
+}
+.placement-tools [aria-label="Cancel board edits"] {
+  color: #ee927d;
+}
+.placement-palette {
+  width: min(300px, calc(100vw - 84px));
+  max-height: min(70dvh, 560px);
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 4px 5px 0 #08080a;
+  z-index: 5;
+}
+.placement-palette h2 {
+  font-family: "Luckiest Guy", fantasy;
+  font-size: 17px;
+  font-weight: 400;
+  color: #d5e8b5;
+  text-shadow: 2px 3px 0 #08080a;
+  margin: 0 0 12px;
+}
+
+.placement-palette .vocabulary {
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+}
