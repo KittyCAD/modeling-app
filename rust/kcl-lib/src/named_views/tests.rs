@@ -374,7 +374,7 @@ fn hide(value: OpKclValue) -> Operation {
     Operation::StdLibCall {
         name: "hide".to_owned(),
         unlabeled_arg: Some(OpArg::new(value, Default::default())),
-        labeled_args: IndexMap::new(),
+        labeled_args: IndexMap::new().into(),
         node_path: Default::default(),
         source_range: Default::default(),
         stdlib_entry_source_range: None,
@@ -1294,7 +1294,8 @@ fn default_visibility_ignores_tags_objects_non_hide_calls_and_labeled_values() {
     } = &mut labeled
     {
         *unlabeled_arg = None;
-        labeled_args.insert("objects".to_owned(), OpArg::new(value.clone(), Default::default()));
+        std::sync::Arc::make_mut(labeled_args)
+            .insert("objects".to_owned(), OpArg::new(value.clone(), Default::default()));
     }
     let operations = [(
         ModuleId::default(),
