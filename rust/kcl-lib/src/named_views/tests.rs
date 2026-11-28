@@ -418,7 +418,7 @@ fn resolve_named(
     artifacts.push(named_view(id(900), "Front", 0, baseline, exceptions));
     let graph = graph(artifacts);
     let filenames = [(ModuleId::default(), ModulePath::Main)].into_iter().collect();
-    resolve_all(&graph, &IndexMap::new(), &filenames)
+    resolve_all(&graph, [], &filenames)
         .named_views()
         .first()
         .expect("the fixture must calculate its named view")
@@ -463,7 +463,6 @@ fn discovery_preserves_module_identity_and_module_paths() {
         named_view(id(3), "Front", 0, ArtifactVisibility::Show, &[]),
         named_view(id(4), "Detail", 7, ArtifactVisibility::Hide, &[]),
     ]);
-    let operations = IndexMap::new();
     let imported_path = ModulePath::Local {
         value: "part.kcl".into(),
         original_import_path: None,
@@ -479,7 +478,7 @@ fn discovery_preserves_module_identity_and_module_paths() {
     ]
     .into_iter()
     .collect();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
     assert_same_named_views(
         &batch.list_named_views(),
         &[
@@ -512,13 +511,12 @@ fn construction_retains_incomplete_module_paths_for_resolution() {
         named_view(id(1), "Front", 0, ArtifactVisibility::Show, &[]),
         named_view(id(2), "Detail", 7, ArtifactVisibility::Hide, &[]),
     ]);
-    let operations = IndexMap::new();
     let root_only = [(ModuleId::default(), ModulePath::Main)].into_iter().collect();
     for (filenames, module_id) in [
         (IndexMap::new(), ModuleId::default()),
         (root_only, ModuleId::from_usize(7)),
     ] {
-        let batch = resolve_all(&graph, &operations, &filenames);
+        let batch = resolve_all(&graph, [], &filenames);
         let name = if module_id == ModuleId::default() {
             "Front"
         } else {
@@ -544,7 +542,6 @@ fn ambiguous_selection_returns_candidate_metadata() {
         named_view(id(4), "Front", 0, ArtifactVisibility::Show, &[]),
         named_view(id(5), "Other", 0, ArtifactVisibility::Show, &[]),
     ]);
-    let operations = IndexMap::new();
     let filenames = [
         (ModuleId::default(), ModulePath::Main),
         (
@@ -557,7 +554,7 @@ fn ambiguous_selection_returns_candidate_metadata() {
     ]
     .into_iter()
     .collect();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
     assert_ambiguous_candidates(
         &batch.get(&target("Front", ModuleId::default())).unwrap_err(),
         &[
@@ -592,7 +589,6 @@ fn qualified_selection_distinguishes_same_names_across_modules() {
         plane(id(2)),
         named_view(id(3), "Front", 0, ArtifactVisibility::Show, &[]),
     ]);
-    let operations = IndexMap::new();
     let filenames = [
         (ModuleId::default(), ModulePath::Main),
         (
@@ -605,7 +601,7 @@ fn qualified_selection_distinguishes_same_names_across_modules() {
     ]
     .into_iter()
     .collect();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
     assert_eq!(
         batch
             .get(&target("Front", ModuleId::from_usize(1)))
@@ -622,7 +618,6 @@ fn qualified_selection_distinguishes_same_names_across_modules() {
 #[test]
 fn selection_requires_an_exact_name_and_matching_module() {
     let graph = graph(vec![named_view(id(1), "Front", 1, ArtifactVisibility::Show, &[])]);
-    let operations = IndexMap::new();
     let filenames = [(
         ModuleId::from_usize(1),
         ModulePath::Local {
@@ -632,7 +627,7 @@ fn selection_requires_an_exact_name_and_matching_module() {
     )]
     .into_iter()
     .collect();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
     for name in ["missing", "front", " Front", "Front ", ""] {
         assert_eq!(
             batch.get(&target(name, ModuleId::from_usize(1))),
@@ -650,9 +645,8 @@ fn selection_requires_an_exact_name_and_matching_module() {
 #[test]
 fn an_empty_execution_has_only_the_computed_default() {
     let graph = ArtifactGraph::default();
-    let operations = IndexMap::new();
     let filenames = IndexMap::new();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
     assert!(batch.list_named_views().is_empty());
     let resolved = batch.get(&ViewTarget::Default).unwrap();
     assert!(resolved.visibility().is_empty());
@@ -675,7 +669,7 @@ fn batch_preserves_metadata_camera_and_visibility() {
         })],
     )]
     .into_iter()
-    .collect();
+    .collect::<IndexMap<_, _>>();
     let filenames = [
         (ModuleId::default(), ModulePath::Main),
         (
@@ -688,7 +682,7 @@ fn batch_preserves_metadata_camera_and_visibility() {
     ]
     .into_iter()
     .collect();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, operations.values().flatten(), &filenames);
 
     assert!(batch.failures().is_empty());
     assert_eq!(
@@ -741,11 +735,10 @@ fn batch_preserves_other_views_when_the_second_module_path_is_missing() {
         named_view(id(3), "Third", 0, ArtifactVisibility::Hide, &[]),
         named_view(id(4), "Fourth", 0, ArtifactVisibility::Show, &[]),
     ];
-    let operations = IndexMap::new();
     let filenames = [(ModuleId::default(), ModulePath::Main)].into_iter().collect();
     for artifacts in [artifacts.clone(), artifacts.into_iter().rev().collect()] {
         let graph = graph(artifacts);
-        let batch = resolve_all(&graph, &operations, &filenames);
+        let batch = resolve_all(&graph, [], &filenames);
 
         assert_eq!(
             batch
@@ -795,7 +788,6 @@ fn batch_rejects_ambiguous_selections_without_discarding_other_views() {
         named_view(id(3), "Front", 0, ArtifactVisibility::Hide, &[]),
         named_view(id(4), "Other", 0, ArtifactVisibility::Show, &[]),
     ]);
-    let operations = IndexMap::new();
     let filenames = [
         (ModuleId::default(), ModulePath::Main),
         (
@@ -808,7 +800,7 @@ fn batch_rejects_ambiguous_selections_without_discarding_other_views() {
     ]
     .into_iter()
     .collect();
-    let batch = resolve_all(&graph, &operations, &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
     let expected_candidates = [id(1), id(3)].map(|artifact_id| NamedViewInfo {
         artifact_id,
         name: "Front".to_owned(),
@@ -855,8 +847,8 @@ fn batch_retains_default_when_every_declared_view_has_missing_metadata() {
         vec![hide(OpKclValue::Plane { artifact_id: id(100) })],
     )]
     .into_iter()
-    .collect();
-    let batch = resolve_all(&graph, &operations, &IndexMap::new());
+    .collect::<IndexMap<_, _>>();
+    let batch = resolve_all(&graph, operations.values().flatten(), &IndexMap::new());
 
     assert!(batch.named_views().is_empty());
     assert_eq!(batch.failures().len(), 2);
@@ -880,9 +872,8 @@ fn batch_includes_default_with_or_without_declared_views() {
             )
         }));
         let graph = graph(artifacts);
-        let operations = IndexMap::new();
         let filenames = [(ModuleId::default(), ModulePath::Main)].into_iter().collect();
-        let batch = resolve_all(&graph, &operations, &filenames);
+        let batch = resolve_all(&graph, [], &filenames);
 
         assert_eq!(batch.named_views().len(), view_count as usize);
         assert!(batch.failures().is_empty());
@@ -918,8 +909,8 @@ fn calculated_results_own_their_execution_data() {
             vec![hide(OpKclValue::Plane { artifact_id: id(1) })],
         )]
         .into_iter()
-        .collect();
-        resolve_all(&graph, &operations, &filenames)
+        .collect::<IndexMap<_, _>>();
+        resolve_all(&graph, operations.values().flatten(), &filenames)
     };
 
     assert_eq!(
@@ -961,7 +952,7 @@ fn batch_preserves_hidden_decisions_when_artifacts_share_an_engine_id() {
         named_view(id(3), "Front", 0, ArtifactVisibility::Show, &[id(1)]),
     ]);
     let filenames = [(ModuleId::default(), ModulePath::Main)].into_iter().collect();
-    let batch = resolve_all(&graph, &IndexMap::new(), &filenames);
+    let batch = resolve_all(&graph, [], &filenames);
 
     assert_eq!(
         &batch.named_views()[0].visibility,
@@ -1268,7 +1259,7 @@ fn default_visibility_reads_all_artifact_id_shapes_across_modules_and_nested_arr
         );
     }
     let graph = graph((1..=9).map(|value| plane(id(value))).collect());
-    let batch = resolve_all(&graph, &operations, &IndexMap::new());
+    let batch = resolve_all(&graph, operations.values().flatten(), &IndexMap::new());
     let resolved = batch.get(&ViewTarget::Default).unwrap();
     assert_eq!(
         resolved.visibility(),
@@ -1315,9 +1306,9 @@ fn default_visibility_ignores_tags_objects_non_hide_calls_and_labeled_values() {
         ],
     )]
     .into_iter()
-    .collect();
+    .collect::<IndexMap<_, _>>();
     let graph = graph(vec![plane(id(1))]);
-    let batch = resolve_all(&graph, &operations, &IndexMap::new());
+    let batch = resolve_all(&graph, operations.values().flatten(), &IndexMap::new());
     let resolved = batch.get(&ViewTarget::Default).unwrap();
     assert_eq!(
         resolved.visibility(),
@@ -1329,9 +1320,11 @@ fn default_visibility_ignores_tags_objects_non_hide_calls_and_labeled_values() {
 fn default_visibility_preserves_hide_operations_marked_as_errors() {
     let mut operation = hide(OpKclValue::Plane { artifact_id: id(1) });
     operation.set_std_lib_call_is_error(true);
-    let operations = [(ModuleId::default(), vec![operation])].into_iter().collect();
+    let operations = [(ModuleId::default(), vec![operation])]
+        .into_iter()
+        .collect::<IndexMap<_, _>>();
     let graph = graph(vec![plane(id(1)), plane(id(2))]);
-    let batch = resolve_all(&graph, &operations, &IndexMap::new());
+    let batch = resolve_all(&graph, operations.values().flatten(), &IndexMap::new());
     let resolved = batch.get(&ViewTarget::Default).unwrap();
     assert_eq!(
         resolved.visibility(),
@@ -1357,9 +1350,9 @@ fn declared_visibility_ignores_program_hide_operations_and_inactive_exception_li
             vec![hide(OpKclValue::Plane { artifact_id: id(1) })],
         )]
         .into_iter()
-        .collect();
+        .collect::<IndexMap<_, _>>();
         let filenames = [(ModuleId::default(), ModulePath::Main)].into_iter().collect();
-        let batch = resolve_all(&graph, &operations, &filenames);
+        let batch = resolve_all(&graph, operations.values().flatten(), &filenames);
         let resolved = batch.get(&target("Front", ModuleId::default())).unwrap();
         assert_eq!(
             resolved.visibility(),

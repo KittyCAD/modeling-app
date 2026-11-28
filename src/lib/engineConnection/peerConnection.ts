@@ -439,7 +439,6 @@ export const createOnDataChannel = ({
   setUnreliableDataChannel,
   dispatchEvent,
   trackListener,
-  startPingPong,
   connectionPromiseResolve,
   handleOnDataChannelMessage,
   tearDownManager,
@@ -452,7 +451,6 @@ export const createOnDataChannel = ({
     name: string,
     eventListenerTracked: IEventListenerTracked
   ) => void
-  startPingPong: () => void
   connectionPromiseResolve: (value: unknown) => void
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   tearDownManager: (options: ManagerTearDown) => void
@@ -472,7 +470,6 @@ export const createOnDataChannel = ({
     // Initialize the event.channel with 4 event listeners
     const onDataChannelOpen = createOnDataChannelOpen({
       dispatchEvent,
-      startPingPong,
       connectionPromiseResolve,
     })
     const onDataChannelError = createOnDataChannelError()
@@ -534,11 +531,9 @@ export const createOnDataChannel = ({
  */
 export const createOnDataChannelOpen = ({
   dispatchEvent,
-  startPingPong,
   connectionPromiseResolve,
 }: {
   dispatchEvent: (event: Event) => boolean
-  startPingPong: () => void
   connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannelOpen = (event: Event) => {
@@ -564,7 +559,6 @@ export const createOnDataChannelOpen = ({
       metadata: { event },
     })
 
-    startPingPong()
     markOnce('code/endInitialEngineConnect')
     connectionPromiseResolve(true)
 

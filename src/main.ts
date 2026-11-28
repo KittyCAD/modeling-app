@@ -319,6 +319,8 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
       x,
       y,
       webPreferences: {
+        // The modeling socket needs heartbeats even while another window is active.
+        backgroundThrottling: false,
         nodeIntegration: false, // do not give the application implicit system access
         contextIsolation: true, // expose system functions in preload
         sandbox: false, // expose nodejs in preload

@@ -307,32 +307,23 @@ export class Connection extends EventTarget {
     return this._pingIntervalId
   }
 
-  /**
-   * Starts when onDataChannelOpen is ready in the peerConnection
-   */
-  startPingPong() {
+  private startPingPong() {
     EngineDebugger.addLog({
       label: 'connection',
       message: 'startPingPong',
       metadata: { id: this.id },
     })
 
-    if (this._pingIntervalId) {
+    if (this._pingIntervalId !== undefined) {
       console.warn('Attempting to startPingPong before stopping it.')
       return
     }
 
-    this._pingIntervalId = setInterval(() => {
-      if (this._pingPongSpan.ping) {
-        return
-      }
-
-      this.send({ type: 'ping' })
-      this._pingPongSpan = {
-        ping: Date.now(),
-        pong: undefined,
-      }
-    }, PING_INTERVAL_MS)
+    // Keep the socket alive independently of when the engine processes pongs.
+    this._pingIntervalId = setInterval(
+      () => this.sendHeartbeat(),
+      PING_INTERVAL_MS
+    )
   }
 
   stopPingPong() {
@@ -589,7 +580,6 @@ export class Connection extends EventTarget {
       setUnreliableDataChannel: this.setUnreliableDataChannel.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
-      startPingPong: this.startPingPong.bind(this),
       connectionPromiseResolve: this.deferredConnection.resolve,
       // don't bind this, it was passed into the class
       handleOnDataChannelMessage: this.handleOnDataChannelMessage,
@@ -736,7 +726,7 @@ export class Connection extends EventTarget {
       send: this.send.bind(this),
       token: this.token,
       dispatchEvent: this.dispatchEvent.bind(this),
-      onOpen: this.beginWebSocketOnlyHandshake.bind(this),
+      onOpen: this.startWebSocketHeartbeat.bind(this),
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
@@ -781,6 +771,7 @@ export class Connection extends EventTarget {
     // Meta close will remove all the internal events itself but then the this.websocket.close
     // needs to remove itself so it is wrapped in a metaClose.
     const metaClose = (event: CloseEvent) => {
+      this.stopPingPong()
       const codeAsString = event.code.toString()
       EngineDebugger.addLog({
         label: 'connection',
@@ -844,7 +835,6 @@ export class Connection extends EventTarget {
     }
 
     this.connected = true
-    this.startPingPong()
     this.cleanUpTimeouts()
     markOnce('code/endInitialEngineConnect')
     this.deferredConnection?.resolve(true)
@@ -857,16 +847,18 @@ export class Connection extends EventTarget {
     )
   }
 
-  private beginWebSocketOnlyHandshake() {
-    if (this.webrtc) {
-      return
+  private startWebSocketHeartbeat() {
+    this.startPingPong()
+    if (!this.webrtc) {
+      // Geometry-only sessions become ready on the first pong.
+      this.sendHeartbeat()
     }
+  }
 
+  private sendHeartbeat() {
+    if (this.websocket?.readyState !== WebSocket.OPEN) return
+    this._pingPongSpan.ping ??= Date.now()
     this.send({ type: 'ping' })
-    this._pingPongSpan = {
-      ping: Date.now(),
-      pong: undefined,
-    }
   }
 
   setWebrtcStatsCollector(webrtcStatsCollector: () => Promise<ClientMetrics>) {

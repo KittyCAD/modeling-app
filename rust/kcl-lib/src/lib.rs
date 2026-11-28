@@ -200,6 +200,7 @@ pub use execution::LegacyAngleRefactorMeta;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
+pub use execution::OperationsByModule;
 pub use execution::Point2d;
 pub use execution::RefactorMetadata;
 pub use execution::SegmentDragAnchor;

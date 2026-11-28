@@ -11,7 +11,6 @@ use kcl_api::artifact::NamedViewArtifact;
 use kcl_api::artifact::Pattern;
 use kcl_api::artifact::Sweep;
 use kcl_api::artifact::SweepSubType;
-use kcl_error::ModuleId;
 use uuid::Uuid;
 
 /// Returns the engine object UUID for an artifact kind supported by named views.
@@ -122,9 +121,11 @@ impl VisibilityTargets {
     }
 }
 
-pub(super) fn hidden_ids_from_operations(operations: &IndexMap<ModuleId, Vec<Operation>>) -> HashSet<ArtifactId> {
+pub(super) fn hidden_ids_from_operations<'a>(
+    operations: impl IntoIterator<Item = &'a Operation>,
+) -> HashSet<ArtifactId> {
     let mut hidden_ids = HashSet::new();
-    for operation in operations.values().flatten() {
+    for operation in operations {
         // Include `hide` calls even when `is_error` is true,
         // matching `getHideOperationArtifactIds` in TypeScript.
         if let Operation::StdLibCall {

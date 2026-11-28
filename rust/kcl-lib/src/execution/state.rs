@@ -178,24 +178,27 @@ pub(super) fn collect_execution_issues(
 }
 
 impl GlobalState {
+    fn operation_histories_by_module(&self) -> impl Iterator<Item = (ModuleId, &Arc<Vec<Operation>>)> {
+        let imports = self.module_infos.iter().filter_map(|(&module_id, info)| {
+            let artifacts = match &info.repr {
+                ModuleRepr::Kcl(_, Some(outcome)) => &outcome.artifacts,
+                ModuleRepr::Foreign(_, Some((_, artifacts))) => artifacts,
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {
+                    return None;
+                }
+            };
+            Some((module_id, &artifacts.operations))
+        });
+        std::iter::once((ModuleId::default(), &self.root_module_artifacts.operations)).chain(imports)
+    }
+
     pub(crate) fn operations_by_module(&self) -> OperationsByModule {
-        let mut operations = OperationsByModule::default();
-        operations.insert(ModuleId::default(), self.root_module_artifacts.operations.clone());
-
-        for (module_id, module_info) in &self.module_infos {
-            match &module_info.repr {
-                ModuleRepr::Root => {}
-                ModuleRepr::Kcl(_, Some(outcome)) => {
-                    operations.insert(*module_id, outcome.artifacts.operations.clone());
-                }
-                ModuleRepr::Foreign(_, Some((_, artifacts))) => {
-                    operations.insert(*module_id, artifacts.operations.clone());
-                }
-                ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
-            }
+        OperationsByModule {
+            map: self
+                .operation_histories_by_module()
+                .map(|(module_id, operations)| (module_id, Arc::clone(operations)))
+                .collect(),
         }
-
-        operations
     }
 }
 
@@ -322,8 +325,8 @@ pub struct ModuleArtifactState {
     #[cfg(feature = "snapshot-engine-responses")]
     pub responses: IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
     /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    pub operations: Vec<Operation>,
+    /// the Feature Tree. Shared by cache snapshots and outcomes.
+    pub operations: Arc<Vec<Operation>>,
     /// [`ObjectId`] generator.
     pub object_id_generator: IncIdGenerator<usize>,
     /// Objects in the scene, created from execution.
@@ -562,7 +565,9 @@ impl ExecState {
     pub(super) fn resolve_named_views(&mut self) {
         self.global.named_views = Some(crate::named_views::resolve_all(
             &self.global.artifacts.graph,
-            &self.global.operations_by_module().map,
+            self.global
+                .operation_histories_by_module()
+                .flat_map(|(_, operations)| operations.iter()),
             &self.global.filenames(),
         ));
     }
@@ -1191,9 +1196,10 @@ impl ExecState {
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
-        let index = self.mod_local.artifacts.operations.len();
-        self.mod_local.artifacts.operations.push(op);
-        if let Some(operation) = self.mod_local.artifacts.operations.last().cloned()
+        let operations = Arc::make_mut(&mut self.mod_local.artifacts.operations);
+        let index = operations.len();
+        operations.push(op);
+        if let Some(operation) = operations.last().cloned()
             && let Some(callbacks) = &self.execution_callbacks
         {
             callbacks.on_operation(OperationCallbackArgs {
@@ -1818,7 +1824,7 @@ impl ModuleArtifactState {
         self.artifacts.clear();
         self.unprocessed_commands.clear();
         self.commands.clear();
-        self.operations.clear();
+        self.operations = Arc::default();
         self.refactor_metadata.clear();
     }
 
@@ -1868,7 +1874,15 @@ impl ModuleArtifactState {
         self.artifacts.extend(other.artifacts);
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
-        self.operations.extend(other.operations);
+        if self.operations.is_empty() {
+            self.operations = other.operations;
+        } else if !other.operations.is_empty() {
+            let operations = Arc::make_mut(&mut self.operations);
+            match Arc::try_unwrap(other.operations) {
+                Ok(other) => operations.extend(other),
+                Err(other) => operations.extend_from_slice(&other),
+            }
+        }
         if other.scene_objects.len() > self.scene_objects.len() {
             self.scene_objects
                 .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());

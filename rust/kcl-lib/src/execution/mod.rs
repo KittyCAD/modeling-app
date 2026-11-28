@@ -121,7 +121,7 @@ use crate::parsing::ast::types::NodeRef;
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Default)]
 #[ts(export)]
 pub struct OperationsByModule {
-    pub map: IndexMap<ModuleId, Vec<Operation>>,
+    pub map: IndexMap<ModuleId, Arc<Vec<Operation>>>,
 }
 
 #[derive(Clone, Serialize, ts_rs::TS)]
@@ -139,23 +139,34 @@ pub trait ExecutionCallbacks: std::fmt::Debug + Send + Sync + 'static {
 
 impl OperationsByModule {
     pub fn count(&self) -> usize {
-        self.map.values().map(Vec::len).sum()
+        self.values().map(Vec::len).sum()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.map.values().all(Vec::is_empty)
+        self.values().all(Vec::is_empty)
     }
 
     pub fn get(&self, module_id: &ModuleId) -> Option<&Vec<Operation>> {
-        self.map.get(module_id)
+        self.map.get(module_id).map(Arc::as_ref)
     }
 
-    pub fn values(&self) -> indexmap::map::Values<'_, ModuleId, Vec<Operation>> {
-        self.map.values()
+    pub fn values(&self) -> impl DoubleEndedIterator<Item = &Vec<Operation>> + ExactSizeIterator + Clone {
+        self.map.values().map(Arc::as_ref)
     }
 
     pub fn insert(&mut self, module_id: ModuleId, operations: Vec<Operation>) {
-        self.map.insert(module_id, operations);
+        self.map.insert(module_id, Arc::new(operations));
+    }
+}
+
+impl From<IndexMap<ModuleId, Vec<Operation>>> for OperationsByModule {
+    fn from(map: IndexMap<ModuleId, Vec<Operation>>) -> Self {
+        Self {
+            map: map
+                .into_iter()
+                .map(|(id, operations)| (id, Arc::new(operations)))
+                .collect(),
+        }
     }
 }
 
@@ -2465,7 +2476,7 @@ impl ExecutorContext {
         // purpose (firing onOperation callbacks for the live feature tree).
         // Clear them so they don't duplicate the operations the root module
         // body will produce when it actually executes its import statements.
-        exec_state.mod_local.artifacts.operations.clear();
+        exec_state.mod_local.artifacts.operations = Arc::default();
 
         // Move any remaining setup artifacts (non-operation data from the
         // prelude, etc.) into the root state.
@@ -2734,18 +2745,17 @@ impl ExecutorContext {
         // Fill in NodePath for operations.
         let programs = &exec_state.build_program_lookup(program.clone());
         let cached_body_items = exec_state.global.artifacts.cached_body_items();
-        for op in exec_state
-            .global
-            .root_module_artifacts
-            .operations
-            .iter_mut()
-            .skip(start_op)
-        {
-            op.fill_node_paths(programs, cached_body_items);
+        let root_operations = &mut exec_state.global.root_module_artifacts.operations;
+        if start_op < root_operations.len() {
+            for op in &mut Arc::make_mut(root_operations)[start_op..] {
+                op.fill_node_paths(programs, cached_body_items);
+            }
         }
         for module in exec_state.global.module_infos.values_mut() {
-            if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
-                for op in &mut outcome.artifacts.operations {
+            if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr
+                && !outcome.artifacts.operations.is_empty()
+            {
+                for op in Arc::make_mut(&mut outcome.artifacts.operations) {
                     op.fill_node_paths(programs, cached_body_items);
                 }
             }
@@ -2796,7 +2806,10 @@ impl ExecutorContext {
             //
             // TODO: Should we also clear them out of each module so that they
             // don't appear in test output?
-            exec_state.mod_local.artifacts.operations.truncate(initial_ops);
+            let operations = &mut exec_state.mod_local.artifacts.operations;
+            if initial_ops < operations.len() {
+                Arc::make_mut(operations).truncate(initial_ops);
+            }
         }
 
         Ok(())
@@ -6053,6 +6066,54 @@ solid7 = extrude(r7, length = width)
             assert_number_variable(&outcome.variables, "y", 8.0);
         }
 
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_shares_operation_history() {
+        let project = tempfile::TempDir::new().unwrap();
+        tokio::fs::write(
+            project.path().join("planes.kcl"),
+            "@settings(kclVersion = 3.0)\nexport plane = offsetPlane(XY, offset = 10mm)",
+        )
+        .await
+        .unwrap();
+        let ctx = ExecutorContext::new_with_engine(
+            Arc::new(EngineManager::new_mock()),
+            ExecutorSettings {
+                project_directory: Some(crate::TypedPath(project.path().into())),
+                ..Default::default()
+            },
+        );
+        let source =
+            "@settings(kclVersion = 3.0)\nimport plane from 'planes.kcl'\nplaneA = offsetPlane(plane, offset = 10mm)";
+        let program = crate::Program::parse_no_errs(source).unwrap();
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        let root_id = ModuleId::default();
+        let root_history = &first.operations.map[&root_id];
+        assert!(!root_history.is_empty());
+        assert!(
+            first
+                .operations
+                .map
+                .iter()
+                .any(|(id, history)| *id != root_id && !history.is_empty())
+        );
+        assert_eq!(first.operations.map.len(), cached.operations.map.len());
+        for (module, history) in &first.operations.map {
+            assert!(Arc::ptr_eq(history, &cached.operations.map[module]));
+        }
+
+        let extended = format!("{source}\nplaneB = offsetPlane(planeA, offset = 10mm)");
+        let extended = ctx
+            .run_with_caching(crate::Program::parse_no_errs(&extended).unwrap())
+            .await
+            .unwrap();
+        let extended_history = &extended.operations.map[&root_id];
+        assert!(extended_history.len() > root_history.len());
+        assert!(extended_history.starts_with(root_history));
+        assert_eq!(first.operations, cached.operations);
         ctx.close().await;
     }
 

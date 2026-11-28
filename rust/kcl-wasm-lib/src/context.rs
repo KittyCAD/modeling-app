@@ -9,6 +9,7 @@ use kcl_lib::KclError;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::MockConfig;
 use kcl_lib::OperationCallbackArgs;
+use kcl_lib::OperationsByModule;
 use kcl_lib::Program;
 use kcl_lib::ProjectManager;
 use kcl_lib::front::FrontendState;
@@ -17,6 +18,8 @@ use kcl_lib::wasm_engine::FileManager;
 use wasm_bindgen::prelude::*;
 
 pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
+const OPERATION_CHUNK_LIMIT: usize = 1024;
+const OPERATION_CHUNK_TARGET_BYTES: usize = 1024 * 1024;
 
 #[wasm_bindgen]
 extern "C" {
@@ -25,6 +28,64 @@ extern "C" {
 
     #[wasm_bindgen(method, js_name = onOperation)]
     fn on_operation(this: &JsExecutionCallbacks, args: JsValue);
+
+    #[wasm_bindgen(catch, js_namespace = JSON, js_name = parse)]
+    fn parse_execution_json(json: &JsValue) -> Result<JsValue, JsValue>;
+}
+
+fn json_encoding_error(error: serde_json::Error) -> JsValue {
+    JsValue::from_str(&error.to_string())
+}
+
+fn serialize_execution_result(
+    result: &impl serde::Serialize,
+    operations: OperationsByModule,
+    outcome_key: Option<&str>,
+) -> Result<JsValue, JsValue> {
+    use js_sys::Array;
+    use js_sys::Function;
+    use js_sys::Reflect;
+
+    let result = {
+        let json = serde_json::to_vec(result).map_err(json_encoding_error)?;
+        parse_execution_json(&JsValue::from_utf8_lossy(&json))?
+    };
+    if operations.map.is_empty() {
+        return Ok(result);
+    }
+
+    // The JSON metadata contains an empty operations map. Fill it in place to
+    // preserve the existing frontend shape, including empty module histories.
+    let outcome = match outcome_key {
+        Some(key) => Reflect::get(&result, &key.into())?,
+        None => result.clone(),
+    };
+    let operations_map = Reflect::get(&Reflect::get(&outcome, &"operations".into())?, &"map".into())?;
+    let push: Function = Reflect::get(&Array::new(), &"push".into())?.unchecked_into();
+    let mut json = Vec::new();
+    for (module_id, history) in operations.map {
+        let array = Array::new();
+        Reflect::set(&operations_map, &module_id.to_string().into(), &array)?;
+
+        let mut history = history.iter().peekable();
+        while history.peek().is_some() {
+            json.clear();
+            json.push(b'[');
+            for (index, operation) in history.by_ref().take(OPERATION_CHUNK_LIMIT).enumerate() {
+                if index != 0 {
+                    json.push(b',');
+                }
+                serde_json::to_writer(&mut json, operation).map_err(json_encoding_error)?;
+                if json.len() >= OPERATION_CHUNK_TARGET_BYTES {
+                    break;
+                }
+            }
+            json.push(b']');
+            let parsed = parse_execution_json(&JsValue::from_utf8_lossy(&json))?;
+            push.apply(&array, parsed.unchecked_ref())?;
+        }
+    }
+    Ok(result)
 }
 
 impl ExecutionCallbacks for JsExecutionCallbacks {
@@ -209,16 +270,19 @@ impl Context {
 
         self.execute_typed(program_ast_json, path, settings)
             .await
-            .and_then(|outcome| {
-                JsValue::from_serde(&outcome).map_err(|e| {
-                    // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-                    // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+            .and_then(|mut outcome| {
+                let operations = std::mem::take(&mut outcome.exec_outcome.operations);
+                // Keep the existing JSON wire format. serde-wasm-bindgen encodes maps differently.
+                serialize_execution_result(&outcome, operations, Some("exec_outcome")).map_err(|error| {
                     KclErrorWithOutputs::no_outputs(KclError::internal(format!(
-                        "Could not serialize successful KCL result. {TRUE_BUG} Details: {e}"
+                        "Could not serialize successful KCL result. {TRUE_BUG} Details: {error:?}"
                     )))
                 })
             })
-            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())
+            .map_err(|mut error| {
+                let operations = std::mem::take(&mut error.operations);
+                serialize_execution_result(&error, operations, None).unwrap_or_else(|error| error)
+            })
     }
 
     async fn execute_typed(
