@@ -196,6 +196,10 @@ export function getEngineEntityIdsForGdtSelections(
       return [selection.engineEntityId]
     }
 
+    if (selection.entityRef?.type === 'face') {
+      return [selection.entityRef.face_id]
+    }
+
     const artifact = selection.artifact
     if (!artifact?.id) {
       return []
@@ -223,6 +227,10 @@ export function getPlanarFaceEntityIdsForGdtSelections(
   }
 
   const entityIds = selections.graphSelections.flatMap((selection) => {
+    if (selection.entityRef?.type === 'face') {
+      return [selection.engineEntityId ?? selection.entityRef.face_id]
+    }
+
     const artifact = selection.artifact
 
     if (artifact?.type === 'pattern') {
