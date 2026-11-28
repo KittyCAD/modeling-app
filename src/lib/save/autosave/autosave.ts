@@ -40,8 +40,8 @@ export function attachAutosave(
     }, EDITOR_SAVE_DEBOUNCE_MS)
   }
   onDispose(
-    editor.subscribe((transaction) => {
-      if (transaction.docChanged) schedule()
+    editor.subscribe((update) => {
+      if (update.docChanged) schedule()
     })
   )
   onDispose(

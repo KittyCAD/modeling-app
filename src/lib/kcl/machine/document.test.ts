@@ -1,0 +1,286 @@
+import { invertedEffects, isolateHistory } from '@codemirror/commands'
+import { StateEffect, Transaction } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
+import { signal } from '@preact/signals-core'
+import { expect, it, vi } from 'vitest'
+import { createEditorDocument } from '@src/lib/editors/document'
+import type { Editor } from '@src/lib/editors/registry/contract'
+import { createModelingDocumentAdapter } from '@src/lib/kcl/machine/document'
+
+const checkpoint = StateEffect.define<{ undo: number; redo: number }>()
+function fixture() {
+  const readOnly = signal(false)
+  const backing = createEditorDocument('before', () => !readOnly.peek())
+  const editor: Editor = {
+    ...backing.document,
+    get state() {
+      return backing.document.state
+    },
+    id: Symbol(),
+    src: signal('/main.kcl'),
+    classification: signal({ languageId: 'kcl' }),
+    readOnly,
+  }
+  const create = (
+    committedEditText?: Parameters<
+      ReturnType<typeof createModelingDocumentAdapter>['createView']
+    >[2]
+  ) => {
+    const restored: number[] = []
+    const sourcesAtCheckpointRestore: string[] = []
+    const runtimeSource = signal<string | undefined>(undefined)
+    const onDocumentChangedElsewhere = vi.fn()
+    const recordRuntimeSource = vi.fn((text: string) => {
+      runtimeSource.value = text
+    })
+    const adapter = createModelingDocumentAdapter(
+      editor,
+      recordRuntimeSource,
+      onDocumentChangedElsewhere
+    )
+    const view = adapter.createView(
+      [
+        invertedEffects.of((tr) =>
+          tr.effects.flatMap((effect) =>
+            effect.is(checkpoint)
+              ? [
+                  checkpoint.of({
+                    undo: effect.value.redo,
+                    redo: effect.value.undo,
+                  }),
+                ]
+              : []
+          )
+        ),
+        EditorView.updateListener.of((update) => {
+          for (const tr of update.transactions) {
+            if (tr.isUserEvent('undo') || tr.isUserEvent('redo'))
+              for (const effect of tr.effects)
+                if (effect.is(checkpoint)) {
+                  restored.push(effect.value.redo)
+                  sourcesAtCheckpointRestore.push(
+                    runtimeSource.peek() ?? 'unrecorded'
+                  )
+                }
+          }
+        }),
+      ],
+      (effect) => effect.is(checkpoint),
+      committedEditText
+    )
+    return {
+      adapter,
+      view,
+      restored,
+      sourcesAtCheckpointRestore,
+      onDocumentChangedElsewhere,
+      recordRuntimeSource,
+      runtimeSource,
+    }
+  }
+  return { editor, readOnly, create, dispose: backing.dispose }
+}
+
+it('shares text and history but replays native checkpoint effects only in their owning view', () => {
+  const document = fixture(),
+    first = document.create(),
+    second = document.create()
+  try {
+    first.view.dispatch({
+      changes: { from: 0, to: 6, insert: 'after' },
+      effects: checkpoint.of({ undo: 10, redo: 11 }),
+      annotations: isolateHistory.of('full'),
+    })
+    expect(document.editor.contents.peek()).toBe('after')
+    expect(second.view.state.doc.toString()).toBe('after')
+    expect(second.onDocumentChangedElsewhere).toHaveBeenCalledOnce()
+    expect(first.onDocumentChangedElsewhere).not.toHaveBeenCalled()
+    expect(document.editor.undo()).toBe(true)
+    expect(document.editor.contents.peek()).toBe('before')
+    expect(first.view.state.doc.toString()).toBe('before')
+    expect(second.view.state.doc.toString()).toBe('before')
+    expect(first.restored).toEqual([10])
+    expect(second.restored).toEqual([])
+    expect(document.editor.redo()).toBe(true)
+    expect(first.restored).toEqual([10, 11])
+    expect(second.restored).toEqual([])
+  } finally {
+    first.adapter.dispose()
+    second.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('publishes and replays checkpoints without recording unchanged runtime source', () => {
+  const document = fixture()
+  const first = document.create()
+  try {
+    first.view.dispatch({
+      changes: { from: 0, to: 6, insert: 'after' },
+      annotations: isolateHistory.of('full'),
+    })
+    first.recordRuntimeSource.mockClear()
+    const observed: string[] = []
+    const stop = document.editor.subscribe((update) =>
+      observed.push(update.state.doc.toString())
+    )
+    try {
+      first.view.dispatch({
+        effects: checkpoint.of({ undo: 10, redo: 11 }),
+        annotations: isolateHistory.of('full'),
+      })
+      expect(observed).toEqual(['after'])
+      expect(document.editor.undo()).toBe(true)
+      expect(first.restored).toEqual([10])
+      expect(document.editor.redo()).toBe(true)
+      expect(first.restored).toEqual([10, 11])
+      expect(first.sourcesAtCheckpointRestore).toEqual(['after', 'after'])
+      expect(observed).toEqual(['after', 'after', 'after'])
+      expect(first.recordRuntimeSource).not.toHaveBeenCalled()
+      expect(first.onDocumentChangedElsewhere).not.toHaveBeenCalled()
+    } finally {
+      stop()
+    }
+  } finally {
+    first.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('keeps undo usable after the native checkpoint owner closes', () => {
+  const document = fixture(),
+    first = document.create(),
+    second = document.create()
+  try {
+    first.view.dispatch({
+      changes: { from: 0, to: 6, insert: 'after' },
+      effects: checkpoint.of({ undo: 10, redo: 11 }),
+    })
+    first.adapter.dispose()
+    expect(document.editor.undo()).toBe(true)
+    expect(second.view.state.doc.toString()).toBe('before')
+    expect(second.restored).toEqual([])
+  } finally {
+    first.adapter.dispose()
+    second.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('records runtime source before document observers run and rejects edits when read only or disposed', () => {
+  const document = fixture(),
+    first = document.create()
+  const observed: string[] = []
+  const stop = document.editor.subscribe(() =>
+    observed.push(first.runtimeSource.peek() ?? 'unrecorded')
+  )
+  try {
+    first.view.dispatch({ changes: { from: 0, to: 6, insert: 'after' } })
+    expect(observed).toEqual(['after'])
+    document.readOnly.value = true
+    first.view.dispatch({ changes: { from: 0, insert: 'blocked' } })
+    expect(document.editor.contents.peek()).toBe('after')
+    document.readOnly.value = false
+    first.adapter.dispose()
+    document.editor.dispatch({
+      changes: { from: 0, to: 5, insert: 'elsewhere' },
+      annotations: Transaction.addToHistory.of(false),
+    })
+    expect(document.editor.contents.peek()).toBe('elsewhere')
+    expect(first.recordRuntimeSource).toHaveBeenCalledOnce()
+  } finally {
+    stop()
+    first.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('commits an interactive edit with an effect-only checkpoint and records restored source before replay', () => {
+  const document = fixture()
+  const first = document.create((effect, transaction) =>
+    effect.is(checkpoint)
+      ? { before: 'before', after: transaction.state.doc.toString() }
+      : undefined
+  )
+  const second = document.create()
+  try {
+    first.view.dispatch({
+      changes: { from: 0, to: 6, insert: 'intermediate' },
+      annotations: Transaction.addToHistory.of(false),
+    })
+    first.view.dispatch({
+      changes: { from: 0, to: 12, insert: 'after' },
+      annotations: Transaction.addToHistory.of(false),
+    })
+    first.recordRuntimeSource.mockClear()
+    first.view.dispatch({
+      effects: checkpoint.of({ undo: 10, redo: 11 }),
+      annotations: isolateHistory.of('full'),
+    })
+    expect(first.recordRuntimeSource).not.toHaveBeenCalled()
+    const observed: string[] = []
+    const stop = document.editor.subscribe((update) =>
+      observed.push(update.state.doc.toString())
+    )
+    try {
+      expect(document.editor.undo()).toBe(true)
+      expect(first.view.state.doc.toString()).toBe('before')
+      expect(second.view.state.doc.toString()).toBe('before')
+      expect(first.restored).toEqual([10])
+      expect(first.sourcesAtCheckpointRestore).toEqual(['before'])
+      expect(second.restored).toEqual([])
+      expect(document.editor.redo()).toBe(true)
+      expect(first.view.state.doc.toString()).toBe('after')
+      expect(second.view.state.doc.toString()).toBe('after')
+      expect(first.restored).toEqual([10, 11])
+      expect(first.sourcesAtCheckpointRestore).toEqual(['before', 'after'])
+      expect(observed).toEqual(['before', 'after'])
+      first.adapter.dispose()
+      expect(document.editor.undo()).toBe(true)
+      expect(second.view.state.doc.toString()).toBe('before')
+      expect(second.restored).toEqual([])
+    } finally {
+      stop()
+    }
+  } finally {
+    first.adapter.dispose()
+    second.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('rejects edits after the backing editor closes before adapter cleanup', () => {
+  const document = fixture(),
+    first = document.create()
+  try {
+    document.dispose()
+    first.view.dispatch({ changes: { from: 0, to: 6, insert: 'late' } })
+    expect(document.editor.contents.peek()).toBe('before')
+    expect(first.view.state.doc.toString()).toBe('before')
+    expect(first.recordRuntimeSource).not.toHaveBeenCalled()
+  } finally {
+    first.adapter.dispose()
+    document.dispose()
+  }
+})
+
+it('restores the editing view cursor when its text change is undone from Code', () => {
+  const document = fixture(),
+    first = document.create()
+  try {
+    first.view.dispatch({ selection: { anchor: 3 } })
+    first.view.dispatch({
+      changes: { from: 3, insert: 'X' },
+      selection: { anchor: 4 },
+    })
+    expect(document.editor.contents.peek()).toBe('befXore')
+    expect(document.editor.undo()).toBe(true)
+    expect(document.editor.contents.peek()).toBe('before')
+    expect(document.editor.state.selection.main.head).toBe(3)
+    expect(document.editor.redo()).toBe(true)
+    expect(document.editor.state.selection.main.head).toBe(4)
+  } finally {
+    first.adapter.dispose()
+    document.dispose()
+  }
+})

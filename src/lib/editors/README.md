@@ -45,3 +45,46 @@ report `unbound`, `ready`, or `error` to the host.
 
 See [classification and ownership](../../../docs/editor-contributions.md) for the
 contribution contracts, language descriptors, and explicit language choices.
+
+## Atomic document updates
+
+`editor.subscribe` receives one `EditorUpdate` after a document update finishes.
+Committing an interactive edit or correcting an undo can require several
+CodeMirror transactions.
+Subscribers receive the completed update so saving and other views do not observe
+an intermediate document.
+
+Use `state` to read the final shared document and undo history. `changes` combines
+the text changes, and `docChanged` reports whether any transaction changed text.
+Code surfaces apply the combined changes once. The ordered `transactions` also
+retain effects needed by specialized consumers; their intermediate states can
+differ from the final shared state.
+
+`EditorUpdate` is part of the editor contract used by Code surfaces, Save, and
+autosave. It remains useful when KclManager and modelingMachine are replaced:
+tools that change text during an interaction still need a completed update with
+undo history. The [legacy modeling document adapter](../kcl/machine/document.ts)
+interprets checkpoint effects in the transactions and forwards them to the
+owning machine's editor. Those checkpoint rules belong to that adapter.
+
+The fields use CodeMirror types, as does the rest of the current `Editor` API.
+Exposing full transactions gives consumers more detail than most need. A narrower
+effect interface could replace that field while preserving the contract that
+subscribers receive one completed update.
+
+An [interactive edit](../../GLOSSARY.md#interactive-edit) is one user operation,
+such as dragging a sketch point, that can update the shared document several times
+before it finishes. Each movement changes the text without adding a separate undo
+entry. Committing supplies `committedInteractiveEdit` with the starting and final
+text and records the operation as one undoable edit. The final text may already
+be present, so the commit can consist entirely of history effects.
+
+Cancellation restores the starting text and its earlier undo history. Ordinary
+recorded edits end the pending interactive edit history, while editor configuration
+changes remain installed. Closing the document releases the saved starting state.
+
+Undo and redo work after the tool's native session closes. When replay needs an
+additional text correction, `replayInteractiveEdit` applies it after CodeMirror's
+own history transition, then publishes one update. This keeps earlier undo and
+redo entries mapped to the correct document length and avoids exposing a temporary
+rollback to save, cloud, or view observers.

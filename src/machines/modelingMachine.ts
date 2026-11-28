@@ -1,3 +1,4 @@
+import { tryEnterSketchOnDoubleClickFromScene } from '@src/lib/kcl/scene/activateEntity'
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import {
@@ -185,7 +186,6 @@ import {
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
   selectionBodyFace,
-  tryEnterSketchOnDoubleClickFromScene,
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
@@ -353,7 +353,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
-  if (!project) {
+  if (!project && !kclManager.hasDocumentHost) {
     console.warn('No project available for editSketch call')
   }
 
@@ -1525,7 +1525,7 @@ export const modelingMachine = setup({
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (args?.mouseEvent?.detail === 2) {
-            void tryEnterSketchOnDoubleClickFromScene(
+            return tryEnterSketchOnDoubleClickFromScene(
               args,
               sceneInfra.renderer.domElement,
               {
@@ -1533,7 +1533,7 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 sceneInfra,
               }
-            )
+            ).catch(reportRejection)
           }
         },
       })
@@ -3376,7 +3376,9 @@ export const modelingMachine = setup({
 
         // Call newSketch API
         const project = projectRef?.current
-        if (!project) {
+        // A view-owned native runtime has already opened its captured project.
+        // The file route still requires its legacy project owner.
+        if (!project && !kclManager.hasDocumentHost) {
           return reject(new Error('No active project to start a sketch in.'))
         }
 
@@ -5081,9 +5083,9 @@ export const modelingMachine = setup({
       },
 
       entry: [
-        'set modeling idle double-click callback',
         'restore modeling camera controls',
         'reset client scene mouse handlers',
+        'set modeling idle double-click callback',
       ],
 
       states: {

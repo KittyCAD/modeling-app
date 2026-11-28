@@ -1,5 +1,6 @@
 import { inputs, observe, observeService } from '@src/registry/inputs'
 import type {
+  ChangeSet,
   EditorState,
   Extension,
   Transaction,
@@ -13,6 +14,28 @@ import type {
 } from '@src/lib/editors/matching'
 import { contract, Facet, service } from 'plankton'
 import type { ComponentType } from 'react'
+
+/**
+ * One completed document update, delivered once to Code views, saving, and other
+ * subscribers. Committing an interactive edit or undoing it can require several
+ * CodeMirror transactions before the document and its history reach their final state.
+ * This notification belongs to the editor contract independently of KclManager.
+ */
+export interface EditorUpdate {
+  /**
+   * Ordered CodeMirror transactions, including effects used by specialized
+   * consumers. The legacy modeling adapter interprets checkpoint effects here;
+   * that interpretation belongs to the adapter. Read `state` for the final
+   * document and history, rather than a transaction's intermediate state.
+   */
+  readonly transactions: readonly Transaction[]
+  /** The resulting shared document and undo history after applying history effects. */
+  readonly state: EditorState
+  /** Combined text changes from the previous document to this update's document. */
+  readonly changes: ChangeSet
+  /** Whether any transaction in this update changes the text. */
+  readonly docChanged: boolean
+}
 
 /** One live working document, independent of the views displaying it. */
 export interface Editor {
@@ -28,7 +51,7 @@ export interface Editor {
   readonly state: EditorState
   readonly signal: AbortSignal
   dispatch: (...specs: TransactionSpec[]) => void
-  subscribe: (listener: (transaction: Transaction) => void) => () => void
+  subscribe: (listener: (update: EditorUpdate) => void) => () => void
   undo: () => boolean
   redo: () => boolean
 }

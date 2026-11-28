@@ -159,9 +159,8 @@ export function createEditorSave(
       attached.add(editor)
       entry.document.value = editor.state.doc
       onDispose(
-        editor.subscribe((transaction) => {
-          if (transaction.docChanged)
-            entry.document.value = transaction.state.doc
+        editor.subscribe((update) => {
+          if (update.docChanged) entry.document.value = update.state.doc
         })
       )
       onDispose(() => {
