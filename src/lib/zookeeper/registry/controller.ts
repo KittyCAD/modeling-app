@@ -1,3 +1,4 @@
+import { formatZookeeperFileChangeSummary } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
   effect,
   type ReadonlySignal,
@@ -168,6 +169,12 @@ class SessionController implements ZookeeperSessionController {
         const snapshot = this.actor.getSnapshot()
         this.continueCheck(snapshot, this.resumeInterruptedTurnPending)
         this.flushQueue(snapshot)
+      },
+      onFilesChanged: (summary) => {
+        toast.success(formatZookeeperFileChangeSummary(summary), {
+          id: `${this.fileWriteToastId}:completed`,
+          position: 'bottom-center',
+        })
       },
       onEditApplied: (response) => {
         this.actor.send({
